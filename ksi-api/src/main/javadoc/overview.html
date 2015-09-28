@@ -1,0 +1,268 @@
+<!--
+  ~ Copyright 2013-2015 Guardtime, Inc.
+  ~
+  ~ This file is part of the Guardtime client SDK.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License").
+  ~ You may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+  ~ express or implied. See the License for the specific language governing
+  ~ permissions and limitations under the License.
+  ~ "Guardtime" and "KSI" are trademarks or registered trademarks of
+  ~ Guardtime, Inc., and no license to trademarks is granted; Guardtime
+  ~ reserves and retains all trademark rights.
+  -->
+
+<html>
+<body>
+<h2><a id="intro"></a>KSI introduction</h2>
+
+<h2>API introduction</h2>
+
+<p>This is the Client API for KSI service. It provides functionality to create and verify KSI Signatures.</p>
+
+
+<h2>API modules</h2>
+The KSI SDK Java project contains the following modules:
+<ul>
+    <li>ksi-common - contains common functionality</li>
+    <li>ksi-service-client - common module for all KSI service clients</li>
+    <li>ksi-service-client-common-http - common module for all KSI HTTP service clients</li>
+    <li>ksi-service-client-apache-http - KSI HTTP service client implementation. Uses apache-async-httpclient to
+        communicate with the server.
+    </li>
+    <li>ksi-service-client-simple-http - KSI HTTP service client implementation. Uses Java standard API to communicate
+        with the server.
+    </li>
+    <li>ksi-service-client-tcp - KSI TCP signing service client implementation.</li>
+    <li>ksi-api - main module</li>
+</ul>
+
+
+<h2>Dependencies</h2>
+
+<p>The following is a list of compile dependencies for this project. These dependencies are required to compile and run
+    the application:</p>
+<ul>
+    <li>Bouncycastle - used for cryptographic functions</li>
+    <li>SLF4J - logging facade for logging</li>
+</ul>
+<p>Optional libraries:</p>
+<ul>
+    <li>apache-async-httpclient - used by ksi-service-client-apache-http module. When using
+        ksi-service-client-apache-http module then apache-async-httpclient dependency must be in application classpath.
+    </li>
+    <li>mina-core - used by ksi-service-client-tcp module.</li>
+    <li>SLF4J simple implementation - simple SLF4J backend that logs to standard output.</li>
+</ul>
+<p>All libraries are bundled with source, including optional libraries. If these are not required, the API user must
+    exclude them.</p>
+
+
+<h2>Logging</h2>
+
+<p>KSI API uses SLF4J for logging, SLF4J is a facade for different logging frameworks(e.g. java.util.logging, logback,
+    log4j). By default simple implementations is included with API that logs to standard output.</p>
+
+<p>SLF4J allows developers to send KSI API logs to the logging framework used in their application. To enable it,
+    logging framework support must be downloaded from <a href="http://www.slf4j.org/">SLF4J homepage</a> and added to
+    classpath.</p>
+
+
+<h2>Usage</h2>
+
+<p>Java SDK API is provided by <em>com.guardtime.ksi.KSI</em> interface</p>
+
+<h3>Initialization</h3>
+
+<p>To obtain a instance of <em>com.guardtime.ksi.KSI</em> the <em>com.guardtime.ksi.KSIBuilder</em> class can be used.
+    <em>com.guardtime.ksi.KSIBuilder</em> class checks that at least the following parameters are present:</p>
+<ul>
+    <li>signing-client - used to sign data.</li>
+    <li>extender-client - used to extend/verify signature.</li>
+    <li>publications-file-client - used to download publications file</li>
+    <li>publications file trusted certificate selector - defines the additional parameters to check when verifying the
+        publications file signing certificate
+    </li>
+</ul>
+
+The following code creates a instance of <em>com.guardtime.ksi.KSI</em> with <em>SimpleHttpClient</em>:
+<pre><code>
+    SimpleHttpClient simpleHttpClient = ...
+
+    KSIBuilder builder = new KSIBuilder().
+    setKsiProtocolSignerClient(simpleHttpClient).
+    setKsiProtocolExtenderClient(simpleHttpClient).
+    setKsiProtocolPublicationsFileClient(simpleHttpClient).
+    setPublicationsFileTrustedCertSelector(new X509CertificateSubjectRdnSelector("E=test@test.com"));
+
+    KSI ksi = builder.build();
+
+    // use KSI object
+
+
+    // release resources
+    ksi.close();
+
+</code></pre>
+
+The following clients are currently implemented:
+<ul>
+    <li>
+        <em>SimpleHttpClient</em> - uses Java standard API to communicate with the server
+    </li>
+    <li>
+        <em>ApacheHttpClient</em> - uses apache HTTP client to communicate with the server
+    </li>
+    <li>
+        <em>TCPClient</em> - uses TCP protocol. NB! Only signing is supported!
+    </li>
+</ul>
+Method <em>setPublicationsFilePkiTrustStore(trustStore)</em> from <em>com.guardtime.ksi.KSIBuilder</em> class can be
+used to specify the default Java Key Store to be used when verifying the publications file. This key store is
+used to build a valid certificate path from root certificate to the certificate that was used for publications file
+signing. Method <em>setPublicationsFileTrustedCertSelector(CertSelector certSelector)</em> from <em>com.guardtime.ksi.KSIBuilder</em>
+class defines the additional parameters to check when verifying the signing certificate. A <em>CertSelector</em> defines
+a set of criteria for signing certificate. The following implementation of <em>CertSelector</em> exist:
+<ul>
+    <li><em>com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector</em> implemented by Guardtime. Selects
+        certificates by subjectDN values (e.g E=test@test.com)
+    </li>
+    <li><em>java.security.cert.X509CertSelector</em> is part of Java SDK. See X509CertSelector javadoc for more
+        information.
+    </li>
+</ul>
+
+A new implementation (e.g reading configuration from file) can be added by implementing <em>CertSelector</em> interface.
+The following example code creates a instance of <em>com.guardtime.ksi.KSI</em> with <em>com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector</em>
+and custom trust store:
+<pre><code>
+    SimpleHttpClient simpleHttpClient = ...
+
+    KeyStore trustStore = loadKeyStore();
+    KSIBuilder builder = new KSIBuilder().
+    setKsiProtocolSignerClient(simpleHttpClient).
+    setKsiProtocolExtenderClient(simpleHttpClient).
+    setKsiProtocolPublicationsFileClient(simpleHttpClient).
+    setPublicationsFilePkiTrustStore(trustStore).
+    setPublicationsFileTrustedCertSelector(new X509CertificateSubjectRdnSelector("E=test@test.com, CN=My Test CN"));
+
+    KSI ksi = builder.build();
+</code></pre>
+Method <em>setDefaultSigningHashAlgorithm(HashAlgorithm algorithm)</em> from <em>com.guardtime.ksi.KSIBuilder</em> class
+is used to specify the default signing hash algorithm.
+
+
+<h3>Read Signature</h3>
+The following code can be used to read signature:
+<pre><code>
+    KSI ksi = ...
+
+    // read signature from disk
+    KSISignature signature = ksi.read(new File("signature.ksig"));
+
+    // read using input stream
+    KSISignature signature2 = ksi.read(new FileInputStream("signature.ksig"));
+
+    // read using byte array
+    byte[] bytes = getSignatureBytes();
+    KSISignature signature3 = ksi.read(bytes);
+
+</code></pre>
+<h3>Create Signature</h3>
+The following code can be used to create signature:
+<pre><code>
+    KSI ksi = ...
+
+    // synchronous signing
+    KSISignature sig = ksi.sign(new File("file.txt"));
+    // asynchronous signing
+    Future&lt;KSISignature&gt; future = ksi.asyncSign(new File("asyncFile.txt"));
+    KSISignature signature2 = future.getResult();
+
+</code></pre>
+<h3>Extend Signature</h3>
+The following code can be used to extend signature:
+<pre><code>
+    KSI ksi = ...
+
+    // read signature from disk
+    KSISignature signature = ksi.read(new File("signature.ksig"));
+
+    // synchronous extending
+    KSISignature extendedSignature = ksi.extend(signature);
+
+    // asynchronous extending
+    Future&lt;KSISignature&gt; future = ksi.asyncExtend(signature);
+    KSISignature extendedSignature2 = future.getResult();
+
+</code></pre>
+<h3>Verify Signature</h3>
+Java SDK provides policy based verification process. To verify a signature the VerificationContext must be built and
+policy must be selected. Currently the following policies are implemented:
+<ul>
+    <li><b>KeyBasedVerificationPolicy</b> can be used if the keyless signature contains a calendar hash chain and a
+        calendar
+        authentication record. NB! Key-based verification should be used for short-term verification before a
+        publication becomes available.
+    </li>
+    <li><b>UserProvidedPublicationBasedVerificationPolicy</b> can be used to verify keyless signatures using used
+        provided publication
+    </li>
+    <li><b>PublicationsFileBasedVerificationPolicy</b> an be used to verify signatures using publications file</li>
+    <li><b>CalendarBasedVerificationPolicy</b> takes as input the computed output hash of aggregation hash chains and
+        the `aggregation
+        time'. It requires on-line access to the extending service and allows verification using the calendar database
+        as the
+        trust anchor.
+    </li>
+</ul>
+Any verification process may finish with three possible outcomes:
+<ul>
+    <li>Verification succeeded, which means there's a way to prove the correctness of the signature.</li>
+    <li>Verification not possible, which means there is not enough data to prove or disprove the correctness of the
+        signature.
+    </li>
+    <li>Verification failed, which means the signature is definitely invalid or the document does not match with the
+        signature.
+    </li>
+</ul>
+The following code can be used to create verification context:
+<pre><code>
+    KSI ksi = ...
+    SimpleHttpClient simpleHttpClient = ...
+    PublicationsFile publicationsFile = ...
+
+    KSISignature signature = ksi.read(new File("signature.ksig"));
+
+    VerificationContextBuilder builder = new VerificationContextBuilder().
+    setSignature(signature).
+    setExtenderClient(simpleHttpClient).
+    setPublicationsFile(publicationsFile);
+
+    VerificationContext context = builder.build();
+</code></pre>
+
+The following code can be used to verify signature:
+<pre><code>
+    KSI ksi = ...
+
+    VerificationContext context = ...
+    Policy policy = new KeyBasedVerificationPolicy();
+    VerificationResult result = ksi.verify(context, policy);
+
+</code></pre>
+<h2>Acknowledgements</h2>
+
+<p>This product relies on software developed by the Legion of the Bouncy Castle (<a
+        href="http://www.bouncycastle.org">www.bouncycastle.org</a>).
+</p>
+
+<p>This product includes software developed by The Apache Software Foundation (<a href="http://www.apache.org/">www.apache.org/</a>).
+</p>
+</body>
+</html>

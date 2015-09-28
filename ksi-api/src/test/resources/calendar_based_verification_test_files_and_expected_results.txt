@@ -1,0 +1,10 @@
+#signature file location with full path:pass signature internal verification:pass signature verification with OK results:verification error code (" " if none):expected exception class (" " if none):expected excpetion message (" " if none)
+ok-sig-2014-06-2.ksig:true:true: : : 
+ok-sig-2014-06-2-extended.ksig:true:true: : : 
+calendar-based-verification/ExtendedSignature-MissingCalChainAndPubRec.ksig:true:true: : : 
+calendar-based-verification/ExtendedSignature-MissingPubRecWrongCalChainFirstLeftLink.ksig:true:true: : : 
+calendar-based-verification/ExtendedSignature-MissingPubRecWrongCalChainFirstRightLink.ksig:true:false:CAL_04: : 
+calendar-based-verification/ExtendedSignature-MissingPubRecWrongCalChainLastRightLink.ksig:true:false:CAL_04: : 
+calendar-based-verification/all-wrong-hash-chains-in-signature.ksig:true:false:CAL_02: : 
+publication-based-verification/ok-sig-2014-06-2-extended-wrong-publication-reference.ksig:true:true: : : 
+publication-based-verification/ok-sig-2014-06-2-extended-no-publication-reference.ksig:true:true: : : 

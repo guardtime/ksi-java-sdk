@@ -1,0 +1,21 @@
+# OS and IDE settings files
+.DS_Store
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+# binary dirs
+bin/
+bin-debug/
+test-bin/
+dist/
+doc/
+
+# test output dirs
+test-output/
+test-coverage/
+/ebin
+*/target/
+/target/
+/tools

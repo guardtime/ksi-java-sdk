@@ -23,6 +23,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.PublicationsFileFactory;
@@ -39,6 +40,7 @@ import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
+import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.util.Util;
@@ -358,6 +360,26 @@ public final class KSIBuilder {
             }
             KSISignatureVerifier verifier = new KSISignatureVerifier();
             return verifier.verify(context, policy);
+        }
+
+        public VerificationResult verify(KSISignature signature, Policy policy) throws KSIException {
+            return verify(signature, policy, null, null);
+        }
+
+        public VerificationResult verify(KSISignature signature, Policy policy, PublicationData publicationData) throws KSIException {
+            return verify(signature, policy, null, publicationData);
+        }
+
+        public VerificationResult verify(KSISignature signature, Policy policy, DataHash documentHash) throws KSIException {
+            return verify(signature, policy, documentHash, null);
+        }
+
+        public VerificationResult verify(KSISignature signature, Policy policy, DataHash documentHash, PublicationData publicationData) throws KSIException {
+            VerificationContextBuilder builder = new VerificationContextBuilder();
+            builder.setDocumentHash(documentHash).setSignature(signature);
+            builder.setExtenderClient(extenderClient).setExtendingAllowed(true).setUserPublication(publicationData);
+            VerificationContext context = builder.setPublicationsFile(getPublicationsFile()).createVerificationContext();
+            return verify(context, policy);
         }
 
         public PublicationsFile getPublicationsFile() throws KSIException {

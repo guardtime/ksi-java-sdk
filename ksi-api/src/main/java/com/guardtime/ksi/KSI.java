@@ -22,9 +22,12 @@ package com.guardtime.ksi;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
@@ -229,6 +232,66 @@ public interface KSI {
      *         when error occurs (e.g when communication with KSI service fails)
      */
     VerificationResult verify(VerificationContext context, Policy policy) throws KSIException;
+
+    /**
+     * Convenience method to verify KSI signature. Uses the {@link com.guardtime.ksi.service.client.KSIExtenderClient}
+     * defined by {@link KSIBuilder#setKsiProtocolExtenderClient(KSIExtenderClient)} method. The publications file is
+     * downloaded using the client specified by method {@link KSIBuilder#setKsiProtocolPublicationsFileClient(KSIPublicationsFileClient)}.
+     *
+     * @param signature
+     *         signature to verify.
+     * @param policy
+     *         policy to be used to verify the signature.
+     * @see KSI#verify(KSISignature, Policy, DataHash, PublicationData)
+     */
+    VerificationResult verify(KSISignature signature, Policy policy) throws KSIException;
+
+    /**
+     * Convenience method to verify KSI signature.Uses the {@link com.guardtime.ksi.service.client.KSIExtenderClient}
+     * defined by {@link KSIBuilder#setKsiProtocolExtenderClient(KSIExtenderClient)} method. The publications file is
+     * downloaded using the client specified by method {@link KSIBuilder#setKsiProtocolPublicationsFileClient(KSIPublicationsFileClient)}.
+     *
+     * @param signature
+     *         signature to verify.
+     * @param policy
+     *         policy to be used to verify the signature.
+     * @param publicationData
+     *         publication data to be used to verify signature. may be null.
+     * @see KSI#verify(KSISignature, Policy, DataHash, PublicationData)
+     */
+    VerificationResult verify(KSISignature signature, Policy policy, PublicationData publicationData) throws KSIException;
+
+    /**
+     * Convenience method to verify KSI signature.Uses the {@link com.guardtime.ksi.service.client.KSIExtenderClient}
+     * defined by {@link KSIBuilder#setKsiProtocolExtenderClient(KSIExtenderClient)} method. The publications file is
+     * downloaded using the client specified by method {@link KSIBuilder#setKsiProtocolPublicationsFileClient(KSIPublicationsFileClient)}.
+     *
+     * @param signature
+     *         signature to verify.
+     * @param policy
+     *         policy to be used to verify the signature.
+     * @param documentHash
+     *         the original document hash. may be null
+     * @see KSI#verify(KSISignature, Policy, DataHash, PublicationData)
+     */
+    VerificationResult verify(KSISignature signature, Policy policy, DataHash documentHash) throws KSIException;
+
+    /**
+     * Convenience method to verify KSI signature.Uses the {@link com.guardtime.ksi.service.client.KSIExtenderClient}
+     * defined by {@link KSIBuilder#setKsiProtocolExtenderClient(KSIExtenderClient)} method. The publications file is
+     * downloaded using the client specified by method {@link KSIBuilder#setKsiProtocolPublicationsFileClient(KSIPublicationsFileClient)}.
+     *
+     * @param signature
+     *         signature to verify.
+     * @param policy
+     *         policy to be used to verify the signature.
+     * @param documentHash
+     *         the original document hash. may be null
+     * @param publicationData
+     *         publication data to be used to verify signature. may be null.
+     * @see KSI#verify(VerificationContext, Policy)
+     */
+    VerificationResult verify(KSISignature signature, Policy policy, DataHash documentHash, PublicationData publicationData) throws KSIException;
 
     /**
      * This method is used to get the publications file. Uses the {@link com.guardtime.ksi.service.client.KSIPublicationsFileClient}

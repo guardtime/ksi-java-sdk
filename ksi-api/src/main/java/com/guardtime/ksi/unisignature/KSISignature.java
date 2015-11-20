@@ -98,6 +98,16 @@ public interface KSISignature {
     KSISignature extend(CalendarHashChain calendarHashChain, PublicationRecord publicationRecord) throws KSIException;
 
     /**
+     * Returns the identity of the signature.
+     */
+    String getIdentity();
+
+    /**
+     * Returns true if signature contains signature publication record element.
+     */
+    boolean isExtended();
+
+    /**
      * Writes {@link KSISignature} to given output stream
      *
      * @param output

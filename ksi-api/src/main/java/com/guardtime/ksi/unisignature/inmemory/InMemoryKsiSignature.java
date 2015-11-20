@@ -141,6 +141,10 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
         return identity;
     }
 
+    public boolean isExtended() {
+        return getPublicationRecord() != null;
+    }
+
     public Date getAggregationTime() {
         return calendarChain == null ? getLastAggregationHashChain().getAggregationTime() : calendarChain.getRegistrationTime();
     }

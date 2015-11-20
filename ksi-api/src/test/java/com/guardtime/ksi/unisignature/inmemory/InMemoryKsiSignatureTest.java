@@ -48,6 +48,13 @@ public class InMemoryKsiSignatureTest {
     }
 
     @Test
+    public void testSignatureContainsIdentity_Ok() throws Exception {
+        TLVInputStream input = new TLVInputStream(TestUtil.load("signature/signature-with-mixed-aggregation-chains.ksig"));
+        KSISignature signature = new InMemoryKsiSignature(input.readElement());
+        Assert.assertNotNull(signature.getIdentity());
+    }
+
+    @Test
     public void testLoadSignatureFromFile_Ok() throws Exception {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(new TLVInputStream(TestUtil.load("signature/signature-ok.tlv")).readElement());
         Assert.assertEquals(signature.getInputHash(), new DataHash(HashAlgorithm.SHA1, Base16.decode("E9A01D04EBE58F51E4291ADEE6768CE754D155D5")));
@@ -72,6 +79,7 @@ public class InMemoryKsiSignatureTest {
     public void testSignatureExtend() throws Exception {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(new TLVInputStream(TestUtil.load("signature/signature-ok.tlv")).readElement());
 
+        Assert.assertFalse(signature.isExtended());
         Assert.assertFalse(signature.isPublished());
         Assert.assertEquals(signature.getPublicationTime(), new Date(1396656000000L));
         Assert.assertEquals(signature.getAggregationTime(), new Date(1396608816000L));
@@ -81,8 +89,9 @@ public class InMemoryKsiSignatureTest {
         inputStream.close();
         PublicationsFilePublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData("AAAAAA-CTJR3I-AANBWU-RY76YF-7TH2M5-KGEZVA-WLLRGD-3GKYBG-AM5WWV-4MCLSP-XPRDDI-UFMHBA"));
 
-        InMemoryKsiSignature extendedSignature = signature.extend(calendarHashChain, record);
-        Assert.assertTrue(extendedSignature.isPublished());
+        KSISignature extendedSignature = signature.extend(calendarHashChain, record);
+        Assert.assertTrue(extendedSignature.isExtended());
+        Assert.assertFalse(signature.isExtended());
         Assert.assertEquals(extendedSignature.getPublicationTime(), new Date(1398154864000L));
         /*
          * Aggregation time cannot change
@@ -90,7 +99,7 @@ public class InMemoryKsiSignatureTest {
         Assert.assertEquals(extendedSignature.getAggregationTime(), new Date(1396608816000L));
         Assert.assertNull(extendedSignature.getCalendarAuthenticationRecord());
         Assert.assertEquals(extendedSignature.getInputHash(), signature.getInputHash());
-        Assert.assertEquals(extendedSignature.getRegistrationTime(), new Date(1396608816000L));
+        Assert.assertEquals(extendedSignature.getCalendarHashChain().getAggregationTime(), new Date(1396608816000L));
     }
 
     @Test(expectedExceptions = {InvalidAggregationHashChainException.class}, expectedExceptionsMessageRegExp = "Aggregation chain index list can not be empty")

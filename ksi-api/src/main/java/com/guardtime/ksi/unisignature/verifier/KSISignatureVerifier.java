@@ -42,7 +42,7 @@ public final class KSISignatureVerifier implements SignatureVerifier {
         KSIVerificationResult finalResult = new KSIVerificationResult();
         Policy runPolicy = policy;
         while (runPolicy != null) {
-            PolicyVerificationResult result = verifySignature(context, policy);
+            PolicyVerificationResult result = verifySignature(context, runPolicy);
             finalResult.addPolicyResult(result);
             if (!VerificationResultCode.OK.equals(result.getPolicyStatus())) {
                 LOGGER.info("Using fallback policy {}", runPolicy.getFallbackPolicy());

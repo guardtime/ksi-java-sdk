@@ -23,9 +23,14 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
+import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
+import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -33,6 +38,7 @@ import org.testng.annotations.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Date;
 
 import static org.testng.Assert.assertNotNull;
 
@@ -150,5 +156,36 @@ public class KSITest {
     public void testSignFileUsingInvalidInputStream_ThrowsKSIException() throws Exception {
         ksi.sign((File) null);
     }
+
+    @Test
+    public void testVerifySignatureWithoutContext_OK() throws Exception {
+        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-04-30.1.ksig"));
+        VerificationResult result = ksi.verify(signature, new KeyBasedVerificationPolicy());
+        Assert.assertTrue(result.isOk());
+    }
+
+    @Test
+    public void testVerifySignatureWithFileDataHashWithoutContext_OK() throws Exception {
+        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-04-30.1.ksig"));
+        VerificationResult result = ksi.verify(signature, new KeyBasedVerificationPolicy(), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D")));
+        Assert.assertTrue(result.isOk());
+    }
+
+    @Test
+    public void testVerifyExtendedSignatureWithoutContext_OK() throws Exception {
+        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-06-2-extended.ksig"));
+        VerificationResult result = ksi.verify(signature, new PublicationsFileBasedVerificationPolicy());
+        Assert.assertTrue(result.isOk());
+    }
+
+    @Test
+    public void testVerifyExtendedSignatureWithFileHashAndPublicationDataAndWithoutContext_OK() throws Exception {
+        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-06-2-extended.ksig"));
+        PublicationData publicationData = new PublicationData(new Date(1410739200000L), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("C1679EDC2E2A23D1BA9B4F49845C7607AEEF48AD1A344A1572A70907A86FF040")));
+        DataHash documentHash = new DataHash(HashAlgorithm.SHA2_256, Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D"));
+        VerificationResult result = ksi.verify(signature, new PublicationsFileBasedVerificationPolicy(), documentHash, publicationData);
+        Assert.assertTrue(result.isOk());
+    }
+
 
 }

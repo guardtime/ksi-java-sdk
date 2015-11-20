@@ -113,6 +113,7 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
     private CloseableHttpAsyncClient createClient(HttpClientSettings settings) {
         IOReactorConfig ioReactor = IOReactorConfig.custom().setIoThreadCount(10).build();
         HttpAsyncClientBuilder httpClientBuilder = HttpAsyncClients.custom()
+                .useSystemProperties()
                 // allow POST redirects
                 .setRedirectStrategy(new LaxRedirectStrategy()).setMaxConnTotal(1000).setMaxConnPerRoute(1000).setDefaultIOReactorConfig(ioReactor)
                 .setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy()).setDefaultRequestConfig(createDefaultRequestConfig(settings));

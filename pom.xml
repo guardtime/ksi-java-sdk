@@ -23,7 +23,7 @@
 
 	<groupId>com.guardtime</groupId>
 	<artifactId>ksi</artifactId>
-	<version>4.0.15</version>
+	<version>4.0.16</version>
 	<packaging>pom</packaging>
 
 	<name>KSI SDK</name>
@@ -104,7 +104,24 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<includeScope>runtime</includeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- Test coverage plugin & configuration -->
 			<plugin>
 				<groupId>org.jacoco</groupId>

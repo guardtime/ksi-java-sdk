@@ -43,8 +43,12 @@ public class AggregationRequest extends AbstractKSIRequest {
     private DataHash mac;
 
     public AggregationRequest(AggregationRequestPayload payload, KSIRequestContext context) throws KSIException {
+        this(payload,  new KSIMessageHeader(context.getLoginId()), context);
+    }
+
+    public AggregationRequest(AggregationRequestPayload payload, KSIMessageHeader header, KSIRequestContext context)throws KSIException  {
         super(context);
-        this.header = new KSIMessageHeader(context.getLoginId());
+        this.header = header;
         this.payload = payload;
 
         this.rootElement = new TLVElement(false, false, ELEMENT_TYPE);

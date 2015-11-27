@@ -38,6 +38,7 @@ public class AggregationRequestPayload extends TLVStructure {
     public static final int ELEMENT_TYPE_LEVEL = 0x03;
     public static final int ELEMENT_TYPE_CONFIG = 0x10;
 
+    private Long level;
     private Long requestId;
     private DataHash requestHash;
 
@@ -83,6 +84,8 @@ public class AggregationRequestPayload extends TLVStructure {
                     this.requestHash = readOnce(child).getDecodedDataHash();
                     continue;
                 case ELEMENT_TYPE_LEVEL:
+                    this.level = readOnce(child).getDecodedLong();
+                    continue;
                 case ELEMENT_TYPE_CONFIG:
                     readOnce(child);
                     continue;
@@ -111,6 +114,10 @@ public class AggregationRequestPayload extends TLVStructure {
      */
     public final Long getRequestId() {
         return requestId;
+    }
+
+    public Long getLevel() {
+        return level;
     }
 
     @Override

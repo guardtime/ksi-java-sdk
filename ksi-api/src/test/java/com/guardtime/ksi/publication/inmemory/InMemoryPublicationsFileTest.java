@@ -29,8 +29,10 @@ import java.io.ByteArrayInputStream;
 public class InMemoryPublicationsFileTest {
 
     public static final String PUBLICATIONS_FILE_OK = "publications.tlv";
+    public static final String PUBLICATIONS_FILE_INVALID_ORDER = "publications-file/publications-file-reordered.tlv";
     public static final String PUBLICATIONS_FILE_HEADER_MISSING = "publications-file/publications-file-header-missing.tlv";
     public static final String PUBLICATIONS_FILE_SIGNATURE_MISSING = "publications-file/publications-file-signature-missing.tlv";
+    public static final String PUBLICATIONS_FILE_ELEMENT_AFTER_SIGNATURE = "publications-file/publications-file-reference-after-signature.tlv";
     public static final String PUBLICATIONS_FILE_CONTAINS_UNKNOWN_ELEMENT = "publications-file/publications-file-contains-unknown-element.tlv";
     public static final String PUBLICATIONS_FILE_CONTAINS_CRITICAL_UNKNOWN_ELEMENT = "publications-file/publications-file-contains-critical-unknown-element.tlv";
 
@@ -60,6 +62,16 @@ public class InMemoryPublicationsFileTest {
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file CMS signature is missing")
     public void testCreatePublicationsFileWithoutCmsSignature_ThrowsInvalidPublicationsFileException() throws Exception {
         new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_SIGNATURE_MISSING));
+    }
+
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file order is incorrect ")
+    public void testCreatePublicationsFileWithIncorrectElementOrder_ThrowsInvalidPublicationsFileException() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_INVALID_ORDER));
+    }
+
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file order is incorrect ")
+    public void testCreatePublicationsFileWithElementAfterSignature_ThrowsInvalidPublicationsFileException() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_ELEMENT_AFTER_SIGNATURE));
     }
 
     @Test

@@ -64,12 +64,12 @@ public class InMemoryPublicationsFileTest {
         new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_SIGNATURE_MISSING));
     }
 
-    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file order is incorrect ")
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file order is incorrect")
     public void testCreatePublicationsFileWithIncorrectElementOrder_ThrowsInvalidPublicationsFileException() throws Exception {
         new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_INVALID_ORDER));
     }
 
-    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file order is incorrect ")
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file order is incorrect")
     public void testCreatePublicationsFileWithElementAfterSignature_ThrowsInvalidPublicationsFileException() throws Exception {
         new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_ELEMENT_AFTER_SIGNATURE));
     }

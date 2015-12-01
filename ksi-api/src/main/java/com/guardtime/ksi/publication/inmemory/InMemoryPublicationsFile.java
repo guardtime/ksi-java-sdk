@@ -97,7 +97,19 @@ class InMemoryPublicationsFile implements PublicationsFile {
         if (cmsSignature == null) {
             throw new InvalidPublicationsFileException("Invalid publications file. Publications file CMS signature is missing");
         }
+        if (!verifyElementOrder()) {
+            throw new InvalidPublicationsFileException("Invalid publications file. Publications file order is incorrect");
+        }
         LOGGER.info("Publication file decoded {}", this);
+    }
+
+    /**
+     * Verifies that the read in elements have correct order
+     *
+     * @return false if incorrect order is found
+     */
+    private boolean verifyElementOrder() {
+        return PublicationsFileOrderVerifier.verifyOrder(this.elements);
     }
 
     /**

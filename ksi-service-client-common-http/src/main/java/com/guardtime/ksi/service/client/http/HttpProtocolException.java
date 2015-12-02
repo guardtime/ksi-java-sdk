@@ -21,22 +21,14 @@ package com.guardtime.ksi.service.client.http;
 import com.guardtime.ksi.service.client.KSIClientException;
 
 /**
- * HTTP ServiceException class.
+ * HTTP protocol exception class.
  */
-public class HTTPServiceException extends KSIClientException {
+public class HttpProtocolException extends KSIClientException {
 
     private static final long serialVersionUID = -1173038305861702243L;
     private final int errorCode;
-
-    /**
-     * Create HTTP service exception.
-     *
-     * @param errorCode
-     *         error code
-     * @param msg
-     *         error message
-     */
-    public HTTPServiceException(int errorCode, String msg) {
+    
+    public HttpProtocolException(int errorCode, String msg) {
         super("(" + errorCode + "):" + msg);
         this.errorCode = errorCode;
     }

@@ -56,8 +56,7 @@ public class ApacheHttpPostRequestFuture extends HttpPostRequestFuture {
             input = response.getEntity().getContent();
             Header contentType = response.getFirstHeader(AbstractHttpClient.HEADER_NAME_CONTENT_TYPE);
             String responseHeader = contentType.getValue();
-            validateHttpResponse(statusCode, responseMessage, input, responseHeader);
-            return Util.parseResponseTLV(Util.toByteArray(input));
+            return parse(statusCode, responseMessage, input, responseHeader);
         } catch (InterruptedException e) {
             throw new KSIClientException("Getting KSI response failed", e);
         } catch (ExecutionException e) {

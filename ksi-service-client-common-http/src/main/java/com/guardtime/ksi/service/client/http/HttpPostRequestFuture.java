@@ -20,14 +20,11 @@ package com.guardtime.ksi.service.client.http;
 
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-
-import static com.guardtime.ksi.service.client.http.AbstractHttpClient.HEADER_APPLICATION_KSI_RESPONSE;
 
 /**
  * Common HTTP request future class for all HTTP POST based requests.
@@ -36,6 +33,11 @@ public abstract class HttpPostRequestFuture implements Future<TLVElement> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpPostRequestFuture.class);
 
+    private static final int AGGREGATION_PDU_TYPE = 0x200;
+    private static final int EXTENSION_PDU_TYPE = 0x300;
+
+    private static final int[] SUPPORTED_TLV_TYPES = new int[]{AGGREGATION_PDU_TYPE, EXTENSION_PDU_TYPE};
+
     /**
      * Validates HTTP response message.
      *
@@ -43,22 +45,30 @@ public abstract class HttpPostRequestFuture implements Future<TLVElement> {
      *         - HTTP status code
      * @param responseMessage
      *         - HTTP header response message
-     * @param responseInputStream
+     * @param response
      *         - response input stream
      * @param contentType
      *         - response content type header
-     * @throws IOException
-     *         - will be thrown when I/O exception occurs
-     * @throws HTTPServiceException
-     *         will be thrown when HTTP status code is not 200 and response doesn't include data or HTTP status code is
-     *         not 200 and response content type isn't "application/ksi-response"
+     * @throws HttpProtocolException
+     *         will be thrown when KSI HTTP response is not valid
      */
-    protected void validateHttpResponse(int statusCode, String responseMessage, InputStream responseInputStream, String contentType) throws IOException,
-            HTTPServiceException {
-        if (statusCode != HttpURLConnection.HTTP_OK && (responseInputStream.available() == 0 || !HEADER_APPLICATION_KSI_RESPONSE.equals(contentType))) {
-            LOGGER.error("KSI Protocol request failed. HTTP status code is {}, HTTP response message is {} and content type is {}", statusCode, responseMessage, contentType);
-            throw new HTTPServiceException(statusCode, responseMessage);
+    protected TLVElement parse(int statusCode, String responseMessage, InputStream response, String contentType) throws HttpProtocolException {
+        try {
+            TLVElement tlv = TLVElement.createFromBytes(Util.toByteArray(response));
+            int tlvType = tlv.getType();
+            for (int type : SUPPORTED_TLV_TYPES) {
+                if (tlvType == type) {
+                    return tlv;
+                }
+            }
+        } catch (Exception e) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Invalid TLV response.", e);
+            }
+            throw new HttpProtocolException(statusCode, responseMessage);
         }
+        LOGGER.error("Invalid KSI Protocol response. HTTP status code is {}, HTTP response message is {} and content type is {}", statusCode, responseMessage, contentType);
+        throw new HttpProtocolException(statusCode, responseMessage);
     }
 
 }

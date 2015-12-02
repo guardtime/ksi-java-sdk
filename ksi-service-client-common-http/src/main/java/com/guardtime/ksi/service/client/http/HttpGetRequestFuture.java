@@ -35,13 +35,13 @@ public abstract class HttpGetRequestFuture implements Future<ByteBuffer> {
      *         - HTTP status code
      * @param responseMessage
      *         - HTTP header response message
-     * @throws HTTPServiceException
+     * @throws HttpProtocolException
      *         will be thrown when HTTP status code is not 200 and response doesn't include data or HTTP status code is
      *         not 200 and response content type isn't "application/ksi-response"
      */
-    protected void validateHttpResponse(int statusCode, String responseMessage) throws HTTPServiceException {
+    protected void validateHttpResponse(int statusCode, String responseMessage) throws HttpProtocolException {
         if (statusCode != HttpURLConnection.HTTP_OK) {
-            throw new HTTPServiceException(statusCode, responseMessage);
+            throw new HttpProtocolException(statusCode, responseMessage);
         }
     }
 

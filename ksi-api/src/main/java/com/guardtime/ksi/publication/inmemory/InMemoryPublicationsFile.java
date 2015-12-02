@@ -97,9 +97,6 @@ class InMemoryPublicationsFile implements PublicationsFile {
         if (cmsSignature == null) {
             throw new InvalidPublicationsFileException("Invalid publications file. Publications file CMS signature is missing");
         }
-        if (!PublicationsFileOrderVerifier.verifyOrder(this.elements)) {
-            throw new InvalidPublicationsFileException("Invalid publications file. Publications file order is incorrect");
-        }
         LOGGER.info("Publication file decoded {}", this);
     }
 
@@ -114,27 +111,37 @@ class InMemoryPublicationsFile implements PublicationsFile {
     private void decodePublicationsFile(TLVInputStream input) throws KSIException, IOException {
         while (input.hasNextElement()) {
             TLVElement element = input.readElement();
-            elements.add(element);
             switch (element.getType()) {
                 case PublicationsFileHeader.ELEMENT_TYPE:
                     if (header != null) {
                         throw new InvalidPublicationsFileException("Publications file contains multiple header components");
                     }
                     this.header = new PublicationsFileHeader(element);
-                    continue;
+                    break;
                 case InMemoryCertificateRecord.ELEMENT_TYPE:
                     certificateRecords.add(new InMemoryCertificateRecord(element));
-                    continue;
+                    break;
                 case PublicationsFilePublicationRecord.ELEMENT_TYPE:
                     publicationRecords.add(new PublicationsFilePublicationRecord(element));
-                    continue;
+                    break;
                 case ELEMENT_TYPE_CMS_SIGNATURE:
                     cmsSignature = element.getContent();
                     break;
                 default:
                     throw new InvalidPublicationsFileException("Invalid publications file element type=0x" + Integer.toHexString(element.getType()));
             }
+            verifyElementOrder(element);
+            elements.add(element);
+        }
+    }
 
+    private void verifyElementOrder(TLVElement element) throws KSIException {
+        if (elements.isEmpty()){
+            return;
+        }
+        int lastElementType = elements.get(elements.size() - 1).getType();
+        if (element.getType() < lastElementType) {
+            throw new InvalidPublicationsFileException("Invalid publications file. Publications file order is incorrect");
         }
     }
 

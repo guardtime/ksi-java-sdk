@@ -57,13 +57,11 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
     private CloseableHttpAsyncClient apacheClient;
 
     /**
-     * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientDefaultConfiguration}
+     * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientSimpleConfiguration}
      * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
      */
     public ApacheHttpClient(HttpClientSettings settings) {
-        super(settings);
-        ApacheHttpClientConfiguration conf = new ApacheHttpClientDefaultConfiguration();
-        this.apacheClient = createClient(settings, conf);
+        this(settings, new ApacheHttpClientSimpleConfiguration());
     }
 
     /**

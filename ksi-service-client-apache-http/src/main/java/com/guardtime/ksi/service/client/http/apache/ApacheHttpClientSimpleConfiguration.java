@@ -21,15 +21,23 @@ package com.guardtime.ksi.service.client.http.apache;
 /**
  * Basic implementation of {@link ApacheHttpClientConfiguration} that uses predefined values for the configuration.
  */
-public class ApacheHttpClientDefaultConfiguration implements ApacheHttpClientConfiguration {
+public class ApacheHttpClientSimpleConfiguration implements ApacheHttpClientConfiguration {
+    private static final int MAX_THREAD_COUNT = 10;
+    private static final int MAX_TOTAL_CONNECTION_COUNT = 1000;
+    private static final int MAX_ROUTE_CONNECTION_COUNT = 1000;
+
     private int maxThreadCount;
     private int maxTotalConnectionCount;
     private int maxRouteConnectionCount;
 
-    public ApacheHttpClientDefaultConfiguration() {
-        this.maxThreadCount = 10;
-        this.maxTotalConnectionCount = 1000;
-        this.maxRouteConnectionCount = 1000;
+    public ApacheHttpClientSimpleConfiguration() {
+        this(MAX_THREAD_COUNT, MAX_TOTAL_CONNECTION_COUNT, MAX_ROUTE_CONNECTION_COUNT);
+    }
+
+    public ApacheHttpClientSimpleConfiguration(int maxThreadCount, int maxTotalConnectionCount, int maxRouteConnectionCount) {
+        this.maxThreadCount = maxThreadCount;
+        this.maxTotalConnectionCount = maxTotalConnectionCount;
+        this.maxRouteConnectionCount = maxRouteConnectionCount;
     }
 
     public int getMaxThreadCount() {

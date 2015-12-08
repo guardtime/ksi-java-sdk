@@ -236,10 +236,6 @@
 					</execution>
 				</executions>
 				<configuration>
-					<failOnError>false</failOnError>
-					<footer><![CDATA[Copyright 2008-2015 Guardtime, Inc]]></footer>
-					<additionalparam>${javadoc.doclint.none}</additionalparam>
-					<aggregate>true</aggregate>
 					<overview>${basedir}/ksi-api/src/main/javadoc/overview.html</overview>
 				</configuration>
 			</plugin>

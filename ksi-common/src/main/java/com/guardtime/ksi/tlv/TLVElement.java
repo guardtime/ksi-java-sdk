@@ -176,7 +176,6 @@ public final class TLVElement {
                 content = concat(content, child.getContent());
             }
         }
-        assertActualContentLengthIsInTLVLimits(content.length);
         return content;
     }
 
@@ -186,7 +185,8 @@ public final class TLVElement {
      * @param content
      *         value to set
      */
-    public void setContent(byte[] content) {
+    public void setContent(byte[] content) throws TLVParserException {
+        assertActualContentLengthIsInTLVLimits(content.length);
         this.content = content;
     }
 
@@ -196,24 +196,25 @@ public final class TLVElement {
      * @param s
      *         - string to decode
      */
-    public void setStringContent(String s) {
+    public void setStringContent(String s) throws TLVParserException {
         if (s != null) {
-            this.content = Util.toByteArray(s + '\0');
+            setContent(Util.toByteArray(s + '\0'));
         } else {
-            this.content = new byte[]{'\0'};
+            setContent(new byte[]{'\0'});
         }
     }
 
-    public void setLongContent(long value) {
-        this.content = Util.encodeUnsignedLong(value);
+    public void setLongContent(long value) throws TLVParserException {
+        setContent(Util.encodeUnsignedLong(value));
     }
 
-    public void setDataHashContent(DataHash dataHash) {
-        this.content = dataHash.getImprint();
+    public void setDataHashContent(DataHash dataHash) throws TLVParserException {
+        setContent(dataHash.getImprint());
     }
 
-    public void addChildElement(TLVElement element) {
+    public void addChildElement(TLVElement element) throws TLVParserException {
         this.children.add(element);
+        assertActualContentLengthIsInTLVLimits(getContentLength());
     }
 
     /**
@@ -412,6 +413,7 @@ public final class TLVElement {
      */
     public void writeTo(OutputStream out) throws TLVParserException {
         try {
+            assertActualContentLengthIsInTLVLimits(getContentLength());
             out.write(encodeHeader());
             out.write(getContent());
         } catch (IOException e) {

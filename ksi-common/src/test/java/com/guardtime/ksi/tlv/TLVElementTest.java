@@ -25,6 +25,7 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.reporters.Files;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -343,6 +344,33 @@ public class TLVElementTest {
         TLVElement element = new TLVElement(new TLVHeader(false, false, 0x1));
         element.setLongContent(1442837678);
         Assert.assertEquals(element.getDecodedDate(), new Date(1442837678000L));
+    }
+
+    @Test(expectedExceptions = MultipleTLVElementException.class)
+    public void testCreateTlvElementFromTooLargeInput_ThrowsMultipleTLVElementException() throws Exception {
+        byte[] tmp = Files.readFile(CommonTestUtil.loadFile("root_content_larger_than_max.tlv")).getBytes();
+        TLVElement element = TLVElement.createFromBytes(tmp);
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bits of content,.*")
+    public void testSetTooLargeContentToTlvElement_ThrowsTLVParserException() throws Exception {
+        TLVHeader header = new TLVHeader(true, false, false, 0x1, TLVElement.MAX_TLV16_CONTENT_LENGTH);
+        TLVElement element = new TLVElement(header);
+        byte[] content = new byte[TLVElement.MAX_TLV16_CONTENT_LENGTH + 256];
+        element.setContent(content);
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bits of content,.*")
+    public void testTlvElementChildrenTooLarge_ThrowsTLVParserException() throws Exception {
+        byte[] content = new byte[TLVElement.MAX_TLV16_CONTENT_LENGTH];
+        TLVHeader header = new TLVHeader(true, false, false, 0x1, TLVElement.MAX_TLV16_CONTENT_LENGTH);
+        TLVElement root = new TLVElement(header);
+        TLVElement child1 = new TLVElement(header);
+        child1.setContent(content);
+        TLVElement child2 = new TLVElement(header);
+        child1.setContent(content);
+        root.addChildElement(child1);
+        root.addChildElement(child2);
     }
 
     private void writeOutTLVWithGivenContentLength(int contentLength, boolean tlv16) throws TLVParserException {

@@ -30,7 +30,7 @@ import java.net.URL;
  * <p/>
  * Connection parameters hold HTTP connection settings like timeouts and proxy configuration.
  */
-public final class HttpClientSettings {
+public class HttpClientSettings {
 
     private URL extendingUrl;
     private URL signingUrl;
@@ -148,7 +148,7 @@ public final class HttpClientSettings {
         /**
          * @return connection timeout
          */
-        public final int getConnectionTimeout() {
+        public int getConnectionTimeout() {
             return connectionTimeout;
         }
 
@@ -158,14 +158,14 @@ public final class HttpClientSettings {
          * @param connectionTimeout
          *         connection timeout
          */
-        public final void setConnectionTimeout(int connectionTimeout) {
+        public void setConnectionTimeout(int connectionTimeout) {
             this.connectionTimeout = connectionTimeout;
         }
 
         /**
          * @return proxy password
          */
-        public final String getProxyPassword() {
+        public String getProxyPassword() {
             return proxyPassword;
         }
 
@@ -175,14 +175,14 @@ public final class HttpClientSettings {
          * @param proxyPassword
          *         proxy password
          */
-        public final void setProxyPassword(String proxyPassword) {
+        public void setProxyPassword(String proxyPassword) {
             this.proxyPassword = proxyPassword;
         }
 
         /**
          * @return proxy URL.
          */
-        public final URL getProxyUrl() {
+        public URL getProxyUrl() {
             return proxyUrl;
         }
 
@@ -192,14 +192,14 @@ public final class HttpClientSettings {
          * @param proxyUrl
          *         proxy url
          */
-        public final void setProxyUrl(URL proxyUrl) {
+        public void setProxyUrl(URL proxyUrl) {
             this.proxyUrl = proxyUrl;
         }
 
         /**
          * @return proxy username
          */
-        public final String getProxyUser() {
+        public String getProxyUser() {
             return proxyUser;
         }
 
@@ -209,14 +209,14 @@ public final class HttpClientSettings {
          * @param proxyUser
          *         proxy user
          */
-        public final void setProxyUser(String proxyUser) {
+        public void setProxyUser(String proxyUser) {
             this.proxyUser = proxyUser;
         }
 
         /**
          * @return read timeout
          */
-        public final int getReadTimeout() {
+        public int getReadTimeout() {
             return readTimeout;
         }
 
@@ -226,7 +226,7 @@ public final class HttpClientSettings {
          * @param readTimeout
          *         read timeout
          */
-        public final void setReadTimeout(int readTimeout) {
+        public void setReadTimeout(int readTimeout) {
             this.readTimeout = readTimeout;
         }
     }

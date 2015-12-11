@@ -36,6 +36,7 @@ public class CalendarHashChainTest {
     public void testDecodeCalendarHashChain_Ok() throws Exception {
         TLVInputStream inputStream = new TLVInputStream(TestUtil.load(SIGNATURE_CALENDAR_HASH_CHAIN_OK));
         InMemoryCalendarHashChain calendarHashChain = new InMemoryCalendarHashChain(inputStream.readElement());
+        inputStream.close();
         Assert.assertNotNull(calendarHashChain.getAggregationTime());
         Assert.assertNotNull(calendarHashChain.getRegistrationTime());
         Assert.assertNotNull(calendarHashChain.getElementType(), String.valueOf(0x0802));
@@ -45,51 +46,77 @@ public class CalendarHashChainTest {
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Invalid calendar hash chain. Hash algorithm SHA3_256 is not implemented")
     public void testDecodeCalendarHashChainContainingInvalidHashAlgorithm_ThrowsHashAlgorithmNotImplementedException() throws Exception {
         TLVInputStream inputStream = new TLVInputStream(TestUtil.load(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM));
-        new InMemoryCalendarHashChain(inputStream.readElement());
+        try {
+            new InMemoryCalendarHashChain(inputStream.readElement());
+        } finally {
+            inputStream.close();
+        }
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain publication time is missing")
     public void testDecodeCalendarHashChainWithoutPublicationTime_ThrowsInvalidCalendarHashChainException() throws Exception {
         TLVInputStream inputStream = new TLVInputStream(TestUtil.load("calendar-hash-chain/calendar-hash-chain-without-publication-time.tlv"));
-        new InMemoryCalendarHashChain(inputStream.readElement());
+        try {
+            new InMemoryCalendarHashChain(inputStream.readElement());
+        } finally {
+            inputStream.close();
+        }
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain input hash is missing")
     public void testDecodeCalendarHashChainWithoutInputHash_ThrowsInvalidCalendarHashChainException() throws Exception {
         TLVInputStream inputStream = new TLVInputStream(TestUtil.load("calendar-hash-chain/calendar-hash-chain-without-input-hash.tlv"));
-        new InMemoryCalendarHashChain(inputStream.readElement());
+        try {
+            new InMemoryCalendarHashChain(inputStream.readElement());
+        } finally {
+            inputStream.close();
+        }
 
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain does not contain link elements")
     public void testDecodeCalendarHashChainWithoutLinks_ThrowsInvalidCalendarHashChainException() throws Exception {
         TLVInputStream inputStream = new TLVInputStream(TestUtil.load("calendar-hash-chain/calendar-hash-chain-no-links.tlv"));
-        new InMemoryCalendarHashChain(inputStream.readElement());
+        try {
+            new InMemoryCalendarHashChain(inputStream.readElement());
+        } finally {
+            inputStream.close();
+        }
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain shape is inconsistent with publication time")
     public void testDecodeCalendarHashChainContainingInvalidRegistrationTime_ThrowsInvalidCalendarHashChainException() throws Exception {
         TLVInputStream inputStream = new TLVInputStream(TestUtil.load("calendar-hash-chain/calendar-hash-chain-invalid-publication-time.tlv"));
-        new InMemoryCalendarHashChain(inputStream.readElement());
+        try {
+            new InMemoryCalendarHashChain(inputStream.readElement());
+        } finally {
+            inputStream.close();
+        }
     }
 
     @Test
     public void testGetRegistrationTimeFromCalendarHashChain_Ok() throws Exception {
         TLVInputStream inputStream = new TLVInputStream(TestUtil.load(SIGNATURE_CALENDAR_HASH_CHAIN_OK));
         InMemoryCalendarHashChain calendarHashChain = new InMemoryCalendarHashChain(inputStream.readElement());
+        inputStream.close();
         Assert.assertEquals(calendarHashChain.getRegistrationTime().getTime(), 1398153270000L);
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain shape inconsistent with publication time")
     public void testDecodeCalendarHashChainContainingInvalidRegistrationTimeElement_ThrowsInvalidCalendarHashChainException() throws Exception {
         TLVInputStream inputStream = new TLVInputStream(TestUtil.load("calendar-hash-chain/calendar-hash-chain-invalid-publication-time2.tlv"));
-        new InMemoryCalendarHashChain(inputStream.readElement());
+        try {
+            new InMemoryCalendarHashChain(inputStream.readElement());
+        } finally {
+            inputStream.close();
+        }
     }
 
     @Test
     public void testCalculateCalendarHashChainOutputHash_Ok() throws Exception {
         TLVInputStream inputStream = new TLVInputStream(TestUtil.load(SIGNATURE_CALENDAR_HASH_CHAIN_OK));
         InMemoryCalendarHashChain calendarHashChain = new InMemoryCalendarHashChain(inputStream.readElement());
+        inputStream.close();
         Assert.assertEquals(calendarHashChain.getInputHash(), new DataHash(HashAlgorithm.SHA1, new byte[]{-95, 124, -102, -86, 97, -24, 10, 27, -9, 29, 13, -123, 10, -12, -27, -70, -87, -128, 11, -67}));
         Assert.assertEquals(calendarHashChain.getOutputHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[]{-118, 71, 62, 38, 49, -108, 26, -97, 14, 78, -13, -19, -53, 77, -14, -74, 125, -85, -30, -126, -120, 41, -60, -47, -41, -82, 60, -104, -22, -40, 13, 58}));
     }
@@ -98,6 +125,7 @@ public class CalendarHashChainTest {
     public void testGetPublicationDataFromCalendarHashChain_Ok() throws Exception {
         TLVInputStream inputStream = new TLVInputStream(TestUtil.load(SIGNATURE_CALENDAR_HASH_CHAIN_OK));
         InMemoryCalendarHashChain calendarHashChain = new InMemoryCalendarHashChain(inputStream.readElement());
+        inputStream.close();
         PublicationData publicationData = calendarHashChain.getPublicationData();
         Assert.assertNotNull(publicationData.getPublicationTime());
         Assert.assertNotNull(publicationData.getPublicationDataHash());

@@ -32,6 +32,7 @@ public class PublicationsFileHeaderTest {
     public void testDecodePublicationFileHeader_Ok() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("publications-file/publications-file-header-ok.tlv"));
         PublicationsFileHeader header = new PublicationsFileHeader(input.readElement());
+        input.close();
         Assert.assertEquals(header.getVersion().longValue(), 2L);
         Assert.assertEquals(header.getCreationTime(), new Date(123456000L));
         Assert.assertEquals(header.getRepositoryUri(), "repository");
@@ -40,14 +41,22 @@ public class PublicationsFileHeaderTest {
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Publications file header version element must be present")
     public void testDecodePublicationsFileHeaderWithoutVersion_ThrowsInvalidPublicationsFileException() throws Exception {
         com.guardtime.ksi.tlv.TLVInputStream input = new TLVInputStream(TestUtil.load("publications-file/publications-file-header-version-missing.tlv"));
-        new PublicationsFileHeader(input.readElement());
+        try {
+            new PublicationsFileHeader(input.readElement());
+        } finally {
+            input.close();
+        }
 
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Publications file header creation time element must be present")
     public void testDecodePublicationFileHeaderWithoutCreationTime_ThrowsInvalidPublicationsFileException() throws Exception {
         com.guardtime.ksi.tlv.TLVInputStream input = new TLVInputStream(TestUtil.load("publications-file/publications-file-header-creation-time-missing.tlv"));
-        new PublicationsFileHeader(input.readElement());
+        try {
+            new PublicationsFileHeader(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
 

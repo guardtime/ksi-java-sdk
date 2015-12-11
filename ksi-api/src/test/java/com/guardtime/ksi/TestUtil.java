@@ -69,7 +69,11 @@ public final class TestUtil extends CommonTestUtil {
 
     public static KSISignature loadSignature(String file) throws Exception {
         TLVInputStream input = new TLVInputStream(load(file));
-        return signatureFactory.createSignature(input.readElement());
+        try {
+            return signatureFactory.createSignature(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
     public static PublicationsFile loadPublicationsFile(String file) throws Exception {

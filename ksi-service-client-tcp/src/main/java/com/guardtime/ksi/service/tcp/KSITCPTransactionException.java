@@ -25,6 +25,8 @@ import com.guardtime.ksi.service.client.KSIClientException;
  */
 public class KSITCPTransactionException extends KSIClientException {
 
+	private static final long serialVersionUID = 1;
+
     public KSITCPTransactionException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -26,6 +26,8 @@ import com.guardtime.ksi.tlv.InconsistentTlvElementException;
  */
 public class InvalidAggregationHashChainException extends InconsistentTlvElementException {
 
+	private static final long serialVersionUID = 1;
+
     public InvalidAggregationHashChainException(String message) {
         super(message);
     }

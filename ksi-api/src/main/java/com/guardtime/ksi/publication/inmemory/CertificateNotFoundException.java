@@ -26,6 +26,8 @@ import com.guardtime.ksi.exceptions.KSIException;
  */
 public class CertificateNotFoundException extends KSIException {
 
+	private static final long serialVersionUID = 1;
+
     public CertificateNotFoundException(String message) {
         super(message);
     }

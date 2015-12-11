@@ -26,6 +26,8 @@ import com.guardtime.ksi.tlv.InconsistentTlvElementException;
  */
 public class InvalidSignatureException extends InconsistentTlvElementException {
 
+	private static final long serialVersionUID = 1;
+
     public InvalidSignatureException(String message) {
         super(message);
     }

@@ -23,6 +23,8 @@ import com.guardtime.ksi.tlv.InconsistentTlvElementException;
 
 public class InvalidPublicationRecordException extends InconsistentTlvElementException {
 
+	private static final long serialVersionUID = 1;
+
     public InvalidPublicationRecordException(String fieldName, int elementType, String parentName, int parentElementType) {
         super(fieldName, elementType, parentName, parentElementType);
     }

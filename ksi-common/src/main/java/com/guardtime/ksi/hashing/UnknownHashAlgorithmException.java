@@ -26,6 +26,8 @@ package com.guardtime.ksi.hashing;
  */
 public final class UnknownHashAlgorithmException extends HashException {
 
+	private static final long serialVersionUID = 1;
+
     UnknownHashAlgorithmException(int id) {
         super("Hash algorithm id '" + id + "' is unknown");
     }

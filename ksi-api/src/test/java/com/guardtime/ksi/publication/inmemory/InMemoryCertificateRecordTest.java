@@ -34,9 +34,7 @@ public class InMemoryCertificateRecordTest {
 
     @Test
     public void testDecodeCertificateRecord_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_CERTIFICATE_RECORD));
-        InMemoryCertificateRecord certificateRecord = new InMemoryCertificateRecord(input.readElement());
-        input.close();
+        InMemoryCertificateRecord certificateRecord = load(TEST_FILE_CERTIFICATE_RECORD);
         assertNotNull(certificateRecord.getCertificate());
         assertNotNull(certificateRecord.getCertificateId());
         assertEquals(certificateRecord.getCertificateId(), new byte[]{1, 2, 3, 4});
@@ -45,19 +43,18 @@ public class InMemoryCertificateRecordTest {
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Certificate Id can not be null")
     public void testDecodeCertificateRecordWithoutCertificateId_ThrowsInvalidPublicationsFileException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE_ID));
-        try {
-            new InMemoryCertificateRecord(input.readElement());
-        } finally {
-            input.close();
-        }
+        load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE_ID);
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Certificate can not be null")
     public void testDecodeCertificateRecordWithoutCertificate_ThrowsInvalidPublicationsFileException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE));
+        load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE);
+    }
+
+    private InMemoryCertificateRecord load(String file) throws Exception {
+        TLVInputStream input = new TLVInputStream(TestUtil.load(file));
         try {
-            new InMemoryCertificateRecord(input.readElement());
+            return new InMemoryCertificateRecord(input.readElement());
         } finally {
             input.close();
         }

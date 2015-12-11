@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 public class InMemorySignaturePublicationRecordTest {
 
@@ -36,9 +37,7 @@ public class InMemorySignaturePublicationRecordTest {
 
     @Test
     public void testDecodeInMemorySignaturePublicationRecord_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_SIGNATURE_OK));
-        InMemorySignaturePublicationRecord publicationRecord = new InMemorySignaturePublicationRecord(input.readElement());
-        input.close();
+        InMemorySignaturePublicationRecord publicationRecord = load(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_SIGNATURE_OK));
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationData().getPublicationTime());
         Assert.assertEquals(publicationRecord.getPublicationData().getPublicationDataHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -48,9 +47,7 @@ public class InMemorySignaturePublicationRecordTest {
 
     @Test
     public void testDecodeInMemorySignaturePublicationRecordWithReferencesAndRepositoryURI_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_SIGNATURE2_OK));
-        InMemorySignaturePublicationRecord publicationRecord = new InMemorySignaturePublicationRecord(input.readElement());
-        input.close();
+        InMemorySignaturePublicationRecord publicationRecord = load(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_SIGNATURE2_OK));
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationData().getPublicationTime());
         Assert.assertEquals(publicationRecord.getPublicationData().getPublicationDataHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -62,9 +59,13 @@ public class InMemorySignaturePublicationRecordTest {
 
     @Test(expectedExceptions = InvalidPublicationRecordException.class, expectedExceptionsMessageRegExp = "Required field publicationData\\(TLV\\[0x10\\]\\) missing in # PublicationRecord TLV\\[0x803\\]")
     public void testDecodeInMemorySignaturePublicationRecordWithoutPublicationData_ThrowsInvalidPublicationRecordException() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{(byte) 0x88, 0x03, 0x0, 0x0}));
+        load(new ByteArrayInputStream(new byte[]{(byte) 0x88, 0x03, 0x0, 0x0}));
+    }
+
+    private InMemorySignaturePublicationRecord load(InputStream file) throws Exception {
+        TLVInputStream input = new TLVInputStream(file);
         try {
-            new InMemorySignaturePublicationRecord(input.readElement());
+            return new InMemorySignaturePublicationRecord(input.readElement());
         } finally {
             input.close();
         }

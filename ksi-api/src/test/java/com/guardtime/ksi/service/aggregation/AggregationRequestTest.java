@@ -49,10 +49,7 @@ public class AggregationRequestTest {
     @Test
     public void testEncodeAggregationRequestWithoutPayload_Ok() throws Exception {
         AggregationRequest aggregationRequest = new AggregationRequest((AggregationRequestPayload) null, CONTEXT);
-        byte[] bytes = encode(aggregationRequest);
-        TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
-        AggregationRequest request = new AggregationRequest(tlvInput.readElement(), CONTEXT);
-        tlvInput.close();
+        AggregationRequest request = load(encode(aggregationRequest));
         Assert.assertEquals(aggregationRequest.getRequestPayload(), request.getRequestPayload());
         Assert.assertEquals(aggregationRequest.getHeader(), request.getHeader());
     }
@@ -61,10 +58,7 @@ public class AggregationRequestTest {
     public void testEncodeAggregationRequestWithPayload_Ok() throws Exception {
         AggregationRequestPayload payload = new AggregationRequestPayload(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), Util.nextLong());
         AggregationRequest aggregationRequest = new AggregationRequest(payload, CONTEXT);
-        byte[] bytes = encode(aggregationRequest);
-        TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
-        AggregationRequest request = new AggregationRequest(tlvInput.readElement(), CONTEXT);
-        tlvInput.close();
+        AggregationRequest request = load(encode(aggregationRequest));
         Assert.assertEquals(aggregationRequest.getRequestPayload().getRequestHash(), request.getRequestPayload().getRequestHash());
     }
 
@@ -72,10 +66,7 @@ public class AggregationRequestTest {
     public void testEncodeAggregationRequestWithoutPayloadDataHash_Ok() throws Exception {
         AggregationRequestPayload payload = new AggregationRequestPayload(Util.nextLong());
         AggregationRequest aggregationRequest = new AggregationRequest(payload, CONTEXT);
-        byte[] bytes = encode(aggregationRequest);
-        TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
-        AggregationRequest request = new AggregationRequest(tlvInput.readElement(), CONTEXT);
-        tlvInput.close();
+        AggregationRequest request = load(encode(aggregationRequest));
         Assert.assertEquals(aggregationRequest.getRequestPayload().getRequestHash(), request.getRequestPayload().getRequestHash());
         Assert.assertEquals(request.getRequestPayload().getRequestHash(), null);
     }
@@ -83,4 +74,14 @@ public class AggregationRequestTest {
     private byte[] encode(TLVStructure element) throws KSIException {
         return element.getRootElement().getEncoded();
     }
+
+    private AggregationRequest load(byte[] data) throws Exception {
+        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(data));
+        try {
+            return new AggregationRequest(input.readElement(), CONTEXT);
+        } finally {
+            input.close();
+        }
+    }
+
 }

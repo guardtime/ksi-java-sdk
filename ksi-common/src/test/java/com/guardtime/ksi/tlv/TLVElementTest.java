@@ -29,6 +29,7 @@ import org.testng.reporters.Files;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -41,18 +42,14 @@ public class TLVElementTest {
 
     @Test
     public void testGetTheFirstChildElementFromNestedTlvElement_Ok() throws Exception {
-        TLVInputStream in = new TLVInputStream(CommonTestUtil.load("aggregation-203-error.tlv"));
-        TLVElement element = in.readElement();
-        in.close();
+        TLVElement element = load(CommonTestUtil.load("aggregation-203-error.tlv"));
         Assert.assertNotNull(element.getFirstChildElement(0x203));
         Assert.assertNull(element.getFirstChildElement(0x202));
     }
 
     @Test
     public void testGetAllTheChildElementsFormEncodeTlvElement_Ok() throws Exception {
-        TLVInputStream in = new TLVInputStream(CommonTestUtil.load("aggregation-203-error.tlv"));
-        TLVElement element = in.readElement();
-        in.close();
+        TLVElement element = load(CommonTestUtil.load("aggregation-203-error.tlv"));
         List<TLVElement> childElements = element.getChildElements(0x203);
         Assert.assertNotNull(childElements);
         Assert.assertEquals(childElements.size(), 1);
@@ -65,9 +62,7 @@ public class TLVElementTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         element.writeTo(out);
 
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(out.toByteArray()));
-        element = input.readElement();
-        input.close();
+        element = load(new ByteArrayInputStream(out.toByteArray()));
         Assert.assertEquals(element.getType(), 0x0202);
         Assert.assertTrue(element.isTlv16());
         Assert.assertTrue(element.isForwarded());
@@ -81,9 +76,7 @@ public class TLVElementTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         element.writeTo(out);
 
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(out.toByteArray()));
-        element = input.readElement();
-        input.close();
+        element = load(new ByteArrayInputStream(out.toByteArray()));
         Assert.assertEquals(element.getType(), 0x0202);
         Assert.assertTrue(element.isTlv16());
         Assert.assertTrue(element.isForwarded());
@@ -111,9 +104,7 @@ public class TLVElementTest {
 
     @Test
     public void testDecodeTlvElementContainingStringValue_Ok() throws Exception {
-        TLVInputStream in = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x02, 0x03, 'O', 'K', 0x0}));
-        TLVElement element = in.readElement();
-        in.close();
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x02, 0x03, 'O', 'K', 0x0}));
         Assert.assertEquals(element.getType(), 2);
         Assert.assertFalse(element.isTlv16());
         Assert.assertFalse(element.isForwarded());
@@ -123,9 +114,7 @@ public class TLVElementTest {
 
     @Test
     public void testDecodeTlvElementContainingEmptyStringValue_Ok() throws Exception {
-        TLVInputStream in = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x02, 0x01, 0x0}));
-        TLVElement element = in.readElement();
-        in.close();
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x02, 0x01, 0x0}));
         Assert.assertEquals(element.getType(), 2);
         Assert.assertFalse(element.isTlv16());
         Assert.assertFalse(element.isForwarded());
@@ -135,91 +124,67 @@ public class TLVElementTest {
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "String must be null terminated")
     public void testDecodeInvalidStringTlvElement_ThrowsTLVParserException() throws Exception {
-        TLVInputStream in = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x02, 0x02, 'O', 'K'}));
-        TLVElement element = in.readElement();
-        in.close();
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x02, 0x02, 'O', 'K'}));
         element.getDecodedString();
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "String must be null terminated")
     public void testDecodeInvalidStringElement_ThrowsTLVParserException() throws Exception {
-        TLVInputStream in = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x02, 0x00}));
-        TLVElement element = in.readElement();
-        in.close();
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x02, 0x00}));
         element.getDecodedString();
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Malformed UTF-8 data")
     public void testDecodeInvalidNonUTF8StringElement_ThrowsTLVParserException() throws Exception {
-        TLVInputStream in = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x02, 0x05, (byte) 0xfe, (byte) 0xff, 0x0e, 0x22, 0x0}));
-        TLVElement element = in.readElement();
-        in.close();
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x02, 0x05, (byte) 0xfe, (byte) 0xff, 0x0e, 0x22, 0x0}));
         element.getDecodedString();
     }
 
     @Test
     public void testDecodeIntegerElement_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x2, 0x1, 0x1}));
-        TLVElement element = input.readElement();
-        input.close();
-
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x2, 0x1, 0x1}));
         Assert.assertEquals(element.getDecodedLong().longValue(), 1, "Value should be preserved");
         Assert.assertEquals(element.getType(), 2, "Type should be preserved");
     }
 
     @Test
     public void testDecodeIntegerZeroElement_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x2, 0x0}));
-        TLVElement element = input.readElement();
-        input.close();
-
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x2, 0x0}));
         Assert.assertEquals(element.getDecodedLong().longValue(), 0, "Value should be preserved");
         Assert.assertEquals(element.getType(), 2, "Type should be preserved");
     }
 
     @Test
     public void testDecodeElementWithMaximumInteger_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x2, 0x8, 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x2, 0x8, 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                 (byte) 0xff, (byte) 0xff, (byte) 0xff}));
-        TLVElement element = input.readElement();
-        input.close();
-
         Assert.assertEquals(element.getDecodedLong().longValue(), 0x7fffffffffffffffL, "Value should be preserved");
         Assert.assertEquals(element.getType(), 2, "Type should be preserved");
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Integer encoding cannot contain leading zeros")
     public void testDecodeIntegerWithLeadingZeroes_ThrowsTLVParserException() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x2, 0x3, 0x0, 0x0, 0x0}));
-        TLVElement element = input.readElement();
-        input.close();
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x2, 0x3, 0x0, 0x0, 0x0}));
         element.getDecodedLong();
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Integers of at most 63 unsigned bits supported by this implementation")
     public void testDecodeElementContainingIntegerOverflow_ThrowsTLVParserException() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x2, 0x8, (byte) 0x80, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x2, 0x8, (byte) 0x80, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                 (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}));
-        TLVElement element = input.readElement();
-        input.close();
         element.getDecodedLong();
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Integers of at most 63 unsigned bits supported by this implementation")
     public void testDecodeElementContainingIntegerOverflow2_ThrowsTLVParserException() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x2, 0x9, (byte) 0x80, (byte) 0x80, (byte) 0xff, (byte) 0xff,
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x2, 0x9, (byte) 0x80, (byte) 0x80, (byte) 0xff, (byte) 0xff,
                 (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}));
-        TLVElement element = input.readElement();
-        input.close();
         element.getDecodedLong();
     }
 
     @Test
     public void testDecodeElementHighBit_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x2, 0x2, (byte) 0xff, (byte) 0xff}));
-        TLVElement element = input.readElement();
-        input.close();
-
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x2, 0x2, (byte) 0xff, (byte) 0xff}));
         Assert.assertEquals(element.getDecodedLong().longValue(), 0xffff, "Value should be preserved");
         Assert.assertEquals(element.getType(), 2, "Type should be preserved");
     }
@@ -254,11 +219,8 @@ public class TLVElementTest {
 
     @Test
     public void testDecodeImprintTlvElement_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(
+        TLVElement element = load(new ByteArrayInputStream(
                 new byte[]{0x2, 21, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}));
-        TLVElement element = input.readElement();
-        input.close();
-
         Assert.assertEquals(element.getDecodedDataHash().getAlgorithm(), HashAlgorithm.RIPEMD_160, "Algorithm should be parsed correctly");
         Assert.assertEquals(element.getDecodedDataHash().getValue(), new byte[]{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                 "Hash Value should be parsed correctly");
@@ -276,9 +238,7 @@ public class TLVElementTest {
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid DataHash")
     public void testDecodeTlvElementContainingUnknownHashAlgorithm_ThrowsTLVParserException() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x2, 21, 112, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}));
-        TLVElement element = input.readElement();
-        input.close();
+        TLVElement element = load(new ByteArrayInputStream(new byte[]{0x2, 21, 112, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}));
         element.getDecodedDataHash();
     }
 
@@ -379,4 +339,14 @@ public class TLVElementTest {
         element.setContent(bytes);
         element.writeTo(new ByteArrayOutputStream());
     }
+
+    private TLVElement load(InputStream file) throws Exception {
+        TLVInputStream input = new TLVInputStream(file);
+        try {
+            return input.readElement();
+        } finally {
+            input.close();
+        }
+    }
+
 }

@@ -41,25 +41,19 @@ public class InMemoryKsiSignatureTest {
 
     @Test
     public void testParseKSISignature_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("signature/signature-ok.tlv"));
-        InMemoryKsiSignature signature = new InMemoryKsiSignature(input.readElement());
-        input.close();
+        InMemoryKsiSignature signature = load(TestUtil.load("signature/signature-ok.tlv"));
         Assert.assertNotNull(signature);
     }
 
     @Test
     public void testSignatureContainsIdentity_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("signature/signature-with-mixed-aggregation-chains.ksig"));
-        KSISignature signature = new InMemoryKsiSignature(input.readElement());
-        input.close();
+        KSISignature signature = load(TestUtil.load("signature/signature-with-mixed-aggregation-chains.ksig"));
         Assert.assertNotNull(signature.getIdentity());
     }
 
     @Test
     public void testLoadSignatureFromFile_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("signature/signature-ok.tlv"));
-        InMemoryKsiSignature signature = new InMemoryKsiSignature(input.readElement());
-        input.close();
+        InMemoryKsiSignature signature = load(TestUtil.load("signature/signature-ok.tlv"));
         Assert.assertEquals(signature.getInputHash(), new DataHash(HashAlgorithm.SHA1, Base16.decode("E9A01D04EBE58F51E4291ADEE6768CE754D155D5")));
         Assert.assertFalse(signature.isPublished());
         Assert.assertEquals(signature.getIdentity(), "");
@@ -73,10 +67,7 @@ public class InMemoryKsiSignatureTest {
         byte[] bytes = Util.toByteArray(input);
         input.close();
 
-        TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
-        InMemoryKsiSignature signature = new InMemoryKsiSignature(tlvInput.readElement());
-        tlvInput.close();
-
+        InMemoryKsiSignature signature = load(new ByteArrayInputStream(bytes));
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
         signature.writeTo(outBytes);
         Assert.assertEquals(bytes, outBytes.toByteArray());
@@ -84,18 +75,13 @@ public class InMemoryKsiSignatureTest {
 
     @Test
     public void testSignatureExtend() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("signature/signature-ok.tlv"));
-        InMemoryKsiSignature signature = new InMemoryKsiSignature(input.readElement());
-        input.close();
-
+        InMemoryKsiSignature signature = load(TestUtil.load("signature/signature-ok.tlv"));
         Assert.assertFalse(signature.isExtended());
         Assert.assertFalse(signature.isPublished());
         Assert.assertEquals(signature.getPublicationTime(), new Date(1396656000000L));
         Assert.assertEquals(signature.getAggregationTime(), new Date(1396608816000L));
 
-        TLVInputStream inputStream = new TLVInputStream(TestUtil.load("signature/signature-calendar-hash-chain-ok.tlv"));
-        CalendarHashChain calendarHashChain = new InMemoryCalendarHashChain(inputStream.readElement());
-        inputStream.close();
+        CalendarHashChain calendarHashChain = CalendarHashChainTest.load("signature/signature-calendar-hash-chain-ok.tlv");
         PublicationsFilePublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData("AAAAAA-CTJR3I-AANBWU-RY76YF-7TH2M5-KGEZVA-WLLRGD-3GKYBG-AM5WWV-4MCLSP-XPRDDI-UFMHBA"));
 
         KSISignature extendedSignature = signature.extend(calendarHashChain, record);
@@ -150,6 +136,15 @@ public class InMemoryKsiSignatureTest {
     @Test(expectedExceptions = InvalidSignatureException.class, expectedExceptionsMessageRegExp = "At least one aggregation chain required")
     public void testParseSignatureWithoutAggregationHashChains_ThrowsInvalidSignatureException() throws Exception {
         TestUtil.loadSignature("signature/signature-without-aggregation-hash-chains.ksig");
+    }
+
+    private InMemoryKsiSignature load(InputStream file) throws Exception {
+        TLVInputStream input = new TLVInputStream(file);
+        try {
+            return new InMemoryKsiSignature(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
 }

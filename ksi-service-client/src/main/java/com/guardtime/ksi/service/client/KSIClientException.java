@@ -26,7 +26,7 @@ import com.guardtime.ksi.exceptions.KSIException;
  */
 public class KSIClientException extends KSIException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     public KSIClientException(String message) {
         super(message);

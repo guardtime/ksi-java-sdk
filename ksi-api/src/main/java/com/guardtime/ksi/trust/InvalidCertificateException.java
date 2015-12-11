@@ -26,7 +26,7 @@ import java.security.cert.X509Certificate;
  */
 public class InvalidCertificateException extends CryptoException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     InvalidCertificateException(X509Certificate certificate) {
         super("Invalid certificated subject with subjectDN " + certificate.getSubjectX500Principal());

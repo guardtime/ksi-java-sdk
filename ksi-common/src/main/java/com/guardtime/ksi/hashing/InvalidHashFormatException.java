@@ -25,9 +25,9 @@ package com.guardtime.ksi.hashing;
  */
 public final class InvalidHashFormatException extends HashException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
-	InvalidHashFormatException(String message) {
+    InvalidHashFormatException(String message) {
         super(message);
     }
 }

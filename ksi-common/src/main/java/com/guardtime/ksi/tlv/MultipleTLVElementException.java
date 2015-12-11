@@ -20,7 +20,7 @@ package com.guardtime.ksi.tlv;
 
 public class MultipleTLVElementException extends TLVParserException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     public MultipleTLVElementException() {
         super("Message outer most layer consists of more than one TLV elements.");

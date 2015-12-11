@@ -26,7 +26,7 @@ import com.guardtime.ksi.exceptions.KSIException;
  */
 public class TLVParserException extends KSIException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     public TLVParserException(String message) {
         super(message);

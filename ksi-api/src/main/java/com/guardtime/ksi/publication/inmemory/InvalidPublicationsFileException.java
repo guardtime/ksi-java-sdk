@@ -26,7 +26,7 @@ import com.guardtime.ksi.tlv.InconsistentTlvElementException;
  */
 public class InvalidPublicationsFileException extends InconsistentTlvElementException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     public InvalidPublicationsFileException(String message, Exception e) {
         super(message, e);

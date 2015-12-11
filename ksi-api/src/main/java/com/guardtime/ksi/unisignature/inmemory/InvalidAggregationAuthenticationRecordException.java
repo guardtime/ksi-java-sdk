@@ -26,7 +26,7 @@ import com.guardtime.ksi.tlv.InconsistentTlvElementException;
  */
 public class InvalidAggregationAuthenticationRecordException extends InconsistentTlvElementException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     public InvalidAggregationAuthenticationRecordException(String message) {
         super(message);

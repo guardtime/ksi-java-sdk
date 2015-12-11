@@ -30,7 +30,7 @@ import com.guardtime.ksi.exceptions.KSIException;
  */
 public class HashException extends KSIException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     HashException(String message) {
         super(message);

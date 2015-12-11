@@ -24,7 +24,7 @@ package com.guardtime.ksi.trust;
  */
 public class InvalidKeyStoreException extends CryptoException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     InvalidKeyStoreException(String message, Throwable cause) {
         super(message, cause);

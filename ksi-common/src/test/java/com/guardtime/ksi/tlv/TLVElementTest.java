@@ -349,7 +349,7 @@ public class TLVElementTest {
     @Test(expectedExceptions = MultipleTLVElementException.class)
     public void testCreateTlvElementFromTooLargeInput_ThrowsMultipleTLVElementException() throws Exception {
         byte[] tmp = Files.readFile(CommonTestUtil.loadFile("root_content_larger_than_max.tlv")).getBytes();
-        TLVElement element = TLVElement.createFromBytes(tmp);
+        TLVElement.createFromBytes(tmp);
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bits of content,.*")

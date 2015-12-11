@@ -368,7 +368,7 @@ public class TLVElementTest {
         TLVElement child1 = new TLVElement(header);
         child1.setContent(content);
         TLVElement child2 = new TLVElement(header);
-        child1.setContent(content);
+        child2.setContent(content);
         root.addChildElement(child1);
         root.addChildElement(child2);
     }

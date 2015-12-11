@@ -26,6 +26,8 @@ import com.guardtime.ksi.exceptions.KSIException;
  */
 public final class InvalidFileBasedMultiSignatureException extends KSIException {
 
+	private static final long serialVersionUID = 1;
+
     public InvalidFileBasedMultiSignatureException(String message) {
         super(message);
     }

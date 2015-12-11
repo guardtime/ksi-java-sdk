@@ -24,6 +24,8 @@ package com.guardtime.ksi.tlv;
  */
 public class InconsistentTlvElementException extends TLVParserException {
 
+	private static final long serialVersionUID = 1;
+
     public InconsistentTlvElementException(String message) {
         super(message);
     }

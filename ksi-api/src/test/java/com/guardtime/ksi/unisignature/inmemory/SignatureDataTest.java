@@ -25,9 +25,6 @@ import com.guardtime.ksi.unisignature.SignatureData;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-
 public class SignatureDataTest {
 
     @Test

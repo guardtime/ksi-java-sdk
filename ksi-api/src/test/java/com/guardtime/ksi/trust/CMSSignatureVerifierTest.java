@@ -22,13 +22,11 @@ package com.guardtime.ksi.trust;
 import com.guardtime.ksi.TestUtil;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 

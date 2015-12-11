@@ -34,13 +34,11 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecordExistenceRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.security.Security;
 import java.security.cert.CertSelector;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;

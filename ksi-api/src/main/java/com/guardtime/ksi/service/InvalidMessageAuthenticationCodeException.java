@@ -24,7 +24,7 @@ package com.guardtime.ksi.service;
  */
 public class InvalidMessageAuthenticationCodeException extends KSIProtocolException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     public InvalidMessageAuthenticationCodeException(String message) {
         super(message);

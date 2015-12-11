@@ -30,7 +30,7 @@ import com.guardtime.ksi.exceptions.KSIException;
  */
 public class CryptoException extends KSIException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     CryptoException(String message, Throwable cause) {
         super(message, cause);

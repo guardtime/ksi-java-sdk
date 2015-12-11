@@ -27,7 +27,7 @@ package com.guardtime.ksi.hashing;
  */
 public final class HashAlgorithmNotImplementedException extends HashException {
 
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     HashAlgorithmNotImplementedException(String message) {
         super(message);

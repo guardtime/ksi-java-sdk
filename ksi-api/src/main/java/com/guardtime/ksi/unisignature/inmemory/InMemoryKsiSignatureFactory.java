@@ -88,7 +88,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         return new InMemorySignaturePublicationRecord(element);
     }
 
-    private void addTlvStructure(TLVElement root, TLVStructure structure) {
+    private void addTlvStructure(TLVElement root, TLVStructure structure) throws KSIException {
         if (structure != null) {
             root.addChildElement(structure.getRootElement());
         }

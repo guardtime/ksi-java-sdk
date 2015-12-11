@@ -51,7 +51,11 @@ public class ExtensionRequestTest {
         ExtensionRequest aggregationRequest = new ExtensionRequest((ExtensionRequestPayload) null, CONTEXT);
         byte[] bytes = encode(aggregationRequest);
         TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
-        new ExtensionRequest(tlvInput.readElement(), CONTEXT);
+        try {
+            new ExtensionRequest(tlvInput.readElement(), CONTEXT);
+        } finally {
+            tlvInput.close();
+        }
     }
 
     @Test

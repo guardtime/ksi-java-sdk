@@ -31,7 +31,7 @@ public class SignatureDataTest {
     public void testReadSignatureData_Ok() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("signature-data/signature-data-ok.tlv"));
         InMemorySignatureData signatureData = new InMemorySignatureData(input.readElement());
-
+        input.close();
         Assert.assertEquals(signatureData.getElementType(), SignatureData.ELEMENT_TYPE);
         Assert.assertNotNull(signatureData.getSignatureType());
         Assert.assertNotNull(signatureData.getSignatureValue());
@@ -42,25 +42,38 @@ public class SignatureDataTest {
     @Test(expectedExceptions = InvalidSignatureDataException.class, expectedExceptionsMessageRegExp = "Signature data signature type can not be null")
     public void testReadSignatureDataWithoutSignatureType_ThrowsInvalidSignatureDataException() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("signature-data/signature-data-without-signature-type.tlv"));
-        new InMemorySignatureData(input.readElement());
+        try {
+            new InMemorySignatureData(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
     @Test(expectedExceptions = InvalidSignatureDataException.class, expectedExceptionsMessageRegExp = "Signature data signature value can not be null")
     public void testReadSignatureDataWithoutSignatureValue_ThrowsInvalidSignatureDataException() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("signature-data/signature-data-without-signature-value.tlv"));
-        new InMemorySignatureData(input.readElement());
+        try {
+            new InMemorySignatureData(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
     @Test(expectedExceptions = InvalidSignatureDataException.class, expectedExceptionsMessageRegExp = "Signature data certificate id can not be null")
     public void testReadSignatureDataWithoutCertificateId_ThrowsInvalidSignatureDataException() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("signature-data/signature-data-without-certificate-id.tlv"));
-        new InMemorySignatureData(input.readElement());
+        try {
+            new InMemorySignatureData(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
     @Test
     public void testReadSignatureDataWithCertificateRepositoryUri_Ok() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("signature-data/signature-data-with-repository-uri.tlv"));
         SignatureData data = new InMemorySignatureData(input.readElement());
+        input.close();
         Assert.assertNotNull(data.getCertificateRepositoryUri());
         Assert.assertEquals(data.getCertificateRepositoryUri(), "http://localhost/rep_uri");
     }

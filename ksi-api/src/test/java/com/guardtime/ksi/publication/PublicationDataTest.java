@@ -40,6 +40,7 @@ public class PublicationDataTest {
     public void testDecodePublicationData_Ok() throws Exception {
         TLVInputStream tlvInput = new TLVInputStream(TestUtil.load(FILE_PUBLICATION_DATA_OK));
         PublicationData publication = new PublicationData(tlvInput.readElement());
+        tlvInput.close();
         Assert.assertNotNull(publication);
         Assert.assertNotNull(publication.getPublicationTime());
         Assert.assertNotNull(publication.getPublicationDataHash());
@@ -48,25 +49,41 @@ public class PublicationDataTest {
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid TLV element. Expected.*")
     public void testDecodeInvalidPublicationData_ThrowsTLVParserException() throws Exception {
         TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x9, 0x0}));
-        new PublicationData(input.readElement());
+        try {
+            new PublicationData(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
     @Test(expectedExceptions = InvalidPublicationDataException.class)
     public void testDecodePublicationDataWithoutAnyChildrenElements_ThrowsInvalidPublicationDataEception() throws Exception {
         TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x10, 0x00}));
-        new PublicationData(input.readElement());
+        try {
+            new PublicationData(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
     @Test(expectedExceptions = InvalidPublicationDataException.class, expectedExceptionsMessageRegExp = "Publication data publication hash can not be null")
     public void testDecodePublicationDataWithoutPublicationHash_ThrowsInvalidPublicationDataEception() throws Exception {
         TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x10, 0x02, 0x2, 0x0}));
-        new PublicationData(input.readElement());
+        try {
+            new PublicationData(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
     @Test(expectedExceptions = InvalidPublicationDataException.class, expectedExceptionsMessageRegExp = "Publication data publication time can not be null")
     public void testDecodePublicationDataWithoutPublicationTime_ThrowsInvalidPublicationDataEception() throws Exception {
         TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x10, 0x02, 0x4, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
-        new PublicationData(input.readElement());
+        try {
+            new PublicationData(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
     @Test

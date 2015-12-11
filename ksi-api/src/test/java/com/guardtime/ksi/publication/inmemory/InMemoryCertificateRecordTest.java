@@ -36,6 +36,7 @@ public class InMemoryCertificateRecordTest {
     public void testDecodeCertificateRecord_Ok() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_CERTIFICATE_RECORD));
         InMemoryCertificateRecord certificateRecord = new InMemoryCertificateRecord(input.readElement());
+        input.close();
         assertNotNull(certificateRecord.getCertificate());
         assertNotNull(certificateRecord.getCertificateId());
         assertEquals(certificateRecord.getCertificateId(), new byte[]{1, 2, 3, 4});
@@ -45,13 +46,21 @@ public class InMemoryCertificateRecordTest {
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Certificate Id can not be null")
     public void testDecodeCertificateRecordWithoutCertificateId_ThrowsInvalidPublicationsFileException() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE_ID));
-        new InMemoryCertificateRecord(input.readElement());
+        try {
+            new InMemoryCertificateRecord(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Certificate can not be null")
     public void testDecodeCertificateRecordWithoutCertificate_ThrowsInvalidPublicationsFileException() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE));
-        new InMemoryCertificateRecord(input.readElement());
+        try {
+            new InMemoryCertificateRecord(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
 }

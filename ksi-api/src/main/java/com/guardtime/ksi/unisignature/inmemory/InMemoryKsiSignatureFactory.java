@@ -26,6 +26,7 @@ import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.util.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +45,8 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
             return createSignature(tlvInput.readElement());
         } catch (IOException e) {
             throw new KSIException("Reading signature data from input stream failed", e);
+        } finally {
+            Util.closeQuietly(tlvInput);
         }
     }
 

@@ -38,6 +38,7 @@ public class InMemorySignaturePublicationRecordTest {
     public void testDecodeInMemorySignaturePublicationRecord_Ok() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_SIGNATURE_OK));
         InMemorySignaturePublicationRecord publicationRecord = new InMemorySignaturePublicationRecord(input.readElement());
+        input.close();
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationData().getPublicationTime());
         Assert.assertEquals(publicationRecord.getPublicationData().getPublicationDataHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -49,6 +50,7 @@ public class InMemorySignaturePublicationRecordTest {
     public void testDecodeInMemorySignaturePublicationRecordWithReferencesAndRepositoryURI_Ok() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_SIGNATURE2_OK));
         InMemorySignaturePublicationRecord publicationRecord = new InMemorySignaturePublicationRecord(input.readElement());
+        input.close();
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationData().getPublicationTime());
         Assert.assertEquals(publicationRecord.getPublicationData().getPublicationDataHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -61,7 +63,11 @@ public class InMemorySignaturePublicationRecordTest {
     @Test(expectedExceptions = InvalidPublicationRecordException.class, expectedExceptionsMessageRegExp = "Required field publicationData\\(TLV\\[0x10\\]\\) missing in # PublicationRecord TLV\\[0x803\\]")
     public void testDecodeInMemorySignaturePublicationRecordWithoutPublicationData_ThrowsInvalidPublicationRecordException() throws Exception {
         TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{(byte) 0x88, 0x03, 0x0, 0x0}));
-        new InMemorySignaturePublicationRecord(input.readElement());
+        try {
+            new InMemorySignaturePublicationRecord(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
 }

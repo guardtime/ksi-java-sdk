@@ -43,6 +43,7 @@ public class InMemoryKsiSignatureTest {
     public void testParseKSISignature_Ok() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("signature/signature-ok.tlv"));
         InMemoryKsiSignature signature = new InMemoryKsiSignature(input.readElement());
+        input.close();
         Assert.assertNotNull(signature);
     }
 
@@ -50,12 +51,15 @@ public class InMemoryKsiSignatureTest {
     public void testSignatureContainsIdentity_Ok() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("signature/signature-with-mixed-aggregation-chains.ksig"));
         KSISignature signature = new InMemoryKsiSignature(input.readElement());
+        input.close();
         Assert.assertNotNull(signature.getIdentity());
     }
 
     @Test
     public void testLoadSignatureFromFile_Ok() throws Exception {
-        InMemoryKsiSignature signature = new InMemoryKsiSignature(new TLVInputStream(TestUtil.load("signature/signature-ok.tlv")).readElement());
+        TLVInputStream input = new TLVInputStream(TestUtil.load("signature/signature-ok.tlv"));
+        InMemoryKsiSignature signature = new InMemoryKsiSignature(input.readElement());
+        input.close();
         Assert.assertEquals(signature.getInputHash(), new DataHash(HashAlgorithm.SHA1, Base16.decode("E9A01D04EBE58F51E4291ADEE6768CE754D155D5")));
         Assert.assertFalse(signature.isPublished());
         Assert.assertEquals(signature.getIdentity(), "");
@@ -67,7 +71,11 @@ public class InMemoryKsiSignatureTest {
     public void testLoadSignatureFromFileAndSerialize() throws Exception {
         InputStream input = TestUtil.load("signature/signature-ok.tlv");
         byte[] bytes = Util.toByteArray(input);
-        InMemoryKsiSignature signature = new InMemoryKsiSignature(new TLVInputStream(new ByteArrayInputStream(bytes)).readElement());
+        input.close();
+
+        TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
+        InMemoryKsiSignature signature = new InMemoryKsiSignature(tlvInput.readElement());
+        tlvInput.close();
 
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
         signature.writeTo(outBytes);
@@ -76,7 +84,9 @@ public class InMemoryKsiSignatureTest {
 
     @Test
     public void testSignatureExtend() throws Exception {
-        InMemoryKsiSignature signature = new InMemoryKsiSignature(new TLVInputStream(TestUtil.load("signature/signature-ok.tlv")).readElement());
+        TLVInputStream input = new TLVInputStream(TestUtil.load("signature/signature-ok.tlv"));
+        InMemoryKsiSignature signature = new InMemoryKsiSignature(input.readElement());
+        input.close();
 
         Assert.assertFalse(signature.isExtended());
         Assert.assertFalse(signature.isPublished());

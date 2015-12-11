@@ -30,6 +30,7 @@ public class CalendarAuthenticationRecordTest {
     public void testDecodeCalendarAuthenticationRecord_Ok() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("calendar-authentication-record/calendar-authentication-record-ok.tlv"));
         InMemoryCalendarAuthenticationRecord record = new InMemoryCalendarAuthenticationRecord(input.readElement());
+        input.close();
         Assert.assertNotNull(record.getPublicationData());
         Assert.assertNotNull(record.getSignatureData());
     }
@@ -37,13 +38,21 @@ public class CalendarAuthenticationRecordTest {
     @Test(expectedExceptions = InvalidCalendarAuthenticationRecordException.class, expectedExceptionsMessageRegExp = "Calendar authentication does not contain publication data")
     public void testDecodeCalendarAuthenticationRecordWithoutPublicationData_ThrowsInvalidCalendarAuthenticationRecordException() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("calendar-authentication-record/calendar-authentication-record-without-publication-data.tlv"));
-        new InMemoryCalendarAuthenticationRecord(input.readElement());
+        try {
+            new InMemoryCalendarAuthenticationRecord(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
     @Test(expectedExceptions = InvalidCalendarAuthenticationRecordException.class, expectedExceptionsMessageRegExp = "Calendar authentication record does not contain signature data")
     public void testDecodeCalendarAuthenticationRecordWithoutSignatureData_ThrowsInvalidCalendarAuthenticationRecordException() throws Exception {
         TLVInputStream input = new TLVInputStream(TestUtil.load("calendar-authentication-record/calendar-authentication-record-without-signature-data.tlv"));
-        new InMemoryCalendarAuthenticationRecord(input.readElement());
+        try {
+            new InMemoryCalendarAuthenticationRecord(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
 }

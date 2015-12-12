@@ -248,12 +248,12 @@ public class TLVElementTest {
         element.setDataHashContent(new DataHash(HashAlgorithm.SHA2_256, new byte[31]));
     }
 
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bits of content, but this one contains 65536 bits.")
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bytes of content, but this one contains 65536 bytes.")
     public void testWritingOutTLV16sWithContentsWithLengthExceedingTheMaxAllowedLimitThrowsException() throws Exception {
         writeOutTLVWithGivenContentLength(0x10000, true);
     }
 
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV8 should never contain more than 255 bits of content, but this one contains 256 bits.")
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV8 should never contain more than 255 bytes of content, but this one contains 256 bytes.")
     public void testWritingOutTLV8sWithContentsWithLengthExceedingTheMaxAllowedLimitsThrowsException() throws Exception {
         writeOutTLVWithGivenContentLength(0x100, false);
     }
@@ -312,7 +312,7 @@ public class TLVElementTest {
         TLVElement.createFromBytes(tmp);
     }
 
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bits of content,.*")
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bytes of content,.*")
     public void testSetTooLargeContentToTlvElement_ThrowsTLVParserException() throws Exception {
         TLVHeader header = new TLVHeader(true, false, false, 0x1, TLVElement.MAX_TLV16_CONTENT_LENGTH);
         TLVElement element = new TLVElement(header);
@@ -320,7 +320,7 @@ public class TLVElementTest {
         element.setContent(content);
     }
 
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bits of content,.*")
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bytes of content,.*")
     public void testTlvElementChildrenTooLarge_ThrowsTLVParserException() throws Exception {
         byte[] content = new byte[TLVElement.MAX_TLV16_CONTENT_LENGTH - 1024];
         TLVHeader header = new TLVHeader(true, false, false, 0x1, TLVElement.MAX_TLV16_CONTENT_LENGTH);

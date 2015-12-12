@@ -30,9 +30,7 @@ public class PublicationsFileHeaderTest {
 
     @Test
     public void testDecodePublicationFileHeader_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("publications-file/publications-file-header-ok.tlv"));
-        PublicationsFileHeader header = new PublicationsFileHeader(input.readElement());
-        input.close();
+        PublicationsFileHeader header = load("publications-file/publications-file-header-ok.tlv");
         Assert.assertEquals(header.getVersion().longValue(), 2L);
         Assert.assertEquals(header.getCreationTime(), new Date(123456000L));
         Assert.assertEquals(header.getRepositoryUri(), "repository");
@@ -40,24 +38,21 @@ public class PublicationsFileHeaderTest {
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Publications file header version element must be present")
     public void testDecodePublicationsFileHeaderWithoutVersion_ThrowsInvalidPublicationsFileException() throws Exception {
-        com.guardtime.ksi.tlv.TLVInputStream input = new TLVInputStream(TestUtil.load("publications-file/publications-file-header-version-missing.tlv"));
-        try {
-            new PublicationsFileHeader(input.readElement());
-        } finally {
-            input.close();
-        }
-
+        load("publications-file/publications-file-header-version-missing.tlv");
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Publications file header creation time element must be present")
     public void testDecodePublicationFileHeaderWithoutCreationTime_ThrowsInvalidPublicationsFileException() throws Exception {
-        com.guardtime.ksi.tlv.TLVInputStream input = new TLVInputStream(TestUtil.load("publications-file/publications-file-header-creation-time-missing.tlv"));
+        load("publications-file/publications-file-header-creation-time-missing.tlv");
+    }
+
+    private PublicationsFileHeader load(String file) throws Exception {
+        TLVInputStream input = new TLVInputStream(TestUtil.load(file));
         try {
-            new PublicationsFileHeader(input.readElement());
+            return new PublicationsFileHeader(input.readElement());
         } finally {
             input.close();
         }
     }
-
 
 }

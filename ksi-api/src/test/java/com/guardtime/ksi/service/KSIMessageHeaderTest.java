@@ -30,9 +30,7 @@ public class KSIMessageHeaderTest {
     @Test
     public void testCreateMessageHeader_Ok() throws Exception {
         KSIMessageHeader messageHeader = new KSIMessageHeader("anon");
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(messageHeader.getRootElement().getEncoded()));
-        KSIMessageHeader header = new KSIMessageHeader(input.readElement());
-        input.close();
+        KSIMessageHeader header = load(messageHeader.getRootElement().getEncoded());
         Assert.assertEquals(header.getLoginId(), "anon");
         Assert.assertEquals(header.getLoginId(), messageHeader.getLoginId());
     }
@@ -40,9 +38,7 @@ public class KSIMessageHeaderTest {
     @Test
     public void testCreateMessageHeaderWithMessageId_Ok() throws Exception {
         KSIMessageHeader messageHeader = new KSIMessageHeader("anon", 111111L, 333331L);
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(messageHeader.getRootElement().getEncoded()));
-        KSIMessageHeader header = new KSIMessageHeader(input.readElement());
-        input.close();
+        KSIMessageHeader header = load(messageHeader.getRootElement().getEncoded());
         Assert.assertEquals(header.getLoginId(), "anon");
         Assert.assertEquals(header.getLoginId(), messageHeader.getLoginId());
         Assert.assertEquals(header.getInstanceId().longValue(), 111111L);
@@ -62,6 +58,15 @@ public class KSIMessageHeaderTest {
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. MessageId is null.")
     public void testCreateMessageHeaderUsingInvalidMessageId_Throws() throws Exception {
         new KSIMessageHeader("anon", 1L, null);
+    }
+
+    private KSIMessageHeader load(byte[] data) throws Exception {
+        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(data));
+        try {
+            return new KSIMessageHeader(input.readElement());
+        } finally {
+            input.close();
+        }
     }
 
 }

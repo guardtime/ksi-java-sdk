@@ -28,28 +28,25 @@ public class CalendarAuthenticationRecordTest {
 
     @Test
     public void testDecodeCalendarAuthenticationRecord_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("calendar-authentication-record/calendar-authentication-record-ok.tlv"));
-        InMemoryCalendarAuthenticationRecord record = new InMemoryCalendarAuthenticationRecord(input.readElement());
-        input.close();
+        InMemoryCalendarAuthenticationRecord record = load("calendar-authentication-record/calendar-authentication-record-ok.tlv");
         Assert.assertNotNull(record.getPublicationData());
         Assert.assertNotNull(record.getSignatureData());
     }
 
     @Test(expectedExceptions = InvalidCalendarAuthenticationRecordException.class, expectedExceptionsMessageRegExp = "Calendar authentication does not contain publication data")
     public void testDecodeCalendarAuthenticationRecordWithoutPublicationData_ThrowsInvalidCalendarAuthenticationRecordException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("calendar-authentication-record/calendar-authentication-record-without-publication-data.tlv"));
-        try {
-            new InMemoryCalendarAuthenticationRecord(input.readElement());
-        } finally {
-            input.close();
-        }
+        load("calendar-authentication-record/calendar-authentication-record-without-publication-data.tlv");
     }
 
     @Test(expectedExceptions = InvalidCalendarAuthenticationRecordException.class, expectedExceptionsMessageRegExp = "Calendar authentication record does not contain signature data")
     public void testDecodeCalendarAuthenticationRecordWithoutSignatureData_ThrowsInvalidCalendarAuthenticationRecordException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("calendar-authentication-record/calendar-authentication-record-without-signature-data.tlv"));
+        load("calendar-authentication-record/calendar-authentication-record-without-signature-data.tlv");
+    }
+
+    private InMemoryCalendarAuthenticationRecord load(String file) throws Exception {
+        TLVInputStream input = new TLVInputStream(TestUtil.load(file));
         try {
-            new InMemoryCalendarAuthenticationRecord(input.readElement());
+            return new InMemoryCalendarAuthenticationRecord(input.readElement());
         } finally {
             input.close();
         }

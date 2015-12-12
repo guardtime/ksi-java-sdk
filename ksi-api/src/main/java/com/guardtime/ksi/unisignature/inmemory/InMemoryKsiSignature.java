@@ -47,6 +47,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
     private List<InMemoryAggregationHashChain> aggregationChains;
     private InMemoryCalendarHashChain calendarChain;
     private InMemorySignaturePublicationRecord publicationRecord;
+    @SuppressWarnings("unused")
     private InMemoryAggregationAuthenticationRecord aggregationAuthenticationRecord;
     private InMemoryCalendarAuthenticationRecord calendarAuthenticationRecord;
     private InMemoryRFC3161Record rfc3161Record;

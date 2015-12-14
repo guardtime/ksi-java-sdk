@@ -19,7 +19,6 @@
 package com.guardtime.ksi.service.http.simple;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.http.AbstractHttpClient;
 import com.guardtime.ksi.service.client.http.HttpPostRequestFuture;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -65,12 +64,7 @@ public class SimpleHttpPostRequestFuture extends HttpPostRequestFuture {
     }
 
     public TLVElement getResult() throws KSIException {
-        try {
-            validateHttpResponse(responseCode, responseMessage, new ByteArrayInputStream(response), responseContentType);
-            return Util.parseResponseTLV(response);
-        } catch (IOException e) {
-            throw new KSIClientException("Getting KSI response failed.", e);
-        }
+        return parse(responseCode, responseMessage, new ByteArrayInputStream(response), responseContentType);
     }
 
 }

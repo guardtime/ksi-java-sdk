@@ -27,7 +27,6 @@ import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.CertificateNotFoundException;
 import com.guardtime.ksi.service.ExtensionRequestFuture;
 import com.guardtime.ksi.service.KSIRequestContext;
-import com.guardtime.ksi.service.KSIService;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.extension.ExtensionRequest;
 import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
@@ -36,7 +35,6 @@ import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Util;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.security.cert.Certificate;
 import java.util.Date;
 import java.util.HashMap;

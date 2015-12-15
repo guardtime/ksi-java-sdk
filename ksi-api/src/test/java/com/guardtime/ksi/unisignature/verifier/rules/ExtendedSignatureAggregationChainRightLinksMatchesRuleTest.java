@@ -20,8 +20,6 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.service.ExtensionRequestFuture;
-import com.guardtime.ksi.service.KSIService;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.*;
 import org.mockito.Mockito;

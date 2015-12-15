@@ -19,31 +19,32 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class CalendarAuthenticationRecordTest {
 
     @Test
     public void testDecodeCalendarAuthenticationRecord_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("calendar-authentication-record/calendar-authentication-record-ok.tlv"));
-        InMemoryCalendarAuthenticationRecord record = new InMemoryCalendarAuthenticationRecord(input.readElement());
+        InMemoryCalendarAuthenticationRecord record = load("calendar-authentication-record/calendar-authentication-record-ok.tlv");
         Assert.assertNotNull(record.getPublicationData());
         Assert.assertNotNull(record.getSignatureData());
     }
 
     @Test(expectedExceptions = InvalidCalendarAuthenticationRecordException.class, expectedExceptionsMessageRegExp = "Calendar authentication does not contain publication data")
     public void testDecodeCalendarAuthenticationRecordWithoutPublicationData_ThrowsInvalidCalendarAuthenticationRecordException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("calendar-authentication-record/calendar-authentication-record-without-publication-data.tlv"));
-        new InMemoryCalendarAuthenticationRecord(input.readElement());
+        load("calendar-authentication-record/calendar-authentication-record-without-publication-data.tlv");
     }
 
     @Test(expectedExceptions = InvalidCalendarAuthenticationRecordException.class, expectedExceptionsMessageRegExp = "Calendar authentication record does not contain signature data")
     public void testDecodeCalendarAuthenticationRecordWithoutSignatureData_ThrowsInvalidCalendarAuthenticationRecordException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("calendar-authentication-record/calendar-authentication-record-without-signature-data.tlv"));
-        new InMemoryCalendarAuthenticationRecord(input.readElement());
+        load("calendar-authentication-record/calendar-authentication-record-without-signature-data.tlv");
+    }
+
+    private InMemoryCalendarAuthenticationRecord load(String file) throws Exception {
+        return new InMemoryCalendarAuthenticationRecord(loadTlv(file));
     }
 
 }

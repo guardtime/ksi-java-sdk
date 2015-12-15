@@ -56,11 +56,11 @@ public final class TestUtil extends CommonTestUtil {
                 }
             });
         } catch (KSIException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
-    private TestUtil() throws KSIException {
+    private TestUtil() {
     }
 
     public static byte[] loadBytes(String file) throws IOException {
@@ -68,8 +68,7 @@ public final class TestUtil extends CommonTestUtil {
     }
 
     public static KSISignature loadSignature(String file) throws Exception {
-        TLVInputStream input = new TLVInputStream(load(file));
-        return signatureFactory.createSignature(input.readElement());
+        return signatureFactory.createSignature(loadTlv(file));
     }
 
     public static PublicationsFile loadPublicationsFile(String file) throws Exception {

@@ -24,6 +24,8 @@ package com.guardtime.ksi.trust;
  */
 public class InvalidCmsSignatureException extends CryptoException {
 
+    private static final long serialVersionUID = 1;
+
     InvalidCmsSignatureException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -19,10 +19,9 @@
 
 package com.guardtime.ksi.publication.inmemory;
 
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -34,8 +33,7 @@ public class InMemoryCertificateRecordTest {
 
     @Test
     public void testDecodeCertificateRecord_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_CERTIFICATE_RECORD));
-        InMemoryCertificateRecord certificateRecord = new InMemoryCertificateRecord(input.readElement());
+        InMemoryCertificateRecord certificateRecord = load(TEST_FILE_CERTIFICATE_RECORD);
         assertNotNull(certificateRecord.getCertificate());
         assertNotNull(certificateRecord.getCertificateId());
         assertEquals(certificateRecord.getCertificateId(), new byte[]{1, 2, 3, 4});
@@ -44,14 +42,16 @@ public class InMemoryCertificateRecordTest {
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Certificate Id can not be null")
     public void testDecodeCertificateRecordWithoutCertificateId_ThrowsInvalidPublicationsFileException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE_ID));
-        new InMemoryCertificateRecord(input.readElement());
+        load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE_ID);
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Certificate can not be null")
     public void testDecodeCertificateRecordWithoutCertificate_ThrowsInvalidPublicationsFileException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE));
-        new InMemoryCertificateRecord(input.readElement());
+        load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE);
+    }
+
+    private InMemoryCertificateRecord load(String file) throws Exception {
+        return new InMemoryCertificateRecord(loadTlv(file));
     }
 
 }

@@ -19,54 +19,46 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.unisignature.ChainResult;
 import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.TestUtil.load;
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class AggregationHashChainTest {
 
     @Test
     public void testDecodeAggregationHashChain_Ok() throws Exception {
-        TLVInputStream inputStream = new TLVInputStream(load("aggregation/aggregation-hash-chain-ok.tlv"));
-        InMemoryAggregationHashChain chain = new InMemoryAggregationHashChain(inputStream.readElement());
-        Assert.assertEquals(chain.getElementType(), 0x0801);
+        InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
+        Assert.assertEquals(chain.getElementType(), InMemoryAggregationHashChain.ELEMENT_TYPE);
         Assert.assertNotNull(chain.getAggregationTime());
         Assert.assertEquals(chain.getAggregationTime().getTime(), 1395317319000L);
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation time can not be null")
     public void testDecodeAggregationHashChainWithoutAggregationTime_ThrowsInvalidAggregationHashChainException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("aggregation-hash-chain/aggregation-chain-aggregation-time-missing.tlv"));
-        new InMemoryAggregationHashChain(input.readElement());
+        load("aggregation-hash-chain/aggregation-chain-aggregation-time-missing.tlv");
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain index list can not be empty")
     public void testDecodeAggregationHashChainWithoutChainIndex_ThrowsInvalidAggregationHashChainException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("aggregation-hash-chain/aggregation-chain-no-indexes.tlv"));
-        new InMemoryAggregationHashChain(input.readElement());
+        load("aggregation-hash-chain/aggregation-chain-no-indexes.tlv");
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain input hash can not be empty")
     public void testDecodeAggregationHashChainWithoutInputHash_ThrowsInvalidAggregationHashChainException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("aggregation-hash-chain/aggregation-chain-input-hash-missing.tlv"));
-        new InMemoryAggregationHashChain(input.readElement());
+        load("aggregation-hash-chain/aggregation-chain-input-hash-missing.tlv");
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain aggregation algorithm id can no be null")
     public void testDecodeAggregationHashChainWithoutAggregationAlgorithm_ThrowsInvalidAggregationHashChainException() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("aggregation-hash-chain/aggregation-chain-algorithm-missing.tlv"));
-        new InMemoryAggregationHashChain(input.readElement());
+        load("aggregation-hash-chain/aggregation-chain-algorithm-missing.tlv");
     }
 
     @Test
     public void testCalculateAggregationChainHash_Ok() throws Exception {
-        TLVInputStream inputStream = new TLVInputStream(load("aggregation/aggregation-hash-chain-ok.tlv"));
-        InMemoryAggregationHashChain chain = new InMemoryAggregationHashChain(inputStream.readElement());
+        InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
         ChainResult chainHash = chain.calculateOutputHash(0L);
         Assert.assertNotNull(chainHash);
         Assert.assertEquals(chainHash.getLevel(), 116L);
@@ -75,9 +67,12 @@ public class AggregationHashChainTest {
 
     @Test
     public void testGetChainIdentityFromAggregationHashChain_Ok() throws Exception {
-        TLVInputStream inputStream = new TLVInputStream(load("aggregation/aggregation-hash-chain-ok.tlv"));
-        InMemoryAggregationHashChain chain = new InMemoryAggregationHashChain(inputStream.readElement());
+        InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
         Assert.assertEquals(chain.getChainIdentity(), "A.B.testA.GT");
+    }
+
+    private InMemoryAggregationHashChain load(String file) throws Exception {
+        return new InMemoryAggregationHashChain(loadTlv(file));
     }
 
 }

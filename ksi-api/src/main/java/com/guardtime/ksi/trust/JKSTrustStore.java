@@ -181,6 +181,7 @@ public class JKSTrustStore implements PKITrustStore {
      * @throws FileNotFoundException
      *         if file does not exist
      */
+    @SuppressWarnings("resource")
     private InputStream loadFile(String trustStorePath) throws FileNotFoundException {
         InputStream input;
         try {

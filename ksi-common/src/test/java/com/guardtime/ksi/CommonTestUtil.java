@@ -18,6 +18,11 @@
  */
 package com.guardtime.ksi;
 
+import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVInputStream;
+import com.guardtime.ksi.util.Util;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -36,4 +41,26 @@ public class CommonTestUtil {
         }
         return new File(fileURL.toURI());
     }
+
+    public static TLVElement loadTlv(String file) throws Exception {
+        return loadTlv(load(file));
+    }
+
+    public static TLVElement loadTlv(byte[] data) throws Exception {
+        return loadTlv(new ByteArrayInputStream(data));
+    }
+
+    public static TLVElement loadTlv(InputStream input) throws Exception {
+        TLVInputStream tlvInputStream = null;
+        try {
+            tlvInputStream = new TLVInputStream(input);
+            return tlvInputStream.readElement();
+
+        } finally {
+            Util.closeQuietly(tlvInputStream);
+        }
+    }
+
+
+
 }

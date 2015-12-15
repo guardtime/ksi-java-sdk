@@ -22,14 +22,14 @@ import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.KSIRequestContext;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.ByteArrayInputStream;
 import java.util.Date;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class ExtensionRequestTest {
 
@@ -37,71 +37,62 @@ public class ExtensionRequestTest {
 
     @Test
     public void testCreateExtensionRequestInstance_Ok() throws Exception {
-        ExtensionRequest aggregationRequest = new ExtensionRequest((ExtensionRequestPayload) null, CONTEXT);
-        Assert.assertNotNull(aggregationRequest.getHeader());
-        Assert.assertEquals(aggregationRequest.getHeader().getLoginId(), TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
-        Assert.assertNull(aggregationRequest.getHeader().getInstanceId());
-        Assert.assertNull(aggregationRequest.getHeader().getMessageId());
-        Assert.assertNotNull(aggregationRequest.getMac());
-        Assert.assertNull(aggregationRequest.getRequestPayload());
+        ExtensionRequest extensionRequest = new ExtensionRequest((ExtensionRequestPayload) null, CONTEXT);
+        Assert.assertNotNull(extensionRequest.getHeader());
+        Assert.assertEquals(extensionRequest.getHeader().getLoginId(), TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
+        Assert.assertNull(extensionRequest.getHeader().getInstanceId());
+        Assert.assertNull(extensionRequest.getHeader().getMessageId());
+        Assert.assertNotNull(extensionRequest.getMac());
+        Assert.assertNull(extensionRequest.getRequestPayload());
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Invalid KSI request. Extension request payload is missing")
     public void testEncodeExtensionRequestWithoutPayload_Ok() throws Exception {
-        ExtensionRequest aggregationRequest = new ExtensionRequest((ExtensionRequestPayload) null, CONTEXT);
-        byte[] bytes = encode(aggregationRequest);
-        TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
-        new ExtensionRequest(tlvInput.readElement(), CONTEXT);
+        ExtensionRequest extensionRequest = new ExtensionRequest((ExtensionRequestPayload) null, CONTEXT);
+        load(encode(extensionRequest));
     }
 
     @Test
     public void testEncodeExtensionRequestWithAggregationTime_Ok() throws Exception {
         ExtensionRequestPayload payload = new ExtensionRequestPayload(new Date(), Util.nextLong());
-        ExtensionRequest aggregationRequest = new ExtensionRequest(payload, CONTEXT);
-        byte[] bytes = encode(aggregationRequest);
-        TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
-        ExtensionRequest request = new ExtensionRequest(tlvInput.readElement(), CONTEXT);
-        tlvInput.close();
-        Assert.assertEquals(aggregationRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
+        ExtensionRequest extensionRequest = new ExtensionRequest(payload, CONTEXT);
+        ExtensionRequest request = load(encode(extensionRequest));
+        Assert.assertEquals(extensionRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
     }
 
     @Test
     public void testEncodeExtensionRequestWithPublicationTime_Ok() throws Exception {
         ExtensionRequestPayload payload = new ExtensionRequestPayload(new Date(), new Date(), Util.nextLong());
-        ExtensionRequest aggregationRequest = new ExtensionRequest(payload, CONTEXT);
-        byte[] bytes = encode(aggregationRequest);
-        TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
-        ExtensionRequest request = new ExtensionRequest(tlvInput.readElement(), CONTEXT);
-        tlvInput.close();
-        Assert.assertEquals(aggregationRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
-        Assert.assertEquals(aggregationRequest.getRequestPayload().getAggregationTime().getTime() / 1000, request.getRequestPayload().getAggregationTime().getTime() / 1000);
-        Assert.assertEquals(aggregationRequest.getRequestPayload().getPublicationTime().getTime() / 1000, request.getRequestPayload().getPublicationTime().getTime() / 1000);
+        ExtensionRequest extensionRequest = new ExtensionRequest(payload, CONTEXT);
+        ExtensionRequest request = load(encode(extensionRequest));
+        Assert.assertEquals(extensionRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
+        Assert.assertEquals(extensionRequest.getRequestPayload().getAggregationTime().getTime() / 1000, request.getRequestPayload().getAggregationTime().getTime() / 1000);
+        Assert.assertEquals(extensionRequest.getRequestPayload().getPublicationTime().getTime() / 1000, request.getRequestPayload().getPublicationTime().getTime() / 1000);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. AggregationTime is null.")
     public void testEncodeExtensionRequestWithoutAggregationTime_ThrowsIllegalArgumentException() throws Exception {
         ExtensionRequestPayload payload = new ExtensionRequestPayload((Date) null, Util.nextLong());
-        ExtensionRequest aggregationRequest = new ExtensionRequest(payload, CONTEXT);
-        byte[] bytes = encode(aggregationRequest);
-        TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
-        ExtensionRequest request = new ExtensionRequest(tlvInput.readElement(), CONTEXT);
-        tlvInput.close();
-        Assert.assertEquals(aggregationRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
+        ExtensionRequest extensionRequest = new ExtensionRequest(payload, CONTEXT);
+        ExtensionRequest request = load(encode(extensionRequest));
+        Assert.assertEquals(extensionRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "There is no suitable publication yet")
     public void testEncodeExtensionRequestPublicationTimeAfterAggregationTime_Ok() throws Exception {
         Date currentDate = new Date();
         ExtensionRequestPayload payload = new ExtensionRequestPayload(currentDate, new Date(currentDate.getTime() - 1000), Util.nextLong());
-        ExtensionRequest aggregationRequest = new ExtensionRequest(payload, CONTEXT);
-        byte[] bytes = encode(aggregationRequest);
-        TLVInputStream tlvInput = new TLVInputStream(new ByteArrayInputStream(bytes));
-        ExtensionRequest request = new ExtensionRequest(tlvInput.readElement(), CONTEXT);
-        tlvInput.close();
-        Assert.assertEquals(aggregationRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
+        ExtensionRequest extensionRequest = new ExtensionRequest(payload, CONTEXT);
+        ExtensionRequest request = load(encode(extensionRequest));
+        Assert.assertEquals(extensionRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
     }
 
     private byte[] encode(TLVStructure element) throws KSIException {
         return element.getRootElement().getEncoded();
     }
+
+    private ExtensionRequest load(byte[] data) throws Exception {
+        return new ExtensionRequest(loadTlv(data), CONTEXT);
+    }
+
 }

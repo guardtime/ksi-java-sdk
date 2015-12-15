@@ -22,11 +22,13 @@ package com.guardtime.ksi.publication.inmemory;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class PublicationsFilePublicationRecordTest {
 
@@ -35,8 +37,7 @@ public class PublicationsFilePublicationRecordTest {
 
     @Test
     public void testDecodePublicationFileRecord_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_PUBFILE_OK));
-        PublicationsFilePublicationRecord publicationRecord = new PublicationsFilePublicationRecord(input.readElement());
+        PublicationsFilePublicationRecord publicationRecord = load(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_PUBFILE_OK));
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationData().getPublicationTime());
         Assert.assertEquals(publicationRecord.getPublicationData().getPublicationDataHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -46,8 +47,7 @@ public class PublicationsFilePublicationRecordTest {
 
     @Test
     public void testDecodePublicationsFilePublicationRecordWithReferencesAndRepositoryURI_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_PUBFILE2_OK));
-        PublicationsFilePublicationRecord publicationRecord = new PublicationsFilePublicationRecord(input.readElement());
+        PublicationsFilePublicationRecord publicationRecord = load(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_PUBFILE2_OK));
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationData().getPublicationTime());
         Assert.assertEquals(publicationRecord.getPublicationData().getPublicationDataHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -59,8 +59,11 @@ public class PublicationsFilePublicationRecordTest {
 
     @Test(expectedExceptions = InvalidPublicationRecordException.class, expectedExceptionsMessageRegExp = "Required field publicationData\\(TLV\\[0x10\\]\\) missing in # PublicationRecord TLV\\[0x703\\]")
     public void testDecodePublicationsFilePublicationRecordWithoutPublicationData_ThrowsInvalidPublicationRecordException() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{(byte) 0x87, 0x03, 0x0, 0x0}));
-        new PublicationsFilePublicationRecord(input.readElement());
+        load(new ByteArrayInputStream(new byte[]{(byte) 0x87, 0x03, 0x0, 0x0}));
+    }
+
+    private PublicationsFilePublicationRecord load(InputStream file) throws Exception {
+        return new PublicationsFilePublicationRecord(loadTlv(file));
     }
 
 }

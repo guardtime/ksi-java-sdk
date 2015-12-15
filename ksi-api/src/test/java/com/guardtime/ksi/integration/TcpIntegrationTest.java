@@ -69,7 +69,7 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION)
     public void testTCPStressingUsingDifferentHashAlgorithms(HashAlgorithm algorithm) throws Exception {
         VerificationResult result = signAndVerify(algorithm);
-        Thread.currentThread().sleep(400L);
+        Thread.sleep(400);
         VerificationResult result2 = signAndVerify(algorithm);
         Assert.assertTrue(result.isOk());
         Assert.assertTrue(result2.isOk());

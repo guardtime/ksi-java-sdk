@@ -19,19 +19,18 @@
 
 package com.guardtime.ksi.publication.inmemory;
 
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Date;
 
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+
 public class PublicationsFileHeaderTest {
 
     @Test
     public void testDecodePublicationFileHeader_Ok() throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load("publications-file/publications-file-header-ok.tlv"));
-        PublicationsFileHeader header = new PublicationsFileHeader(input.readElement());
+        PublicationsFileHeader header = load("publications-file/publications-file-header-ok.tlv");
         Assert.assertEquals(header.getVersion().longValue(), 2L);
         Assert.assertEquals(header.getCreationTime(), new Date(123456000L));
         Assert.assertEquals(header.getRepositoryUri(), "repository");
@@ -39,16 +38,16 @@ public class PublicationsFileHeaderTest {
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Publications file header version element must be present")
     public void testDecodePublicationsFileHeaderWithoutVersion_ThrowsInvalidPublicationsFileException() throws Exception {
-        com.guardtime.ksi.tlv.TLVInputStream input = new TLVInputStream(TestUtil.load("publications-file/publications-file-header-version-missing.tlv"));
-        new PublicationsFileHeader(input.readElement());
-
+        load("publications-file/publications-file-header-version-missing.tlv");
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Publications file header creation time element must be present")
     public void testDecodePublicationFileHeaderWithoutCreationTime_ThrowsInvalidPublicationsFileException() throws Exception {
-        com.guardtime.ksi.tlv.TLVInputStream input = new TLVInputStream(TestUtil.load("publications-file/publications-file-header-creation-time-missing.tlv"));
-        new PublicationsFileHeader(input.readElement());
+        load("publications-file/publications-file-header-creation-time-missing.tlv");
     }
 
+    private PublicationsFileHeader load(String file) throws Exception {
+        return new PublicationsFileHeader(loadTlv(file));
+    }
 
 }

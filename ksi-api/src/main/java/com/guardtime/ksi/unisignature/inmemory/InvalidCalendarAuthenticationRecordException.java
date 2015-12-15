@@ -26,6 +26,8 @@ import com.guardtime.ksi.tlv.InconsistentTlvElementException;
  */
 public class InvalidCalendarAuthenticationRecordException extends InconsistentTlvElementException {
 
+    private static final long serialVersionUID = 1;
+
     public InvalidCalendarAuthenticationRecordException(String message) {
         super(message);
     }

@@ -22,14 +22,16 @@ package com.guardtime.ksi.publication;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVParserException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Date;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class PublicationDataTest {
 
@@ -38,8 +40,7 @@ public class PublicationDataTest {
 
     @Test
     public void testDecodePublicationData_Ok() throws Exception {
-        TLVInputStream tlvInput = new TLVInputStream(TestUtil.load(FILE_PUBLICATION_DATA_OK));
-        PublicationData publication = new PublicationData(tlvInput.readElement());
+        PublicationData publication = load(TestUtil.load(FILE_PUBLICATION_DATA_OK));
         Assert.assertNotNull(publication);
         Assert.assertNotNull(publication.getPublicationTime());
         Assert.assertNotNull(publication.getPublicationDataHash());
@@ -47,26 +48,22 @@ public class PublicationDataTest {
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid TLV element. Expected.*")
     public void testDecodeInvalidPublicationData_ThrowsTLVParserException() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x9, 0x0}));
-        new PublicationData(input.readElement());
+        load(new ByteArrayInputStream(new byte[]{0x9, 0x0}));
     }
 
     @Test(expectedExceptions = InvalidPublicationDataException.class)
     public void testDecodePublicationDataWithoutAnyChildrenElements_ThrowsInvalidPublicationDataEception() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x10, 0x00}));
-        new PublicationData(input.readElement());
+        load(new ByteArrayInputStream(new byte[]{0x10, 0x00}));
     }
 
     @Test(expectedExceptions = InvalidPublicationDataException.class, expectedExceptionsMessageRegExp = "Publication data publication hash can not be null")
     public void testDecodePublicationDataWithoutPublicationHash_ThrowsInvalidPublicationDataEception() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x10, 0x02, 0x2, 0x0}));
-        new PublicationData(input.readElement());
+        load(new ByteArrayInputStream(new byte[]{0x10, 0x02, 0x2, 0x0}));
     }
 
     @Test(expectedExceptions = InvalidPublicationDataException.class, expectedExceptionsMessageRegExp = "Publication data publication time can not be null")
     public void testDecodePublicationDataWithoutPublicationTime_ThrowsInvalidPublicationDataEception() throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(new byte[]{0x10, 0x02, 0x4, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
-        new PublicationData(input.readElement());
+        load(new ByteArrayInputStream(new byte[]{0x10, 0x02, 0x4, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
     }
 
     @Test
@@ -108,6 +105,10 @@ public class PublicationDataTest {
     public void testCreatePublicationDataUsingPublicationString_Ok() throws Exception {
         PublicationData publicationData = new PublicationData(PUBLICATION_STRING);
         Assert.assertEquals(publicationData.getPublicationString(), PUBLICATION_STRING);
+    }
+
+    private PublicationData load(InputStream input) throws Exception {
+        return new PublicationData(loadTlv(input));
     }
 
 }

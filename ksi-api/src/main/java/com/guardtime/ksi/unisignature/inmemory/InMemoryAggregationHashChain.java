@@ -51,7 +51,7 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
 
     private List<Long> chainIndex = new LinkedList<Long>();
 
-    // TODO currently not used. Task KSIJAVAAPI-207
+    @SuppressWarnings("unused")
     private byte[] inputData;
 
     private DataHash inputHash;

@@ -424,10 +424,10 @@ public final class TLVElement {
     private void assertActualContentLengthIsInTLVLimits(int contentLength) throws TLVParserException {
         if (isTlv16()) {
             if (contentLength > MAX_TLV16_CONTENT_LENGTH) {
-                throw new TLVParserException("TLV16 should never contain more than " + MAX_TLV16_CONTENT_LENGTH + " bits of content, but this one contains " + contentLength + " bits.");
+                throw new TLVParserException("TLV16 should never contain more than " + MAX_TLV16_CONTENT_LENGTH + " bytes of content, but this one contains " + contentLength + " bytes.");
             }
         } else if (contentLength > MAX_TLV8_CONTENT_LENGTH) {
-            throw new TLVParserException("TLV8 should never contain more than " + MAX_TLV8_CONTENT_LENGTH + " bits of content, but this one contains " + contentLength + " bits.");
+            throw new TLVParserException("TLV8 should never contain more than " + MAX_TLV8_CONTENT_LENGTH + " bytes of content, but this one contains " + contentLength + " bytes.");
         }
     }
 

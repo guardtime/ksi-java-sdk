@@ -26,6 +26,8 @@ import com.guardtime.ksi.tlv.InconsistentTlvElementException;
  */
 public class InvalidSignatureRFC3161RecordException extends InconsistentTlvElementException {
 
+    private static final long serialVersionUID = 1;
+
     public InvalidSignatureRFC3161RecordException(String message) {
         super(message);
     }

@@ -63,7 +63,7 @@ public class PublicationsFilePublicationRecord extends TLVStructure implements P
         for (TLVElement child : children) {
             switch (child.getType()) {
                 case PublicationData.ELEMENT_TYPE:
-                    this.publicationData = new PublicationData(readOnce(rootElement.getFirstChildElement(PublicationData.ELEMENT_TYPE)));
+                    this.publicationData = new PublicationData(readOnce(child));
                     continue;
                 case ELEMENT_TAG_PUBLICATION_REFERENCE:
                     publicationReferences.add(child.getDecodedString());

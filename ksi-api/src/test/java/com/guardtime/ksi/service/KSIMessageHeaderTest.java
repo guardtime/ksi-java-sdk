@@ -18,55 +18,53 @@
  */
 package com.guardtime.ksi.service;
 
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.ByteArrayInputStream;
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 
 public class KSIMessageHeaderTest {
 
+    private static final long INSTANCE_ID = 111111L;
+    private static final long MESSAGE_ID = 333331L;
+    public static final String TEST_LOGIN_ID = "anon";
+
     @Test
     public void testCreateMessageHeader_Ok() throws Exception {
-        KSIMessageHeader messageHeader = new KSIMessageHeader("anon");
+        KSIMessageHeader messageHeader = new KSIMessageHeader(TEST_LOGIN_ID);
         KSIMessageHeader header = load(messageHeader.getRootElement().getEncoded());
-        Assert.assertEquals(header.getLoginId(), "anon");
+        Assert.assertEquals(header.getLoginId(), TEST_LOGIN_ID);
         Assert.assertEquals(header.getLoginId(), messageHeader.getLoginId());
     }
 
     @Test
     public void testCreateMessageHeaderWithMessageId_Ok() throws Exception {
-        KSIMessageHeader messageHeader = new KSIMessageHeader("anon", 111111L, 333331L);
+        KSIMessageHeader messageHeader = new KSIMessageHeader(TEST_LOGIN_ID, INSTANCE_ID, MESSAGE_ID);
         KSIMessageHeader header = load(messageHeader.getRootElement().getEncoded());
-        Assert.assertEquals(header.getLoginId(), "anon");
+        Assert.assertEquals(header.getLoginId(), TEST_LOGIN_ID);
         Assert.assertEquals(header.getLoginId(), messageHeader.getLoginId());
-        Assert.assertEquals(header.getInstanceId().longValue(), 111111L);
-        Assert.assertEquals(header.getMessageId().longValue(), 333331L);
+        Assert.assertEquals(header.getInstanceId().longValue(), INSTANCE_ID);
+        Assert.assertEquals(header.getMessageId().longValue(), MESSAGE_ID);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. LoginId is null.")
-    public void testCreateMessageHeaderUsingInvalidLoginId_Throws() throws Exception {
+    public void testCreateMessageHeaderUsingInvalidLoginId_ThrowsIllegalArgumentException() throws Exception {
         new KSIMessageHeader((String) null);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. InstanceId is null.")
-    public void testCreateMessageHeaderUsingInvalidInstanceId_Throws() throws Exception {
-        new KSIMessageHeader("anon", null, 1L);
+    public void testCreateMessageHeaderUsingInvalidInstanceId_ThrowsIllegalArgumentException() throws Exception {
+        new KSIMessageHeader(TEST_LOGIN_ID, null, 1L);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. MessageId is null.")
-    public void testCreateMessageHeaderUsingInvalidMessageId_Throws() throws Exception {
-        new KSIMessageHeader("anon", 1L, null);
+    public void testCreateMessageHeaderUsingInvalidMessageId_ThrowsIllegalArgumentException() throws Exception {
+        new KSIMessageHeader(TEST_LOGIN_ID, 1L, null);
     }
 
     private KSIMessageHeader load(byte[] data) throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(data));
-        try {
-            return new KSIMessageHeader(input.readElement());
-        } finally {
-            input.close();
-        }
+        return new KSIMessageHeader(loadTlv(data));
     }
 
 }

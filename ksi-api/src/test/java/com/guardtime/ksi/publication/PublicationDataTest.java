@@ -22,7 +22,6 @@ package com.guardtime.ksi.publication;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVParserException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -31,6 +30,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Date;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class PublicationDataTest {
 
@@ -106,13 +107,8 @@ public class PublicationDataTest {
         Assert.assertEquals(publicationData.getPublicationString(), PUBLICATION_STRING);
     }
 
-    private PublicationData load(InputStream file) throws Exception {
-        TLVInputStream input = new TLVInputStream(file);
-        try {
-            return new PublicationData(input.readElement());
-        } finally {
-            input.close();
-        }
+    private PublicationData load(InputStream input) throws Exception {
+        return new PublicationData(loadTlv(input));
     }
 
 }

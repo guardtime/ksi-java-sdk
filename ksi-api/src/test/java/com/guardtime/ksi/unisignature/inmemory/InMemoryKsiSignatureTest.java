@@ -24,7 +24,6 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.util.Base16;
@@ -36,6 +35,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Date;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class InMemoryKsiSignatureTest {
 
@@ -139,12 +140,7 @@ public class InMemoryKsiSignatureTest {
     }
 
     private InMemoryKsiSignature load(InputStream file) throws Exception {
-        TLVInputStream input = new TLVInputStream(file);
-        try {
-            return new InMemoryKsiSignature(input.readElement());
-        } finally {
-            input.close();
-        }
+        return new InMemoryKsiSignature(loadTlv(file));
     }
 
 }

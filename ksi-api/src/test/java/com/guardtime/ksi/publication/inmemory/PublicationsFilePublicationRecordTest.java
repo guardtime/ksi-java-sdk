@@ -22,12 +22,13 @@ package com.guardtime.ksi.publication.inmemory;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class PublicationsFilePublicationRecordTest {
 
@@ -62,12 +63,7 @@ public class PublicationsFilePublicationRecordTest {
     }
 
     private PublicationsFilePublicationRecord load(InputStream file) throws Exception {
-        TLVInputStream input = new TLVInputStream(file);
-        try {
-            return new PublicationsFilePublicationRecord(input.readElement());
-        } finally {
-            input.close();
-        }
+        return new PublicationsFilePublicationRecord(loadTlv(file));
     }
 
 }

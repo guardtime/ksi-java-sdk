@@ -22,14 +22,14 @@ import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.KSIRequestContext;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.ByteArrayInputStream;
 import java.util.Date;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class ExtensionRequestTest {
 
@@ -92,12 +92,7 @@ public class ExtensionRequestTest {
     }
 
     private ExtensionRequest load(byte[] data) throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(data));
-        try {
-            return new ExtensionRequest(input.readElement(), CONTEXT);
-        } finally {
-            input.close();
-        }
+        return new ExtensionRequest(loadTlv(data), CONTEXT);
     }
 
 }

@@ -23,13 +23,12 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.service.KSIRequestContext;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.ByteArrayInputStream;
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class AggregationRequestTest {
 
@@ -76,12 +75,7 @@ public class AggregationRequestTest {
     }
 
     private AggregationRequest load(byte[] data) throws Exception {
-        TLVInputStream input = new TLVInputStream(new ByteArrayInputStream(data));
-        try {
-            return new AggregationRequest(input.readElement(), CONTEXT);
-        } finally {
-            input.close();
-        }
+        return new AggregationRequest(loadTlv(data), CONTEXT);
     }
 
 }

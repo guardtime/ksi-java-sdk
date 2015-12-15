@@ -33,6 +33,8 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+
 public class TLVElementTest {
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid argument. TLVHeader is null")
@@ -340,13 +342,8 @@ public class TLVElementTest {
         element.writeTo(new ByteArrayOutputStream());
     }
 
-    private TLVElement load(InputStream file) throws Exception {
-        TLVInputStream input = new TLVInputStream(file);
-        try {
-            return input.readElement();
-        } finally {
-            input.close();
-        }
+    private TLVElement load(InputStream input) throws Exception {
+        return loadTlv(input);
     }
 
 }

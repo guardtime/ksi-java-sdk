@@ -19,12 +19,12 @@
 
 package com.guardtime.ksi.publication.inmemory;
 
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Date;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class PublicationsFileHeaderTest {
 
@@ -47,12 +47,7 @@ public class PublicationsFileHeaderTest {
     }
 
     private PublicationsFileHeader load(String file) throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(file));
-        try {
-            return new PublicationsFileHeader(input.readElement());
-        } finally {
-            input.close();
-        }
+        return new PublicationsFileHeader(loadTlv(file));
     }
 
 }

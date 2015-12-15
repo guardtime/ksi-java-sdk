@@ -19,19 +19,19 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.unisignature.ChainResult;
 import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class AggregationHashChainTest {
 
     @Test
     public void testDecodeAggregationHashChain_Ok() throws Exception {
         InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
-        Assert.assertEquals(chain.getElementType(), 0x0801);
+        Assert.assertEquals(chain.getElementType(), InMemoryAggregationHashChain.ELEMENT_TYPE);
         Assert.assertNotNull(chain.getAggregationTime());
         Assert.assertEquals(chain.getAggregationTime().getTime(), 1395317319000L);
     }
@@ -72,12 +72,7 @@ public class AggregationHashChainTest {
     }
 
     private InMemoryAggregationHashChain load(String file) throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(file));
-        try {
-            return new InMemoryAggregationHashChain(input.readElement());
-        } finally {
-            input.close();
-        }
+        return new InMemoryAggregationHashChain(loadTlv(file));
     }
 
 }

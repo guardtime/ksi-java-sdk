@@ -23,12 +23,13 @@ import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.inmemory.InvalidPublicationRecordException;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class InMemorySignaturePublicationRecordTest {
 
@@ -63,12 +64,7 @@ public class InMemorySignaturePublicationRecordTest {
     }
 
     private InMemorySignaturePublicationRecord load(InputStream file) throws Exception {
-        TLVInputStream input = new TLVInputStream(file);
-        try {
-            return new InMemorySignaturePublicationRecord(input.readElement());
-        } finally {
-            input.close();
-        }
+        return new InMemorySignaturePublicationRecord(loadTlv(file));
     }
 
 }

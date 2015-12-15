@@ -19,10 +19,10 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class CalendarAuthenticationRecordTest {
 
@@ -44,12 +44,7 @@ public class CalendarAuthenticationRecordTest {
     }
 
     private InMemoryCalendarAuthenticationRecord load(String file) throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(file));
-        try {
-            return new InMemoryCalendarAuthenticationRecord(input.readElement());
-        } finally {
-            input.close();
-        }
+        return new InMemoryCalendarAuthenticationRecord(loadTlv(file));
     }
 
 }

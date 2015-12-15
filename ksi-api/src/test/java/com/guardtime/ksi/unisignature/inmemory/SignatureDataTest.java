@@ -19,11 +19,11 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.unisignature.SignatureData;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class SignatureDataTest {
 
@@ -60,12 +60,7 @@ public class SignatureDataTest {
     }
 
     static InMemorySignatureData load(String file) throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(file));
-        try {
-            return new InMemorySignatureData(input.readElement());
-        } finally {
-            input.close();
-        }
+        return new InMemorySignatureData(loadTlv(file));
     }
 
 }

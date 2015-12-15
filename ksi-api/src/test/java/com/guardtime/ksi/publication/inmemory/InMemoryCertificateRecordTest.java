@@ -19,10 +19,9 @@
 
 package com.guardtime.ksi.publication.inmemory;
 
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
@@ -52,12 +51,7 @@ public class InMemoryCertificateRecordTest {
     }
 
     private InMemoryCertificateRecord load(String file) throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(file));
-        try {
-            return new InMemoryCertificateRecord(input.readElement());
-        } finally {
-            input.close();
-        }
+        return new InMemoryCertificateRecord(loadTlv(file));
     }
 
 }

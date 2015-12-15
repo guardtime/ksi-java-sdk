@@ -19,13 +19,13 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
-import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.tlv.TLVInputStream;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class CalendarHashChainTest {
 
@@ -95,12 +95,7 @@ public class CalendarHashChainTest {
     }
 
     static InMemoryCalendarHashChain load(String file) throws Exception {
-        TLVInputStream input = new TLVInputStream(TestUtil.load(file));
-        try {
-            return new InMemoryCalendarHashChain(input.readElement());
-        } finally {
-            input.close();
-        }
+        return new InMemoryCalendarHashChain(loadTlv(file));
     }
 
 }

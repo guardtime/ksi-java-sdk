@@ -29,7 +29,6 @@ import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
 import com.guardtime.ksi.service.ExtensionRequestFuture;
 import com.guardtime.ksi.service.KSIService;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
@@ -400,7 +399,7 @@ public class FileBasedMultiSignatureTest {
     public void testExtendUniSignaturesFromSameAggregationRound_Ok() throws Exception {
         Mockito.when(mockedExtensionRequestFuture.getResult()).thenReturn(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig").getCalendarHashChain());
         Date date = new Date(System.currentTimeMillis() / 1000 * 1000);
-        TLVElement rootElement = new TLVElement(new TLVHeader(false, false, 0x0703));
+        TLVElement rootElement = new TLVElement(false, false, 0x0703);
         rootElement.addChildElement(new PublicationData(date, new DataHash(HashAlgorithm.SHA2_256, new byte[32])).getRootElement());
         PublicationsFilePublicationRecord pubRecord = new PublicationsFilePublicationRecord(rootElement);
         FileBasedMultiSignature multiSignature = new FileBasedMultiSignature(signatureWriter, mockedKsiService, uniSignatureFactory);

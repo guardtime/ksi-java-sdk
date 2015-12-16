@@ -18,15 +18,14 @@
  */
 package com.guardtime.ksi.util;
 
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-
-import com.guardtime.ksi.service.KSIProtocolException;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 public class UtilTest {
 
@@ -83,21 +82,21 @@ public class UtilTest {
 
     @Test
     public void testToByteArray() {
-        byte[] oneTwoThree = new byte[] { 0, 123 };
+        byte[] oneTwoThree = new byte[]{0, 123};
         Assert.assertEquals(Util.toByteArray((short) 123), oneTwoThree);
     }
 
     @Test
     public void testToShort() {
-        byte[] oneTwoThree = new byte[] { 0, 123 };
+        byte[] oneTwoThree = new byte[]{0, 123};
         Assert.assertEquals(Util.toShort(oneTwoThree), (short) 123);
-        byte[] oneTwoFour = new byte[] { 0, 0, 0, 124 };
+        byte[] oneTwoFour = new byte[]{0, 0, 0, 124};
         Assert.assertNotEquals(Util.toShort(oneTwoFour), (short) 124);
     }
 
     @Test
     public void testToInt() {
-        byte[] oneTwoThree = new byte[] { 0, 0, 0, 123 };
+        byte[] oneTwoThree = new byte[]{0, 0, 0, 123};
         Assert.assertEquals(Util.toInt(oneTwoThree), (int) 123);
     }
 
@@ -133,11 +132,6 @@ public class UtilTest {
         alfa.close();
         beta.close();
         Assert.assertEquals(beta.toString(), "foo");
-    }
-
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Can\\'t parse response message")
-    public void testResponseContainsNotData_ThrowsKSIProtocolException() throws Exception {
-        Util.parseResponseTLV(new byte[0]);
     }
 
 }

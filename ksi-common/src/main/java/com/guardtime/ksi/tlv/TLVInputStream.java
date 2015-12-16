@@ -37,6 +37,8 @@ public class TLVInputStream extends InputStream {
 
     static final int BYTE_BITS = 8;
     static final int BYTE_MAX = 0xff;
+    public static final int TLV16_HEADER_LENGTH = 4;
+    public static final int TLV8_HEADER_LENGTH = 2;
 
     private DataInputStream in;
 
@@ -68,13 +70,13 @@ public class TLVInputStream extends InputStream {
      *         when reading from underlying stream fails.
      */
     public TLVElement readElement() throws IOException, TLVParserException {
-        TLVHeader header = readHeader();
-        TLVElement element = new TLVElement(header);
+        TlvHeader header = readHeader();
+        TLVElement element = new TLVElement(header.nonCritical, header.forwarded, header.type);
         int count = countNestedTlvElements(header);
         if (count > 0) {
             readNestedElements(element, count);
         } else {
-            element.setContent(readTLVContent(header));
+            element.setContent(readTlvContent(header));
         }
         return element;
     }
@@ -117,11 +119,11 @@ public class TLVInputStream extends InputStream {
      * Reads the TLV header form input stream. Reads two (TLV8 encoding is used) or four (TLV16 encoding is used) bytes
      * from underlying stream.
      *
-     * @return instance of {@link TLVHeader}. Always present.
+     * @return instance of {@link TlvHeader}. Always present.
      * @throws IOException
      *         - when reading from underlying stream fails.
      */
-    private TLVHeader readHeader() throws IOException {
+    private TlvHeader readHeader() throws IOException {
         int firstByte = in.read();
         if (firstByte < 0) {
             // no data to read
@@ -133,7 +135,6 @@ public class TLVInputStream extends InputStream {
 
         int type = firstByte & TYPE_MASK;
         int length;
-
         if (tlv16) {
             int typeLSB = in.readUnsignedByte();
             type = (type << BYTE_BITS) | typeLSB;
@@ -141,10 +142,16 @@ public class TLVInputStream extends InputStream {
         } else {
             length = in.readUnsignedByte();
         }
-        return new TLVHeader(tlv16, nonCritical, forward, type, length);
+        if (type > TYPE_MASK && !tlv16) {
+            throw new IOException("Invalid TLV header. TLV type > 0x1f but TLV8 encoding is used");
+        }
+        if (length > BYTE_MAX && !tlv16) {
+            throw new IOException("Invalid TLV header. TLV length > 0xff but TLV8 encoding is used");
+        }
+        return new TlvHeader(tlv16, nonCritical, forward, type, length);
     }
 
-    private int countNestedTlvElements(TLVHeader parent) throws IOException {
+    private int countNestedTlvElements(TlvHeader parent) throws IOException {
         LOGGER.debug("Checking TLV header {} nested elements", parent);
         int maximumPosition = parent.getDataLength();
 
@@ -158,7 +165,7 @@ public class TLVInputStream extends InputStream {
         // read the header candidates
         while (true) {
             try {
-                TLVHeader headerCandidate = readHeader();
+                TlvHeader headerCandidate = readHeader();
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("currentPosition={}, maximumPosition={}", currentPosition, maximumPosition);
                 }
@@ -188,12 +195,12 @@ public class TLVInputStream extends InputStream {
      * Reads the TLV content bytes from the underlying stream.
      *
      * @param header
-     *         instance of {@link TLVHeader}. not null.
+     *         instance of {@link TlvHeader}. not null.
      * @return TLV content bytes
      * @throws IOException
      *         if an I/O error occurs.
      */
-    private byte[] readTLVContent(TLVHeader header) throws IOException {
+    private byte[] readTlvContent(TlvHeader header) throws IOException {
         byte[] data = new byte[header.getDataLength()];
         in.readFully(data);
         return data;
@@ -208,6 +215,41 @@ public class TLVInputStream extends InputStream {
     @Override
     public void close() throws IOException {
         in.close();
+    }
+
+    /**
+     * helper class for parsing tlv stream
+     */
+    private final class TlvHeader {
+        final boolean tlv16;
+        final boolean nonCritical;
+        final boolean forwarded;
+        final int type;
+        final int dataLength;
+
+        TlvHeader(boolean tlv16, boolean nonCritical, boolean forwarded, int type, int dataLength) {
+            this.tlv16 = tlv16;
+            this.nonCritical = nonCritical;
+            this.forwarded = forwarded;
+            this.type = type;
+            this.dataLength = dataLength;
+        }
+
+        /**
+         * Returns the length of the data.
+         */
+        int getDataLength() {
+            return dataLength;
+        }
+
+        /**
+         * Returns the header size. If header is TLV16 encoded then the size will be four. If the header is TLV8 encoded
+         * then the size will be two.
+         */
+        int getHeaderLength() {
+            return tlv16 ? TLV16_HEADER_LENGTH : TLV8_HEADER_LENGTH;
+        }
+
     }
 
 }

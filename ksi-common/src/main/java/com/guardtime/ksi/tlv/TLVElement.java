@@ -33,26 +33,41 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * <p> This class represents the Type-Length-Value (TLV) element. The TLV scheme is used to encode both the KSI data
+ * structures and also protocol data units. </p>
+ * <p/>
+ * For space efficiency, two TLV encodings are used: <ul> <li>A 16-bit TLV (TLV16) encodes a 13-bit type and 16-bit
+ * length (and can thus contain at most 65535 octets of data in the value part). <li>An 8-bit TLV (TLV8) encodes a 5-bit
+ * type and 8-bit length (at most 255 octets of value data). </ul> TLV header contains 3 flags: <ul> <li>16-bit flag.
+ * TLV8 and TLV16 are distinguished by the `16-Bit' flag in the first octet of the type field <li>The non-critical flag.
+ * <li>The Forward Unknown flag. </ul>
+ */
 public final class TLVElement {
 
     public static final int MAX_TLV16_CONTENT_LENGTH = 0xFFFF;
-    public static final int MAX_TLV8_CONTENT_LENGTH = 0xFF;
 
-    private TLVHeader header;
+    /**
+     * Non-critical flag
+     */
+    private boolean nonCritical;
+
+    /**
+     * The Forward Unknown flag
+     */
+    private boolean forwarded;
+    /**
+     * The type tags are given in hexadecimal: 4 digits for global (long) and 2 digits for local (short) tlv types.
+     */
+    private int type;
+
     private List<TLVElement> children = new LinkedList<TLVElement>();
     private byte[] content = new byte[0];
 
-    /**
-     * Creates a new {@link TLVElement} instance.
-     *
-     * @param header
-     *         - TLV element header. not null
-     */
-    public TLVElement(TLVHeader header) throws TLVParserException {
-        if (header == null) {
-            throw new TLVParserException("Invalid argument. TLVHeader is null");
-        }
-        this.header = header;
+    public TLVElement(boolean nonCritical, boolean forwarded, int type) {
+        this.nonCritical = nonCritical;
+        this.forwarded = forwarded;
+        this.type = type;
     }
 
     /**
@@ -172,8 +187,8 @@ public final class TLVElement {
         byte[] content = this.content;
         if (!children.isEmpty()) {
             for (TLVElement child : children) {
-                content = concat(content, child.encodeHeader());
-                content = concat(content, child.getContent());
+                content = Util.join(content, child.encodeHeader());
+                content = Util.join(content, child.getContent());
             }
         }
         return content;
@@ -268,42 +283,23 @@ public final class TLVElement {
     }
 
     public int getType() {
-        return header.getType();
+        return type;
     }
 
     public void setType(int type) {
-        header.setType(type);
+        this.type = type;
     }
 
     public boolean isTlv16() {
-        return header.isTlv16();
+        return getType() > TLVInputStream.TYPE_MASK || (getContentLength() > TLVInputStream.BYTE_MAX);
     }
 
     public boolean isNonCritical() {
-        return header.isNonCritical();
+        return nonCritical;
     }
 
     public boolean isForwarded() {
-        return header.isForwarded();
-    }
-
-    public TLVHeader getHeader() {
-        return header;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder(header.toString());
-        builder.append(":");
-        if (children.isEmpty()) {
-            builder.append(Base16.encode(content));
-        } else {
-            for (TLVElement element : children) {
-                builder.append(element.toString());
-            }
-        }
-
-        return builder.toString();
+        return forwarded;
     }
 
     /**
@@ -321,21 +317,21 @@ public final class TLVElement {
 
             int dataLength = getContentLength();
 
-            boolean tlv16 = header.getType() > TLVInputStream.TYPE_MASK || (dataLength > TLVInputStream.BYTE_MAX);
-            int firstByte = (tlv16 ? TLVInputStream.TLV16_FLAG : 0) + (header.isNonCritical() ? TLVInputStream.NON_CRITICAL_FLAG : 0)
-                    + (header.isForwarded() ? TLVInputStream.FORWARD_FLAG : 0);
+            boolean tlv16 = isTlv16();
+            int firstByte = (tlv16 ? TLVInputStream.TLV16_FLAG : 0) + (isNonCritical() ? TLVInputStream.NON_CRITICAL_FLAG : 0)
+                    + (isForwarded() ? TLVInputStream.FORWARD_FLAG : 0);
 
             if (tlv16) {
-                firstByte = firstByte | (header.getType() >>> TLVInputStream.BYTE_BITS) & TLVInputStream.TYPE_MASK;
+                firstByte = firstByte | (getType() >>> TLVInputStream.BYTE_BITS) & TLVInputStream.TYPE_MASK;
                 out.writeByte(firstByte);
-                out.writeByte(header.getType());
+                out.writeByte(getType());
                 if (dataLength < 1) {
                     out.writeShort(0);
                 } else {
                     out.writeShort(dataLength);
                 }
             } else {
-                firstByte = firstByte | header.getType() & TLVInputStream.TYPE_MASK;
+                firstByte = firstByte | getType() & TLVInputStream.TYPE_MASK;
                 out.writeByte(firstByte);
                 if (dataLength < 1) {
                     out.writeByte(0);
@@ -352,43 +348,30 @@ public final class TLVElement {
     }
 
     /**
-     * @return returns the length of the TLV element content.
+     * Returns the length of the TLV element content.
      */
-    private int getContentLength() {
+    public int getContentLength() {
         int contentLength = content.length;
         if (!children.isEmpty()) {
             for (TLVElement element : children) {
-                contentLength += element.getHeader().getHeaderLength();
+                contentLength += element.getHeaderLength();
                 contentLength += element.getContentLength();
             }
         }
         return contentLength;
     }
 
-    /**
-     * Merges two arrays. The new array contains all of the elements of the first array followed by all of the elements
-     * from the second array. When an array is returned, it is always a new array.
-     *
-     * @param a
-     *         first array to merge. not null.
-     * @param b
-     *         second array to merge. not null
-     * @return the new merged byte array
-     */
-    private byte[] concat(byte[] a, byte[] b) {
-        byte[] result = new byte[a.length + b.length];
-        System.arraycopy(a, 0, result, 0, a.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
-        return result;
+    public int getHeaderLength() {
+        return isTlv16() ? 4 : 2;
     }
 
     /**
      * Replaces first element with given one.
      *
      * @param childToBeReplaced
-     *         inmemory element to be replaced
+     *         tlv element to be replaced
      * @param newChild
-     *         new inmemory element
+     *         new tlv element
      */
     public void replace(TLVElement childToBeReplaced, TLVElement newChild) {
         for (int i = 0; i < children.size(); i++) {
@@ -417,22 +400,48 @@ public final class TLVElement {
             out.write(encodeHeader());
             out.write(getContent());
         } catch (IOException e) {
-            throw new TLVParserException("Writing TLV element (" + header + ")  to output stream failed", e);
+            throw new TLVParserException("Writing TLV element (" + convertHeader() + ")  to output stream failed", e);
         }
     }
 
     private void assertActualContentLengthIsInTLVLimits(int contentLength) throws TLVParserException {
-        if (isTlv16()) {
-            if (contentLength > MAX_TLV16_CONTENT_LENGTH) {
-                throw new TLVParserException("TLV16 should never contain more than " + MAX_TLV16_CONTENT_LENGTH + " bytes of content, but this one contains " + contentLength + " bytes.");
-            }
-        } else if (contentLength > MAX_TLV8_CONTENT_LENGTH) {
-            throw new TLVParserException("TLV8 should never contain more than " + MAX_TLV8_CONTENT_LENGTH + " bytes of content, but this one contains " + contentLength + " bytes.");
+        if (contentLength > MAX_TLV16_CONTENT_LENGTH) {
+            throw new TLVParserException("TLV16 should never contain more than " + MAX_TLV16_CONTENT_LENGTH + " bytes of content, but this one contains " + contentLength + " bytes.");
         }
     }
 
     public byte[] getEncoded() throws TLVParserException {
-        return concat(encodeHeader(), getContent());
+        return Util.join(encodeHeader(), getContent());
+    }
+
+
+    @Override
+    public String toString() {
+
+        StringBuilder builder = new StringBuilder(convertHeader());
+        builder.append(":");
+        if (children.isEmpty()) {
+            builder.append(Base16.encode(content));
+        } else {
+            for (TLVElement element : children) {
+                builder.append(element.toString());
+            }
+        }
+
+        return builder.toString();
+    }
+
+    private String convertHeader() {
+        StringBuilder builder = new StringBuilder("TLV[0x");
+        builder.append(Integer.toHexString(this.type));
+        if (isNonCritical()) {
+            builder.append(",N");
+        }
+        if (isForwarded()) {
+            builder.append(",F");
+        }
+        builder.append("]");
+        return builder.toString();
     }
 
     @Override
@@ -442,13 +451,19 @@ public final class TLVElement {
 
         TLVElement that = (TLVElement) o;
 
-        if (!header.equals(that.header)) return false;
-        return !(children != null ? !children.equals(that.children) : that.children != null) && Arrays.equals(content, that.content);
+        if (nonCritical != that.nonCritical) return false;
+        if (forwarded != that.forwarded) return false;
+        if (type != that.type) return false;
+        if (children != null ? !children.equals(that.children) : that.children != null) return false;
+        return Arrays.equals(content, that.content);
+
     }
 
     @Override
     public int hashCode() {
-        int result = header.hashCode();
+        int result = (nonCritical ? 1 : 0);
+        result = 31 * result + (forwarded ? 1 : 0);
+        result = 31 * result + type;
         result = 31 * result + (children != null ? children.hashCode() : 0);
         result = 31 * result + (content != null ? Arrays.hashCode(content) : 0);
         return result;

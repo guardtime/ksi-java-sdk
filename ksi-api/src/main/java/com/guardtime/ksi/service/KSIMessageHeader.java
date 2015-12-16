@@ -20,7 +20,6 @@ package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.List;
@@ -72,8 +71,8 @@ public class KSIMessageHeader extends TLVStructure {
             throw new IllegalArgumentException("Invalid input parameter. LoginId is null.");
         }
         this.loginId = loginId;
-        this.rootElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_MESSAGE_HEADER));
-        TLVElement loginIdElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_LOGIN_ID));
+        this.rootElement = new TLVElement(false, false, ELEMENT_TYPE_MESSAGE_HEADER);
+        TLVElement loginIdElement = new TLVElement(false, false, ELEMENT_TYPE_LOGIN_ID);
         loginIdElement.setStringContent(loginId);
         rootElement.addChildElement(loginIdElement);
     }
@@ -99,11 +98,11 @@ public class KSIMessageHeader extends TLVStructure {
         this.instanceId = instanceId;
         this.messageId = messageId;
 
-        TLVElement instanceIdElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_INSTANCE_ID));
+        TLVElement instanceIdElement = new TLVElement(false, false, ELEMENT_TYPE_INSTANCE_ID);
         instanceIdElement.setLongContent(instanceId);
         rootElement.addChildElement(instanceIdElement);
 
-        TLVElement messageIdElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_MESSAGE_ID));
+        TLVElement messageIdElement = new TLVElement(false, false, ELEMENT_TYPE_MESSAGE_ID);
         messageIdElement.setLongContent(messageId);
         rootElement.addChildElement(messageIdElement);
     }

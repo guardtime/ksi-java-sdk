@@ -18,11 +18,6 @@
  */
 package com.guardtime.ksi.util;
 
-import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.tlv.MultipleTLVElementException;
-import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVParserException;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
@@ -578,9 +573,9 @@ public final class Util {
 
     /**
      * Closes an {@code InputStream} unconditionally.
-     * <p>
-     * Equivalent to {@code InputStream.close()}, except any exceptions will be ignored.
-     * This is typically used in {@code finally} blocks.
+     * <p/>
+     * Equivalent to {@code InputStream.close()}, except any exceptions will be ignored. This is typically used in
+     * {@code finally} blocks.
      *
      * @param input
      *         {@link InputStream} to close
@@ -596,9 +591,9 @@ public final class Util {
 
     /**
      * Closes an {@code OutputStream} unconditionally.
-     * <p>
-     * Equivalent to {@code OutputStream.close()}, except any exceptions will be ignored.
-     * This is typically used in {@code finally} blocks.
+     * <p/>
+     * Equivalent to {@code OutputStream.close()}, except any exceptions will be ignored. This is typically used in
+     * {@code finally} blocks.
      *
      * @param output
      *         {@link OutputStream} to close

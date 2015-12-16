@@ -88,7 +88,7 @@ public class TLVInputStreamTest {
 
     @Test
     public void testReadTlv16Element_Ok() throws Exception {
-        input = new TLVInputStream(new ByteArrayInputStream(new byte[]{(byte) (1 << 7), 1, 0, 2, 1, 2}));
+        input = new TLVInputStream(new ByteArrayInputStream(new byte[]{(byte) (1 << 7), 0x20, 0, 2, 1, 2}));
 
         Assert.assertTrue(input.hasNextElement());
         TLVElement tlvElement = input.readElement();
@@ -108,10 +108,12 @@ public class TLVInputStreamTest {
     @Test
     public void testReadTlv16ElementContainingNestedElements_Ok() throws Exception {
         input = new TLVInputStream(CommonTestUtil.load("aggregation-203-error.tlv"));
+        int count = 0;
         while (input.hasNextElement()) {
-            TLVElement element = input.readElement();
-            System.err.println(element);
+            input.readElement();
+            count++;
         }
+        Assert.assertEquals(1, count);
     }
 
     @Test (expectedExceptions = EOFException.class)

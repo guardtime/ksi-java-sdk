@@ -37,11 +37,6 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class TLVElementTest {
 
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid argument. TLVHeader is null")
-    public void testCreateTLVElementWithInvalidHeader_ThrowsTLVParserException() throws Exception {
-        new TLVElement(null);
-    }
-
     @Test
     public void testGetTheFirstChildElementFromNestedTlvElement_Ok() throws Exception {
         TLVElement element = load(CommonTestUtil.load("aggregation-203-error.tlv"));
@@ -60,7 +55,7 @@ public class TLVElementTest {
 
     @Test
     public void testEncodeTlv16ElementWithoutData_Ok() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(true, true, 0x0202));
+        TLVElement element = new TLVElement(true, true, 0x0202);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         element.writeTo(out);
 
@@ -73,7 +68,7 @@ public class TLVElementTest {
 
     @Test
     public void testEncodeTlv16ElementWithData_Ok() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(true, true, 0x0202));
+        TLVElement element = new TLVElement(true, true, 0x0202);
         element.setStringContent("OK");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         element.writeTo(out);
@@ -88,7 +83,7 @@ public class TLVElementTest {
 
     @Test
     public void testEncodeStringElement_Ok() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 2));
+        TLVElement element = new TLVElement(false, false, 2);
         element.setStringContent("OK");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         element.writeTo(out);
@@ -97,7 +92,7 @@ public class TLVElementTest {
 
     @Test
     public void testEncodeElementContainingEmptyString_Ok() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 2));
+        TLVElement element = new TLVElement(false, false, 2);
         element.setStringContent(null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         element.writeTo(out);
@@ -192,14 +187,14 @@ public class TLVElementTest {
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Only non-negative integer values are allowed")
-    public void testCreateTLVElemenContainingNegativeInteger_ThrowsIllegalArgumentException() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 2));
+    public void testCreateTLVElementContainingNegativeInteger_ThrowsIllegalArgumentException() throws Exception {
+        TLVElement element = new TLVElement(false, false, 2);
         element.setLongContent(-1);
     }
 
     @Test
     public void testEncodeTLVIntegerElement_Ok() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 2));
+        TLVElement element = new TLVElement(false, false, 2);
         element.setLongContent(0xffffffffL);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -210,7 +205,7 @@ public class TLVElementTest {
 
     @Test
     public void testEncodeTLVIntegerZeroElement_Ok() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 2));
+        TLVElement element = new TLVElement(false, false, 2);
         element.setLongContent(0);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -231,7 +226,7 @@ public class TLVElementTest {
 
     @Test
     public void testEncodeImprintTlvElement_Ok() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 2));
+        TLVElement element = new TLVElement(false, false, 2);
         element.setDataHashContent(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         element.writeTo(out);
@@ -246,23 +241,13 @@ public class TLVElementTest {
 
     @Test(expectedExceptions = HashException.class, expectedExceptionsMessageRegExp = "Hash size\\(31\\) does not match SHA-256 size\\(32\\)")
     public void testCreateTlvElementWithWrongImprintLength_ThrowsFormatException() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 2));
+        TLVElement element = new TLVElement(false, false, 2);
         element.setDataHashContent(new DataHash(HashAlgorithm.SHA2_256, new byte[31]));
-    }
-
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bytes of content, but this one contains 65536 bytes.")
-    public void testWritingOutTLV16sWithContentsWithLengthExceedingTheMaxAllowedLimitThrowsException() throws Exception {
-        writeOutTLVWithGivenContentLength(0x10000, true);
-    }
-
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV8 should never contain more than 255 bytes of content, but this one contains 256 bytes.")
-    public void testWritingOutTLV8sWithContentsWithLengthExceedingTheMaxAllowedLimitsThrowsException() throws Exception {
-        writeOutTLVWithGivenContentLength(0x100, false);
     }
 
     @Test
     public void testWritingOutNotUsedId_Ok() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x0f));
+        TLVElement element = new TLVElement(false, false, 0x0f);
         element.setDataHashContent(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         element.writeTo(out);
@@ -303,7 +288,7 @@ public class TLVElementTest {
 
     @Test
     public void testGetDecodedDate_OK() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x1));
+        TLVElement element = new TLVElement(false, false, 0x1);
         element.setLongContent(1442837678);
         Assert.assertEquals(element.getDecodedDate(), new Date(1442837678000L));
     }
@@ -314,32 +299,54 @@ public class TLVElementTest {
         TLVElement.createFromBytes(tmp);
     }
 
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bytes of content,.*")
-    public void testSetTooLargeContentToTlvElement_ThrowsTLVParserException() throws Exception {
-        TLVHeader header = new TLVHeader(true, false, false, 0x1, TLVElement.MAX_TLV16_CONTENT_LENGTH);
-        TLVElement element = new TLVElement(header);
-        byte[] content = new byte[TLVElement.MAX_TLV16_CONTENT_LENGTH + 256];
-        element.setContent(content);
+    @Test
+    public void testTlvWithLongTypeIsAlwaysEncodedAsTlv16() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x800);
+        Assert.assertTrue(element.isTlv16());
+    }
+
+    @Test
+    public void testCreateShortTlv8_Ok() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x05);
+        element.setContent(new byte[200]);
+        Assert.assertFalse(element.isTlv16());
+        Assert.assertEquals(200, element.getContentLength());
+        Assert.assertEquals(2, element.getHeaderLength());
+    }
+
+    @Test
+    public void testCreateShortTlv16_Ok() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x05);
+        element.setContent(new byte[257]);
+        Assert.assertTrue(element.isTlv16());
+        Assert.assertTrue(element.isTlv16());
+        Assert.assertEquals(257, element.getContentLength());
+        Assert.assertEquals(4, element.getHeaderLength());
+    }
+
+    @Test
+    public void testCreateTlvElementWithMaximumContentLength_Ok() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x1);
+        element.setContent(new byte[TLVElement.MAX_TLV16_CONTENT_LENGTH]);
+        Assert.assertTrue(element.isTlv16());
+        Assert.assertEquals(TLVElement.MAX_TLV16_CONTENT_LENGTH, element.getContentLength());
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bytes of content,.*")
-    public void testTlvElementChildrenTooLarge_ThrowsTLVParserException() throws Exception {
-        byte[] content = new byte[TLVElement.MAX_TLV16_CONTENT_LENGTH - 1024];
-        TLVHeader header = new TLVHeader(true, false, false, 0x1, TLVElement.MAX_TLV16_CONTENT_LENGTH);
-        TLVElement root = new TLVElement(header);
-        TLVElement child1 = new TLVElement(header);
-        child1.setContent(content);
-        TLVElement child2 = new TLVElement(header);
-        child2.setContent(content);
+    public void testCreateTlvElementWithTooLargeContent_ThrowsTLVParserException() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x1);
+        element.setContent(new byte[TLVElement.MAX_TLV16_CONTENT_LENGTH + 1]);
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "TLV16 should never contain more than 65535 bytes of content,.*")
+    public void testCreateTlvElementWithTooLargeChildrenContent_testCreateTlvElementWithTooLargeContent_ThrowsTLVParserException() throws Exception {
+        TLVElement root = new TLVElement(false, false, 0x1);
+        TLVElement child1 = new TLVElement(false, false, 0x02);
+        child1.setContent(new byte[TLVElement.MAX_TLV16_CONTENT_LENGTH - 10]);
+        TLVElement child2 = new TLVElement(false, false, 0x03);
+        child2.setContent(new byte[9]);
         root.addChildElement(child1);
         root.addChildElement(child2);
-    }
-
-    private void writeOutTLVWithGivenContentLength(int contentLength, boolean tlv16) throws TLVParserException {
-        TLVElement element = new TLVElement(new TLVHeader(tlv16, false, false, 0x00, contentLength));
-        byte[] bytes = new byte[contentLength];
-        element.setContent(bytes);
-        element.writeTo(new ByteArrayOutputStream());
     }
 
     private TLVElement load(InputStream input) throws Exception {

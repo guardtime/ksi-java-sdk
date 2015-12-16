@@ -22,7 +22,6 @@ package com.guardtime.ksi.unisignature.inmemory;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -36,23 +35,22 @@ public class AggregationChainLinkTest {
 
     @BeforeClass
     public void init() throws Exception {
-        siblingHash = new TLVElement(new TLVHeader(false, false, 0x02));
+        siblingHash = new TLVElement(false, false, 0x02);
         siblingHash.setDataHashContent(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
 
-
-        metadata = new TLVElement(new TLVHeader(false, false, 0x04));
-        TLVElement clientIdElement = new TLVElement(new TLVHeader(false, false, 0x01));
+        metadata = new TLVElement(false, false, 0x04);
+        TLVElement clientIdElement = new TLVElement(false, false, 0x01);
         clientIdElement.setStringContent("abc");
         metadata.addChildElement(clientIdElement);
 
-        metaHash = new TLVElement(new TLVHeader(false, false, 0x03));
+        metaHash = new TLVElement(false, false, 0x03);
         metaHash.setDataHashContent(new DataHash(HashAlgorithm.SHA2_224, new byte[28]));
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount 257")
     public void testCorrectionLevelExceeds8bits_ThrowsInvalidAggregationHashChainException() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x08));
-        TLVElement correctionLevel = new TLVElement(new TLVHeader(false, false, 0x01));
+        TLVElement element = new TLVElement(false, false, 0x08);
+        TLVElement correctionLevel = new TLVElement(false, false, 0x01);
         correctionLevel.setLongContent(257L);
         element.addChildElement(correctionLevel);
 
@@ -61,14 +59,14 @@ public class AggregationChainLinkTest {
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "AggregationChainLink sibling data must consist of one of the following: 'sibling hash', 'meta hash' or 'metadata'")
     public void testLinkMustHaveSiblingHashOrMetaHashOrMetaData_ThrowsInvalidAggregationHashChainException() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x07));
+        TLVElement element = new TLVElement(false, false, 0x07);
         element.setStringContent("");
         new LeftAggregationChainLink(element);
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Sibling hash and meta hash are present")
     public void testLinkMustNotHaveSiblingHashAndMetaHash_ThrowsInvalidAggregationHashChainException() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x07));
+        TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(siblingHash);
         element.addChildElement(metaHash);
         new LeftAggregationChainLink(element);
@@ -76,7 +74,7 @@ public class AggregationChainLinkTest {
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Sibling hash and metadata are present")
     public void testLinkMustNotHaveSiblingHashAndMetadata_ThrowsInvalidAggregationHashChainException() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x07));
+        TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(siblingHash);
         element.addChildElement(metadata);
 
@@ -85,7 +83,7 @@ public class AggregationChainLinkTest {
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Meta hash and metadata are present")
     public void testLinkMustNotHaveMetaHashAndMetadata_ThrowsInvalidAggregationHashChainException() throws Exception {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x07));
+        TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(metaHash);
         element.addChildElement(metadata);
         new LeftAggregationChainLink(element);
@@ -93,8 +91,8 @@ public class AggregationChainLinkTest {
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "AggregationChainLink metadata does not contain clientId element")
     public void testLinkMetadataDoesNotContainClientId_ThrowsInvalidAggregationHashChainException() throws Exception {
-        TLVElement metadata = new TLVElement(new TLVHeader(false, false, 0x04));
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x07));
+        TLVElement metadata = new TLVElement(false, false, 0x04);
+        TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(metadata);
 
         new LeftAggregationChainLink(element);
@@ -103,15 +101,15 @@ public class AggregationChainLinkTest {
 
     @Test
     public void testDecodeLinkWithMetadata_Ok() throws Exception {
-        TLVElement metadata = new TLVElement(new TLVHeader(false, false, 0x04));
-        TLVElement clientId = new TLVElement(new TLVHeader(false, false, 0x01));
+        TLVElement metadata = new TLVElement(false, false, 0x04);
+        TLVElement clientId = new TLVElement(false, false, 0x01);
         clientId.setStringContent("abc");
-        TLVElement machineId = new TLVElement(new TLVHeader(false, false, 0x02));
+        TLVElement machineId = new TLVElement(false, false, 0x02);
         machineId.setStringContent("123");
 
         metadata.addChildElement(clientId);
         metadata.addChildElement(machineId);
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x07));
+        TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(metadata);
 
         LeftAggregationChainLink link = new LeftAggregationChainLink(element);
@@ -121,10 +119,10 @@ public class AggregationChainLinkTest {
 
     @Test
     public void testDecodeLinkWithMetaHash_Ok() throws Exception {
-        TLVElement metaHash = new TLVElement(new TLVHeader(false, false, 0x03));
+        TLVElement metaHash = new TLVElement(false, false, 0x03);
         metaHash.setContent(Base16.decode("00:0003414243000000000000000000000000000000"));
 
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x08));
+        TLVElement element = new TLVElement(false, false, 0x08);
         element.addChildElement(metaHash);
 
         RightAggregationChainLink link = new RightAggregationChainLink(element);

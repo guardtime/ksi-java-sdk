@@ -29,7 +29,6 @@ import com.guardtime.ksi.tlv.TLVElement;
  */
 public class AggregationResponse extends AbstractKSIResponse<AggregationResponsePayload> {
 
-
     public static final int ELEMENT_TYPE_AGGREGATION_RESPONSE = 0x0200;
 
     /**
@@ -55,4 +54,5 @@ public class AggregationResponse extends AbstractKSIResponse<AggregationResponse
     public int getElementType() {
         return ELEMENT_TYPE_AGGREGATION_RESPONSE;
     }
+
 }

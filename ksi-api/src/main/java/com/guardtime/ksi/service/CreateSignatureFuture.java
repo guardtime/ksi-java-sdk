@@ -23,7 +23,6 @@ import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.service.aggregation.AggregationResponse;
 import com.guardtime.ksi.service.aggregation.AggregationResponsePayload;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
@@ -68,7 +67,7 @@ public final class CreateSignatureFuture implements Future<KSISignature> {
     }
 
     private TLVElement convert(AggregationResponsePayload response) throws TLVParserException {
-        TLVElement element = new TLVElement(new TLVHeader(false, false, 0x0800));
+        TLVElement element = new TLVElement(false, false, 0x0800);
         List<TLVElement> children = response.getRootElement().getChildElements();
         for (TLVElement child : children) {
             if (child.getType() > 0x800 && child.getType() < 0x900) {

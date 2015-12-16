@@ -22,7 +22,6 @@ package com.guardtime.ksi.publication;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Base32;
@@ -124,15 +123,15 @@ public class PublicationData extends TLVStructure {
     }
 
     private void createRootTLVElement() throws TLVParserException {
-        this.rootElement = new TLVElement(new TLVHeader(false, true, ELEMENT_TYPE));
+        this.rootElement = new TLVElement(false, true, ELEMENT_TYPE);
 
         //publication time
-        TLVElement publicationTimeElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_PUBLICATION_TIME));
+        TLVElement publicationTimeElement = new TLVElement(false, false, ELEMENT_TYPE_PUBLICATION_TIME);
         publicationTimeElement.setLongContent(publicationTime.getTime() / 1000);
         rootElement.addChildElement(publicationTimeElement);
 
         //published hash
-        TLVElement publicationHashElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_PUBLICATION_HASH));
+        TLVElement publicationHashElement = new TLVElement(false, false, ELEMENT_TYPE_PUBLICATION_HASH);
         publicationHashElement.setDataHashContent(publicationHash);
         rootElement.addChildElement(publicationHashElement);
     }

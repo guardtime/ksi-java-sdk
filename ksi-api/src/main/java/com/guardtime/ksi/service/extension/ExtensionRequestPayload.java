@@ -21,7 +21,6 @@ package com.guardtime.ksi.service.extension;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.Date;
@@ -57,15 +56,15 @@ public class ExtensionRequestPayload extends TLVStructure {
         this.requestId = requestId;
         this.aggregationTime = aggregationTime;
 
-        this.rootElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_EXTENSION_REQUEST_PAYLOAD));
+        this.rootElement = new TLVElement(false, false, ELEMENT_TYPE_EXTENSION_REQUEST_PAYLOAD);
 
         //requestID
-        TLVElement requestIdElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_REQUEST_ID));
+        TLVElement requestIdElement = new TLVElement(false, false, ELEMENT_TYPE_REQUEST_ID);
         requestIdElement.setLongContent(requestId);
         rootElement.addChildElement(requestIdElement);
 
         //aggregationTime
-        TLVElement aggregationTimeElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_AGGREGATION_TIME));
+        TLVElement aggregationTimeElement = new TLVElement(false, false, ELEMENT_TYPE_AGGREGATION_TIME);
         aggregationTimeElement.setLongContent(aggregationTime.getTime() / 1000);
         rootElement.addChildElement(aggregationTimeElement);
     }
@@ -90,7 +89,7 @@ public class ExtensionRequestPayload extends TLVStructure {
             }
 
             this.publicationTime = publicationTime;
-            TLVElement publicationTimeElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_PUBLICATION_TIME));
+            TLVElement publicationTimeElement = new TLVElement(false, false, ELEMENT_TYPE_PUBLICATION_TIME);
             publicationTimeElement.setLongContent(publicationTime.getTime() / 1000);
             rootElement.addChildElement(publicationTimeElement);
         }

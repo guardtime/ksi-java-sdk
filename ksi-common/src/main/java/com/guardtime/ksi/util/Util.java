@@ -627,17 +627,6 @@ public final class Util {
         return randomLong;
     }
 
-    public static TLVElement parseResponseTLV(byte[] responseBytes) throws KSIProtocolException {
-        try {
-            return TLVElement.createFromBytes(responseBytes);
-        } catch (MultipleTLVElementException e) {
-            throw new KSIProtocolException("Invalid KSI response. Response message contains multiple TLV elements");
-        } catch (TLVParserException e) {
-            throw new KSIProtocolException("Can't parse response message", e);
-        }
-
-    }
-
     /**
      * This class should not be instantiated.
      */

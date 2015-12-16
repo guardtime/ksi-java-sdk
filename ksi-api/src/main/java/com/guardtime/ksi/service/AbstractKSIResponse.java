@@ -74,52 +74,52 @@ public abstract class AbstractKSIResponse<T extends KSIResponsePayload> extends 
      *         - will be thrown when TLV message parsing fails
      */
     public AbstractKSIResponse(TLVElement rootElement, KSIRequestContext context) throws KSIException {
-            super(rootElement);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Incoming response message: {}", rootElement);
-            }
-            List<TLVElement> children = rootElement.getChildElements();
-            for (TLVElement child : children) {
-                switch (child.getType()) {
-                    case KSIMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER:
-                        this.header = new KSIMessageHeader(readOnce(child));
-                        continue;
-                    case ELEMENT_TYPE_AGGREGATION_ERROR_PAYLOAD:
-                    case ELEMENT_TYPE_EXTENSION_ERROR_PAYLOAD:
-                        throwErrorPayloadException(child);
-                    case AggregationResponsePayload.ELEMENT_TYPE:
-                    case ExtensionResponsePayload.ELEMENT_TYPE:
-                        if (response != null) {
-                            throw new KSIProtocolException("Invalid response message. Message contains multiple response payloads");
-                        }
-                        this.response = parse(child);
-                        continue;
-                    case ELEMENT_TYPE_MAC:
-                        this.mac = readOnce(child).getDecodedDataHash();
-                        continue;
-                    default:
-                        verifyCriticalFlag(child);
-                }
-            }
-            if (header == null) {
-                throw new KSIProtocolException("Invalid response message. Response message header is required");
-            }
-            if (mac == null) {
-                throw new KSIProtocolException("Invalid response message. Response message mac tag is required");
-            }
-            validateMac(context.getLoginKey());
-            if (response == null) {
-                throw new KSIProtocolException("Response message does not contain response payload element");
-            }
-            Long requestId = context.getRequestId();
-            if (requestId != null && !requestId.equals(response.getRequestId())) {
-                throw new KSIProtocolException("request IDs do not match, sent '" + requestId + "'" + " received '" + response.getRequestId() + "'");
-            }
-            if (response.getError() != null && response.getError() > 0) {
-                throw new KSIProtocolException(response.getError(), response.getErrorMessage());
-            }
-
+        super(rootElement);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Incoming response message: {}", rootElement);
         }
+        List<TLVElement> children = rootElement.getChildElements();
+        for (TLVElement child : children) {
+            switch (child.getType()) {
+                case KSIMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER:
+                    this.header = new KSIMessageHeader(readOnce(child));
+                    continue;
+                case ELEMENT_TYPE_AGGREGATION_ERROR_PAYLOAD:
+                case ELEMENT_TYPE_EXTENSION_ERROR_PAYLOAD:
+                    throwErrorPayloadException(child);
+                case AggregationResponsePayload.ELEMENT_TYPE:
+                case ExtensionResponsePayload.ELEMENT_TYPE:
+                    if (response != null) {
+                        throw new KSIProtocolException("Invalid response message. Message contains multiple response payloads");
+                    }
+                    this.response = parse(child);
+                    continue;
+                case ELEMENT_TYPE_MAC:
+                    this.mac = readOnce(child).getDecodedDataHash();
+                    continue;
+                default:
+                    verifyCriticalFlag(child);
+            }
+        }
+        if (header == null) {
+            throw new KSIProtocolException("Invalid response message. Response message header is required");
+        }
+        if (mac == null) {
+            throw new KSIProtocolException("Invalid response message. Response message mac tag is required");
+        }
+        validateMac(context.getLoginKey());
+        if (response == null) {
+            throw new KSIProtocolException("Response message does not contain response payload element");
+        }
+        Long requestId = context.getRequestId();
+        if (requestId != null && !requestId.equals(response.getRequestId())) {
+            throw new KSIProtocolException("request IDs do not match, sent '" + requestId + "'" + " received '" + response.getRequestId() + "'");
+        }
+        if (response.getError() != null && response.getError() > 0) {
+            throw new KSIProtocolException(response.getError(), response.getErrorMessage());
+        }
+
+    }
 
     protected abstract T parse(TLVElement element) throws KSIException;
 

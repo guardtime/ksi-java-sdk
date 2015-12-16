@@ -25,7 +25,6 @@ import com.guardtime.ksi.service.KSIMessageHeader;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.KSIRequestContext;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class ExtensionRequest extends AbstractKSIRequest {
         this.header = new KSIMessageHeader(context.getLoginId());
         this.payload = payload;
 
-        this.rootElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE));
+        this.rootElement = new TLVElement(false, false, ELEMENT_TYPE);
         this.rootElement.addChildElement(header.getRootElement());
 
         if (payload != null) {
@@ -55,7 +54,7 @@ public class ExtensionRequest extends AbstractKSIRequest {
         }
         this.mac = calculateMac();
 
-        TLVElement macElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_MAC));
+        TLVElement macElement = new TLVElement(false, false, ELEMENT_TYPE_MAC);
         macElement.setDataHashContent(mac);
         this.rootElement.addChildElement(macElement);
     }

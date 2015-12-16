@@ -22,7 +22,6 @@ package com.guardtime.ksi.unisignature.inmemory;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.*;
@@ -55,7 +54,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     }
 
     public KSISignature createSignature(List<AggregationHashChain> aggregationHashChains, CalendarHashChain calendarChain, CalendarAuthenticationRecord calendarAuthenticationRecord, PublicationRecord signaturePublicationRecord, RFC3161Record rfc3161Record) throws KSIException {
-        TLVElement root = new TLVElement(new TLVHeader(false, false, 0x800));
+        TLVElement root = new TLVElement(false, false, InMemoryKsiSignature.ELEMENT_TYPE);
         for (AggregationHashChain chain : aggregationHashChains) {
             addTlvStructure(root, (TLVStructure) chain);
         }

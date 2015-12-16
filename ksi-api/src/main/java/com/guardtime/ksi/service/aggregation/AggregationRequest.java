@@ -22,10 +22,9 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.service.AbstractKSIRequest;
 import com.guardtime.ksi.service.KSIMessageHeader;
-import com.guardtime.ksi.service.KSIRequestContext;
 import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.service.KSIRequestContext;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 
 import java.util.List;
 
@@ -48,13 +47,13 @@ public class AggregationRequest extends AbstractKSIRequest {
         this.header = new KSIMessageHeader(context.getLoginId());
         this.payload = payload;
 
-        this.rootElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE));
+        this.rootElement = new TLVElement(false, false, ELEMENT_TYPE);
         this.rootElement.addChildElement(header.getRootElement());
         if (payload != null) {
             this.rootElement.addChildElement(payload.getRootElement());
         }
         this.mac = calculateMac();
-        TLVElement macElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_MAC));
+        TLVElement macElement = new TLVElement(false, false, ELEMENT_TYPE_MAC);
         macElement.setDataHashContent(mac);
         this.rootElement.addChildElement(macElement);
     }

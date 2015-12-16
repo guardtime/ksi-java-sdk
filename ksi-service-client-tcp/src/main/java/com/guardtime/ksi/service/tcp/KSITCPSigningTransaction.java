@@ -19,6 +19,8 @@
 package com.guardtime.ksi.service.tcp;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.tlv.MultipleTLVElementException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.util.Util;
@@ -61,10 +63,20 @@ class KSITCPSigningTransaction {
         KSITCPSigningTransaction transaction = new KSITCPSigningTransaction();
         byte[] responseData = new byte[ioBuffer.remaining()];
         ioBuffer.get(responseData);
-        TLVElement tlv = Util.parseResponseTLV(responseData);
+        TLVElement tlv = parse(responseData);
         transaction.correlationId = extractTransactionIdFromResponseTLV(tlv);
         transaction.response = tlv;
         return transaction;
+    }
+
+    static TLVElement parse(byte[] data) throws KSIProtocolException {
+        try {
+            return TLVElement.createFromBytes(data);
+        } catch (MultipleTLVElementException e) {
+            throw new KSIProtocolException("Invalid KSI response. Response message contains multiple TLV elements", e);
+        } catch (TLVParserException e) {
+            throw new KSIProtocolException("Can't parse response message", e);
+        }
     }
 
     private static long extractTransactionIdFromRequestTLV(TLVElement tlvData) throws KSITCPTransactionException {

@@ -23,7 +23,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 
@@ -83,7 +82,7 @@ public class PublicationsFilePublicationRecord extends TLVStructure implements P
 
     public PublicationsFilePublicationRecord(PublicationData publicationData) throws TLVParserException {
         this.publicationData = publicationData;
-        this.rootElement = new TLVElement(new TLVHeader(false, false, getElementType()));
+        this.rootElement = new TLVElement(false, false, getElementType());
         this.rootElement.addChildElement(publicationData.getRootElement());
     }
 

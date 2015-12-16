@@ -27,13 +27,14 @@ import org.testng.annotations.Test;
 
 import java.io.InputStream;
 
+import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 import static com.guardtime.ksi.TestUtil.load;
 
 public class AggregationServiceTest extends AbstractCommonServiceTest {
 
     @Test
     public void testCreateSignature_Ok() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(Util.parseResponseTLV(Util.toByteArray(load("aggregation-response.tlv"))));
+        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-response.tlv"));
         Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
 
         CreateSignatureFuture response = ksiService.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -43,7 +44,7 @@ public class AggregationServiceTest extends AbstractCommonServiceTest {
 
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testResponseContainsInvalidMac_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(Util.parseResponseTLV(Util.toByteArray(load("aggregation-response-invalid-mac.tlv"))));
+        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-response-invalid-mac.tlv"));
         Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
         CreateSignatureFuture future = ksiService.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         future.getResult();
@@ -51,7 +52,7 @@ public class AggregationServiceTest extends AbstractCommonServiceTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*request IDs do not match, sent .* received .*")
     public void testResponseContainsInvalidRequestId_ThrowsKSIProtocolException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(Util.parseResponseTLV(Util.toByteArray(load("aggregation-response.tlv"))));
+        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-response.tlv"));
         Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
         Mockito.when(ksiService.generateRandomId()).thenReturn(42275443333883167L);
         CreateSignatureFuture future = ksiService.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -60,7 +61,7 @@ public class AggregationServiceTest extends AbstractCommonServiceTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Response message does not contain response payload element")
     public void testResponseDoesNotContainResponseTlvTag_ThrowsKSIProtocolException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(Util.parseResponseTLV(Util.toByteArray(load("aggregation-response-missing-response-tag.tlv"))));
+        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-response-missing-response-tag.tlv"));
         Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
 
         CreateSignatureFuture future = ksiService.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -69,7 +70,7 @@ public class AggregationServiceTest extends AbstractCommonServiceTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(5\\):Response error 5: Invalid request format")
     public void testResponseContains203ErrorMessage_ThrowsKSIProtocolException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(Util.parseResponseTLV(Util.toByteArray(load("aggregation-203-error.tlv"))));
+        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-203-error.tlv"));
         Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
         CreateSignatureFuture future = ksiService.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         future.getResult();
@@ -77,7 +78,7 @@ public class AggregationServiceTest extends AbstractCommonServiceTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(769\\):Server error")
     public void testResponseContainsErrorMessageInside202TLVMessage_ThrowsKSIProtocolException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(Util.parseResponseTLV(Util.toByteArray(load("aggregation-202-error.tlv"))));
+        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-202-error.tlv"));
         Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
         CreateSignatureFuture future = ksiService.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         future.getResult();

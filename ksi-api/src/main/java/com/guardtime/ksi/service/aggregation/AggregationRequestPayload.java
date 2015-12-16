@@ -22,7 +22,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.List;
@@ -44,8 +43,8 @@ public class AggregationRequestPayload extends TLVStructure {
 
     public AggregationRequestPayload(Long requestId) throws KSIException {
         this.requestId = requestId;
-        this.rootElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE));
-        TLVElement requestIdElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_REQUEST_ID));
+        this.rootElement = new TLVElement(false, false, ELEMENT_TYPE);
+        TLVElement requestIdElement = new TLVElement(false, false, ELEMENT_TYPE_REQUEST_ID);
         requestIdElement.setLongContent(requestId);
         this.rootElement.addChildElement(requestIdElement);
     }
@@ -61,7 +60,7 @@ public class AggregationRequestPayload extends TLVStructure {
     public AggregationRequestPayload(DataHash dataHash, Long requestId) throws KSIException {
         this(requestId);
         this.requestHash = dataHash;
-        TLVElement requestHashElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_REQUEST_HASH));
+        TLVElement requestHashElement = new TLVElement(false, false, ELEMENT_TYPE_REQUEST_HASH);
         requestHashElement.setDataHashContent(dataHash);
         this.rootElement.addChildElement(requestHashElement);
     }

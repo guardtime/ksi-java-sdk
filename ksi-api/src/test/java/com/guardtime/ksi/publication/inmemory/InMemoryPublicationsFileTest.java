@@ -20,6 +20,7 @@
 package com.guardtime.ksi.publication.inmemory;
 
 import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.tlv.TLVParserException;
 import org.testng.Assert;
@@ -37,8 +38,8 @@ public class InMemoryPublicationsFileTest {
     public static final String PUBLICATIONS_FILE_ELEMENT_AFTER_SIGNATURE = "publications-file/publications-file-reference-after-signature.tlv";
     public static final String PUBLICATIONS_FILE_CONTAINS_UNKNOWN_ELEMENT = "publications-file/publications-file-contains-unknown-element.tlv";
     public static final String PUBLICATIONS_FILE_CONTAINS_CRITICAL_UNKNOWN_ELEMENT = "publications-file/publications-file-contains-critical-unknown-element.tlv";
-    private static final String TEST_FILE_PUBLICATION_RECORD_INVALID_PUBLICATION_HASH_LENGTH = "publications-file/publication-one-cert-one-record-invalid-hash-length.tlv";
-    private static final String TEST_FILE_PUBLICATION_RECORD_TWO_HEADERS = "publications-file/publication-one-cert-one-record-multi-header.tlv";
+    private static final String PUBLICATION_FILE_RECORD_INVALID_PUBLICATION_HASH_LENGTH = "publications-file/publication-one-cert-one-record-invalid-hash-length.tlv";
+    private static final String PUBLICATION_FILE_RECORD_TWO_HEADERS = "publications-file/publication-one-cert-one-record-multi-header.tlv";
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "InputStream can not be null when creating publications file")
     public void testCreatePublicationsFileUsingInvalidInputStream_ThrowsInvalidPublicationsFileException() throws Exception {
@@ -114,19 +115,20 @@ public class InMemoryPublicationsFileTest {
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Publications file contains multiple header components")
     public void testDecodePublicationsFileWithTwoHeaders_ThrowsInvalidPublicationsFileException() throws Exception {
-        new InMemoryPublicationsFile(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_TWO_HEADERS));
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATION_FILE_RECORD_TWO_HEADERS));
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid DataHash")
     public void testDecodePublicationsFileWithInvalidHashLength_ThrowsTLVParserException() throws Exception {
-        new InMemoryPublicationsFile(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_INVALID_PUBLICATION_HASH_LENGTH));
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATION_FILE_RECORD_INVALID_PUBLICATION_HASH_LENGTH));
     }
 
     @Test
-    public void testDecodePublicationsFileCompareLatestDataWithSelectedData_OK() throws Exception {
+    public void testVerifyThatActualLatestPublicationRecordIsFound_OK() throws Exception {
         PublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_OK));
-        Assert.assertEquals(publication.getLatestPublication().getPublicationData(), publication.getPublicationRecord(new Date(1413331200000L)).getPublicationData());
-        Assert.assertNotEquals(publication.getLatestPublication().getPublicationData(), publication.getPublicationRecord(new Date(1413331200L)).getPublicationData());
+        PublicationData latest = publication.getLatestPublication().getPublicationData();
+        Assert.assertEquals(latest, publication.getPublicationRecord(new Date(latest.getPublicationTime().getTime() - 100000L)).getPublicationData());
+        Assert.assertNull(publication.getPublicationRecord(new Date(latest.getPublicationTime().getTime() + 1000L)));
     }
 
 }

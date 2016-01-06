@@ -34,7 +34,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.LaxRedirectStrategy;
@@ -51,7 +50,7 @@ import java.net.URL;
 import java.util.concurrent.Future;
 
 /**
- * KSI HTTP client that used Apache HTTP client library.
+ * KSI HTTP client that uses Apache HTTP client library.
  */
 public class ApacheHttpClient extends AbstractHttpClient implements KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
 
@@ -59,7 +58,13 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
 
     public ApacheHttpClient(HttpClientSettings settings) {
         super(settings);
-        this.apacheClient = createClient(settings);
+        ApacheHttpClientConfiguration conf = new ApacheHttpClientDefaultConfiguration();
+        this.apacheClient = createClient(settings, conf);
+    }
+
+    public ApacheHttpClient(HttpClientSettings settings, ApacheHttpClientConfiguration conf) {
+        super(settings);
+        this.apacheClient = createClient(settings, conf);
     }
 
     public ApacheHttpPostRequestFuture sign(InputStream request) throws KSIClientException {
@@ -108,14 +113,16 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
      *
      * @param settings
      *         - settings to use to create client
+     * @param conf
+     *         - configuration related to async connection
      * @return instance of {@link CloseableHttpAsyncClient}
      */
-    private CloseableHttpAsyncClient createClient(HttpClientSettings settings) {
-        IOReactorConfig ioReactor = IOReactorConfig.custom().setIoThreadCount(10).build();
+    private CloseableHttpAsyncClient createClient(HttpClientSettings settings, ApacheHttpClientConfiguration conf) {
+        IOReactorConfig ioReactor = IOReactorConfig.custom().setIoThreadCount(conf.getMaxThreadCount()).build();
         HttpAsyncClientBuilder httpClientBuilder = HttpAsyncClients.custom()
                 .useSystemProperties()
                 // allow POST redirects
-                .setRedirectStrategy(new LaxRedirectStrategy()).setMaxConnTotal(1000).setMaxConnPerRoute(1000).setDefaultIOReactorConfig(ioReactor)
+                .setRedirectStrategy(new LaxRedirectStrategy()).setMaxConnTotal(conf.getMaxTotalConnectionCount()).setMaxConnPerRoute(conf.getMaxRouteConnectionCount()).setDefaultIOReactorConfig(ioReactor)
                 .setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy()).setDefaultRequestConfig(createDefaultRequestConfig(settings));
         if (settings.getParameters().getProxyUrl() != null) {
             DefaultProxyRoutePlanner routePlanner = createProxyRoutePlanner(settings, httpClientBuilder);

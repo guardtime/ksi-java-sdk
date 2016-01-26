@@ -50,15 +50,28 @@ import java.net.URL;
 import java.util.concurrent.Future;
 
 /**
- * KSI HTTP client that used Apache HTTP client library.
+ * KSI HTTP client that uses Apache HTTP client library.
  */
 public class ApacheHttpClient extends AbstractHttpClient implements KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
 
     private CloseableHttpAsyncClient apacheClient;
 
+    /**
+     * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientSimpleConfiguration}
+     * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     */
     public ApacheHttpClient(HttpClientSettings settings) {
+        this(settings, new ApacheHttpClientSimpleConfiguration());
+    }
+
+    /**
+     * Constructs ApacheHttpClient with configuration values passed in
+     * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     * @param asyncConfiguration - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
+     */
+    public ApacheHttpClient(HttpClientSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         super(settings);
-        this.apacheClient = createClient(settings);
+        this.apacheClient = createClient(settings, asyncConfiguration);
     }
 
     public ApacheHttpPostRequestFuture sign(InputStream request) throws KSIClientException {
@@ -107,14 +120,16 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
      *
      * @param settings
      *         - settings to use to create client
+     * @param conf
+     *         - configuration related to async connection
      * @return instance of {@link CloseableHttpAsyncClient}
      */
-    private CloseableHttpAsyncClient createClient(HttpClientSettings settings) {
-        IOReactorConfig ioReactor = IOReactorConfig.custom().setIoThreadCount(10).build();
+    private CloseableHttpAsyncClient createClient(HttpClientSettings settings, ApacheHttpClientConfiguration conf) {
+        IOReactorConfig ioReactor = IOReactorConfig.custom().setIoThreadCount(conf.getMaxThreadCount()).build();
         HttpAsyncClientBuilder httpClientBuilder = HttpAsyncClients.custom()
                 .useSystemProperties()
                 // allow POST redirects
-                .setRedirectStrategy(new LaxRedirectStrategy()).setMaxConnTotal(1000).setMaxConnPerRoute(1000).setDefaultIOReactorConfig(ioReactor)
+                .setRedirectStrategy(new LaxRedirectStrategy()).setMaxConnTotal(conf.getMaxTotalConnectionCount()).setMaxConnPerRoute(conf.getMaxRouteConnectionCount()).setDefaultIOReactorConfig(ioReactor)
                 .setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy()).setDefaultRequestConfig(createDefaultRequestConfig(settings));
         if (settings.getParameters().getProxyUrl() != null) {
             DefaultProxyRoutePlanner routePlanner = createProxyRoutePlanner(settings, httpClientBuilder);

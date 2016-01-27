@@ -138,7 +138,7 @@ public abstract class AbstractKSIResponse<T extends KSIResponsePayload> extends 
     private void validateMac(byte[] key) throws KSIException {
         try {
             // calculate and set the MAC value
-            HashAlgorithm algorithm = HashAlgorithm.getByName("DEFAULT");
+            HashAlgorithm algorithm = mac.getAlgorithm();
             DataHash macValue = new DataHash(algorithm, Util.calculateHMAC(getContent(), key, algorithm.getName()));
             if (!mac.equals(macValue)) {
                 throw new InvalidMessageAuthenticationCodeException("Invalid MAC code. Expected " + mac + ", calculated " + macValue);
@@ -148,8 +148,6 @@ public abstract class AbstractKSIResponse<T extends KSIResponsePayload> extends 
         } catch (InvalidKeyException e) {
             throw new InvalidMessageAuthenticationCodeException("Problem with HMAC key.", e);
         } catch (NoSuchAlgorithmException e) {
-            // If the default algorithm changes to be outside of MD5 / SHA1 /
-            // SHA256 list.
             throw new InvalidMessageAuthenticationCodeException("Unsupported HMAC algorithm.", e);
         } catch (HashException e) {
             throw new KSIProtocolException("Hashing exception occurred when calculating KSI service response HMAC", e);

@@ -57,7 +57,7 @@ public class AbstractCommonServiceTest {
         ksiService = Mockito.spy(new KSIServiceImpl(mockedSigningClient, mockedExtenderClient, mockedPublicationsFileClient, new InMemoryKsiSignatureFactory(), new InMemoryPublicationsFileFactory(mockedTrustStore)));
         mockedResponse = Mockito.mock(Future.class);
         mockedPublicationsFileResponse = Mockito.mock(Future.class);
-        Mockito.when(ksiService.generateRandomId()).thenReturn(42275443333883166L);
+        Mockito.when(ksiService.generateRequestId()).thenReturn(42275443333883166L);
     }
 
 }

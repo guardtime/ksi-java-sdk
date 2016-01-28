@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 class ActiveTransactionsHolder {
 
-    private static final Logger logger = LoggerFactory.getLogger(ActiveTransactionsHolder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActiveTransactionsHolder.class);
 
     private static final ConcurrentMap<Long, KSITCPSigningTransaction> ACTIVE_TRANSACTIONS = new ConcurrentHashMap<Long, KSITCPSigningTransaction>();
 
@@ -47,7 +47,7 @@ class ActiveTransactionsHolder {
         if (ACTIVE_TRANSACTIONS.get(correlationId) != null) {
             ACTIVE_TRANSACTIONS.get(correlationId).responseReceived(transaction.getResponse());
         } else {
-            logger.info("Received TCP signing response with id {}, but did not find corresponding request. It might have timed out.", correlationId);
+            LOGGER.info("Received TCP signing response with id {}, but did not find corresponding request. It might have timed out.", correlationId);
         }
 
     }

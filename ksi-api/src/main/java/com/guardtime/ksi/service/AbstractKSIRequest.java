@@ -22,7 +22,10 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
+import com.guardtime.ksi.service.aggregation.AggregationRequestPayload;
+import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
 
@@ -30,46 +33,96 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 /**
  * Contains the common logic for all KSI related request messages.
  */
-public abstract class AbstractKSIRequest extends TLVStructure {
+public abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStructure {
 
-    protected KSIRequestContext context;
+    private static final int ELEMENT_TYPE_MAC = 0x1F;
 
-    /**
-     * Used to createSignature new instances of request objects.
-     *
-     * @param context
-     *         - instance of {@link KSIRequestContext}
-     */
-    public AbstractKSIRequest(KSIRequestContext context) {
-        this.context = context;
+    private byte[] loginKey;
+    private KSIMessageHeader header;
+    private P payload;
+    private DataHash mac;
+
+    public AbstractKSIRequest(KSIMessageHeader header, P payload, byte[] loginKey) throws KSIException {
+        this.loginKey = loginKey;
+        this.header = header;
+        this.payload = payload;
+        this.rootElement = new TLVElement(new TLVHeader(false, false, getElementType()));
+        this.rootElement.addChildElement(header.getRootElement());
+
+        if (payload != null) {
+            this.rootElement.addChildElement(payload.getRootElement());
+        }
+        this.mac = calculateMac();
+        TLVElement macElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_MAC));
+        macElement.setDataHashContent(mac);
+        this.rootElement.addChildElement(macElement);
     }
 
     /**
-     * Used to parse request objects.
+     * Used to parse request TLV objects.
      *
      * @param element
-     *         - instance of {@link TLVElement} to createSignature
-     * @param context
-     *         - instance of {@link KSIRequestContext}
+     *         - instance of {@link TLVElement}
+     * @param loginKey
+     *         - login key byte array
      */
-    public AbstractKSIRequest(TLVElement element, KSIRequestContext context) throws KSIException {
+    public AbstractKSIRequest(TLVElement element, byte[] loginKey) throws KSIException {
         super(element);
-        this.context = context;
+        this.loginKey = loginKey;
+        List<TLVElement> children = element.getChildElements();
+        for (TLVElement child : children) {
+            switch (child.getType()) {
+                case KSIMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER:
+                    this.header = new KSIMessageHeader(readOnce(child));
+                    continue;
+                case AggregationRequestPayload.ELEMENT_TYPE:
+                case ExtensionRequestPayload.ELEMENT_TYPE:
+                    this.payload = readPayload(readOnce(child));
+                    continue;
+                case ELEMENT_TYPE_MAC:
+                    this.mac = readOnce(child).getDecodedDataHash();
+                    continue;
+                default:
+                    verifyCriticalFlag(child);
+            }
+        }
+        if (header == null) {
+            throw new KSIProtocolException("Invalid KSI request. PDU request header is missing");
+        }
+        if (mac == null) {
+            throw new KSIProtocolException("Invalid KSI request. PDU request mac is missing");
+        }
+    }
+
+    protected abstract P readPayload(TLVElement element) throws KSIException;
+
+    /**
+     * Get the header of message.
+     *
+     * @return header for the message
+     */
+    public KSIMessageHeader getHeader() {
+        return this.header;
     }
 
     /**
-     * @return returns instance of {@link KSIMessageHeader}.
+     * @return outgoing aggregation message hmac
      */
-    public abstract KSIMessageHeader getHeader();
+    public DataHash getMac() {
+        return this.mac;
+    }
 
     /**
-     * @return returns instance of request payload.
+     * Returns instance of request payload.
      */
-    public abstract TLVStructure getRequestPayload();
+    public P getRequestPayload() {
+        return payload;
+    }
 
     /**
      * Calculates the MAC based on header and payload TLVs.
@@ -81,7 +134,7 @@ public abstract class AbstractKSIRequest extends TLVStructure {
     protected DataHash calculateMac() throws KSIException {
         try {
             HashAlgorithm algorithm = HashAlgorithm.getByName("DEFAULT");
-            return new DataHash(algorithm, Util.calculateHMAC(getContent(), this.context.getLoginKey(), algorithm.getName()));
+            return new DataHash(algorithm, Util.calculateHMAC(getContent(), this.loginKey, algorithm.getName()));
         } catch (IOException e) {
             throw new KSIProtocolException("Problem with HMAC", e);
         } catch (InvalidKeyException e) {

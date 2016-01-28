@@ -36,7 +36,7 @@ public class ExtensionServiceRequestTest extends AbstractCommonServiceTest {
     public void testNormalOperations_Ok() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension-response-sig-2014-04-30.1.ksig"));
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(ksiService.generateRandomId()).thenReturn(5546551786909961666L);
+        Mockito.when(ksiService.generateRequestId()).thenReturn(5546551786909961666L);
 
         ExtensionRequestFuture response = ksiService.extend(loadSignature("ok-sig-2014-04-30.1.ksig").getAggregationTime(), null);
         CalendarHashChain result = response.getResult();
@@ -47,7 +47,7 @@ public class ExtensionServiceRequestTest extends AbstractCommonServiceTest {
     public void testResponseFormatException() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-response-invalid.tlv"));
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(ksiService.generateRandomId()).thenReturn(5546551786909961666L);
+        Mockito.when(ksiService.generateRequestId()).thenReturn(5546551786909961666L);
 
         ExtensionRequestFuture response = ksiService.extend(loadSignature("ok-sig-2014-04-30.1.ksig").getAggregationTime(), null);
         response.getResult();
@@ -57,7 +57,7 @@ public class ExtensionServiceRequestTest extends AbstractCommonServiceTest {
     public void testResponseInvalidHMAC_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-response-invalid-hmac.tlv"));
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(ksiService.generateRandomId()).thenReturn(5546551786909961666L);
+        Mockito.when(ksiService.generateRequestId()).thenReturn(5546551786909961666L);
 
         ExtensionRequestFuture response = ksiService.extend(loadSignature("ok-sig-2014-04-30.1.ksig").getAggregationTime(), null);
         response.getResult();
@@ -67,7 +67,7 @@ public class ExtensionServiceRequestTest extends AbstractCommonServiceTest {
     public void testRequestIdsMismatch() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-response-ok-request-id-4321.tlv"));
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(ksiService.generateRandomId()).thenReturn(5546551786909961666L);
+        Mockito.when(ksiService.generateRequestId()).thenReturn(5546551786909961666L);
 
         ExtensionRequestFuture response = ksiService.extend(loadSignature("ok-sig-2014-04-30.1.ksig").getAggregationTime(), null);
         response.getResult();
@@ -77,7 +77,7 @@ public class ExtensionServiceRequestTest extends AbstractCommonServiceTest {
     public void testRequestResponseEmpty() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-response-missing-response-payload.tlv"));
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(ksiService.generateRandomId()).thenReturn(5546551786909961666L);
+        Mockito.when(ksiService.generateRequestId()).thenReturn(5546551786909961666L);
 
         ExtensionRequestFuture response = ksiService.extend(loadSignature("ok-sig-2014-04-30.1.ksig").getAggregationTime(), null);
         response.getResult();
@@ -87,7 +87,7 @@ public class ExtensionServiceRequestTest extends AbstractCommonServiceTest {
     public void testRequest404ErrorWithResponse() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-response-with-error-payload.tlv"));
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(ksiService.generateRandomId()).thenReturn(4321L);
+        Mockito.when(ksiService.generateRequestId()).thenReturn(4321L);
 
         ExtensionRequestFuture response = ksiService.extend(loadSignature("ok-sig-2014-04-30.1.ksig").getAggregationTime(), null);
         response.getResult();
@@ -97,7 +97,7 @@ public class ExtensionServiceRequestTest extends AbstractCommonServiceTest {
     public void testResponseWithError() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-error-response-with-header.tlv"));
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(ksiService.generateRandomId()).thenReturn(5546551786909961666L);
+        Mockito.when(ksiService.generateRequestId()).thenReturn(5546551786909961666L);
 
         ExtensionRequestFuture response = ksiService.extend(loadSignature("ok-sig-2014-04-30.1.ksig").getAggregationTime(), null);
         response.getResult();

@@ -26,8 +26,11 @@ import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.CertificateNotFoundException;
 import com.guardtime.ksi.service.ExtensionRequestFuture;
+import com.guardtime.ksi.service.KSIMessageHeader;
 import com.guardtime.ksi.service.KSIRequestContext;
+import com.guardtime.ksi.service.PduIdentifiers;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.extension.ExtensionRequest;
 import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
 import com.guardtime.ksi.unisignature.*;
@@ -141,7 +144,9 @@ final class KSIVerificationContext implements VerificationContext {
     private ExtensionRequestFuture extend(Date publicationTime) throws KSIException {
         KSIRequestContext context = new KSIRequestContext(extenderClient.getServiceCredentials(), Util.nextLong());
         ExtensionRequestPayload requestPayload = new ExtensionRequestPayload(getSignature().getAggregationTime(), publicationTime, context.getRequestId());
-        ExtensionRequest request = new ExtensionRequest(requestPayload, context);
+        ServiceCredentials credentials = extenderClient.getServiceCredentials();
+        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
+        ExtensionRequest request = new ExtensionRequest(header, requestPayload, credentials.getLoginKey());
         return new ExtensionRequestFuture(extenderClient.extend(new ByteArrayInputStream(request.getRootElement().getEncoded())), context, signatureFactory);
     }
 

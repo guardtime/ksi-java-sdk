@@ -27,6 +27,7 @@ import com.guardtime.ksi.service.aggregation.AggregationRequestPayload;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.extension.ExtensionRequest;
 import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -38,6 +39,7 @@ import com.guardtime.ksi.util.Util;
 import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * {@link KSIService} implementation
@@ -84,10 +86,12 @@ public class KSIServiceImpl implements KSIService {
     }
 
     public CreateSignatureFuture sign(DataHash dataHash) throws KSIException {
-        Long requestId = generateRandomId();
+        Long requestId = generateRequestId();
         AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId);
-        KSIRequestContext requestContext = new KSIRequestContext(signerClient.getServiceCredentials(), requestId);
-        AggregationRequest requestMessage = new AggregationRequest(request, requestContext);
+        ServiceCredentials credentials = signerClient.getServiceCredentials();
+        KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId);
+        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
+        AggregationRequest requestMessage = new AggregationRequest(header, request, credentials.getLoginKey());
         Future<TLVElement> future = signerClient.sign(convert(requestMessage));
         return new CreateSignatureFuture(future, requestContext, signatureFactory);
     }
@@ -102,7 +106,7 @@ public class KSIServiceImpl implements KSIService {
      * @return instance of {@link ExtensionRequestFuture}
      */
     public ExtensionRequestFuture extend(Date aggregationTime, Date publicationTime) throws KSIException {
-        Long requestId = generateRandomId();
+        Long requestId = generateRequestId();
         return extendSignature(new ExtensionRequestPayload(aggregationTime, publicationTime, requestId));
     }
 
@@ -111,14 +115,16 @@ public class KSIServiceImpl implements KSIService {
         return new PublicationsFileFuture(publicationsFileFactory, future);
     }
 
-    protected Long generateRandomId() {
+    protected Long generateRequestId() {
         return Util.nextLong();
     }
 
     private ExtensionRequestFuture extendSignature(ExtensionRequestPayload extensionRequest)
             throws KSIException {
-        KSIRequestContext requestContext = new KSIRequestContext(extenderClient.getServiceCredentials(), extensionRequest.getRequestId());
-        ExtensionRequest requestMessage = new ExtensionRequest(extensionRequest, requestContext);
+        ServiceCredentials credentials = extenderClient.getServiceCredentials();
+        KSIRequestContext requestContext = new KSIRequestContext(credentials, extensionRequest.getRequestId());
+        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
+        ExtensionRequest requestMessage = new ExtensionRequest(header, extensionRequest, credentials.getLoginKey());
         ByteArrayInputStream inputStream = convert(requestMessage);
         Future<TLVElement> future = extenderClient.extend(inputStream);
         return new ExtensionRequestFuture(future, requestContext, signatureFactory);

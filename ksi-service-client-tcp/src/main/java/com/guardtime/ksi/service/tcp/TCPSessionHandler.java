@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 class TCPSessionHandler implements IoHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(TCPSessionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TCPSessionHandler.class);
 
     private NioSocketConnector connector;
 
@@ -41,7 +41,7 @@ class TCPSessionHandler implements IoHandler {
     }
 
     public void exceptionCaught(IoSession session, Throwable t) throws Exception {
-        logger.error("An exception occurred while making a TCP request.", t);
+        LOGGER.error("An exception occurred while making a TCP request.", t);
     }
 
     public void messageReceived(IoSession session, Object message) throws Exception {
@@ -65,15 +65,15 @@ class TCPSessionHandler implements IoHandler {
     }
 
     public void sessionCreated(IoSession session) throws Exception {
-        logger.debug("TCP session {} with signer created.", session.getId());
+        LOGGER.debug("TCP session {} with signer created.", session.getId());
     }
 
     public void sessionIdle(IoSession session, IdleStatus idleStatus) throws Exception {
-        logger.debug("TCP session {} with signer is idle.", session.getId());
+        LOGGER.debug("TCP session {} with signer is idle.", session.getId());
     }
 
     public void sessionOpened(IoSession session) throws Exception {
-        logger.debug("TCP session {} with signer is opened.", session.getId());
+        LOGGER.debug("TCP session {} with signer is opened.", session.getId());
     }
 
     /**

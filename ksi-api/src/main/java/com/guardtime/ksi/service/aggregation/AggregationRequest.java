@@ -19,97 +19,33 @@
 package com.guardtime.ksi.service.aggregation;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.service.AbstractKSIRequest;
 import com.guardtime.ksi.service.KSIMessageHeader;
-import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.service.KSIRequestContext;
 import com.guardtime.ksi.tlv.TLVElement;
-
-import java.util.List;
 
 /**
  * Outgoing aggregation message TLV object.
  */
-public class AggregationRequest extends AbstractKSIRequest {
+public class AggregationRequest extends AbstractKSIRequest<AggregationRequestPayload> {
 
     private static final int ELEMENT_TYPE = 0x200;
-    private static final int ELEMENT_TYPE_MAC = 0x1F;
 
-    private KSIMessageHeader header;
-
-    private AggregationRequestPayload payload;
-
-    private DataHash mac;
-
-    public AggregationRequest(AggregationRequestPayload payload, KSIRequestContext context) throws KSIException {
-        this(payload,  new KSIMessageHeader(context.getLoginId()), context);
+    public AggregationRequest(KSIMessageHeader header, AggregationRequestPayload payload, byte[] loginKey) throws KSIException {
+        super(header, payload, loginKey);
     }
 
-    public AggregationRequest(AggregationRequestPayload payload, KSIMessageHeader header, KSIRequestContext context)throws KSIException  {
-        super(context);
-        this.header = header;
-        this.payload = payload;
-
-        this.rootElement = new TLVElement(false, false, ELEMENT_TYPE);
-        this.rootElement.addChildElement(header.getRootElement());
-        if (payload != null) {
-            this.rootElement.addChildElement(payload.getRootElement());
-        }
-        this.mac = calculateMac();
-        TLVElement macElement = new TLVElement(false, false, ELEMENT_TYPE_MAC);
-        macElement.setDataHashContent(mac);
-        this.rootElement.addChildElement(macElement);
+    public AggregationRequest(TLVElement element, byte[] loginKey) throws KSIException {
+        super(element, loginKey);
     }
 
-    public AggregationRequest(TLVElement element, KSIRequestContext context) throws KSIException {
-        super(element, context);
-        List<TLVElement> children = element.getChildElements();
-        for (TLVElement child : children) {
-            switch (child.getType()) {
-                case KSIMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER:
-                    this.header = new KSIMessageHeader(readOnce(child));
-                    continue;
-                case AggregationRequestPayload.ELEMENT_TYPE:
-                    this.payload = new AggregationRequestPayload(readOnce(child));
-                    continue;
-                case ELEMENT_TYPE_MAC:
-                    this.mac = readOnce(child).getDecodedDataHash();
-                    continue;
-                default:
-                    verifyCriticalFlag(child);
-            }
-        }
-        if (header == null) {
-            throw new KSIProtocolException("Invalid KSI request. Aggregation request header is missing");
-        }
-        if (mac == null) {
-            throw new KSIProtocolException("Invalid KSI request. Aggregation request mac is missing");
-        }
-    }
-
-    public AggregationRequestPayload getRequestPayload() {
-        return payload;
-    }
-
-    /**
-     * Get the header of message.
-     *
-     * @return header for the message
-     */
-    public KSIMessageHeader getHeader() {
-        return this.header;
-    }
-
-    /**
-     * @return outgoing aggregation message hmac
-     */
-    public DataHash getMac() {
-        return this.mac;
+    @Override
+    protected AggregationRequestPayload readPayload(TLVElement element) throws KSIException {
+        return new AggregationRequestPayload(element);
     }
 
     @Override
     public int getElementType() {
         return ELEMENT_TYPE;
     }
+
 }

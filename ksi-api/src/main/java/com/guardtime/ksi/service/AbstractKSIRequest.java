@@ -25,7 +25,6 @@ import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.service.aggregation.AggregationRequestPayload;
 import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVHeader;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
 
@@ -51,14 +50,14 @@ public abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStru
         this.loginKey = loginKey;
         this.header = header;
         this.payload = payload;
-        this.rootElement = new TLVElement(new TLVHeader(false, false, getElementType()));
+        this.rootElement = new TLVElement(false, false, getElementType());
         this.rootElement.addChildElement(header.getRootElement());
 
         if (payload != null) {
             this.rootElement.addChildElement(payload.getRootElement());
         }
         this.mac = calculateMac();
-        TLVElement macElement = new TLVElement(new TLVHeader(false, false, ELEMENT_TYPE_MAC));
+        TLVElement macElement = new TLVElement(false, false, ELEMENT_TYPE_MAC);
         macElement.setDataHashContent(mac);
         this.rootElement.addChildElement(macElement);
     }

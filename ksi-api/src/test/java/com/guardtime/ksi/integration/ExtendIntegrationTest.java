@@ -35,7 +35,6 @@ public class ExtendIntegrationTest extends AbstractCommonIntegrationTest {
     public void extendUnextendedSignatureToHead(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
         KSISignature sig = TestUtil.loadSignature("ok-sig-2014-06-2.ksig");
         KSISignature extended = ksi.extendToCalendarHead(sig);
-        Thread.sleep(5000);
         VerificationResult result = ksi.verify(TestUtil.buildContext(extended, ksi, extenderClient, getFileHash(INPUT_FILE)), new CalendarBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }

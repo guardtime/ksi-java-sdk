@@ -23,7 +23,7 @@
 
 	<groupId>com.guardtime</groupId>
 	<artifactId>ksi</artifactId>
-	<version>4.0.18-SNAPSHOT</version>
+	<version>4.1.18</version>
 	<packaging>pom</packaging>
 
 	<name>KSI SDK</name>
@@ -254,20 +254,11 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--<plugin>-->
-				<!--<groupId>org.apache.maven.plugins</groupId>-->
-				<!--<artifactId>maven-gpg-plugin</artifactId>-->
-				<!--<version>1.6</version>-->
-				<!--<executions>-->
-					<!--<execution>-->
-						<!--<id>sign-artifacts</id>-->
-						<!--<phase>verify</phase>-->
-						<!--<goals>-->
-							<!--<goal>sign</goal>-->
-						<!--</goals>-->
-					<!--</execution>-->
-				<!--</executions>-->
-			<!--</plugin>-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -377,18 +368,18 @@
 	<repositories>
 		<repository>
 			<id>gt-public</id>
-			<url>http://192.168.100.24:8081/nexus/content/groups/public/</url>
+			<url>http://maven.ee.guardtime.com:8081/nexus/content/groups/public/</url>
 		</repository>
 	</repositories>
 
 	<distributionManagement>
 		<repository>
-			<id>gt-release</id>
-			<url>http://192.168.100.24:8081/nexus/content/repositories/releases/</url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 		<snapshotRepository>
 			<id>gt-snapshots</id>
-			<url>http://192.168.100.24:8081/nexus/content/repositories/snapshots/</url>
+			<url>http://maven.ee.guardtime.com:8081/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 

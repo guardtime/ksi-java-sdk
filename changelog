@@ -1,0 +1,12 @@
+Version 4.1
+
+2016-02-04 4.1.18
+
+* IMPROVEMENT: Publications file parsing and verification are now more strict.
+* IMPROVEMENT: Improved ApacheHttpClient configuration.
+* BUGFIX: Now the TLV8 and TLV16 flags are set automatically according to given content. Fixed TLV limits.
+* IMPROVEMENT: Improved HTTP error PDU message processing
+* IMPROVEMENT: HttpClientSettings class is extendable
+* IMPROVEMENT: The response PDU MAC algorithm is selected from input imprint.
+* IMPROVEMENT: Improved tests
+* IMPROVEMENT: Added serial version UID constants to Exception classes

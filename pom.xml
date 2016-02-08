@@ -239,6 +239,8 @@
 					<failOnError>false</failOnError>
 					<footer><![CDATA[Copyright 2008-2015 Guardtime, Inc]]></footer>
 					<additionalparam>${javadoc.doclint.none}</additionalparam>
+					<aggregate>true</aggregate>
+					<overview>${basedir}/ksi-api/src/main/javadoc/overview.html</overview>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -305,9 +307,10 @@
 					<version>2.10.3</version>
 					<configuration>
 						<failOnError>false</failOnError>
-						<footer><![CDATA[Copyright 2008-2015 Guardtime, Inc]]></footer>
+						<footer><![CDATA[Copyright 2008-2016 Guardtime, Inc]]></footer>
 						<additionalparam>${javadoc.doclint.none}</additionalparam>
 						<quiet>true</quiet>
+						<aggregate>true</aggregate>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -352,9 +355,10 @@
 				<version>2.10.3</version>
 				<configuration>
 					<failOnError>false</failOnError>
-					<footer><![CDATA[Copyright 2008-2015 Guardtime, Inc]]></footer>
+					<footer><![CDATA[Copyright 2008-2016 Guardtime, Inc]]></footer>
 					<additionalparam>${javadoc.doclint.none}</additionalparam>
 					<quiet>true</quiet>
+					<aggregate>true</aggregate>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -66,6 +66,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.10</slf4j.version>
 		<bouncycastle.version>1.52</bouncycastle.version>
+		<jacoco.version>0.7.5.201505241946</jacoco.version>
 	</properties>
 
 	<build>
@@ -126,7 +127,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.4.201502262128</version>
+				<version>${jacoco.version}</version>
 				<executions>
 					<execution>
 						<id>pre-unit-test</id>
@@ -273,8 +274,7 @@
 									<pluginExecutionFilter>
 										<groupId>org.jacoco</groupId>
 										<artifactId>jacoco-maven-plugin</artifactId>
-										<versionRange>[0.7,)
-										</versionRange>
+										<versionRange>${jacoco.version}</versionRange>
 										<goals>
 											<goal>prepare-agent</goal>
 										</goals>

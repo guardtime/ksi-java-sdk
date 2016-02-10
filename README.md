@@ -51,7 +51,7 @@ KSISignature sig1 = ksi.sign(new File("file.txt"));
 Future<KSISignature> future = ksi.asyncSign(new File("asyncFile.txt"));
 KSISignature sig2 = future.getResult();
 ```
-The API full reference is available available here [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/)
+The API full reference is available available here [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
 
 ## License ##
 

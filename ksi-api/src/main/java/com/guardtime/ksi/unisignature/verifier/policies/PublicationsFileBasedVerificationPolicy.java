@@ -26,7 +26,7 @@ import com.guardtime.ksi.unisignature.verifier.rules.*;
  */
 public class PublicationsFileBasedVerificationPolicy extends InternalVerificationPolicy {
 
-    public static final String TYPE_PUBLICATIONS_FILE_BASED_POLICY = "PUBLICATIONS_FILE_BASED_POLICY";
+    private static final String TYPE_PUBLICATIONS_FILE_BASED_POLICY = "PUBLICATIONS_FILE_BASED_POLICY";
 
     public PublicationsFileBasedVerificationPolicy() {
 

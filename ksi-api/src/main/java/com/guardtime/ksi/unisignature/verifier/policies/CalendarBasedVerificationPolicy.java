@@ -28,6 +28,8 @@ import com.guardtime.ksi.unisignature.verifier.rules.*;
  */
 public class CalendarBasedVerificationPolicy extends InternalVerificationPolicy {
 
+    public static final String TYPE_CALENDAR_BASED_POLICY = "CALENDAR_BASED_POLICY";
+
     public CalendarBasedVerificationPolicy() {
 
         Rule signatureDoesNotContainCalendarChainRule = new CompositeRule(false,
@@ -58,6 +60,10 @@ public class CalendarBasedVerificationPolicy extends InternalVerificationPolicy 
 
     public String getName() {
         return "Calendar-based verification policy";
+    }
+
+    public String getType() {
+        return TYPE_CALENDAR_BASED_POLICY;
     }
 
 }

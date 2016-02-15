@@ -26,6 +26,8 @@ import com.guardtime.ksi.unisignature.verifier.rules.*;
  */
 public class PublicationsFileBasedVerificationPolicy extends InternalVerificationPolicy {
 
+    public static final String TYPE_PUBLICATIONS_FILE_BASED_POLICY = "PUBLICATIONS_FILE_BASED_POLICY";
+
     public PublicationsFileBasedVerificationPolicy() {
 
         Rule signaturePublicationPresentInPubFileRule = new CompositeRule(false,
@@ -48,6 +50,10 @@ public class PublicationsFileBasedVerificationPolicy extends InternalVerificatio
 
     public String getName() {
         return "Publications file based verification policy";
+    }
+
+    public String getType() {
+        return TYPE_PUBLICATIONS_FILE_BASED_POLICY;
     }
 
 }

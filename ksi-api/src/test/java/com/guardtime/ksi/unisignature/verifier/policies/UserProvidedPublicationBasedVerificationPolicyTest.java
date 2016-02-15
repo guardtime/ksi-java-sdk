@@ -73,6 +73,7 @@ public class UserProvidedPublicationBasedVerificationPolicyTest {
         Assert.assertNotNull(policy.getRules());
         Assert.assertNotNull(policy.getName());
         Assert.assertFalse(policy.getRules().isEmpty());
+        Assert.assertNotNull(policy.getType());
     }
 
     @Test

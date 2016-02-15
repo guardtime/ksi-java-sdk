@@ -66,7 +66,7 @@ class InMemoryPublicationsFile implements PublicationsFile {
 
     private final List<InMemoryCertificateRecord> certificateRecords = new LinkedList<InMemoryCertificateRecord>();
 
-    private final List<PublicationsFilePublicationRecord> publicationRecords = new LinkedList<PublicationsFilePublicationRecord>();
+    private final List<PublicationRecord> publicationRecords = new LinkedList<PublicationRecord>();
 
     private byte[] cmsSignature;
 
@@ -184,7 +184,7 @@ class InMemoryPublicationsFile implements PublicationsFile {
         return header.getRepositoryUri();
     }
 
-    public List<? extends com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord> getPublicationRecords() {
+    public List<PublicationRecord> getPublicationRecords() {
         return publicationRecords;
     }
 
@@ -229,8 +229,8 @@ class InMemoryPublicationsFile implements PublicationsFile {
         if (publicationRecords.isEmpty()) {
             throw new KSIException("Publications file does not contain publication records");
         }
-        PublicationsFilePublicationRecord latest = publicationRecords.get(0);
-        for (PublicationsFilePublicationRecord publicationRecord : publicationRecords) {
+        PublicationRecord latest = publicationRecords.get(0);
+        for (PublicationRecord publicationRecord : publicationRecords) {
             if (publicationRecord.getPublicationData().getPublicationTime().after(latest.getPublicationData().getPublicationTime())) {
                 latest = publicationRecord;
             }
@@ -242,8 +242,8 @@ class InMemoryPublicationsFile implements PublicationsFile {
      * Returns the closest publication record to given time.
      */
     public PublicationRecord getPublicationRecord(Date time) {
-        PublicationsFilePublicationRecord nearest = null;
-        for (PublicationsFilePublicationRecord publicationRecord : publicationRecords) {
+        PublicationRecord nearest = null;
+        for (PublicationRecord publicationRecord : publicationRecords) {
             Date publicationTime = publicationRecord.getPublicationData().getPublicationTime();
             if (publicationTime.equals(time) || publicationTime.after(time)) {
                 if (nearest == null) {

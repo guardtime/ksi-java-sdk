@@ -24,6 +24,7 @@ import com.guardtime.ksi.publication.inmemory.CertificateNotFoundException;
 
 import java.security.cert.Certificate;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p> KSI trust store provides trusted certificates and publications for verifying keyless signatures. It provides
@@ -53,6 +54,12 @@ public interface PublicationsFile {
      * @return instance of {@link PublicationRecord} if the closest publication exists. null otherwise.
      */
     PublicationRecord getPublicationRecord(Date publicationTime);
+
+    /**
+     * Returns the list of the publications records in publications file. If the publications file doesn't contain
+     * publications records then the empty list will be returned.
+     */
+    List<PublicationRecord> getPublicationRecords();
 
     /**
      * This method is used to get the newest publication from publications file.

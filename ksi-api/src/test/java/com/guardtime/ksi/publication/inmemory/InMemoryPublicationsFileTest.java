@@ -57,6 +57,8 @@ public class InMemoryPublicationsFileTest {
         Assert.assertNotNull(publication.getVersion());
         Assert.assertNotNull(publication.getCreationTime());
         Assert.assertNull(publication.getRepositoryUri());
+        Assert.assertNotNull(publication.getPublicationRecords());
+        Assert.assertFalse(publication.getPublicationRecords().isEmpty());
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file header is missing")

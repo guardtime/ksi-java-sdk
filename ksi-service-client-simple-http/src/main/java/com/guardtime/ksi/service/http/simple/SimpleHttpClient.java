@@ -18,9 +18,12 @@
  */
 package com.guardtime.ksi.service.http.simple;
 
-import com.guardtime.ksi.service.client.*;
+import com.guardtime.ksi.service.client.KSIClientException;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
+import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.http.AbstractHttpClient;
-import com.guardtime.ksi.service.client.http.HttpClientSettings;
+import com.guardtime.ksi.service.client.http.AbstractHttpClientSettings;
 import com.guardtime.ksi.util.Base64;
 import com.guardtime.ksi.util.Util;
 
@@ -34,22 +37,22 @@ import java.net.*;
  */
 public class SimpleHttpClient extends AbstractHttpClient implements KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
 
-    public SimpleHttpClient(HttpClientSettings settings) {
+    public SimpleHttpClient(AbstractHttpClientSettings settings) {
         super(settings);
     }
 
     public SimpleHttpPostRequestFuture sign(InputStream request) throws KSIClientException {
-        return post(request, settings.getSigningUrl(), settings.getParameters());
+        return post(request, settings.getSigningUrl(), settings);
     }
 
     public SimpleHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
-        return post(request, settings.getExtendingUrl(), settings.getParameters());
+        return post(request, settings.getExtendingUrl(), settings);
     }
 
     public SimpleHttpGetRequestFuture getPublicationsFile() throws KSIClientException {
         HttpURLConnection connection;
         try {
-            connection = getConnection(settings.getPublicationsFileUrl(), settings.getParameters());
+            connection = getConnection(settings.getPublicationsFileUrl(), settings);
             connection.setRequestMethod("GET");
             return new SimpleHttpGetRequestFuture(connection);
         } catch (IOException e) {
@@ -57,10 +60,10 @@ public class SimpleHttpClient extends AbstractHttpClient implements KSISigningCl
         }
     }
 
-    private SimpleHttpPostRequestFuture post(InputStream request, URL url, HttpClientSettings.HTTPConnectionParameters params) throws KSIClientException {
+    private SimpleHttpPostRequestFuture post(InputStream request, URL url, AbstractHttpClientSettings settings) throws KSIClientException {
         OutputStream outputStream = null;
         try {
-            HttpURLConnection connection = getConnection(url, params);
+            HttpURLConnection connection = getConnection(url, settings);
             connection.setRequestProperty(HEADER_NAME_CONTENT_TYPE, HEADER_APPLICATION_KSI_REQUEST);
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -74,10 +77,10 @@ public class SimpleHttpClient extends AbstractHttpClient implements KSISigningCl
         }
     }
 
-    public HttpURLConnection getConnection(URL url, HttpClientSettings.HTTPConnectionParameters params) throws IOException {
+    public HttpURLConnection getConnection(URL url, AbstractHttpClientSettings settings) throws IOException {
         URLConnection connection;
-        if (params.getProxyUrl() != null) {
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(params.getProxyUrl().getHost(), params.getProxyUrl().getPort()));
+        if (settings.getProxyUrl() != null) {
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(settings.getProxyUrl().getHost(), settings.getProxyUrl().getPort()));
             connection = url.openConnection(proxy);
         } else {
             connection = url.openConnection();
@@ -87,16 +90,16 @@ public class SimpleHttpClient extends AbstractHttpClient implements KSISigningCl
             throw new ProtocolException("Not an HTTP URL: " + url);
         }
 
-        if (params.getConnectionTimeout() != -1) {
-            connection.setConnectTimeout(params.getConnectionTimeout());
+        if (settings.getConnectionTimeout() != -1) {
+            connection.setConnectTimeout(settings.getConnectionTimeout());
         }
 
-        if (params.getReadTimeout() != -1) {
-            connection.setReadTimeout(params.getReadTimeout());
+        if (settings.getReadTimeout() != -1) {
+            connection.setReadTimeout(settings.getReadTimeout());
         }
 
-        if (params.getProxyUser() != null && !"".equals(params.getProxyUser())) {
-            String auth = "Basic " + Base64.encode(Util.toByteArray(params.getProxyUser() + ":" + params.getProxyPassword()));
+        if (settings.getProxyUser() != null && !"".equals(settings.getProxyUser())) {
+            String auth = "Basic " + Base64.encode(Util.toByteArray(settings.getProxyUser() + ":" + settings.getProxyPassword()));
             connection.setRequestProperty("Proxy-Authorization", auth);
         }
 

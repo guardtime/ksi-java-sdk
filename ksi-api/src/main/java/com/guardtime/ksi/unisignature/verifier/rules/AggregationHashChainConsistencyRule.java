@@ -44,7 +44,7 @@ public final class AggregationHashChainConsistencyRule extends BaseRule {
                 previousHash = chain.getOutputHash();
             } else {
                 if (!previousHash.equals(chain.getInputHash())) {
-                    LOGGER.info("Previous aggregation hash chain output {} does not match current input {}" +previousHash, chain.getInputHash());
+                    LOGGER.info("Previous aggregation hash chain output {} does not match current input {}", previousHash, chain.getInputHash());
                     return VerificationResultCode.FAIL;
                 }
                 previousHash = chain.getOutputHash();

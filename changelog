@@ -1,5 +1,6 @@
 Version 4.2
 
+* IMPROVEMENT: Added getType() method to Policy interface
 * IMPROVEMENT: Changed Jacoco version to 0.7.5.201505241946
 * BUGFIX: Maven javadoc:javadoc target didn’t add overiview.html to javadoc.
 

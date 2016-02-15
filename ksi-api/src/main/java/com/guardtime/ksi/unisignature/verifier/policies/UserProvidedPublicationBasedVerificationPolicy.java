@@ -26,6 +26,8 @@ import com.guardtime.ksi.unisignature.verifier.rules.*;
  */
 public class UserProvidedPublicationBasedVerificationPolicy extends InternalVerificationPolicy {
 
+    private static final String TYPE_USER_PROVIDED_PUBLICATION_BASED_POLICY = "USER_PROVIDED_PUBLICATION_POLICY";
+
     public UserProvidedPublicationBasedVerificationPolicy() {
         addRule(new UserProvidedPublicationExistenceRule());
 
@@ -46,6 +48,10 @@ public class UserProvidedPublicationBasedVerificationPolicy extends InternalVeri
 
     public String getName() {
         return "User provided publication based verification policy";
+    }
+
+    public String getType() {
+        return TYPE_USER_PROVIDED_PUBLICATION_BASED_POLICY;
     }
 
 }

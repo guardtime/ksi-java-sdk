@@ -23,6 +23,7 @@ import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.http.AbstractHttpClient;
+import com.guardtime.ksi.service.client.http.AbstractHttpClientSettings;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.util.Util;
 import org.apache.http.HttpHost;
@@ -58,7 +59,9 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
 
     /**
      * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientSimpleConfiguration}
-     * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     *
+     * @param settings
+     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
      */
     public ApacheHttpClient(HttpClientSettings settings) {
         this(settings, new ApacheHttpClientSimpleConfiguration());
@@ -66,10 +69,13 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
 
     /**
      * Constructs ApacheHttpClient with configuration values passed in
-     * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
-     * @param asyncConfiguration - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
+     *
+     * @param settings
+     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     * @param asyncConfiguration
+     *         - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
      */
-    public ApacheHttpClient(HttpClientSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
+    public ApacheHttpClient(AbstractHttpClientSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         super(settings);
         this.apacheClient = createClient(settings, asyncConfiguration);
     }
@@ -124,14 +130,14 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
      *         - configuration related to async connection
      * @return instance of {@link CloseableHttpAsyncClient}
      */
-    private CloseableHttpAsyncClient createClient(HttpClientSettings settings, ApacheHttpClientConfiguration conf) {
+    private CloseableHttpAsyncClient createClient(AbstractHttpClientSettings settings, ApacheHttpClientConfiguration conf) {
         IOReactorConfig ioReactor = IOReactorConfig.custom().setIoThreadCount(conf.getMaxThreadCount()).build();
         HttpAsyncClientBuilder httpClientBuilder = HttpAsyncClients.custom()
                 .useSystemProperties()
-                // allow POST redirects
+                        // allow POST redirects
                 .setRedirectStrategy(new LaxRedirectStrategy()).setMaxConnTotal(conf.getMaxTotalConnectionCount()).setMaxConnPerRoute(conf.getMaxRouteConnectionCount()).setDefaultIOReactorConfig(ioReactor)
                 .setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy()).setDefaultRequestConfig(createDefaultRequestConfig(settings));
-        if (settings.getParameters().getProxyUrl() != null) {
+        if (settings.getProxyUrl() != null) {
             DefaultProxyRoutePlanner routePlanner = createProxyRoutePlanner(settings, httpClientBuilder);
             httpClientBuilder.setRoutePlanner(routePlanner);
         }
@@ -149,12 +155,12 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
      *         - http client builder
      * @return instance of {@link DefaultProxyRoutePlanner}
      */
-    private DefaultProxyRoutePlanner createProxyRoutePlanner(HttpClientSettings settings, HttpAsyncClientBuilder httpClientBuilder) {
-        HttpHost proxy = new HttpHost(settings.getParameters().getProxyUrl().getHost(), settings.getParameters().getProxyUrl().getPort());
-        if (settings.getParameters().getProxyUser() != null) {
+    private DefaultProxyRoutePlanner createProxyRoutePlanner(AbstractHttpClientSettings settings, HttpAsyncClientBuilder httpClientBuilder) {
+        HttpHost proxy = new HttpHost(settings.getProxyUrl().getHost(), settings.getProxyUrl().getPort());
+        if (settings.getProxyUser() != null) {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            String proxyUser = settings.getParameters().getProxyUser();
-            String proxyPassword = settings.getParameters().getProxyPassword();
+            String proxyUser = settings.getProxyUser();
+            String proxyPassword = settings.getProxyPassword();
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(proxyUser, proxyPassword);
             credentialsProvider.setCredentials(new AuthScope(proxy), credentials);
             httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
@@ -169,9 +175,9 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
      *         settings to use
      * @return instance of {@link RequestConfig}
      */
-    private RequestConfig createDefaultRequestConfig(HttpClientSettings settings) {
-        int connectionTimeout = settings.getParameters().getConnectionTimeout();
-        int socketTimeout = settings.getParameters().getReadTimeout();
+    private RequestConfig createDefaultRequestConfig(AbstractHttpClientSettings settings) {
+        int connectionTimeout = settings.getConnectionTimeout();
+        int socketTimeout = settings.getReadTimeout();
         return RequestConfig.custom().setConnectionRequestTimeout(connectionTimeout).setSocketTimeout(socketTimeout).build();
     }
 

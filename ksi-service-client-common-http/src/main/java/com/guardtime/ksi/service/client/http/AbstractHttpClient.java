@@ -32,9 +32,9 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
     public static final String HEADER_APPLICATION_KSI_RESPONSE = "application/ksi-response";
     public static final String HEADER_NAME_CONTENT_TYPE = "Content-Type";
 
-    protected HttpClientSettings settings;
+    protected AbstractHttpClientSettings settings;
 
-    public AbstractHttpClient(HttpClientSettings settings) {
+    public AbstractHttpClient(AbstractHttpClientSettings settings) {
         if (settings == null) {
             throw new IllegalArgumentException("Can not create HTTP client without settings");
         }

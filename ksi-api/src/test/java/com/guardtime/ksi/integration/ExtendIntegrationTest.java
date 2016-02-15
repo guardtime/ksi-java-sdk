@@ -40,11 +40,4 @@ public class ExtendIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(result.isOk());
     }
 
-    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION, expectedExceptions = KSIException.class)
-    public void extendFreshSignature(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
-        DataHash dataHash = getFileHash(INPUT_FILE);
-        KSISignature sig = ksi.sign(dataHash);
-        ksi.extend(sig);
-    }
-
 }

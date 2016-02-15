@@ -3,6 +3,7 @@ Version 4.2
 * IMPROVEMENT: Refactored HttpClientSettings class. Now AbstractHttpClientSettings class can be used to add different HTTP client settings implementations.
 * IMPROVEMENT: Added getPublicationRecords() method to PublicationsFile interface.
 * IMPROVEMENT: Added getType() method to Policy interface
+* IMPROVEMENT: Updated slf4j version to 1.7.12. Now the scope of slf4j-simple is 'provided'.
 * IMPROVEMENT: Changed Jacoco version to 0.7.5.201505241946
 * BUGFIX: Maven javadoc:javadoc target didn’t add overiview.html to javadoc.
 

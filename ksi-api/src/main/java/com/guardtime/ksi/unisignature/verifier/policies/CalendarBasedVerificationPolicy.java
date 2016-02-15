@@ -28,7 +28,7 @@ import com.guardtime.ksi.unisignature.verifier.rules.*;
  */
 public class CalendarBasedVerificationPolicy extends InternalVerificationPolicy {
 
-    public static final String TYPE_CALENDAR_BASED_POLICY = "CALENDAR_BASED_POLICY";
+    private static final String TYPE_CALENDAR_BASED_POLICY = "CALENDAR_BASED_POLICY";
 
     public CalendarBasedVerificationPolicy() {
 

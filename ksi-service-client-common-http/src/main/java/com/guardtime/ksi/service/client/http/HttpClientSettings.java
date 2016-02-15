@@ -30,7 +30,7 @@ import java.net.URL;
  * <p/>
  * Connection parameters hold HTTP connection settings like timeouts and proxy configuration.
  */
-public class HttpClientSettings {
+public class HttpClientSettings extends AbstractHttpClientSettings {
 
     private URL extendingUrl;
     private URL signingUrl;
@@ -79,19 +79,75 @@ public class HttpClientSettings {
     }
 
     /**
-     * @return extending service URL
+     * @see AbstractHttpClientSettings#getSigningUrl()
      */
+    @Override
+    public URL getSigningUrl() {
+        return signingUrl;
+    }
+
+    /**
+     * @see AbstractHttpClientSettings#getExtendingUrl()
+     */
+    @Override
     public URL getExtendingUrl() {
         return extendingUrl;
     }
 
     /**
-     * Get service credentials.
-     *
-     * @return service credentials
+     * @see AbstractHttpClientSettings#getPublicationsFileUrl()
      */
+    @Override
+    public URL getPublicationsFileUrl() {
+        return publicationsFileUrl;
+    }
+
+    /**
+     * @see AbstractHttpClientSettings#getPublicationsFileUrl()
+     */
+    @Override
     public ServiceCredentials getCredentials() {
         return credentials;
+    }
+
+    /**
+     * @see AbstractHttpClientSettings#getProxyUrl()
+     */
+    @Override
+    public URL getProxyUrl() {
+        return parameters.getProxyUrl();
+    }
+
+    /**
+     * @see AbstractHttpClientSettings#getProxyUser()
+     */
+    @Override
+    public String getProxyUser() {
+        return parameters.getProxyUser();
+    }
+
+    /**
+     * @see AbstractHttpClientSettings#getProxyPassword()
+     */
+    @Override
+    public String getProxyPassword() {
+        return parameters.getProxyPassword();
+    }
+
+    /**
+     * @see AbstractHttpClientSettings#getConnectionTimeout()
+     */
+    @Override
+    public int getConnectionTimeout() {
+        return parameters.getConnectionTimeout();
+    }
+
+    /**
+     * @see AbstractHttpClientSettings#getReadTimeout()
+     */
+    @Override
+    public int getReadTimeout() {
+        return parameters.getReadTimeout();
     }
 
     /**
@@ -112,29 +168,15 @@ public class HttpClientSettings {
     }
 
     /**
-     * @return publications file URL
-     */
-    public URL getPublicationsFileUrl() {
-        return publicationsFileUrl;
-    }
-
-    /**
-     * @return signing service URL
-     */
-    public URL getSigningUrl() {
-        return signingUrl;
-    }
-
-    /**
      * HTTP Connection parameters.
      * <p/>
      * Contains low level connection parameters for HTTP service.
      */
     public static class HTTPConnectionParameters {
 
-        private URL proxyUrl = null;
-        private String proxyUser = null;
-        private String proxyPassword = null;
+        private URL proxyUrl;
+        private String proxyUser;
+        private String proxyPassword;
 
         private int connectionTimeout = -1;
         private int readTimeout = -1;

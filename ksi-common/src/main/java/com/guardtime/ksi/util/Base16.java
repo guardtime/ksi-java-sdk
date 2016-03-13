@@ -36,11 +36,14 @@ public final class Base16 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the base-16 string.
+     * @return the base-16 string, or {@code null) if {@code in} is {@code null}.
      */
     public static String encode(byte[] in) {
-        return encode(in, 0, in.length);
+        if (in == null) {
+            return null;
         }
+        return encode(in, 0, in.length);
+    }
 
     /**
      * Encodes the given bytes into a base-16 string.
@@ -54,11 +57,8 @@ public final class Base16 {
      * @return the base-16 string.
      */
     public static String encode(byte[] in, int off, int len) {
-        if (in == null) {
-            return null;
-            }
         return inst.encode(in, off, len, null, 0).toString();
-        }
+    }
 
     /**
      * Encodes the given bytes into a base-16 string, inserting colons after
@@ -66,9 +66,12 @@ public final class Base16 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the formatted base-16 string.
+     * @return the formatted base-16 string, or {@code null) if {@code in} is {@code null}.
      */
     public static String encodeWithColons(byte[] in) {
+        if (in == null) {
+            return null;
+        }
         return encodeWithColons(in, 0, in.length);
     }
 
@@ -85,9 +88,6 @@ public final class Base16 {
      * @return the formatted base-16 string.
      */
     public static String encodeWithColons(byte[] in, int off, int len) {
-        if (in == null) {
-            return null;
-        }
         return inst.encode(in, off, len, ":", 2).toString();
     }
 
@@ -97,7 +97,7 @@ public final class Base16 {
      *
      * @param in
      *            the base-16 string to decode.
-     * @return the decoded bytes.
+     * @return the decoded bytes, or {@code null) if {@code in} is {@code null}.
      */
     public static byte[] decode(String in) {
         if (in == null) {

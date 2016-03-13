@@ -36,9 +36,12 @@ public final class Base32 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the base-32 string.
+     * @return the base-32 string, or {@code null) if {@code in} is {@code null}.
      */
     public static String encode(byte[] in) {
+        if (in == null) {
+            return null;
+        }
         return encode(in, 0, in.length);
     }
 
@@ -54,9 +57,6 @@ public final class Base32 {
      * @return the base-32 string.
      */
     public static String encode(byte[] in, int off, int len) {
-        if (in == null) {
-            return null;
-        }
         return inst.encode(in, off, len, null, 0).toString();
     }
 
@@ -66,9 +66,12 @@ public final class Base32 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the formatted base-32 string.
+     * @return the formatted base-32 string, or {@code null) if {@code in} is {@code null}.
      */
     public static String encodeWithDashes(byte[] in) {
+        if (in == null) {
+            return null;
+        }
         return encodeWithDashes(in, 0, in.length);
     }
 
@@ -85,9 +88,6 @@ public final class Base32 {
      * @return the formatted base-32 string.
      */
     public static String encodeWithDashes(byte[] in, int off, int len) {
-        if (in == null) {
-            return null;
-        }
         return inst.encode(in, off, len, "-", 6).toString();
     }
 
@@ -97,7 +97,7 @@ public final class Base32 {
      *
      * @param in
      *            the base-32 string to decode.
-     * @return the decoded bytes.
+     * @return the decoded bytes, or {@code null) if {@code in} is {@code null}.
      */
     public static byte[] decode(String in) {
         if (in == null) {

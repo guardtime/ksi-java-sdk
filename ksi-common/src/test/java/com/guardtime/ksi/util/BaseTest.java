@@ -45,8 +45,8 @@ public class BaseTest {
         for (int i = 0; i < test16.length; i++) {
             Assert.assertEquals(test16[i][1], Base16.encode(test16[i][0].getBytes()));
         }
-        Assert.assertEquals(null, Base16.encode(null, 0, 0));
-        Assert.assertEquals(null, Base16.encodeWithColons(null, 0, 0));
+        Assert.assertEquals(null, Base16.encode(null));
+        Assert.assertEquals(null, Base16.encodeWithColons(null));
     }
 
     /**
@@ -75,8 +75,8 @@ public class BaseTest {
         for (int i = 0; i < test32.length; i++) {
             Assert.assertEquals(test32[i][1], Base32.encode(test32[i][0].getBytes()));
         }
-        Assert.assertEquals(null, Base32.encode(null, 0, 0));
-        Assert.assertEquals(null, Base32.encodeWithDashes(null, 0, 0));
+        Assert.assertEquals(null, Base32.encode(null));
+        Assert.assertEquals(null, Base32.encodeWithDashes(null));
     }
 
     /**
@@ -105,7 +105,7 @@ public class BaseTest {
         for (int i = 0; i < test64.length; i++) {
             Assert.assertEquals(test64[i][1], Base64.encode(test64[i][0].getBytes()));
         }
-        Assert.assertEquals(null, Base64.encode(null, 0, 0));
+        Assert.assertEquals(null, Base64.encode(null));
     }
 
     /**

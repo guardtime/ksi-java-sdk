@@ -19,7 +19,6 @@
 package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.unisignature.CalendarHashChain;
-import com.guardtime.ksi.util.Util;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -27,7 +26,6 @@ import org.testng.annotations.Test;
 import java.io.InputStream;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
-import static com.guardtime.ksi.TestUtil.load;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtensionServiceRequestTest extends AbstractCommonServiceTest {

@@ -27,7 +27,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * JUnit test cases for the RFC 4684 base-X encoder/decoder classes.
+ * Test cases for the <a target="_blank"
+ * href="http://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a> base-X
+ * encoder/decoder classes.
  */
 public class BaseTest {
 
@@ -156,12 +158,6 @@ public class BaseTest {
     @Test(expectedExceptions = NullPointerException.class)
     public void testBaseXEncodeNull() {
         BaseX inst = new BaseX("0123456789ABCDEF", false, ' ');
-        inst.encode(null, " ", 2);
-    }
-
-    @Test(expectedExceptions = NullPointerException.class)
-    public void testBaseXEncodeNullLong() {
-        BaseX inst = new BaseX("0123456789ABCDEF", false, ' ');
         inst.encode(null, 1, 2, " ", 1);
     }
 
@@ -190,9 +186,10 @@ public class BaseTest {
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testBaseXEncoindgSeparatorInAlphabet() {
+    public void testBaseXEncoingSeparatorInAlphabet() {
         BaseX inst = new BaseX("0123456789ABCDEF", false, ' ');
-        inst.encode("foobar".getBytes(), "1", 2);
+        byte[] in = "foobar".getBytes();
+        inst.encode(in, 0, in.length, "1", 2);
     }
 
     /**
@@ -202,7 +199,8 @@ public class BaseTest {
     public void testEncodeX() {
         BaseX inst = new BaseX("0123456789ABCDEF", false, ' ');
         for (int i = 0; i < test16.length; i++) {
-            Assert.assertEquals(test16[i][1], inst.encode(test16[i][0].getBytes(), "", 1).toString());
+            byte[] in = test16[i][0].getBytes();
+            Assert.assertEquals(test16[i][1], inst.encode(in, 0, in.length, "", 1).toString());
         }
     }
 
@@ -223,7 +221,7 @@ public class BaseTest {
 
 
     /**
-     * Tests base-X encoding with separators.
+     * Tests base-X decoding with separators.
      */
     @Test
     public void testDecodeX() {

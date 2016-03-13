@@ -20,7 +20,6 @@ package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.util.Util;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -28,7 +27,6 @@ import org.testng.annotations.Test;
 import java.io.InputStream;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
-import static com.guardtime.ksi.TestUtil.load;
 
 public class AggregationServiceTest extends AbstractCommonServiceTest {
 

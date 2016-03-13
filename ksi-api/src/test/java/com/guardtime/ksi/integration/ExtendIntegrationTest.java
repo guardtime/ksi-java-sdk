@@ -20,8 +20,6 @@ package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;

@@ -18,15 +18,12 @@
  */
 package com.guardtime.ksi.service.client;
 
+import java.io.Closeable;
+
 /**
  * KSI client is an interface that defines KSI related services.
  */
-interface CommonKSIClient {
-
-    /**
-     * Used to close resources.
-     */
-    void close();
+interface KSICredentialsAwareClient extends Closeable {
 
     /**
      * Returns the service credentials used by this service

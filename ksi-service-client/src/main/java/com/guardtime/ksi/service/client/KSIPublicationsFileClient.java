@@ -22,12 +22,13 @@ package com.guardtime.ksi.service.client;
 
 import com.guardtime.ksi.service.Future;
 
+import java.io.Closeable;
 import java.nio.ByteBuffer;
 
 /**
  * Interface for clients that is used to get the publications file.
  */
-public interface KSIPublicationsFileClient extends CommonKSIClient {
+public interface KSIPublicationsFileClient extends Closeable {
 
     /**
      * Used to get publications file.

@@ -1,5 +1,7 @@
 Version 4.2
 
+* IMPROVEMENT: CommonKsiClient is now called KsiCredentialsAwareClient. KsiPublicationsFileClient does not extend it anymore.
+* IMPROVEMENT: KsiCredentialsAwareClient, KsiPublicationsFileClient and KSI class itself all extend java.io.Closeable and so all of their close() methods now throw java.io.IOException.
 * IMPROVEMENT: Refactored HttpClientSettings class. Now AbstractHttpClientSettings class can be used to add different HTTP client settings implementations.
 * IMPROVEMENT: Added getPublicationRecords() method to PublicationsFile interface.
 * IMPROVEMENT: Added getType() method to Policy interface

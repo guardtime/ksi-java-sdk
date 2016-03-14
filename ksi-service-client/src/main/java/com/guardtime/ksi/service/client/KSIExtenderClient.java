@@ -27,7 +27,7 @@ import java.io.InputStream;
 /**
  * KSI client for extender service
  */
-public interface KSIExtenderClient extends CommonKSIClient {
+public interface KSIExtenderClient extends KSICredentialsAwareClient {
 
     /**
      * Used to extend existing signatures.

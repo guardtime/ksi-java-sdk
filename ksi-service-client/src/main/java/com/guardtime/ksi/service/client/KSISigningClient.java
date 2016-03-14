@@ -27,7 +27,7 @@ import java.io.InputStream;
 /**
  * KSI client for signing service
  */
-public interface KSISigningClient extends CommonKSIClient{
+public interface KSISigningClient extends KSICredentialsAwareClient {
 
     /**
      * Used to create new signature.

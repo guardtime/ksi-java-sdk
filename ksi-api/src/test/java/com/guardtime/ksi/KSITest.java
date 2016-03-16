@@ -28,7 +28,9 @@ import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.AlwaysFailingDummyPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
@@ -165,10 +167,21 @@ public class KSITest {
     }
 
     @Test
+    public void testVerifySignatureWithFallbackPolicy_OK() throws Exception {
+        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-04-30.1.ksig"));
+        Policy policy = new AlwaysFailingDummyPolicy();
+        policy.setFallbackPolicy( new KeyBasedVerificationPolicy() );
+        VerificationResult result = ksi.verify(signature, policy);
+        Assert.assertTrue(result.isOk());
+        Assert.assertNull(result.getErrorCode());
+    }
+
+    @Test
     public void testVerifySignatureWithFileDataHashWithoutContext_OK() throws Exception {
         KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-04-30.1.ksig"));
         VerificationResult result = ksi.verify(signature, new KeyBasedVerificationPolicy(), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D")));
         Assert.assertTrue(result.isOk());
+        Assert.assertNull(result.getErrorCode());
     }
 
     @Test
@@ -176,6 +189,7 @@ public class KSITest {
         KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-06-2-extended.ksig"));
         VerificationResult result = ksi.verify(signature, new PublicationsFileBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
+        Assert.assertNull(result.getErrorCode());
     }
 
     @Test
@@ -185,7 +199,7 @@ public class KSITest {
         DataHash documentHash = new DataHash(HashAlgorithm.SHA2_256, Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D"));
         VerificationResult result = ksi.verify(signature, new PublicationsFileBasedVerificationPolicy(), documentHash, publicationData);
         Assert.assertTrue(result.isOk());
+        Assert.assertNull(result.getErrorCode());
     }
-
 
 }

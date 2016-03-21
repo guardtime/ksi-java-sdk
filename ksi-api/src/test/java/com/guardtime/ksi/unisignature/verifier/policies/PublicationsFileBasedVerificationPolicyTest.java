@@ -17,25 +17,20 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.service.client;
+package com.guardtime.ksi.unisignature.verifier.policies;
 
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-import com.guardtime.ksi.service.Future;
+public class PublicationsFileBasedVerificationPolicyTest {
 
-import java.io.Closeable;
-import java.nio.ByteBuffer;
-
-/**
- * Interface for clients that is used to get the publications file.
- */
-public interface KSIPublicationsFileClient extends Closeable {
-
-    /**
-     * Used to get publications file.
-     *
-     * @return instance of {@link Future} containing KSI Publication File data.
-     * @throws KSIClientException;
-     */
-    Future<ByteBuffer> getPublicationsFile() throws KSIClientException;
+    @Test
+    public void testCreatePublicationsFileBasedVerificationPolicy_Ok() throws Exception {
+        PublicationsFileBasedVerificationPolicy policy = new PublicationsFileBasedVerificationPolicy();
+        Assert.assertNotNull(policy.getRules());
+        Assert.assertNotNull(policy.getName());
+        Assert.assertFalse(policy.getRules().isEmpty());
+        Assert.assertNotNull(policy.getType());
+    }
 
 }

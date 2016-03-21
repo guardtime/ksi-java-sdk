@@ -391,7 +391,7 @@ public final class KSIBuilder {
             return ksiService.getPublicationsFile().getResult();
         }
 
-        public void close() {
+        public void close() throws IOException {
             signingClient.close();
             extenderClient.close();
             publicationsFileClient.close();

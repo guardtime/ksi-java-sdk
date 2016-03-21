@@ -23,7 +23,7 @@
 
 	<groupId>com.guardtime</groupId>
 	<artifactId>ksi</artifactId>
-	<version>4.0.21-SNAPSHOT</version>
+	<version>4.1.25-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>KSI SDK</name>
@@ -60,14 +60,30 @@
 		<module>ksi-service-client-apache-http</module>
 		<module>ksi-service-client-tcp</module>
 		<module>ksi-api</module>
-		<module>ksi-local-aggregation</module>
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<slf4j.version>1.7.10</slf4j.version>
+		<slf4j.version>1.7.12</slf4j.version>
 		<bouncycastle.version>1.52</bouncycastle.version>
+		<jacoco.version>0.7.5.201505241946</jacoco.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-simple</artifactId>
+				<version>1.7.12</version>
+				<scope>provided</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>
@@ -127,7 +143,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.4.201502262128</version>
+				<version>${jacoco.version}</version>
 				<executions>
 					<execution>
 						<id>pre-unit-test</id>
@@ -237,9 +253,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<failOnError>false</failOnError>
-					<footer><![CDATA[Copyright 2008-2015 Guardtime, Inc]]></footer>
-					<additionalparam>${javadoc.doclint.none}</additionalparam>
+					<overview>${basedir}/ksi-api/src/main/javadoc/overview.html</overview>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -255,20 +269,11 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--<plugin>-->
-				<!--<groupId>org.apache.maven.plugins</groupId>-->
-				<!--<artifactId>maven-gpg-plugin</artifactId>-->
-				<!--<version>1.6</version>-->
-				<!--<executions>-->
-					<!--<execution>-->
-						<!--<id>sign-artifacts</id>-->
-						<!--<phase>verify</phase>-->
-						<!--<goals>-->
-							<!--<goal>sign</goal>-->
-						<!--</goals>-->
-					<!--</execution>-->
-				<!--</executions>-->
-			<!--</plugin>-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -285,8 +290,7 @@
 									<pluginExecutionFilter>
 										<groupId>org.jacoco</groupId>
 										<artifactId>jacoco-maven-plugin</artifactId>
-										<versionRange>[0.7,)
-										</versionRange>
+										<versionRange>${jacoco.version}</versionRange>
 										<goals>
 											<goal>prepare-agent</goal>
 										</goals>
@@ -315,9 +319,10 @@
 					<version>2.10.3</version>
 					<configuration>
 						<failOnError>false</failOnError>
-						<footer><![CDATA[Copyright 2008-2015 Guardtime, Inc]]></footer>
+						<footer><![CDATA[Copyright 2008-2016 Guardtime, Inc]]></footer>
 						<additionalparam>${javadoc.doclint.none}</additionalparam>
 						<quiet>true</quiet>
+						<aggregate>true</aggregate>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -362,9 +367,10 @@
 				<version>2.10.3</version>
 				<configuration>
 					<failOnError>false</failOnError>
-					<footer><![CDATA[Copyright 2008-2015 Guardtime, Inc]]></footer>
+					<footer><![CDATA[Copyright 2008-2016 Guardtime, Inc]]></footer>
 					<additionalparam>${javadoc.doclint.none}</additionalparam>
 					<quiet>true</quiet>
+					<aggregate>true</aggregate>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -378,18 +384,18 @@
 	<repositories>
 		<repository>
 			<id>gt-public</id>
-			<url>http://192.168.100.24:8081/nexus/content/groups/public/</url>
+			<url>http://maven.ee.guardtime.com:8081/nexus/content/groups/public/</url>
 		</repository>
 	</repositories>
 
 	<distributionManagement>
 		<repository>
-			<id>gt-release</id>
-			<url>http://192.168.100.24:8081/nexus/content/repositories/releases/</url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 		<snapshotRepository>
 			<id>gt-snapshots</id>
-			<url>http://192.168.100.24:8081/nexus/content/repositories/snapshots/</url>
+			<url>http://maven.ee.guardtime.com:8081/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 

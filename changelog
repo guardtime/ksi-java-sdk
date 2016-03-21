@@ -1,0 +1,23 @@
+Version 4.2
+
+* IMPROVEMENT: CommonKsiClient is now called KsiCredentialsAwareClient. KsiPublicationsFileClient does not extend it anymore.
+* IMPROVEMENT: KsiCredentialsAwareClient, KsiPublicationsFileClient and KSI class itself all extend java.io.Closeable and so all of their close() methods now throw java.io.IOException.
+* IMPROVEMENT: Updated slf4j version to 1.7.12. Now the scope of slf4j-simple is 'provided'.
+* IMPROVEMENT: Added getType() method to Policy interface
+* IMPROVEMENT: Added getPublicationRecords() method to PublicationsFile interface.
+* IMPROVEMENT: Refactored HttpClientSettings class. Now AbstractHttpClientSettings class can be used to add different HTTP client settings implementations.
+* IMPROVEMENT: Changed Jacoco version to 0.7.5.201505241946
+* BUGFIX: Maven javadoc:javadoc target didn’t add overiview.html to javadoc.
+
+Version 4.1
+
+2016-02-04 4.1.18
+
+* IMPROVEMENT: Publications file parsing and verification are now more strict.
+* IMPROVEMENT: Improved ApacheHttpClient configuration.
+* BUGFIX: Now the TLV8 and TLV16 flags are set automatically according to given content. Fixed TLV limits.
+* IMPROVEMENT: Improved HTTP error PDU message processing
+* IMPROVEMENT: HttpClientSettings class is extendable
+* IMPROVEMENT: The response PDU MAC algorithm is selected from input imprint.
+* IMPROVEMENT: Improved tests
+* IMPROVEMENT: Added serial version UID constants to Exception classes

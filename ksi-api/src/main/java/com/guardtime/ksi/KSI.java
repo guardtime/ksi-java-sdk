@@ -33,13 +33,14 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.InputStream;
 
 /**
  * An instance of this class can be obtained using {@link KSIBuilder} class.
  */
-public interface KSI {
+public interface KSI extends Closeable {
 
     /**
      * This method can be used to createSignature keyless signature from input stream.
@@ -305,11 +306,5 @@ public interface KSI {
      *         when error occurs (e.g when communication with KSI service fails)
      */
     PublicationsFile getPublicationsFile() throws KSIException;
-
-    /**
-     * Releases resources.
-     */
-    void close();
-
-
+    
 }

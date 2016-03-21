@@ -43,11 +43,16 @@ public interface Policy {
     List<Rule> getRules();
 
     /**
-     * Returns the name of the policy
+     * Human readable name of the policy
      *
      * @return the name of the policy
      */
     String getName();
+
+    /**
+     * This method returns the type of the policy.
+     */
+    String getType();
 
     /**
      * Adds fallback policy to be used when signature does not verify with given policy.

@@ -31,6 +31,8 @@ import com.guardtime.ksi.unisignature.verifier.rules.CertificateExistenceRule;
  */
 public class KeyBasedVerificationPolicy extends InternalVerificationPolicy {
 
+    private static final String TYPE_KEY_BASED_POLICY = "KEY_BASED_POLICY";
+
     public KeyBasedVerificationPolicy() {
         addRule(new CalendarHashChainExistenceRule());
         addRule(new CalendarAuthenticationRecordExistenceRule());
@@ -40,6 +42,10 @@ public class KeyBasedVerificationPolicy extends InternalVerificationPolicy {
 
     public String getName() {
         return "Key-based verification policy";
+    }
+
+    public String getType() {
+        return TYPE_KEY_BASED_POLICY;
     }
 
 }

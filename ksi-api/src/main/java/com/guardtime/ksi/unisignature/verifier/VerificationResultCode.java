@@ -34,13 +34,13 @@ public enum VerificationResultCode {
     OK,
 
     /**
-     * Verification not possible, which means there is not enough data to prove or disprove the correctness of the
+     * Verification failed, which means the signature is definitely invalid or the document does not match with the
      * signature
      */
     FAIL,
 
     /**
-     * Verification failed, which means the signature is definitely invalid or the document does not match with the
+     * Verification not possible, which means there is not enough data to prove or disprove the correctness of the
      * signature
      */
     NA

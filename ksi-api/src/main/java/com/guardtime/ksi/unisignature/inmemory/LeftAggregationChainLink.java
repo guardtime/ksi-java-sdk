@@ -30,9 +30,18 @@ import com.guardtime.ksi.unisignature.ChainResult;
  *
  * @see InMemoryAggregationChainLink
  */
-class LeftAggregationChainLink extends InMemoryAggregationChainLink {
+//TODO
+public class LeftAggregationChainLink extends InMemoryAggregationChainLink {
 
     public static final int ELEMENT_TYPE_LEFT_LINK = 0x07;
+
+    public LeftAggregationChainLink(Long levelCorrection, DataHash siblingHash) throws KSIException {
+        super(levelCorrection, siblingHash);
+    }
+
+    public LeftAggregationChainLink(Long levelCorrection, String clientId) throws KSIException {
+        super(levelCorrection, clientId);
+    }
 
     LeftAggregationChainLink(TLVElement element) throws KSIException {
         super(element);

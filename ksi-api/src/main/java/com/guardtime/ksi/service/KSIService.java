@@ -41,6 +41,9 @@ public interface KSIService {
      */
     CreateSignatureFuture sign(DataHash dataHash) throws KSIException;
 
+    //TODO
+    CreateSignatureFuture sign(DataHash dataHash, long level) throws KSIException;
+
     /**
      * This method is used to send extension request to the server. {@link ExtensionRequestFuture#getResult()} method
      * can be used to get extended calendar hash chain starting from the aggregation time to publication time. When

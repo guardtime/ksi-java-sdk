@@ -85,6 +85,9 @@ public interface KSI {
      */
     KSISignature sign(DataHash dataHash) throws KSIException;
 
+    //TODO javadoc
+    KSISignature sign(DataHash dataHash, long level) throws KSIException;
+
     /**
      * This method is used to sign a file. Uses hash algorithm defined by method {@link
      * KSIBuilder#setDefaultSigningHashAlgorithm(HashAlgorithm)}.
@@ -307,5 +310,6 @@ public interface KSI {
      * Releases resources.
      */
     void close();
+
 
 }

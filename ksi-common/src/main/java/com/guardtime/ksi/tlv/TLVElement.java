@@ -79,8 +79,15 @@ public final class TLVElement {
      * @throws MultipleTLVElementException
      *         - Thrown if the outer most layer is composed of more than one TLV.
      * @throws TLVParserException
+     *
+     * @deprecated  use {@link TLVElement#create(byte[])}.
      */
+    @Deprecated
     public static TLVElement createFromBytes(byte[] bytes) throws TLVParserException {
+        return create(bytes);
+    }
+
+    public static TLVElement create(byte[] bytes) throws TLVParserException {
         TLVInputStream input = null;
         try {
             input = new TLVInputStream(new ByteArrayInputStream(bytes));
@@ -225,11 +232,6 @@ public final class TLVElement {
 
     public void setDataHashContent(DataHash dataHash) throws TLVParserException {
         setContent(dataHash.getImprint());
-    }
-
-    public void addChildElement(TLVElement element) throws TLVParserException {
-        this.children.add(element);
-        assertActualContentLengthIsInTLVLimits(getContentLength());
     }
 
     /**
@@ -384,6 +386,16 @@ public final class TLVElement {
 
     public void remove(TLVElement elementToRemoved) {
         children.remove(elementToRemoved);
+    }
+
+    public void addChildElement(TLVElement element) throws TLVParserException {
+        this.children.add(element);
+        assertActualContentLengthIsInTLVLimits(getContentLength());
+    }
+
+    public void addFirstChildElement(TLVElement element) throws TLVParserException {
+        this.children.add(0, element);
+        assertActualContentLengthIsInTLVLimits(getContentLength());
     }
 
     /**

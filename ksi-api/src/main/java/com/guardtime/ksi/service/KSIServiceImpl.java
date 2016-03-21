@@ -86,8 +86,13 @@ public class KSIServiceImpl implements KSIService {
     }
 
     public CreateSignatureFuture sign(DataHash dataHash) throws KSIException {
+        //TODO
+       return sign(dataHash, 0L);
+    }
+
+    public CreateSignatureFuture sign(DataHash dataHash, long level) throws KSIException {
         Long requestId = generateRequestId();
-        AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId);
+        AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId, level);
         ServiceCredentials credentials = signerClient.getServiceCredentials();
         KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId);
         KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());

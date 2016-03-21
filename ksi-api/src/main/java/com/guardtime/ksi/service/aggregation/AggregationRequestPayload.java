@@ -38,7 +38,7 @@ public class AggregationRequestPayload extends TLVStructure {
     public static final int ELEMENT_TYPE_LEVEL = 0x03;
     public static final int ELEMENT_TYPE_CONFIG = 0x10;
 
-    private Long level = 0L;
+    private long level = 0L;
     private Long requestId;
     private DataHash requestHash;
 
@@ -48,6 +48,16 @@ public class AggregationRequestPayload extends TLVStructure {
         TLVElement requestIdElement = new TLVElement(false, false, ELEMENT_TYPE_REQUEST_ID);
         requestIdElement.setLongContent(requestId);
         this.rootElement.addChildElement(requestIdElement);
+    }
+
+    public AggregationRequestPayload(DataHash dataHash, Long requestId, long level) throws KSIException {
+        this(dataHash, requestId);
+        this.level = level;
+
+        TLVElement levelElement = new TLVElement(false, false, ELEMENT_TYPE_LEVEL);
+        levelElement.setLongContent(level);
+
+        this.rootElement.addChildElement(levelElement);
     }
 
     /**

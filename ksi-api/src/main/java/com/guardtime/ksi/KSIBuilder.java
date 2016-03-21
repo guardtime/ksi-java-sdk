@@ -267,6 +267,11 @@ public final class KSIBuilder {
             return future.getResult();
         }
 
+        public KSISignature sign(DataHash dataHash, long level) throws KSIException {
+            //TODO input validation
+            return ksiService.sign(dataHash, level).getResult();
+        }
+
         public KSISignature sign(File file) throws KSIException {
             CreateSignatureFuture future = asyncSign(file);
             return future.getResult();

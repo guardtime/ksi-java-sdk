@@ -23,7 +23,7 @@
 
 	<groupId>com.guardtime</groupId>
 	<artifactId>ksi</artifactId>
-	<version>4.0.20-SNAPSHOT</version>
+	<version>4.0.21-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>KSI SDK</name>
@@ -60,6 +60,7 @@
 		<module>ksi-service-client-apache-http</module>
 		<module>ksi-service-client-tcp</module>
 		<module>ksi-api</module>
+		<module>ksi-local-aggregation</module>
 	</modules>
 
 	<properties>

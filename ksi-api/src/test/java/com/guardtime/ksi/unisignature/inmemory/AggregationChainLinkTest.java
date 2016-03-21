@@ -77,7 +77,6 @@ public class AggregationChainLinkTest {
         TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(siblingHash);
         element.addChildElement(metadata);
-
         new LeftAggregationChainLink(element);
     }
 
@@ -94,9 +93,7 @@ public class AggregationChainLinkTest {
         TLVElement metadata = new TLVElement(false, false, 0x04);
         TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(metadata);
-
         new LeftAggregationChainLink(element);
-
     }
 
     @Test
@@ -128,6 +125,12 @@ public class AggregationChainLinkTest {
         RightAggregationChainLink link = new RightAggregationChainLink(element);
         Assert.assertNotNull(link);
         Assert.assertEquals(link.getIdentity().toLowerCase(), "abc");
+    }
+
+    @Test
+    public void testCreateNewLeftLink() throws Exception {
+        LeftAggregationChainLink link = new LeftAggregationChainLink(20L, "kala");
+        Assert.assertEquals(link, new LeftAggregationChainLink(link.getRootElement()));
     }
 
 }

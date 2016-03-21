@@ -160,26 +160,6 @@ public class BaseX {
      * separator into the result with given frequency.
      *
      * @param in
-     *            the bytes to encode.
-     * @param sep
-     *            if {@code sep} is not {@code null} and {@code freq} is
-     *            positive, the {@code sep} is inserted into the result between
-     *            blocks of {@code freq} normal characters.
-     * @param freq
-     *            if {@code sep} is not {@code null} and {@code freq} is
-     *            positive, the {@code sep} is inserted into the result between
-     *            blocks of {@code freq} normal characters.
-     * @return a newly allocated buffer containing the encoded data.
-     */
-    public final StringBuffer encode(byte[] in, String sep, int freq) {
-        return encode(in, 0, in.length, sep, freq);
-    }
-
-    /**
-     * Encodes the given bytes into a base-X string, optionally inserting a
-     * separator into the result with given frequency.
-     *
-     * @param in
      *            an array containing the bytes to encode.
      * @param off
      *            the start offset of the data within {@code in}.

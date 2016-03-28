@@ -101,16 +101,14 @@ public abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStru
     protected abstract P readPayload(TLVElement element) throws KSIException;
 
     /**
-     * Get the header of message.
-     *
-     * @return header for the message
+     * Returns the header of the message.
      */
     public KSIMessageHeader getHeader() {
         return this.header;
     }
 
     /**
-     * @return outgoing aggregation message hmac
+     * Returns outgoing aggregation message HMAC
      */
     public DataHash getMac() {
         return this.mac;

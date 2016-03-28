@@ -194,9 +194,7 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
     }
 
     public void setAggregationTime(Date aggregationTime) throws TLVParserException {
-        TLVElement aggregationTimeElement = new TLVElement(false, false, ELEMENT_TYPE_AGGREGATION_TIME);
-        aggregationTimeElement.setLongContent(aggregationTime.getTime() / 1000);
-        this.rootElement.addChildElement(aggregationTimeElement);
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_AGGREGATION_TIME, aggregationTime));
     }
 
     @Override

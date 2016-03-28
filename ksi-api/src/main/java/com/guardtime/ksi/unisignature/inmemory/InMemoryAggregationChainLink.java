@@ -28,6 +28,7 @@ import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
@@ -55,30 +56,18 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     private DataHash metaHash;
     private LinkMetadata metadata;
 
-    // TODO refactor duplicated code
     InMemoryAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
         this.siblingHash = siblingHash;
-
         this.rootElement = new TLVElement(false, false, getElementType());
-        TLVElement levelCorrectionElement = new TLVElement(false, false, ELEMENT_TYPE_LEVEL_CORRECTION);
-        levelCorrectionElement.setLongContent(this.levelCorrection);
-        this.rootElement.addChildElement(levelCorrectionElement);
-
-        TLVElement sibling = new TLVElement(false, false, ELEMENT_TYPE_SIBLING_HASH);
-        sibling.setDataHashContent(siblingHash);
-        this.rootElement.addChildElement(sibling);
-
+        addLevelCorrectionTlvElement();
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash));
     }
 
     InMemoryAggregationChainLink(Long levelCorrection, String clientId) throws KSIException {
         this.levelCorrection = levelCorrection;
-
         this.rootElement = new TLVElement(false, false, getElementType());
-        TLVElement levelCorrectionElement = new TLVElement(false, false, ELEMENT_TYPE_LEVEL_CORRECTION);
-        levelCorrectionElement.setLongContent(this.levelCorrection);
-        this.rootElement.addChildElement(levelCorrectionElement);
-
+        addLevelCorrectionTlvElement();
         this.metadata = new LinkMetadata(clientId);
         this.rootElement.addChildElement(metadata.getRootElement());
     }
@@ -220,6 +209,10 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         return levelCorrection;
     }
 
+    private void addLevelCorrectionTlvElement() throws TLVParserException {
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_LEVEL_CORRECTION, this.levelCorrection));
+    }
+
     private static class LinkMetadata extends TLVStructure {
 
         public static final int ELEMENT_TYPE_METADATA = 0x04;
@@ -233,12 +226,8 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
 
         public LinkMetadata(String clientId) throws KSIException {
             this.clientId = clientId;
-
             this.rootElement = new TLVElement(false, false, getElementType());
-            TLVElement clientIdElement = new TLVElement(false, false, ELEMENT_TYPE_CLIENT_ID);
-            clientIdElement.setStringContent(clientId);
-
-            this.rootElement.addChildElement(clientIdElement);
+            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CLIENT_ID, clientId));
         }
 
         public LinkMetadata(TLVElement tlvElement) throws KSIException {

@@ -623,6 +623,17 @@ public final class Util {
     }
 
     /**
+     * Checks if the input object is null or not.
+     * @param o input object
+     * @param name input object name
+     */
+    public static void notNull(Object o, String name) {
+        if (o == null) {
+            throw new NullPointerException(name + " can not be null");
+        }
+    }
+
+    /**
      * This class should not be instantiated.
      */
     private Util() {

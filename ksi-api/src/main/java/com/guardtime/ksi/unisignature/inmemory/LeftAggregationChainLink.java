@@ -30,16 +30,15 @@ import com.guardtime.ksi.unisignature.ChainResult;
  *
  * @see InMemoryAggregationChainLink
  */
-//TODO
-public class LeftAggregationChainLink extends InMemoryAggregationChainLink {
+class LeftAggregationChainLink extends InMemoryAggregationChainLink {
 
     public static final int ELEMENT_TYPE_LEFT_LINK = 0x07;
 
-    public LeftAggregationChainLink(Long levelCorrection, DataHash siblingHash) throws KSIException {
-        super(levelCorrection, siblingHash);
+    LeftAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
+        super(siblingHash, levelCorrection);
     }
 
-    public LeftAggregationChainLink(Long levelCorrection, String clientId) throws KSIException {
+    LeftAggregationChainLink(Long levelCorrection, String clientId) throws KSIException {
         super(levelCorrection, clientId);
     }
 
@@ -52,6 +51,10 @@ public class LeftAggregationChainLink extends InMemoryAggregationChainLink {
         long level = length + getLevelCorrection() + 1;
         DataHash hash = hash(lastStepImprint, getSiblingData(), level, algorithm);
         return new InMemoryChainResult(hash, level);
+    }
+
+    public boolean isLeft() {
+        return true;
     }
 
     @Override

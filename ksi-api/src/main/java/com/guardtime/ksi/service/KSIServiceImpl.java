@@ -18,6 +18,10 @@
  */
 package com.guardtime.ksi.service;
 
+import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
+import java.util.Date;
+
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -36,16 +40,12 @@ import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.util.Util;
 
-import java.io.ByteArrayInputStream;
-import java.nio.ByteBuffer;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicLong;
-
 /**
  * {@link KSIService} implementation
  */
 public class KSIServiceImpl implements KSIService {
 
+    private static final long DEFAULT_LEVEL = 0L;
     private KSISigningClient signerClient;
     private KSIExtenderClient extenderClient;
     private KSIPublicationsFileClient publicationsFileClient;
@@ -86,13 +86,8 @@ public class KSIServiceImpl implements KSIService {
     }
 
     public CreateSignatureFuture sign(DataHash dataHash) throws KSIException {
-        //TODO
-       return sign(dataHash, 0L);
-    }
-
-    public CreateSignatureFuture sign(DataHash dataHash, long level) throws KSIException {
         Long requestId = generateRequestId();
-        AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId, level);
+        AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId, DEFAULT_LEVEL);
         ServiceCredentials credentials = signerClient.getServiceCredentials();
         KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId);
         KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
@@ -101,15 +96,6 @@ public class KSIServiceImpl implements KSIService {
         return new CreateSignatureFuture(future, requestContext, signatureFactory);
     }
 
-    /**
-     * @param aggregationTime
-     *         the time of the aggregation round from which the calendar hash chain should start. must not be null.
-     * @param publicationTime
-     *         the time of the calendar root hash value to which the aggregation hash value should be connected by the
-     *         calendar hash chain.Its absence means a request for a calendar hash chain from aggregation time to the
-     *         most recent calendar record the extension server has.
-     * @return instance of {@link ExtensionRequestFuture}
-     */
     public ExtensionRequestFuture extend(Date aggregationTime, Date publicationTime) throws KSIException {
         Long requestId = generateRequestId();
         return extendSignature(new ExtensionRequestPayload(aggregationTime, publicationTime, requestId));

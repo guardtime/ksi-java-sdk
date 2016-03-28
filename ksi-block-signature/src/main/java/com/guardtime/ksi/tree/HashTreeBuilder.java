@@ -17,7 +17,9 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.aggregation;
+package com.guardtime.ksi.tree;
+
+import static com.guardtime.ksi.util.Util.notNull;
 
 import java.util.LinkedList;
 
@@ -30,22 +32,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class is a Merkle tree (aka hash tree) builder implementation. Merkle tree is a tree in which every non-leaf
- * node is labelled with the hash of the labels or values (in case of leaves) of its child nodes.
+ * This class is a hash tree (aka Merkle tree) builder implementation. Hash tree is a tree in which every non-leaf node
+ * is labelled with the hash of the labels or values (in case of leaves) of its child nodes.
  * <p/>
- * Note that {@link MerkleTreeBuilder} works only with {@link ImprintNode} objects. Current implementation calculates
- * the parent hash by connecting the child node values and the parent node height before hashing.
+ * Note that {@link HashTreeBuilder} works only with {@link ImprintNode} objects. Current implementation calculates the
+ * parent hash by connecting the child node values and the parent node height before hashing.
  * <p/>
  * Not that this builder can not be used multiple times.
  */
-public class MerkleTreeBuilder implements TreeBuilder<ImprintNode> {
+public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MerkleTreeBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HashTreeBuilder.class);
 
     private static final HashAlgorithm DEFAULT_HASH_ALGORITHM = HashAlgorithm.SHA2_256;
 
     /**
-     * Queue for holding the head (root) nodes of Merkle subtrees.
+     * Queue for holding the head (root) nodes of hash subtrees.
      */
     private final LinkedList<ImprintNode> heads = new LinkedList<ImprintNode>();
 
@@ -55,29 +57,28 @@ public class MerkleTreeBuilder implements TreeBuilder<ImprintNode> {
     private final HashAlgorithm algorithm;
 
     /**
-     * Creates a new merkle tree builder with given hash algorithm.
+     * Creates a new hash tree builder with given hash algorithm.
      *
      * @param algorithm
      *         hash algorithm to be used to calculate tree node hashes
      */
-    public MerkleTreeBuilder(HashAlgorithm algorithm) {
+    public HashTreeBuilder(HashAlgorithm algorithm) {
         this.algorithm = algorithm;
     }
 
     /**
-     * Creates a new merkle tree builder with default hash algorithm.
+     * Creates a new hash tree builder with default hash algorithm.
      */
-    public MerkleTreeBuilder() {
+    public HashTreeBuilder() {
         this(DEFAULT_HASH_ALGORITHM);
     }
 
     /**
-     * Adds a new single child node to the Merkle tree
+     * Adds a new single child node to the hash tree
      */
     public void add(ImprintNode node) throws HashException {
-        // TODO clone node? is clone needed?
         notNull(node, "Node");
-        LOGGER.info("Adding node with hash {} and height {} to the Merkle tree", node.getValue(), node.getLevel());
+        LOGGER.debug("Adding node with hash {} and height {} to the hash tree", node.getValue(), node.getLevel());
         ImprintNode n = node;
         if (!heads.isEmpty()) {
             ImprintNode head = heads.getLast();
@@ -88,11 +89,11 @@ public class MerkleTreeBuilder implements TreeBuilder<ImprintNode> {
             }
         }
         heads.add(n);
-        LOGGER.info("New root added. Roots size is {}", heads.size());
+        LOGGER.debug("New root added. Roots size is {}", heads.size());
     }
 
     /**
-     * Adds a new array of child nodes to the Merkle tree
+     * Adds a new array of child nodes to the hash tree
      */
     public void add(ImprintNode... nodes) throws HashException {
         notNull(nodes, "Nodes");
@@ -102,13 +103,12 @@ public class MerkleTreeBuilder implements TreeBuilder<ImprintNode> {
     }
 
     /**
-     * Builds the Merkle tree and returns the root hash of the tree.
+     * Builds the hash tree and returns the root hash of the tree.
      */
     public ImprintNode build() throws HashException {
         if (heads.isEmpty()) {
             throw new IllegalStateException("Add leaf nodes before building a tree");
         }
-        //TODO Sort before aggregating?
         ImprintNode previous = heads.getFirst();
         if (heads.size() > 1) {
             for (int i = 1; i < heads.size(); i++) {
@@ -119,15 +119,9 @@ public class MerkleTreeBuilder implements TreeBuilder<ImprintNode> {
         return previous;
     }
 
-    private void notNull(Object o, String name) {
-        if (o == null) {
-            throw new NullPointerException(name + " can not be null");
-        }
-    }
-
     private ImprintNode aggregate(ImprintNode left, ImprintNode right, HashAlgorithm algorithm) throws HashException {
         long newLevel = Math.max(left.getLevel(), right.getLevel()) + 1;
-        LOGGER.info("Aggregating. Left {}(level={}), right {}(level={}), newLevel={}", left.getValue(), left.getLevel(), right.getValue(), right.getLevel(), newLevel);
+        LOGGER.debug("Aggregating. Left {}(level={}), right {}(level={}), newLevel={}", left.getValue(), left.getLevel(), right.getValue(), right.getLevel(), newLevel);
         DataHash nodeHash = hash(algorithm, left.getValue(), right.getValue(), newLevel);
         LOGGER.info("Aggregation result {}(level={})", nodeHash, newLevel);
         return new ImprintNode(left, right, nodeHash, newLevel);

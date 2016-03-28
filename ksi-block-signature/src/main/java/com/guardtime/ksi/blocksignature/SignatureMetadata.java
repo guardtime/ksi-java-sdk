@@ -17,7 +17,7 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.aggregation;
+package com.guardtime.ksi.blocksignature;
 
 /**
  * Interface for describing data that can be added to the signature.

@@ -17,40 +17,7 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.aggregation;
-
 /**
- * This interface represents a node in a binary tree.
- * <p/>
+ * This package contains classes and interfaces used to build a hash tree.
  */
-public interface TreeNode {
-
-    /**
-     * Returns the value of the node. Must always be present.
-     */
-    byte[] getValue();
-
-    /**
-     * Returns the height of the node.
-     */
-    long getLevel();
-
-    /**
-     * Returns the parent node. In case of root (head) node the <i>null</i> is returned.
-     */
-    TreeNode getParent();
-
-    void setParent(TreeNode node);
-
-    TreeNode getLeftChild();
-
-    TreeNode getRightChild();
-
-    boolean isLeft();
-
-    void setLeft(boolean b);
-
-    boolean isRoot();
-
-    boolean isLeaf();
-}
+package com.guardtime.ksi.tree;

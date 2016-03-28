@@ -17,36 +17,23 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.aggregation;
+package com.guardtime.ksi.tree;
 
 import static org.testng.Assert.*;
 
+import com.guardtime.ksi.AbstractBlockSignatureTest;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class MerkleTreeBuilderTest {
+public class HashTreeBuilderTest extends AbstractBlockSignatureTest {
 
-    private DataHash dataHash;
-    private DataHash dataHash2;
-    private DataHash dataHash3;
-
-    private ImprintNode node;
-    private ImprintNode node2;
-    private ImprintNode node3;
-    private MerkleTreeBuilder builder;
+    private HashTreeBuilder builder;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
-        dataHash2 = new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1});
-        dataHash3 = new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2});
-
-        node = new ImprintNode(dataHash);
-        node2 = new ImprintNode(dataHash2);
-        node3 = new ImprintNode(dataHash3, 1);
-        this.builder = new MerkleTreeBuilder();
+        super.setUp();
+        this.builder = new HashTreeBuilder();
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Node can not be null")
@@ -91,6 +78,5 @@ public class MerkleTreeBuilderTest {
         assertNotNull(root);
         assertEquals(root.getLevel(), 3);
     }
-
 
 }

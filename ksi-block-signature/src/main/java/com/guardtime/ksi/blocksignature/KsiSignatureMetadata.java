@@ -17,29 +17,17 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.service;
+package com.guardtime.ksi.blocksignature;
 
-import com.guardtime.ksi.util.Util;
+public class KsiSignatureMetadata implements SignatureMetadata {
 
-import java.util.concurrent.atomic.AtomicLong;
+    private final String clientId;
 
-/**
- * PDU request identifiers.
- */
-public class PduIdentifiers {
-
-    private static final long INSTANCE_ID = Util.nextLong();
-    private static AtomicLong messageId = new AtomicLong();
-
-    private PduIdentifiers() {
+    public KsiSignatureMetadata(String clientId) {
+        this.clientId = clientId;
     }
 
-    public final long nextMessageId() {
-        return messageId.incrementAndGet();
+    public String getClientId() {
+        return clientId;
     }
-
-    public static long getInstanceId() {
-        return INSTANCE_ID;
-    }
-
 }

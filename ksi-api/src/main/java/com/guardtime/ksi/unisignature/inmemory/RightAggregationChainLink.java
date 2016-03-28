@@ -30,13 +30,12 @@ import com.guardtime.ksi.unisignature.ChainResult;
  *
  * @see InMemoryAggregationChainLink
  */
-//TODO
-public class RightAggregationChainLink extends InMemoryAggregationChainLink {
+class RightAggregationChainLink extends InMemoryAggregationChainLink {
 
     public static final int ELEMENT_TYPE_RIGHT_LINK = 0x08;
 
-    public RightAggregationChainLink(Long levelCorrection, DataHash siblingHash) throws KSIException {
-        super(levelCorrection, siblingHash);
+    RightAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
+        super(siblingHash, levelCorrection);
     }
 
 
@@ -62,6 +61,9 @@ public class RightAggregationChainLink extends InMemoryAggregationChainLink {
         return new InMemoryChainResult(hash, level);
     }
 
+    public boolean isLeft() {
+        return false;
+    }
 
     @Override
     public int getElementType() {

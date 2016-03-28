@@ -17,18 +17,20 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.aggregation;
+package com.guardtime.ksi.blocksignature;
 
+import static com.guardtime.ksi.CommonTestUtil.load;
 import static org.testng.Assert.*;
 
 import java.util.List;
+import java.util.Properties;
 
+import com.guardtime.ksi.AbstractBlockSignatureTest;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.KSIBuilder;
-import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
+import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
@@ -37,20 +39,24 @@ import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPoli
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class KsiBlockSignerTest {
+public class KsiBlockSignerIntegrationTest extends AbstractBlockSignatureTest {
 
     private KSI ksi;
-
-    // TODO load from url
-    private String pubfileUrl = "http://verify.guardtime.com/ksi-publications.bin";
-    private String gatewayUrl = "http://192.168.100.29:2345/gt-signingservice";
-    private String extenderUrl = "http://ksigw.test.guardtime.com:8010/gt-extendingservice";
+    private KSISigningClient simpleHttpClient;
+    private KsiSignatureMetadata metadata = new KsiSignatureMetadata("test1");
 
     @BeforeMethod
     public void setUp() throws Exception {
-        HttpClientSettings settings = new HttpClientSettings(gatewayUrl, extenderUrl, pubfileUrl, new KSIServiceCredentials("rando", "parool"));
-        SimpleHttpClient simpleHttpClient = new SimpleHttpClient(settings);
+        super.setUp();
+        Properties prop = new Properties();
+        prop.load(load("test.properties"));
 
+        HttpClientSettings settings = new HttpClientSettings(prop.getProperty("signer.url"),
+                prop.getProperty("extender.url"), prop.getProperty("publications.file.url"),
+                new KSIServiceCredentials(prop.getProperty("signer.login.id"), prop.getProperty("signer.login.key")));
+
+        SimpleHttpClient simpleHttpClient = new SimpleHttpClient(settings);
+        this.simpleHttpClient = simpleHttpClient;
         this.ksi = new KSIBuilder().setKsiProtocolExtenderClient(simpleHttpClient).
                 setKsiProtocolPublicationsFileClient(simpleHttpClient).
                 setKsiProtocolSignerClient(simpleHttpClient).
@@ -61,17 +67,17 @@ public class KsiBlockSignerTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client")
     public void testCreateSignatureLargeAggregationTree() throws Exception {
-        KsiBlockSigner builder = new KsiBlockSigner(ksi);
-        builder.add(new DataHash(HashAlgorithm.SHA2_256, new byte[32]),255L, new KsiSignatureMetadata("test1"));
+        KsiBlockSigner builder = new KsiBlockSigner(simpleHttpClient);
+        builder.add(dataHash, 255L, metadata);
         builder.sign();
     }
 
     @Test
     public void testBlockSigner() throws Exception {
-        KsiBlockSigner builder = new KsiBlockSigner(ksi);
-        builder.add(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), new KsiSignatureMetadata("test1"));
-        builder.add(new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}), new KsiSignatureMetadata("test2"));
-        builder.add(new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}), new KsiSignatureMetadata("test3"));
+        KsiBlockSigner builder = new KsiBlockSigner(simpleHttpClient);
+        builder.add(dataHash, metadata);
+        builder.add(dataHash2, metadata);
+        builder.add(dataHash3, metadata);
 
         List<KSISignature> signatures = builder.sign();
         assertNotNull(signatures);

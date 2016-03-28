@@ -19,6 +19,8 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
+import java.util.*;
+
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationData;
@@ -28,8 +30,6 @@ import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * KSI signature structure class. KSI signature consist of the following components: <ul> <li>Aggregation hash chain.
@@ -44,7 +44,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
 
     public static final int ELEMENT_TYPE = 0x0800;
     private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryKsiSignature.class);
-    private List<InMemoryAggregationHashChain> aggregationChains;
+    private List<AggregationHashChain> aggregationChains;
     private InMemoryCalendarHashChain calendarChain;
     private InMemorySignaturePublicationRecord publicationRecord;
     @SuppressWarnings("unused")
@@ -57,7 +57,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
     public InMemoryKsiSignature(TLVElement element) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
-        List<InMemoryAggregationHashChain> aggregations = new ArrayList<InMemoryAggregationHashChain>();
+        List<AggregationHashChain> aggregations = new ArrayList<AggregationHashChain>();
         for (TLVElement child : children) {
             switch (child.getType()) {
                 case InMemoryAggregationHashChain.ELEMENT_TYPE:
@@ -98,7 +98,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
 
     private String parseIdentity() throws KSIException {
         String identity = "";
-        for (InMemoryAggregationHashChain chain : aggregationChains) {
+        for (AggregationHashChain chain : aggregationChains) {
             // get name
             String id = chain.getChainIdentity();
             if (id.length() > 0) {
@@ -116,7 +116,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
      */
     private void calculateCalendarHashChainOutput() throws KSIException {
         ChainResult lastRes = null;
-        for (InMemoryAggregationHashChain chain : aggregationChains) {
+        for (AggregationHashChain chain : aggregationChains) {
             if (lastRes == null) {
                 lastRes = chain.calculateOutputHash(0L);
             } else {
@@ -130,7 +130,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
         return aggregationChains.get(0).getInputHash();
     }
 
-    public InMemoryAggregationHashChain getLastAggregationHashChain() {
+    public AggregationHashChain getLastAggregationHashChain() {
         return aggregationChains.get(aggregationChains.size() - 1);
     }
 
@@ -158,8 +158,23 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
         return calendarChain != null ? calendarChain.getPublicationTime() : null;
     }
 
-    public InMemoryAggregationHashChain[] getAggregationHashChains() {
-        return aggregationChains.toArray(new InMemoryAggregationHashChain[aggregationChains.size()]);
+    public AggregationHashChain[] getAggregationHashChains() {
+        return aggregationChains.toArray(new AggregationHashChain[aggregationChains.size()]);
+    }
+
+    public void addAggregationHashChain(AggregationHashChain aggregationHashChain) throws KSIException {
+        if (aggregationHashChain == null) {
+            throw new NullPointerException("Aggregation hash chain must not be null");
+        }
+        InMemoryAggregationHashChain chain = new InMemoryAggregationHashChain(aggregationHashChain.getInputHash(),
+                aggregationHashChain.getAggregationTime(), new LinkedList(aggregationHashChain.getChainIndex()),
+                new LinkedList(aggregationHashChain.getChainLinks()));
+
+        aggregationChains.add(chain);
+        this.aggregationChains = sortAggregationHashChains(aggregationChains);
+        calculateCalendarHashChainOutput();
+        this.identity = parseIdentity();
+        this.rootElement.addFirstChildElement(chain.getRootElement());
     }
 
     @Override
@@ -230,18 +245,18 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
      *         aggregation chains to be ordered.
      * @return ordered list of aggregation chains
      */
-    private List<InMemoryAggregationHashChain> sortAggregationHashChains(List<InMemoryAggregationHashChain> chains) throws InvalidSignatureException {
-        Collections.sort(chains, new Comparator<InMemoryAggregationHashChain>() {
-            public int compare(InMemoryAggregationHashChain chain1, InMemoryAggregationHashChain chain2) {
+    private List<AggregationHashChain> sortAggregationHashChains(List<AggregationHashChain> chains) throws InvalidSignatureException {
+        Collections.sort(chains, new Comparator<AggregationHashChain>() {
+            public int compare(AggregationHashChain chain1, AggregationHashChain chain2) {
                 return chain2.getChainIndex().size() - chain1.getChainIndex().size();
             }
         });
 
-        Iterator<InMemoryAggregationHashChain> chainIterator = chains.iterator();
-        InMemoryAggregationHashChain previousChain = null;
-        InMemoryAggregationHashChain first = null;
+        Iterator<AggregationHashChain> chainIterator = chains.iterator();
+        AggregationHashChain previousChain = null;
+        AggregationHashChain first = null;
         while (chainIterator.hasNext()) {
-            InMemoryAggregationHashChain currentChain = chainIterator.next();
+            AggregationHashChain currentChain = chainIterator.next();
             if (first == null) {
                 first = currentChain;
             }
@@ -254,7 +269,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
         return chains;
     }
 
-    private void compareChains(InMemoryAggregationHashChain previousChain, InMemoryAggregationHashChain currentChain) throws InvalidSignatureException {
+    private void compareChains(AggregationHashChain previousChain, AggregationHashChain currentChain) throws InvalidSignatureException {
         List<Long> previousChainIndexes = previousChain.getChainIndex();
         List<Long> currentChainIndexes = currentChain.getChainIndex();
 

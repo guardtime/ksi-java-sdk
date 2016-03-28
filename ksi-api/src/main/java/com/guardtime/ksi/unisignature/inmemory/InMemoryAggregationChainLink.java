@@ -19,20 +19,19 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
+import java.nio.charset.CharacterCodingException;
+import java.util.List;
+
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
 import com.guardtime.ksi.util.Util;
-
-import java.nio.charset.CharacterCodingException;
-import java.util.List;
 
 /**
  * Abstract class for LeftAggregationChainLink and RightAggregationChainLink implementations. AggregationChainLink
@@ -45,19 +44,19 @@ import java.util.List;
  * <p/>
  * </ul>
  */
-public abstract class InMemoryAggregationChainLink extends TLVStructure implements AggregationChainLink {
+abstract class InMemoryAggregationChainLink extends TLVStructure implements AggregationChainLink {
 
     private static final int ELEMENT_TYPE_LEVEL_CORRECTION = 0x01;
     private static final int ELEMENT_TYPE_SIBLING_HASH = 0x02;
     private static final int ELEMENT_TYPE_META_HASH = 0x03;
 
-    private Long levelCorrection = 0L;
+    private long levelCorrection = 0L;
     private DataHash siblingHash;
     private DataHash metaHash;
     private LinkMetadata metadata;
 
-
-    InMemoryAggregationChainLink(Long levelCorrection, DataHash siblingHash) throws KSIException {
+    // TODO refactor duplicated code
+    InMemoryAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
         this.siblingHash = siblingHash;
 
@@ -129,7 +128,6 @@ public abstract class InMemoryAggregationChainLink extends TLVStructure implemen
         }
 
     }
-
 
     /**
      * This method is used get link identity.

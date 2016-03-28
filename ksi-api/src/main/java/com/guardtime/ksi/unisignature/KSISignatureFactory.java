@@ -20,10 +20,13 @@
 package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
 
 import java.io.InputStream;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -84,6 +87,11 @@ public interface KSISignatureFactory {
      * @throws KSIException
      */
     AggregationHashChain createAggregationHashChain(TLVElement element) throws KSIException;
+
+    /**
+     * Creates a new aggregation hash chain
+     */
+    AggregationHashChain createAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> indexes, LinkedList<AggregationChainLink> links) throws KSIException;
 
     /**
      * Creates calendar authentication record from input TLV element.

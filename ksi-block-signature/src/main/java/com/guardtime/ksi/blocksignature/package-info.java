@@ -17,17 +17,7 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.aggregation;
-
-public class KsiSignatureMetadata implements SignatureMetadata {
-
-    private final String clientId;
-
-    public KsiSignatureMetadata(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-}
+/**
+ * This package contains classes and interfaces used to create block signatures
+ */
+package com.guardtime.ksi.blocksignature;

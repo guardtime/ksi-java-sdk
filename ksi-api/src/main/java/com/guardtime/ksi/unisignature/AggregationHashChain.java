@@ -70,4 +70,8 @@ public interface AggregationHashChain {
      */
     String getChainIdentity() throws KSIException;
 
+    /**
+     * Calculates the aggregation hash chain ouput hash.
+     */
+    ChainResult calculateOutputHash(long level) throws KSIException;
 }

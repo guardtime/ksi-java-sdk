@@ -86,9 +86,6 @@ public interface KSI extends Closeable {
      */
     KSISignature sign(DataHash dataHash) throws KSIException;
 
-    //TODO javadoc
-    KSISignature sign(DataHash dataHash, long level) throws KSIException;
-
     /**
      * This method is used to sign a file. Uses hash algorithm defined by method {@link
      * KSIBuilder#setDefaultSigningHashAlgorithm(HashAlgorithm)}.
@@ -306,5 +303,5 @@ public interface KSI extends Closeable {
      *         when error occurs (e.g when communication with KSI service fails)
      */
     PublicationsFile getPublicationsFile() throws KSIException;
-    
+
 }

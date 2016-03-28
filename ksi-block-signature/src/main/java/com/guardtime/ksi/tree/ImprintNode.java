@@ -17,13 +17,14 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.aggregation;
+package com.guardtime.ksi.tree;
 
-import com.guardtime.ksi.exceptions.KSIException;
+import static com.guardtime.ksi.util.Util.notNull;
+
 import com.guardtime.ksi.hashing.DataHash;
 
 /**
- * This class represents a Merkle tree node which every non-leaf node is labelled with the hash of the labels or values
+ * This class represents a hash tree node which every non-leaf node is labelled with the hash of the labels or values
  * (in case of leaves) of its child nodes.
  */
 public class ImprintNode implements TreeNode {
@@ -37,17 +38,17 @@ public class ImprintNode implements TreeNode {
 
     private boolean left = false;
 
-    public ImprintNode(DataHash value) throws KSIException {
-        this.value = value;
-        this.level = 0;
+    public ImprintNode(DataHash value) {
+        this(value, 0L);
     }
 
-    public ImprintNode(DataHash value, long level) throws KSIException {
+    public ImprintNode(DataHash value, long level) {
+        notNull(value, "InputHash");
         this.value = value;
         this.level = level;
     }
 
-    public ImprintNode(TreeNode leftChild, TreeNode rightChild, DataHash value, long level) {
+    ImprintNode(TreeNode leftChild, TreeNode rightChild, DataHash value, long level) {
         this.leftChild = leftChild;
         this.rightChild = rightChild;
         this.leftChild.setParent(this);
@@ -97,7 +98,6 @@ public class ImprintNode implements TreeNode {
         return getLeftChild() == null && getRightChild() == null;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -116,4 +116,5 @@ public class ImprintNode implements TreeNode {
         result = 31 * result + (int) (level ^ (level >>> 32));
         return result;
     }
+
 }

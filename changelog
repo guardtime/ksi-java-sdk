@@ -1,5 +1,6 @@
 Version 4.2
 
+* BUGFIX: Removed KSI.asyncExtendToHead() and KSI.extendToHead() methods
 * BUGFIX: Fixed a bug when a fallback policy succeeded but verification result contained error code.
 * IMPROVEMENT: CommonKsiClient is now called KsiCredentialsAwareClient. KsiPublicationsFileClient does not extend it anymore.
 * IMPROVEMENT: KsiCredentialsAwareClient, KsiPublicationsFileClient and KSI class itself all extend java.io.Closeable and so all of their close() methods now throw java.io.IOException.

@@ -1,5 +1,6 @@
 Version 4.2
 
+* BUGFIX: Fixed a bug when a fallback policy succeeded but verification result contained error code.
 * IMPROVEMENT: CommonKsiClient is now called KsiCredentialsAwareClient. KsiPublicationsFileClient does not extend it anymore.
 * IMPROVEMENT: KsiCredentialsAwareClient, KsiPublicationsFileClient and KSI class itself all extend java.io.Closeable and so all of their close() methods now throw java.io.IOException.
 * IMPROVEMENT: Updated slf4j version to 1.7.12. Now the scope of slf4j-simple is 'provided'.

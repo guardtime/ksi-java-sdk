@@ -96,6 +96,7 @@ public class SignatureVerifierTest {
     public void testFallbackPolicy() throws Exception {
         Rule mockedRule = Mockito.mock(Rule.class);
         RuleResult mockedResult = Mockito.mock(RuleResult.class);
+        Mockito.when(mockedResult.getErrorCode()).thenReturn(VerificationErrorCode.GEN_1);
         Mockito.when(mockedResult.getResultCode()).thenReturn(VerificationResultCode.NA);
         Mockito.when(mockedRule.verify(Mockito.any(KSIVerificationContext.class))).thenReturn(mockedResult);
 
@@ -110,6 +111,7 @@ public class SignatureVerifierTest {
         Mockito.when(mockedPolicy.getFallbackPolicy()).thenReturn(fallbackPolicy);
         VerificationResult result = verifier.verify(context, mockedPolicy);
         Assert.assertTrue(result.isOk());
+        Assert.assertNull(result.getErrorCode());
     }
 
     List<Rule> toList(Rule... rules) {

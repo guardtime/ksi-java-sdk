@@ -44,7 +44,7 @@ public class AggregationChainLinkTest {
         metadata.addChildElement(clientIdElement);
 
         metaHash = new TLVElement(false, false, 0x03);
-        metaHash.setDataHashContent(new DataHash(HashAlgorithm.SHA2_224, new byte[28]));
+        metaHash.setDataHashContent(new DataHash(HashAlgorithm.SHA2_512, new byte[64]));
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount 257")
@@ -96,7 +96,6 @@ public class AggregationChainLinkTest {
         element.addChildElement(metadata);
 
         new LeftAggregationChainLink(element);
-
     }
 
     @Test

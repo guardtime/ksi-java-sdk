@@ -57,7 +57,6 @@ public class InMemoryKsiSignatureTest {
         InMemoryKsiSignature signature = load(TestUtil.load("signature/signature-ok.tlv"));
         Assert.assertEquals(signature.getInputHash(), new DataHash(HashAlgorithm.SHA1, Base16.decode("E9A01D04EBE58F51E4291ADEE6768CE754D155D5")));
         Assert.assertFalse(signature.isPublished());
-        Assert.assertEquals(signature.getIdentity(), "");
         Assert.assertEquals(signature.getPublicationTime(), new Date(1396656000000L));
         Assert.assertEquals(signature.getAggregationTime(), new Date(1396608816000L));
     }

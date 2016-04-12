@@ -39,4 +39,9 @@ public interface AggregationChainLink {
 
     String getIdentity() throws InvalidSignatureException;
 
+    /**
+     * Returns the legacy client identifier
+     */
+    byte[] getLegacyId();
+
 }

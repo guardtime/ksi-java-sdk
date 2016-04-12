@@ -193,6 +193,10 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         return levelCorrection;
     }
 
+    public byte[] getLegacyId() {
+        return legacyId;
+    }
+
     private static class LinkMetadata extends TLVStructure {
 
         public static final int ELEMENT_TYPE_METADATA = 0x04;

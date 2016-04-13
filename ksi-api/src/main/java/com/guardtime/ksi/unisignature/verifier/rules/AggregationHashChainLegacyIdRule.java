@@ -72,14 +72,14 @@ public class AggregationHashChainLegacyIdRule extends BaseRule {
             LOGGER.info("Invalid legacyId prefix.");
             return VerificationResultCode.FAIL;
         }
-        int len = Util.toShort(legacyId, 1);
-        if (len > LEGACY_ID_OCTET_STRING_MAX_LENGTH) {
+        int length = Util.toShort(legacyId, 1);
+        if (length > LEGACY_ID_OCTET_STRING_MAX_LENGTH) {
             LOGGER.info("Invalid legacyId embedded data length.");
             return VerificationResultCode.FAIL;
         }
 
-        int paddingLength =  len+3;
-        if(!Arrays.equals(new byte[LEGACY_ID_LENGTH-paddingLength], Arrays.copyOfRange(legacyId, paddingLength, legacyId.length))) {
+        int contentLength = length + 3;
+        if (!Arrays.equals(new byte[LEGACY_ID_LENGTH - contentLength], Arrays.copyOfRange(legacyId, contentLength, legacyId.length))) {
             LOGGER.info("Invalid legacyId padding.");
             return VerificationResultCode.FAIL;
         }

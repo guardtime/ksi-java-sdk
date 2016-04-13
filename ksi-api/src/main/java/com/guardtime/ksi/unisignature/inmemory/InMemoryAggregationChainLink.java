@@ -85,18 +85,18 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
 
         // exactly one of the three "sibling data" items must be present
         if (siblingHash == null && legacyId == null && metadata == null) {
-            throw new InvalidAggregationHashChainException("AggregationChainLink sibling data must consist of one of the following: 'sibling hash', 'meta hash' or 'metadata'");
+            throw new InvalidAggregationHashChainException("AggregationChainLink sibling data must consist of one of the following: 'sibling hash', 'legacy id' or 'metadata'");
         }
 
         if (siblingHash != null && legacyId != null) {
-            throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Sibling hash and meta hash are present");
+            throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Sibling hash and legacy id are present");
         }
 
         if (siblingHash != null && metadata != null) {
             throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Sibling hash and metadata are present");
         }
         if (legacyId != null && metadata != null) {
-            throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Meta hash and metadata are present");
+            throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Legacy id and metadata are present");
         }
 
     }
@@ -105,8 +105,8 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     /**
      * This method is used get link identity.
      *
-     * @return if metadata is present then the clientId will be returned. If 'meta hash' is present then identity will
-     * be decoded from 'meta hash'. Empty string otherwise.
+     * @return if metadata is present then the clientId will be returned. If 'legacyId' is present then identity will
+     * be decoded from 'legacyId'. Empty string otherwise.
      */
     public String getIdentity() throws InvalidSignatureException {
         if (legacyId != null) {
@@ -119,9 +119,9 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     }
 
     /**
-     * Decodes link identity from meta hash. Throws NullPointerException when meta hash isn't present.
+     * Decodes link identity from legacy id. Throws NullPointerException when legacy id isn't present.
      *
-     * @return decoded link identity decoded from meta hash.
+     * @return decoded link identity decoded from legacy id.
      */
     private String getIdentityFromLegacyId() throws InvalidSignatureException {
         byte[] data = legacyId;
@@ -129,7 +129,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         try {
             return Util.decodeString(data, 3, len);
         } catch (CharacterCodingException e) {
-            throw new InvalidSignatureException("Decoding link identity from meta hash failed", e);
+            throw new InvalidSignatureException("Decoding link identity from legacy id failed", e);
         }
     }
 

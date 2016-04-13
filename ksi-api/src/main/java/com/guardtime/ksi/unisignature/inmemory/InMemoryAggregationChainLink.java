@@ -110,7 +110,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
      */
     public String getIdentity() throws InvalidSignatureException {
         if (legacyId != null) {
-            return getIdentityFromMetaHash();
+            return getIdentityFromLegacyId();
         }
         if (metadata != null) {
             return metadata.getClientId();
@@ -123,7 +123,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
      *
      * @return decoded link identity decoded from meta hash.
      */
-    private String getIdentityFromMetaHash() throws InvalidSignatureException {
+    private String getIdentityFromLegacyId() throws InvalidSignatureException {
         byte[] data = legacyId;
         int len = Util.toShort(data, 1);
         try {

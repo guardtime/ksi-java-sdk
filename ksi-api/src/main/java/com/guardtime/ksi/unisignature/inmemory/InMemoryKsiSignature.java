@@ -102,7 +102,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
 
         for (int i = aggregationChains.size()-1; i>=0 ; i--) {
             InMemoryAggregationHashChain chain = aggregationChains.get(i);
-            String id = chain.getChainIdentity();
+            String id = chain.getChainIdentity(IDENTITY_SEPARATOR);
             if (id.length() > 0) {
                 if (identity.length() > 0) {
                     identity += IDENTITY_SEPARATOR;

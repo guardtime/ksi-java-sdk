@@ -83,3 +83,13 @@ publication-based-verification/ok-sig-2014-06-2-extended-no-publication-time.ksi
 publication-based-verification/ok-sig-2014-06-2-extended-one-empty-publication-reference.ksig:false:false: :TLVParserException:String must be null terminated
 signature/signature-with-rfc3161-record-ok.ksig:true:true: : : 
 non-signature-file.ksig:false:false: :TLVParserException:Invalid TLV element. Expected=0x800, got=0x701
+internal-verification-aggr-chain/ok-sig-2014-06-2_invalid_sibling_algorithm_-_legacy_id_tlv_changed_to_sibling_hash.ksig:false:false: :TLVParserException:Invalid DataHash
+internal-verification-aggr-chain/ok-sig-2014-06-2_invalid_chain_index.ksig:false:false: :InvalidSignatureException:Aggregation chain indexes are invalid. Invalid value. Expected 6275039, got 6275038
+internal-verification-aggr-chain/ok-sig-2014-06-2_invalid_legacy_id_prefix.ksig:false:false: :InvalidSignatureException:Decoding link identity from legacy id failed. Invalid legacy id length
+internal-verification-aggr-chain/ok-sig-2014-06-2_invalid_legacy_id_content_length.ksig:true:false:INT_01: : 
+internal-verification-aggr-chain/ok-sig-2014-06-2_invalid_legacy_id_ending_byte.ksig:true:false:INT_01: : 
+internal-verification-aggr-chain/ok-sig-2014-06-2_invalid_legacy_id_content.ksig:true:false:INT_01: : 
+internal-verification-aggr-chain/ok-sig-2014-06-2_legacy_id_content_null.ksig:true:false:INT_01: : 
+internal-verification-aggr-chain/ok-sig-2014-06-2_legacy_id_algorithm.ksig:true:false:INT_01: : 
+internal-verification-aggr-chain/ok-sig-2014-06-2_too_short_leacy_id.ksig:true:false:INT_01: : 
+internal-verification-aggr-chain/ok-sig-2014-06-2_too_long_leacy_id.ksig:true:false:INT_01: : 

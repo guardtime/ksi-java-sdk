@@ -299,7 +299,7 @@ public abstract class AbstractCommonIntegrationTest {
         } catch (Exception e) {
             if (!(e.getMessage().contains(testData.getExpectedExceptionMessage()) &&
                     e.getClass().toString().contains(testData.getExpectedExceptionClass()) &&
-                    !testData.getExpectException())) {
+                    !testData.getExpectException() && testData.getExpectedFailureCode().equals(" "))) {
                 throw e;
             }
         }

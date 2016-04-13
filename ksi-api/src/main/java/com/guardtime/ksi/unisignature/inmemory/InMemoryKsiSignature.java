@@ -44,6 +44,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
 
     public static final int ELEMENT_TYPE = 0x0800;
     private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryKsiSignature.class);
+    private static final String IDENTITY_SEPARATOR = " :: ";
     private List<InMemoryAggregationHashChain> aggregationChains;
     private InMemoryCalendarHashChain calendarChain;
     private InMemorySignaturePublicationRecord publicationRecord;
@@ -98,12 +99,13 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
 
     private String parseIdentity() throws KSIException {
         String identity = "";
-        for (InMemoryAggregationHashChain chain : aggregationChains) {
-            // get name
+
+        for (int i = aggregationChains.size()-1; i>=0 ; i--) {
+            InMemoryAggregationHashChain chain = aggregationChains.get(i);
             String id = chain.getChainIdentity();
             if (id.length() > 0) {
                 if (identity.length() > 0) {
-                    identity += ".";
+                    identity += IDENTITY_SEPARATOR;
                 }
                 identity += id;
             }

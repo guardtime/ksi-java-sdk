@@ -68,6 +68,6 @@ public interface AggregationHashChain {
      * @throws KSIException
      *         when identity calculation fails
      */
-    String getChainIdentity() throws KSIException;
+    String getChainIdentity(String separator) throws KSIException;
 
 }

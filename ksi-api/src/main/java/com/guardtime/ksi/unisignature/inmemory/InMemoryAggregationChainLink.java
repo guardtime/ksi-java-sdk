@@ -126,6 +126,9 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     private String getIdentityFromLegacyId() throws InvalidSignatureException {
         byte[] data = legacyId;
         int len = Util.toShort(data, 1);
+        if(len > 25) {
+            throw new InvalidSignatureException("Decoding link identity from legacy id failed. Invalid legacy id length");
+        }
         try {
             return Util.decodeString(data, 3, len);
         } catch (CharacterCodingException e) {

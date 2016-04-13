@@ -158,16 +158,16 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
     }
 
     /**
-     * Get the (partial) signer identity from the current hash chain.
-     *
-     * @return signer identity
+     * Returns the (partial) signer identity from the current hash chain.
      */
-    public final String getChainIdentity() throws KSIException {
+    public final String getChainIdentity(String separator) throws KSIException {
         StringBuilder identity = new StringBuilder();
-        for (AggregationChainLink aggregationChainLink : chain) {
+
+        for (int i = chain.size()-1; i >=0 ; i--) {
+            AggregationChainLink aggregationChainLink = chain.get(i);
             String id = aggregationChainLink.getIdentity();
             if (identity.length() > 0 && id.length() > 0) {
-                identity.append(".");
+                identity.append(separator);
             }
             identity.append(id);
         }

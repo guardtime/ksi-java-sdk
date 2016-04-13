@@ -81,11 +81,6 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = {KSITCPTransactionException.class, IllegalArgumentException.class})
-    public void testTCPIncorrectLoginCredentialsWithRSHA2_224(KSI ksi) throws Exception {
-        ksi.sign(getFileHash(INPUT_FILE, HashAlgorithm.SHA2_224));
-    }
-
-    @Test(dataProvider = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = {KSITCPTransactionException.class, IllegalArgumentException.class})
     public void testTCPIncorrectLoginCredentialsWithSHA2_384(KSI ksi) throws Exception {
         ksi.sign(getFileHash(INPUT_FILE, HashAlgorithm.SHA2_384));
     }

@@ -1,5 +1,6 @@
 Version 4.2
 
+* BUGFIX: Removed SHA-224 hash algorithm. Added internal policy rule to check aggregation hash chain link legacyId content.
 * BUGFIX: Removed KSI.asyncExtendToHead() and KSI.extendToHead() methods
 * BUGFIX: Fixed a bug when a fallback policy succeeded but verification result contained error code.
 * IMPROVEMENT: CommonKsiClient is now called KsiCredentialsAwareClient. KsiPublicationsFileClient does not extend it anymore.

@@ -29,7 +29,6 @@ public enum HashAlgorithm {
     SHA1("SHA1", 0x00, 20, Status.NOT_TRUSTED),
     SHA2_256("SHA-256", 0x01, 32, Status.NORMAL, new String[]{"SHA2-256", "SHA2", "DEFAULT"}),
     RIPEMD_160("RIPEMD160", 0x02, 20, Status.NORMAL),
-    SHA2_224("SHA-224", 0x03, 28, Status.NORMAL, new String[]{"SHA2-224"}),
     SHA2_384("SHA-384", 0x04, 48, Status.NORMAL, new String[]{"SHA2-384"}),
     SHA2_512("SHA-512", 0x05, 64, Status.NORMAL, new String[]{"SHA2-512"}),
     SHA3_224("SHA3-224", 0x07, 28, Status.NOT_IMPLEMENTED),

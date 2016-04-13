@@ -48,11 +48,11 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
 
     private static final int ELEMENT_TYPE_LEVEL_CORRECTION = 0x01;
     private static final int ELEMENT_TYPE_SIBLING_HASH = 0x02;
-    private static final int ELEMENT_TYPE_META_HASH = 0x03;
+    private static final int ELEMENT_TYPE_LEGACY_ID = 0x03;
 
     private Long levelCorrection = 0L;
     private DataHash siblingHash;
-    private DataHash metaHash;
+    private byte[] legacyId;
     private LinkMetadata metadata;
 
     InMemoryAggregationChainLink(TLVElement element) throws KSIException {
@@ -66,8 +66,8 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
                 case ELEMENT_TYPE_SIBLING_HASH:
                     this.siblingHash = readOnce(child).getDecodedDataHash();
                     continue;
-                case ELEMENT_TYPE_META_HASH:
-                    this.metaHash = readOnce(child).getDecodedDataHash();
+                case ELEMENT_TYPE_LEGACY_ID:
+                    this.legacyId = readOnce(child).getContent();
                     continue;
                 case LinkMetadata.ELEMENT_TYPE_METADATA:
                     this.metadata = new LinkMetadata(readOnce(child));
@@ -84,19 +84,19 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         }
 
         // exactly one of the three "sibling data" items must be present
-        if (siblingHash == null && metaHash == null && metadata == null) {
-            throw new InvalidAggregationHashChainException("AggregationChainLink sibling data must consist of one of the following: 'sibling hash', 'meta hash' or 'metadata'");
+        if (siblingHash == null && legacyId == null && metadata == null) {
+            throw new InvalidAggregationHashChainException("AggregationChainLink sibling data must consist of one of the following: 'sibling hash', 'legacy id' or 'metadata'");
         }
 
-        if (siblingHash != null && metaHash != null) {
-            throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Sibling hash and meta hash are present");
+        if (siblingHash != null && legacyId != null) {
+            throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Sibling hash and legacy id are present");
         }
 
         if (siblingHash != null && metadata != null) {
             throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Sibling hash and metadata are present");
         }
-        if (metaHash != null && metadata != null) {
-            throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Meta hash and metadata are present");
+        if (legacyId != null && metadata != null) {
+            throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Legacy id and metadata are present");
         }
 
     }
@@ -105,12 +105,12 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     /**
      * This method is used get link identity.
      *
-     * @return if metadata is present then the clientId will be returned. If 'meta hash' is present then identity will
-     * be decoded from 'meta hash'. Empty string otherwise.
+     * @return if metadata is present then the clientId will be returned. If 'legacyId' is present then identity will
+     * be decoded from 'legacyId'. Empty string otherwise.
      */
     public String getIdentity() throws InvalidSignatureException {
-        if (metaHash != null) {
-            return getIdentityFromMetaHash();
+        if (legacyId != null) {
+            return getIdentityFromLegacyId();
         }
         if (metadata != null) {
             return metadata.getClientId();
@@ -119,17 +119,17 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     }
 
     /**
-     * Decodes link identity from meta hash. Throws NullPointerException when meta hash isn't present.
+     * Decodes link identity from legacy id. Throws NullPointerException when legacy id isn't present.
      *
-     * @return decoded link identity decoded from meta hash.
+     * @return decoded link identity decoded from legacy id.
      */
-    private String getIdentityFromMetaHash() throws InvalidSignatureException {
-        byte[] data = metaHash.getImprint();
+    private String getIdentityFromLegacyId() throws InvalidSignatureException {
+        byte[] data = legacyId;
         int len = Util.toShort(data, 1);
         try {
             return Util.decodeString(data, 3, len);
         } catch (CharacterCodingException e) {
-            throw new InvalidSignatureException("Decoding link identity from meta hash failed", e);
+            throw new InvalidSignatureException("Decoding link identity from legacy id failed", e);
         }
     }
 
@@ -176,8 +176,8 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             return siblingHash.getImprint();
         }
 
-        if (metaHash != null) {
-            return metaHash.getImprint();
+        if (legacyId != null) {
+            return legacyId;
         }
 
         if (metadata != null) {
@@ -191,6 +191,10 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
      */
     public final Long getLevelCorrection() {
         return levelCorrection;
+    }
+
+    public byte[] getLegacyId() {
+        return legacyId;
     }
 
     private static class LinkMetadata extends TLVStructure {

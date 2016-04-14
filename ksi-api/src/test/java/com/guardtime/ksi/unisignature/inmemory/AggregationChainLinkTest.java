@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 
 public class AggregationChainLinkTest {
 
+    private static final byte[] LEGACY_ID_CONTENT = Base16.decode("03:00034142430000000000000000000000000000000000000000000000");
     private TLVElement siblingHash;
     private TLVElement legacyId;
     private TLVElement metadata;
@@ -44,7 +45,7 @@ public class AggregationChainLinkTest {
         metadata.addChildElement(clientIdElement);
 
         legacyId = new TLVElement(false, false, 0x03);
-        legacyId.setDataHashContent(new DataHash(HashAlgorithm.SHA2_512, new byte[64]));
+        legacyId.setContent(LEGACY_ID_CONTENT);
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount 257")
@@ -118,9 +119,6 @@ public class AggregationChainLinkTest {
 
     @Test
     public void testDecodeLinkWithLegacyId_Ok() throws Exception {
-        TLVElement legacyId = new TLVElement(false, false, 0x03);
-        legacyId.setContent(Base16.decode("00:0003414243000000000000000000000000000000"));
-
         TLVElement element = new TLVElement(false, false, 0x08);
         element.addChildElement(legacyId);
 

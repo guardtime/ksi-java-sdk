@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.guardtime.ksi.util.Util.copyOf;
+import static com.guardtime.ksi.unisignature.inmemory.LeftAggregationChainLink.ELEMENT_TYPE_LEFT_LINK;
 
 /**
  * Abstract class for LeftAggregationChainLink and RightAggregationChainLink implementations. AggregationChainLink
@@ -217,6 +218,10 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         return levelCorrection;
     }
 
+    public boolean isLeft() {
+        return getElementType() == ELEMENT_TYPE_LEFT_LINK;
+    }
+
     private static class LinkMetadata extends TLVStructure {
 
         public static final int ELEMENT_TYPE_METADATA = 0x04;
@@ -260,5 +265,4 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             return ELEMENT_TYPE_METADATA;
         }
     }
-
 }

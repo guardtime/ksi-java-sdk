@@ -34,6 +34,8 @@ import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.guardtime.ksi.util.Util.copyOf;
+
 /**
  * Abstract class for LeftAggregationChainLink and RightAggregationChainLink implementations. AggregationChainLink
  * structure contains the following information: <ul> <li>May contain level correction value. Default value is 0</li>
@@ -111,7 +113,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         if (legacyId.length != LEGACY_ID_LENGTH) {
             throw new InvalidAggregationHashChainException("Invalid legacyId length");
         }
-        if (!Arrays.equals(LEGACY_ID_PREFIX, Arrays.copyOfRange(legacyId, 0, 2))) {
+        if (!Arrays.equals(LEGACY_ID_PREFIX, copyOf(legacyId, 0, 2))) {
             throw new InvalidAggregationHashChainException("Invalid legacyId prefix");
         }
         int length = Util.toShort(legacyId, 1);
@@ -119,7 +121,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             throw new InvalidAggregationHashChainException("Invalid legacyId embedded data length");
         }
         int contentLength = length + 3;
-        if (!Arrays.equals(new byte[LEGACY_ID_LENGTH - contentLength], Arrays.copyOfRange(legacyId, contentLength, legacyId.length))) {
+        if (!Arrays.equals(new byte[LEGACY_ID_LENGTH - contentLength], copyOf(legacyId, contentLength, legacyId.length-contentLength))) {
             throw new InvalidAggregationHashChainException("Invalid legacyId padding");
         }
     }
@@ -127,8 +129,8 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     /**
      * This method is used get link identity.
      *
-     * @return if metadata is present then the clientId will be returned. If 'legacyId' is present then identity will
-     * be decoded from 'legacyId'. Empty string otherwise.
+     * @return if metadata is present then the clientId will be returned. If 'legacyId' is present then identity will be
+     * decoded from 'legacyId'. Empty string otherwise.
      */
     public String getIdentity() throws InvalidSignatureException {
         if (legacyId != null) {

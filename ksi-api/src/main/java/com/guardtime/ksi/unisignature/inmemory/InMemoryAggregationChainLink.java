@@ -33,6 +33,8 @@ import com.guardtime.ksi.util.Util;
 import java.nio.charset.CharacterCodingException;
 import java.util.List;
 
+import static com.guardtime.ksi.unisignature.inmemory.LeftAggregationChainLink.ELEMENT_TYPE_LEFT_LINK;
+
 /**
  * Abstract class for LeftAggregationChainLink and RightAggregationChainLink implementations. AggregationChainLink
  * structure contains the following information: <ul> <li>May contain level correction value. Default value is 0</li>
@@ -200,6 +202,10 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         return legacyId;
     }
 
+    public boolean isLeft() {
+        return getElementType() == ELEMENT_TYPE_LEFT_LINK;
+    }
+
     private static class LinkMetadata extends TLVStructure {
 
         public static final int ELEMENT_TYPE_METADATA = 0x04;
@@ -243,5 +249,4 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             return ELEMENT_TYPE_METADATA;
         }
     }
-
 }

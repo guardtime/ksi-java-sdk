@@ -44,4 +44,5 @@ public interface AggregationChainLink {
      */
     byte[] getLegacyId();
 
+    boolean isLeft();
 }

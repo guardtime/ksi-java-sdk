@@ -31,6 +31,7 @@ import com.guardtime.ksi.unisignature.ChainResult;
 import com.guardtime.ksi.util.Util;
 
 import java.nio.charset.CharacterCodingException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -50,6 +51,10 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     private static final int ELEMENT_TYPE_SIBLING_HASH = 0x02;
     private static final int ELEMENT_TYPE_LEGACY_ID = 0x03;
 
+    private static final int LEGACY_ID_LENGTH = 29;
+    private static final byte[] LEGACY_ID_PREFIX = new byte[]{0x03, 0x00};
+    private static final int LEGACY_ID_OCTET_STRING_MAX_LENGTH = 25;
+
     private Long levelCorrection = 0L;
     private DataHash siblingHash;
     private byte[] legacyId;
@@ -68,6 +73,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
                     continue;
                 case ELEMENT_TYPE_LEGACY_ID:
                     this.legacyId = readOnce(child).getContent();
+                    verifyLegacyId(legacyId);
                     continue;
                 case LinkMetadata.ELEMENT_TYPE_METADATA:
                     this.metadata = new LinkMetadata(readOnce(child));
@@ -101,6 +107,22 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
 
     }
 
+    private void verifyLegacyId(byte[] legacyId) throws InvalidAggregationHashChainException {
+        if (legacyId.length != LEGACY_ID_LENGTH) {
+            throw new InvalidAggregationHashChainException("Invalid legacyId length");
+        }
+        if (!Arrays.equals(LEGACY_ID_PREFIX, Arrays.copyOfRange(legacyId, 0, 2))) {
+            throw new InvalidAggregationHashChainException("Invalid legacyId prefix");
+        }
+        int length = Util.toShort(legacyId, 1);
+        if (length > LEGACY_ID_OCTET_STRING_MAX_LENGTH) {
+            throw new InvalidAggregationHashChainException("Invalid legacyId embedded data length");
+        }
+        int contentLength = length + 3;
+        if (!Arrays.equals(new byte[LEGACY_ID_LENGTH - contentLength], Arrays.copyOfRange(legacyId, contentLength, legacyId.length))) {
+            throw new InvalidAggregationHashChainException("Invalid legacyId padding");
+        }
+    }
 
     /**
      * This method is used get link identity.
@@ -126,9 +148,6 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     private String getIdentityFromLegacyId() throws InvalidSignatureException {
         byte[] data = legacyId;
         int len = Util.toShort(data, 1);
-        if(len > 25) {
-            throw new InvalidSignatureException("Decoding link identity from legacy id failed. Invalid legacy id length");
-        }
         try {
             return Util.decodeString(data, 3, len);
         } catch (CharacterCodingException e) {
@@ -194,10 +213,6 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
      */
     public final Long getLevelCorrection() {
         return levelCorrection;
-    }
-
-    public byte[] getLegacyId() {
-        return legacyId;
     }
 
     private static class LinkMetadata extends TLVStructure {

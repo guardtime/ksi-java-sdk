@@ -138,6 +138,26 @@ public class InMemoryKsiSignatureTest {
         TestUtil.loadSignature("signature/signature-without-aggregation-hash-chains.ksig");
     }
 
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Invalid legacyId length")
+    public void testParseSignatureWithInvalidLegacyIdLength() throws Exception {
+        TestUtil.loadSignature("signature/legacy-id/too-long-legacy-id.ksig");
+    }
+
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Invalid legacyId prefix")
+    public void testParseSignatureWithInvalidLegacyIdPrefix() throws Exception {
+        TestUtil.loadSignature("signature/legacy-id/invalid-legacy-id-prefix.ksig");
+    }
+
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Invalid legacyId embedded data length")
+    public void testParseSignatureWithInvalidLegacyIdOctetStringLength() throws Exception {
+        TestUtil.loadSignature("signature/legacy-id/invalid-legacy-id-octet-string-padding-length.ksig");
+    }
+
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Invalid legacyId padding")
+    public void testParseSignatureWithInvalidLegacyIdOctetStringPadding() throws Exception {
+        TestUtil.loadSignature("signature/legacy-id/invalid-legacy-id-ending-byte.ksig");
+    }
+
     private InMemoryKsiSignature load(InputStream file) throws Exception {
         return new InMemoryKsiSignature(loadTlv(file));
     }

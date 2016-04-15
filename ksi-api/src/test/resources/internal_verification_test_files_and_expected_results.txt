@@ -84,13 +84,13 @@ publication-based-verification/ok-sig-2014-06-2-extended-one-empty-publication-r
 signature/signature-with-rfc3161-record-ok.ksig:true:true: : : 
 non-signature-file.ksig:false:false: :TLVParserException:Invalid TLV element. Expected=0x800, got=0x701
 internal-verification-aggr-chain/invalid-sibling-algorithm-legacy-id-tlv-changed-to-sibling-hash.ksig:false:false: :TLVParserException:Invalid DataHash
-internal-verification-aggr-chain/invalid-chain-index.ksig:false:false:INT_10: : 
-internal-verification-aggr-chain/one-invalid-chain-index.ksig:false:false: :InvalidSignatureException:Aggregation chain indexes are invalid. Invalid value. Expected 6275039, got 6275038
-internal-verification-aggr-chain/invalid-legacy-id-prefix.ksig:false:false: :InvalidSignatureException:Decoding link identity from legacy id failed. Invalid legacy id length
-internal-verification-aggr-chain/invalid-legacy-id-content-length.ksig:ok-sig-2014-06-2_invalid_legacy_id_content_length.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/invalid-legacy-id-ending-byte.ksig:true:false:INT_01: : 
+internal-verification-aggr-chain/single-invalid-chain-index.ksig:false:false: :InvalidSignatureException:Aggregation chain indexes are invalid. Invalid value. Expected 6275039, got 6275038
+internal-verification-aggr-chain/invalid-legacy-id-prefix.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId prefix
+internal-verification-aggr-chain/invalid-legacy-id-ending-byte.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId padding
+internal-verification-aggr-chain/legacy-id-algorithm.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId prefix
+internal-verification-aggr-chain/too-short-legacy-id.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId length
+internal-verification-aggr-chain/too-long-legacy-id.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId length
 internal-verification-aggr-chain/invalid-legacy-id-content.ksig:true:false:INT_01: : 
 internal-verification-aggr-chain/legacy-id-content-null.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/legacy-id-algorithm.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/too-short-legacy-id.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/too-long-legacy-id.ksig:true:false:INT_01: : 
+internal-verification-aggr-chain/invalid-legacy-id-content-length.ksig:true:false:INT_01: : 
+#internal-verification-aggr-chain/invalid-chain-index.ksig:true:false:INT_10: : 

@@ -43,29 +43,27 @@ public final class AggregationHashChainIndexConsistencyRule extends BaseRule {
         AggregationHashChain[] aggregationChains = context.getAggregationHashChains();
 
         for (AggregationHashChain chain : aggregationChains) {
-            List<Long> chainIndexList = chain.getChainIndex();
-            String chainIndex = Long.toBinaryString(chainIndexList.get(chainIndexList.size() - 1));
-            String chainToChainIndex = convertChainToChainIndex(chain);
+            int size = chain.getChainIndex().size();
+            long index = chain.getChainIndex().get(size - 1);
+            long chainToIndex = 0;
 
-            if (!chainIndex.equals(chainToChainIndex)) {
-                LOGGER.info("Chain index {} does not match corresponding chain {}", chainIndex, chainToChainIndex);
+            List<AggregationChainLink> links = chain.getChainLinks();
+            for (int i = 0; i < links.size(); i++) {
+                if (links.get(i).isLeft()) {
+                    chainToIndex |= 1L << i;
+                }
+            }
+            chainToIndex |= 1 << links.size();
+
+            if (index != chainToIndex) {
+                LOGGER.info("Chain index {} does not match corresponding chain {}", index, chainToIndex);
                 return VerificationResultCode.FAIL;
             }
         }
         return VerificationResultCode.OK;
     }
 
-    private String convertChainToChainIndex(AggregationHashChain chain) {
-        StringBuilder chainIndex = new StringBuilder();
-        for (AggregationChainLink link : chain.getChainLinks()) {
-            chainIndex.append(link.isLeft() ? "1" : "0");
-        }
-        return chainIndex.append("1").reverse().toString();
-    }
-
     public VerificationErrorCode getErrorCode() {
         return VerificationErrorCode.INT_10;
     }
-
-
 }

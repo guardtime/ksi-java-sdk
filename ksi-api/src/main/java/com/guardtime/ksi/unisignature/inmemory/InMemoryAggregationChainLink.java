@@ -34,6 +34,7 @@ import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.guardtime.ksi.unisignature.inmemory.LeftAggregationChainLink.ELEMENT_TYPE_LEFT_LINK;
 import static com.guardtime.ksi.util.Util.copyOf;
 
 /**
@@ -121,7 +122,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             throw new InvalidAggregationHashChainException("Invalid legacyId embedded data length");
         }
         int contentLength = length + 3;
-        if (!Arrays.equals(new byte[LEGACY_ID_LENGTH - contentLength], copyOf(legacyId, contentLength, legacyId.length-contentLength))) {
+        if (!Arrays.equals(new byte[LEGACY_ID_LENGTH - contentLength], copyOf(legacyId, contentLength, legacyId.length - contentLength))) {
             throw new InvalidAggregationHashChainException("Invalid legacyId padding");
         }
     }
@@ -217,6 +218,10 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         return levelCorrection;
     }
 
+    public boolean isLeft() {
+        return getElementType() == ELEMENT_TYPE_LEFT_LINK;
+    }
+
     private static class LinkMetadata extends TLVStructure {
 
         public static final int ELEMENT_TYPE_METADATA = 0x04;
@@ -260,5 +265,4 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             return ELEMENT_TYPE_METADATA;
         }
     }
-
 }

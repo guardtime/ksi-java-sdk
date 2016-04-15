@@ -6,8 +6,8 @@ internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingAggrTime.ksig:
 internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingChainIndex.ksig:false:false: :InvalidAggregationHashChainException: 
 internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingCoreAggr.ksig:true:false:INT_03: : 
 internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingInputHash.ksig:false:false: :InvalidAggregationHashChainException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingLeftLink.ksig:true:false:INT_03: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingRightLink.ksig:true:false:INT_03: : 
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingLeftLink.ksig:true:false:INT_10: : 
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingRightLink.ksig:true:false:INT_10: : 
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoAggrAlg.ksig:true:false:INT_03: : 
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoAggrTime.ksig:true:false:INT_02: : 
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoChainIndex.ksig:false:false: :InvalidSignatureException: 
@@ -93,4 +93,4 @@ internal-verification-aggr-chain/too-long-legacy-id.ksig:false:false: :InvalidAg
 internal-verification-aggr-chain/invalid-legacy-id-content.ksig:true:false:INT_01: : 
 internal-verification-aggr-chain/legacy-id-content-null.ksig:true:false:INT_01: : 
 internal-verification-aggr-chain/invalid-legacy-id-content-length.ksig:true:false:INT_01: : 
-#internal-verification-aggr-chain/invalid-chain-index.ksig:true:false:INT_10: : 
+internal-verification-aggr-chain/invalid-chain-index.ksig:true:false:INT_10: : 

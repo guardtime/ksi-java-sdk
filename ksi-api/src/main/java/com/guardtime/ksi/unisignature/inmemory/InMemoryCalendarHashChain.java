@@ -129,6 +129,7 @@ class InMemoryCalendarHashChain extends TLVStructure implements CalendarHashChai
                 r = r - highBit(r);
             }
         }
+
         if (r != 0) {
             throw new InvalidCalendarHashChainException("Calendar hash chain shape inconsistent with publication time");
         }

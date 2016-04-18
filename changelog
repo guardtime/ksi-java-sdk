@@ -1,6 +1,5 @@
 Version 4.2
 
-* IMPROVEMENT: Add stronger check for aggregation hash chain index consistency
 * IMPROVEMENT: Changed signature identity separator to <space>::<space>.
 * BUGFIX: Removed SHA-224 hash algorithm. Added internal policy rule to check aggregation hash chain link legacyId content.
 * BUGFIX: Removed KSI.asyncExtendToHead() and KSI.extendToHead() methods

@@ -30,7 +30,7 @@
 
     <artifactId>ksi-assembly</artifactId>
     <name>KSI Assembly</name>
-    <description>KSI Java SDK assembly module</description>
+    <description>KSI Java SDK module to generate zipped project</description>
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>

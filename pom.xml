@@ -60,7 +60,6 @@
 		<module>ksi-service-client-apache-http</module>
 		<module>ksi-service-client-tcp</module>
 		<module>ksi-api</module>
-		<module>ksi-assembly</module>
 	</modules>
 
 	<properties>
@@ -270,11 +269,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.6</version>
-			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -409,6 +403,30 @@
 			<properties>
 				<javadoc.doclint.none>-Xdoclint:none</javadoc.doclint.none>
 			</properties>
+		</profile>
+		<profile>
+			<id>release</id>
+			<modules>
+				<module>ksi-assembly</module>
+			</modules>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 

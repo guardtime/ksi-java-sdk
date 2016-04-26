@@ -312,20 +312,12 @@ public final class KSIBuilder {
             return future.getResult();
         }
 
-        public KSISignature extendToCalendarHead(KSISignature signature) throws KSIException {
-            SignatureExtensionRequestFuture future = asyncExtendToCalendarHead(signature);
-            return future.getResult();
-        }
-
         public SignatureExtensionRequestFuture asyncExtend(KSISignature signature) throws KSIException {
             if (signature == null) {
                 throw new KSIException("Invalid input parameter. KSI signature must be present.");
             }
-
             PublicationRecord publicationRecord = getPublicationsFile().getPublicationRecord(signature.getAggregationTime());
-            Date publicationDate = publicationRecord != null ? publicationRecord.getPublicationTime() : null;
-            ExtensionRequestFuture serviceFuture = ksiService.extend(signature.getAggregationTime(), publicationDate);
-            return new SignatureExtensionRequestFuture(serviceFuture, publicationRecord, signature);
+            return asyncExtend(signature, publicationRecord);
         }
 
         public SignatureExtensionRequestFuture asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException {
@@ -341,14 +333,6 @@ public final class KSIBuilder {
             Date publicationDate = publicationRecord.getPublicationTime();
             ExtensionRequestFuture serviceFuture = ksiService.extend(signature.getAggregationTime(), publicationDate);
             return new SignatureExtensionRequestFuture(serviceFuture, publicationRecord, signature);
-        }
-
-        public SignatureExtensionRequestFuture asyncExtendToCalendarHead(KSISignature signature) throws KSIException {
-            if (signature == null) {
-                throw new KSIException("Invalid input parameter. KSI signature must be present.");
-            }
-            PublicationRecord publicationRecord = getPublicationsFile().getLatestPublication();
-            return asyncExtend(signature, publicationRecord);
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {

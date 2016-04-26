@@ -68,7 +68,7 @@ public class AggregationHashChainTest {
     @Test
     public void testGetChainIdentityFromAggregationHashChain_Ok() throws Exception {
         InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
-        Assert.assertEquals(chain.getChainIdentity(), "A.B.testA.GT");
+        Assert.assertEquals(chain.getChainIdentity(" :: "), "GT :: testA :: B :: A");
     }
 
     private InMemoryAggregationHashChain load(String file) throws Exception {

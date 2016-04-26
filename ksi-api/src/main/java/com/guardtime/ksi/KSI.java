@@ -173,17 +173,6 @@ public interface KSI extends Closeable {
     KSISignature extend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException;
 
     /**
-     * Extends signature to the calendar head.
-     *
-     * @param signature
-     *         signature to be extended. not null.
-     * @return KSISignature extended keyless signature
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    KSISignature extendToCalendarHead(KSISignature signature) throws KSIException;
-
-    /**
      * This method is used to extend signature asynchronously to closes publication. Use method {@link
      * Future#getResult()} to get the extended keyless signature.
      *
@@ -208,18 +197,6 @@ public interface KSI extends Closeable {
      *         when error occurs (e.g when communication with KSI service fails)
      */
     Future<KSISignature> asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException;
-
-    /**
-     * This method is used to extend signature asynchronously to the newest publication found in publications file. Use
-     * method {@link Future#getResult()} to get the extended keyless signature.
-     *
-     * @param signature
-     *         instance of {@link KSISignature} to extend. not null.
-     * @return instance of {@link Future} future
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    Future<KSISignature> asyncExtendToCalendarHead(KSISignature signature) throws KSIException;
 
     /**
      * This method is used to verify the keyless signature.

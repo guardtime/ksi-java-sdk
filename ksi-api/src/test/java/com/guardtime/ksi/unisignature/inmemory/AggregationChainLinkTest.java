@@ -29,8 +29,9 @@ import org.testng.annotations.Test;
 
 public class AggregationChainLinkTest {
 
+    private static final byte[] LEGACY_ID_CONTENT = Base16.decode("03:00034142430000000000000000000000000000000000000000000000");
     private TLVElement siblingHash;
-    private TLVElement metaHash;
+    private TLVElement legacyId;
     private TLVElement metadata;
 
     @BeforeClass
@@ -43,8 +44,8 @@ public class AggregationChainLinkTest {
         clientIdElement.setStringContent("abc");
         metadata.addChildElement(clientIdElement);
 
-        metaHash = new TLVElement(false, false, 0x03);
-        metaHash.setDataHashContent(new DataHash(HashAlgorithm.SHA2_224, new byte[28]));
+        legacyId = new TLVElement(false, false, 0x03);
+        legacyId.setContent(LEGACY_ID_CONTENT);
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount 257")
@@ -57,18 +58,18 @@ public class AggregationChainLinkTest {
         new RightAggregationChainLink(element);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "AggregationChainLink sibling data must consist of one of the following: 'sibling hash', 'meta hash' or 'metadata'")
-    public void testLinkMustHaveSiblingHashOrMetaHashOrMetaData_ThrowsInvalidAggregationHashChainException() throws Exception {
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "AggregationChainLink sibling data must consist of one of the following: 'sibling hash', 'legacy id' or 'metadata'")
+    public void testLinkMustHaveSiblingHashOrLegacyIdOrMetaData_ThrowsInvalidAggregationHashChainException() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x07);
         element.setStringContent("");
         new LeftAggregationChainLink(element);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Sibling hash and meta hash are present")
-    public void testLinkMustNotHaveSiblingHashAndMetaHash_ThrowsInvalidAggregationHashChainException() throws Exception {
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Sibling hash and legacy id are present")
+    public void testLinkMustNotHaveSiblingHashAndLegacyId_ThrowsInvalidAggregationHashChainException() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(siblingHash);
-        element.addChildElement(metaHash);
+        element.addChildElement(legacyId);
         new LeftAggregationChainLink(element);
     }
 
@@ -80,10 +81,10 @@ public class AggregationChainLinkTest {
         new LeftAggregationChainLink(element);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Meta hash and metadata are present")
-    public void testLinkMustNotHaveMetaHashAndMetadata_ThrowsInvalidAggregationHashChainException() throws Exception {
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Legacy id and metadata are present")
+    public void testLinkMustNotHaveLegacyIdAndMetadata_ThrowsInvalidAggregationHashChainException() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x07);
-        element.addChildElement(metaHash);
+        element.addChildElement(legacyId);
         element.addChildElement(metadata);
         new LeftAggregationChainLink(element);
     }
@@ -115,12 +116,9 @@ public class AggregationChainLinkTest {
     }
 
     @Test
-    public void testDecodeLinkWithMetaHash_Ok() throws Exception {
-        TLVElement metaHash = new TLVElement(false, false, 0x03);
-        metaHash.setContent(Base16.decode("00:0003414243000000000000000000000000000000"));
-
+    public void testDecodeLinkWithLegacyId_Ok() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x08);
-        element.addChildElement(metaHash);
+        element.addChildElement(legacyId);
 
         RightAggregationChainLink link = new RightAggregationChainLink(element);
         Assert.assertNotNull(link);

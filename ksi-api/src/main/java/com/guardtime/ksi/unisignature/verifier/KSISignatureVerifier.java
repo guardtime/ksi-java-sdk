@@ -131,6 +131,8 @@ public final class KSISignatureVerifier implements SignatureVerifier {
             policyResults.add(result);
             if (!VerificationResultCode.OK.equals(result.getPolicyStatus())) {
                 this.errorCode = result.getErrorCode();
+            } else {
+                this.errorCode = null;
             }
         }
 

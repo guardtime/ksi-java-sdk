@@ -66,12 +66,6 @@ public class DataHasherTest {
     }
 
     @Test
-    public void testSha224AlgorithmNameAlternative() throws Exception {
-        HashAlgorithm alg = HashAlgorithm.getByName("SHA-2-224");
-        Assert.assertEquals(HashAlgorithm.SHA2_224.getName(), alg.getName());
-    }
-
-    @Test
     public void testSha1AlgorithmStateTag() throws Exception {
         HashAlgorithm alg = HashAlgorithm.getByName("SHA1");
         Assert.assertEquals(alg.getStatus(), HashAlgorithm.Status.NOT_TRUSTED);

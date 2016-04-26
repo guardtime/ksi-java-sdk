@@ -17,7 +17,16 @@
  * reserves and retains all trademark rights.
  */
 
+package com.guardtime.ksi.blocksigner;
+
 /**
- * This package contains classes and interfaces used to create block signatures
+ * Interface for describing data that can be added to the signature.
  */
-package com.guardtime.ksi.blocksignature;
+public interface SignatureMetadata {
+
+    /**
+     * Returns the client id to be added to the signature.
+     */
+    String getClientId();
+
+}

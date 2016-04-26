@@ -17,7 +17,7 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.blocksignature;
+package com.guardtime.ksi.blocksigner;
 
 import static com.guardtime.ksi.util.Util.notNull;
 
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A signer class to create block signatures. Methods {@link KsiBlockSigner#add(DataHash, long, SignatureMetadata)}
  * and/or {@link KsiBlockSigner#add(DataHash, long, SignatureMetadata)} can be used to add new input hash to the block
- * signature. Method {@link KsiBlockSigner#sign()} must be called to get the final signatures.
+ * signature. Method {@link Ks                                                                            iBlockSigner#sign()} must be called to get the final signatures.
  * <p/>
  * Current implementation returns one signature per input hash.
  * <p/>

@@ -17,7 +17,7 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.blocksignature;
+package com.guardtime.ksi.blocksigner;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
 import static org.testng.Assert.*;

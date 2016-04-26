@@ -17,16 +17,17 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.blocksignature;
+package com.guardtime.ksi.blocksigner;
 
-/**
- * Interface for describing data that can be added to the signature.
- */
-public interface SignatureMetadata {
+public class KsiSignatureMetadata implements SignatureMetadata {
 
-    /**
-     * Returns the client id to be added to the signature.
-     */
-    String getClientId();
+    private final String clientId;
 
+    public KsiSignatureMetadata(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
 }

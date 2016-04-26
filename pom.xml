@@ -269,16 +269,10 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.6</version>
-			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -296,8 +290,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<!-- m2e doesn't know what to do with jacoco, let's ignore it or 
-											annoying error markers appear see http://wiki.eclipse.org/M2E_plugin_execution_not_covered -->
+										<!-- m2e doesn't know what to do with jacoco, let's ignore it or annoying error markers appear see http://wiki.eclipse.org/M2E_plugin_execution_not_covered -->
 										<ignore></ignore>
 									</action>
 								</pluginExecution>
@@ -408,6 +401,30 @@
 			<properties>
 				<javadoc.doclint.none>-Xdoclint:none</javadoc.doclint.none>
 			</properties>
+		</profile>
+		<profile>
+			<id>release</id>
+			<modules>
+				<module>ksi-assembly</module>
+			</modules>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 

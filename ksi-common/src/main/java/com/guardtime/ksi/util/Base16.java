@@ -36,7 +36,7 @@ public final class Base16 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the base-16 string, or {@code null) if {@code in} is {@code null}.
+     * @return the base-16 string, or {@code null} if {@code in} is {@code null}.
      */
     public static String encode(byte[] in) {
         if (in == null) {
@@ -66,7 +66,7 @@ public final class Base16 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the formatted base-16 string, or {@code null) if {@code in} is {@code null}.
+     * @return the formatted base-16 string, or {@code null} if {@code in} is {@code null}.
      */
     public static String encodeWithColons(byte[] in) {
         if (in == null) {
@@ -97,7 +97,7 @@ public final class Base16 {
      *
      * @param in
      *            the base-16 string to decode.
-     * @return the decoded bytes, or {@code null) if {@code in} is {@code null}.
+     * @return the decoded bytes, or {@code null} if {@code in} is {@code null}.
      */
     public static byte[] decode(String in) {
         if (in == null) {

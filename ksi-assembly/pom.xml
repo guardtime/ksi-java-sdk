@@ -28,9 +28,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ksi-common</artifactId>
-    <name>KSI Common</name>
-    <description>KSI Java SDK common module</description>
+    <artifactId>ksi-assembly</artifactId>
+    <name>KSI Assembly</name>
+    <description>KSI Java SDK module to generate zipped project</description>
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
@@ -58,36 +58,40 @@
     </properties>
 
     <dependencies>
-
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.8.21</version>
-            <scope>test</scope>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ksi-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
-            <scope>test</scope>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ksi-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>${bouncycastle.version}</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ksi-service-client</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>${bouncycastle.version}</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ksi-service-client-apache-http</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ksi-service-client-common-http</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ksi-service-client-simple-http</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ksi-service-client-tcp</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -95,14 +99,39 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
-
+                <artifactId>maven-javadoc-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>aggregate</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>test-jar</goal>
+                            <goal>jar</goal>
                         </goals>
+                        <configuration>
+                            <includeDependencySources>true</includeDependencySources>
+                            <overview>${session.executionRootDirectory}/ksi-api/src/main/javadoc/overview.html</overview>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>ksi-assembly</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>assembly.xml</descriptor>
+                            </descriptors>
+                            <finalName>${project.parent.build.finalName}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -97,12 +97,13 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         return new InMemorySignaturePublicationRecord(element);
     }
 
+    //TODO add to interface
     public AggregationChainLink createLeftAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
         return new LeftAggregationChainLink(siblingHash, levelCorrection);
     }
 
-    public AggregationChainLink createLeftAggregationChainLink(long levelCorrection, String clientId) throws KSIException {
-        return new LeftAggregationChainLink(levelCorrection, clientId);
+    public AggregationChainLink createLeftAggregationChainLink(String clientId, long levelCorrection) throws KSIException {
+        return new LeftAggregationChainLink(clientId, levelCorrection);
     }
 
     public AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {

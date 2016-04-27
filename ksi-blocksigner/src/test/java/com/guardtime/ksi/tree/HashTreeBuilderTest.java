@@ -58,8 +58,8 @@ public class HashTreeBuilderTest extends AbstractBlockSignatureTest {
         assertNotNull(root);
         assertEquals(new DataHash(root.getValue()), dataHash);
         assertEquals(root.getLevel(), 0);
-        assertNull(root.getLeftChild());
-        assertNull(root.getRightChild());
+        assertNull(root.getLeftChildNode());
+        assertNull(root.getRightChildNode());
         assertNull(root.getParent());
     }
 

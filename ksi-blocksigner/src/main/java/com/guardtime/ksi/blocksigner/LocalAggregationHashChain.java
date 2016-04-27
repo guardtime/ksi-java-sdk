@@ -40,7 +40,7 @@ class LocalAggregationHashChain {
     public LocalAggregationHashChain(DataHash inputHash, long level, SignatureMetadata metadata) throws KSIException {
         this.inputHash = inputHash;
         this.currentOutputHash = inputHash;
-        AggregationChainLink link = SIGNATURE_ELEMENT_FACTORY.createLeftAggregationChainLink(level, metadata.getClientId());
+        AggregationChainLink link = SIGNATURE_ELEMENT_FACTORY.createLeftAggregationChainLink(metadata.getClientId(), level);
         links.addLast(link);
         this.latestChainResult = calculateOutputHash(0L);
     }

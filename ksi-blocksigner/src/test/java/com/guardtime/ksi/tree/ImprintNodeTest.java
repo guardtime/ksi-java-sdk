@@ -55,8 +55,8 @@ public class ImprintNodeTest {
 
         assertTrue(left.isLeft());
         assertFalse(right.isLeft());
-        assertEquals(root.getLeftChild(), left);
-        assertEquals(root.getRightChild(), right);
+        assertEquals(root.getLeftChildNode(), left);
+        assertEquals(root.getRightChildNode(), right);
     }
 
 }

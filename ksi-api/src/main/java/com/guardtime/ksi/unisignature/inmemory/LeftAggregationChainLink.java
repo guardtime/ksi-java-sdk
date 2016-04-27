@@ -38,8 +38,8 @@ class LeftAggregationChainLink extends InMemoryAggregationChainLink {
         super(siblingHash, levelCorrection);
     }
 
-    LeftAggregationChainLink(Long levelCorrection, String clientId) throws KSIException {
-        super(levelCorrection, clientId);
+    LeftAggregationChainLink(String clientId, long levelCorrection) throws KSIException {
+        super(clientId, levelCorrection);
     }
 
     LeftAggregationChainLink(TLVElement element) throws KSIException {

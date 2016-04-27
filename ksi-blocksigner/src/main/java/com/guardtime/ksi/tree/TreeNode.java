@@ -42,14 +42,14 @@ public interface TreeNode {
     void setParent(TreeNode node);
 
     /**
-     * Returns left child node. In case of leaf node the <i>null</i> is returned.
+     * Returns left child node. In case of leaf node <i>null</i> is returned.
      */
-    TreeNode getLeftChild();
+    TreeNode getLeftChildNode();
 
     /**
-     * Returns right child node. In case of leaf node the <i>null</i> is returned.
+     * Returns right child node. In case of leaf node <i>null</i> is returned.
      */
-    TreeNode getRightChild();
+    TreeNode getRightChildNode();
 
     /**
      * Returns true is this node is left child node.

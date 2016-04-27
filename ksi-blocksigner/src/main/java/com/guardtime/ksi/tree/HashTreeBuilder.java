@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * Note that {@link HashTreeBuilder} works only with {@link ImprintNode} objects. Current implementation calculates the
  * parent hash by connecting the child node values and the parent node height before hashing.
  * <p/>
- * Not that this builder can not be used multiple times.
+ * Note that this builder can not be used multiple times.
  */
 public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
 

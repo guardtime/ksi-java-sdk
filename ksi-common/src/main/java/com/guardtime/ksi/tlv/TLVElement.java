@@ -472,7 +472,6 @@ public final class TLVElement {
 
     @Override
     public String toString() {
-
         StringBuilder builder = new StringBuilder(convertHeader());
         builder.append(":");
         if (children.isEmpty()) {
@@ -511,7 +510,6 @@ public final class TLVElement {
         if (type != that.type) return false;
         if (children != null ? !children.equals(that.children) : that.children != null) return false;
         return Arrays.equals(content, that.content);
-
     }
 
     @Override

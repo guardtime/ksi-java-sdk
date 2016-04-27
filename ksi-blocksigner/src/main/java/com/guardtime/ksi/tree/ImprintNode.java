@@ -70,11 +70,11 @@ public class ImprintNode implements TreeNode {
         this.parent = node;
     }
 
-    public TreeNode getLeftChild() {
+    public TreeNode getLeftChildNode() {
         return leftChild;
     }
 
-    public TreeNode getRightChild() {
+    public TreeNode getRightChildNode() {
         return rightChild;
     }
 
@@ -95,7 +95,7 @@ public class ImprintNode implements TreeNode {
     }
 
     public boolean isLeaf() {
-        return getLeftChild() == null && getRightChild() == null;
+        return getLeftChildNode() == null && getRightChildNode() == null;
     }
 
     @Override

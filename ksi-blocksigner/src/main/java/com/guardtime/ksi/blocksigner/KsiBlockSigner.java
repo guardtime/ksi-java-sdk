@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A signer class to create block signatures. Methods {@link KsiBlockSigner#add(DataHash, long, SignatureMetadata)}
  * and/or {@link KsiBlockSigner#add(DataHash, long, SignatureMetadata)} can be used to add new input hash to the block
- * signature. Method {@link Ks                                                                            iBlockSigner#sign()} must be called to get the final signatures.
+ * signature. Method {@link KsiBlockSigner#sign()} must be called to get the final signatures.
  * <p/>
  * Current implementation returns one signature per input hash.
  * <p/>
@@ -183,17 +183,17 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         AggregationChainLink link;
         long parentLevel = parent.getLevel();
         if (node.isLeft()) {
-            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getLeftChild());
-            link = SIGNATURE_ELEMENT_FACTORY.createLeftAggregationChainLink(new DataHash(parent.getRightChild().getValue()), levelCorrection);
+            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getLeftChildNode());
+            link = SIGNATURE_ELEMENT_FACTORY.createLeftAggregationChainLink(new DataHash(parent.getRightChildNode().getValue()), levelCorrection);
         } else {
-            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getRightChild());
-            link = SIGNATURE_ELEMENT_FACTORY.createRightAggregationChainLink(new DataHash(parent.getLeftChild().getValue()), levelCorrection);
+            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getRightChildNode());
+            link = SIGNATURE_ELEMENT_FACTORY.createRightAggregationChainLink(new DataHash(parent.getLeftChildNode().getValue()), levelCorrection);
         }
         return link;
     }
 
-    private long calculateLevelCorrection(long parentLevel, TreeNode parent) {
-        return parentLevel - parent.getLevel() - 1;
+    private long calculateLevelCorrection(long parentLevel, TreeNode childNode) {
+        return parentLevel - childNode.getLevel() - 1;
     }
 
     private long calculateIndex(LinkedList<AggregationChainLink> links) {

@@ -48,7 +48,6 @@ public class SimpleHttpGetRequestFuture extends HttpGetRequestFuture {
             } finally {
                 Util.closeQuietly(inputStream);
             }
-
         }
     }
 

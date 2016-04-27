@@ -48,8 +48,8 @@ public interface TreeBuilder<N extends TreeNode> {
     void add(N... nodes) throws KSIException;
 
     /**
-     * Builds the binary tree and returns the root hash of the tree. {@link TreeNode#getLeftChild()} and/or {@link
-     * TreeNode#getRightChild()} methods can be used for tree traversal.
+     * Builds the binary tree and returns the root hash of the tree. {@link TreeNode#getLeftChildNode()} and/or {@link
+     * TreeNode#getRightChildNode()} methods can be used for tree traversal.
      */
     N build() throws KSIException;
 

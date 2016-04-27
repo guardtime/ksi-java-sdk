@@ -127,7 +127,7 @@ public class AggregationChainLinkTest {
 
     @Test
     public void testCreateNewLeftLink() throws Exception {
-        LeftAggregationChainLink link = new LeftAggregationChainLink(20L, "kala");
+        LeftAggregationChainLink link = new LeftAggregationChainLink("kala", 20L);
         Assert.assertEquals(link, new LeftAggregationChainLink(link.getRootElement()));
     }
 

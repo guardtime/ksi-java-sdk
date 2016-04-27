@@ -40,7 +40,7 @@ import static com.guardtime.ksi.util.Util.copyOf;
 
 /**
  * Abstract class for LeftAggregationChainLink and RightAggregationChainLink implementations. AggregationChainLink
- * structure contains the following information: <ul> <li>May contain level correction value. Default value is 0</li>
+ * structure contains the following information: <ul> <li>contains level correction value. Default value is 0</li>
  * <li>One and only one of the following three fields</li> <ul> <li>sibling hash - an `imprint' representing a hash
  * value from the sibling node in the tree</li> <li>metadata - a sub-structure that provides the ability to incorporate
  * client identity and other information about the request into the hash chain.</li> <li>metadata hash - metadata of
@@ -49,6 +49,7 @@ import static com.guardtime.ksi.util.Util.copyOf;
  * <p/>
  * </ul>
  */
+//TODO fix javadoc
 abstract class InMemoryAggregationChainLink extends TLVStructure implements AggregationChainLink {
 
     private static final int ELEMENT_TYPE_LEVEL_CORRECTION = 0x01;
@@ -64,7 +65,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     private byte[] legacyId;
     private LinkMetadata metadata;
 
-    InMemoryAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
+    InMemoryAggregationChainLink(DataHash siblingHash, Long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
         this.siblingHash = siblingHash;
         this.rootElement = new TLVElement(false, false, getElementType());
@@ -72,7 +73,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash));
     }
 
-    InMemoryAggregationChainLink(Long levelCorrection, String clientId) throws KSIException {
+    InMemoryAggregationChainLink(String clientId, Long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
         this.rootElement = new TLVElement(false, false, getElementType());
         addLevelCorrectionTlvElement();

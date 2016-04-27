@@ -45,7 +45,7 @@ public class SimpleHttpPostRequestFuture extends HttpPostRequestFuture {
         this.responseMessage = connection.getResponseMessage();
         InputStream input = null;
         try {
-            if (connection.getResponseCode() >= 400) {
+            if (connection.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
                 input = connection.getErrorStream();
                 if (input != null) {
                     this.response = Util.toByteArray(input);

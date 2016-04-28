@@ -71,7 +71,6 @@ public interface KSISignatureFactory {
      *         signature publication record.
      * @param rfc3161Record
      *         signature RFC3161 record
-     *
      * @return instance of {@link KSISignature}
      * @throws KSIException
      *         when error occurs (e.g input data is invalid)
@@ -92,6 +91,21 @@ public interface KSISignatureFactory {
      * Creates a new aggregation hash chain
      */
     AggregationHashChain createAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> indexes, LinkedList<AggregationChainLink> links) throws KSIException;
+
+    /**
+     * Creates a new left aggregation hash chain link with given sibling hash and level.
+     */
+    AggregationChainLink createLeftAggregationChainLink(DataHash siblingHash, long level) throws KSIException;
+
+    /**
+     * Creates a new right aggregation hash chain link with given sibling hash and level.
+     */
+    AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long level) throws KSIException;
+
+    /**
+     * Creates a new left aggregation hash chain link with given clientId and level.
+     */
+    AggregationChainLink createLeftAggregationChainLink(String clientId, long level) throws KSIException;
 
     /**
      * Creates calendar authentication record from input TLV element.
@@ -136,5 +150,6 @@ public interface KSISignatureFactory {
      *         when error occurs (e.g input data is invalid)
      */
     SignaturePublicationRecord createPublicationRecord(TLVElement element) throws KSIException;
+
 
 }

@@ -90,7 +90,7 @@ public class KSIServiceImpl implements KSIService {
         AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId, DEFAULT_LEVEL);
         ServiceCredentials credentials = signerClient.getServiceCredentials();
         KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId);
-        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
+        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
         AggregationRequest requestMessage = new AggregationRequest(header, request, credentials.getLoginKey());
         Future<TLVElement> future = signerClient.sign(convert(requestMessage));
         return new CreateSignatureFuture(future, requestContext, signatureFactory);
@@ -114,7 +114,7 @@ public class KSIServiceImpl implements KSIService {
             throws KSIException {
         ServiceCredentials credentials = extenderClient.getServiceCredentials();
         KSIRequestContext requestContext = new KSIRequestContext(credentials, extensionRequest.getRequestId());
-        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
+        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
         ExtensionRequest requestMessage = new ExtensionRequest(header, extensionRequest, credentials.getLoginKey());
         ByteArrayInputStream inputStream = convert(requestMessage);
         Future<TLVElement> future = extenderClient.extend(inputStream);

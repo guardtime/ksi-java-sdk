@@ -1,6 +1,9 @@
-Version 4.2
+Version 4.3
 
 * FEATURE: Added support for local aggregation.
+
+Version 4.2
+
 2016-04-19 4.2.32
 
 * IMPROVEMENT: Changed signature identity separator to <space>::<space>.

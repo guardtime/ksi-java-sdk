@@ -19,15 +19,6 @@
 
 package com.guardtime.ksi.blocksigner;
 
-import static com.guardtime.ksi.util.Util.notNull;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
@@ -49,14 +40,38 @@ import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import static com.guardtime.ksi.util.Util.notNull;
+
 /**
- * A signer class to create block signatures. Methods {@link KsiBlockSigner#add(DataHash, long, SignatureMetadata)}
- * and/or {@link KsiBlockSigner#add(DataHash, long, SignatureMetadata)} can be used to add new input hash to the block
- * signature. Method {@link KsiBlockSigner#sign()} must be called to get the final signatures.
+ * A signer class to create a list of unisigantures. Methods {@link KsiBlockSigner#add(DataHash, long, SignatureMetadata)},
+ * {@link KsiBlockSigner#add(DataHash)} and/or {@link KsiBlockSigner#add(DataHash, long, SignatureMetadata)} can be used
+ * to add new input hash to the block signer. Method {@link KsiBlockSigner#sign()} must be called to get the final
+ * signatures. <p/> Current implementation returns one signature per input hash. <p/> Note that this class can not be
+ * used multiple times. </p> The following sample shows how to use {@link KsiBlockSigner} class:
  * <p/>
- * Current implementation returns one signature per input hash.
- * <p/>
- * Note that this class can not be used multiple times.
+ * <pre>
+ * {@code
+ *
+ * // initialize ksi block signer
+ * KSISigningClient signingClient = getSigningClient()
+ * KsiBlockSigner signer = new KsiBlockSigner(signingClient);
+ *
+ * // add data hashes
+ * signer.add(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
+ * signer.add(dataHash2);
+ * signer.add(dataHash3);
+ *
+ * // call sign methods to get final signatures
+ * List<KSISignature> signatures = signer.sign();
+ * }
+ * </pre>
  */
 public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
@@ -100,6 +115,13 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      */
     public KsiBlockSigner add(DataHash dataHash, SignatureMetadata metadata) throws KSIException {
         return add(dataHash, 0L, metadata);
+    }
+
+    /**
+     * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
+     */
+    public KsiBlockSigner add(DataHash dataHash) throws KSIException {
+        return add(dataHash, 0L, null);
     }
 
     /**

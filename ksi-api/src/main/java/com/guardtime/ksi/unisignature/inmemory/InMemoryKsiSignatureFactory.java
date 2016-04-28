@@ -97,7 +97,6 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         return new InMemorySignaturePublicationRecord(element);
     }
 
-    //TODO add to interface
     public AggregationChainLink createLeftAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
         return new LeftAggregationChainLink(siblingHash, levelCorrection);
     }

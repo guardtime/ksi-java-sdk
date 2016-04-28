@@ -19,51 +19,19 @@
 
 package com.guardtime.ksi.blocksigner;
 
-import static com.guardtime.ksi.CommonTestUtil.load;
-import static org.testng.Assert.*;
-
-import java.util.List;
-import java.util.Properties;
-
 import com.guardtime.ksi.AbstractBlockSignatureTest;
-import com.guardtime.ksi.KSI;
-import com.guardtime.ksi.KSIBuilder;
 import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.service.client.KSIServiceCredentials;
-import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.client.http.HttpClientSettings;
-import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
-import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.List;
+
+import static org.testng.Assert.*;
 
 public class KsiBlockSignerIntegrationTest extends AbstractBlockSignatureTest {
 
-    private KSI ksi;
-    private KSISigningClient simpleHttpClient;
     private KsiSignatureMetadata metadata = new KsiSignatureMetadata("test1");
-
-    @BeforeMethod
-    public void setUp() throws Exception {
-        super.setUp();
-        Properties prop = new Properties();
-        prop.load(load("test.properties"));
-
-        HttpClientSettings settings = new HttpClientSettings(prop.getProperty("signer.url"),
-                prop.getProperty("extender.url"), prop.getProperty("publications.file.url"),
-                new KSIServiceCredentials(prop.getProperty("signer.login.id"), prop.getProperty("signer.login.key")));
-
-        SimpleHttpClient simpleHttpClient = new SimpleHttpClient(settings);
-        this.simpleHttpClient = simpleHttpClient;
-        this.ksi = new KSIBuilder().setKsiProtocolExtenderClient(simpleHttpClient).
-                setKsiProtocolPublicationsFileClient(simpleHttpClient).
-                setKsiProtocolSignerClient(simpleHttpClient).
-                setPublicationsFileTrustedCertSelector(new X509CertificateSubjectRdnSelector("E=publications@guardtime.com")).
-                build();
-
-    }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client")
     public void testCreateSignatureLargeAggregationTree() throws Exception {

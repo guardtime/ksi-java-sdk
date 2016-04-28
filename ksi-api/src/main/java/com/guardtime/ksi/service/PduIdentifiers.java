@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * PDU request identifiers.
  */
-public class PduIdentifiers {
+public final class PduIdentifiers {
 
     private static final long INSTANCE_ID = Util.nextLong();
     private static AtomicLong messageId = new AtomicLong();
@@ -34,7 +34,7 @@ public class PduIdentifiers {
     private PduIdentifiers() {
     }
 
-    public final long nextMessageId() {
+    public static final long nextMessageId() {
         return messageId.incrementAndGet();
     }
 

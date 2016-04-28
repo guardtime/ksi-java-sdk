@@ -23,22 +23,27 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 
 /**
- * A signer class to create block signatures. Methods {@link BlockSigner#add(DataHash, long, SignatureMetadata)} and/or
- * {@link BlockSigner#add(DataHash, long, SignatureMetadata)} can be used to add new input hash to the block signature.
- * Method {@link BlockSigner#sign()} must be called to get the final signatures.
+ * A signer class to create block signatures. Methods {@link BlockSigner#add(DataHash, long, SignatureMetadata)}, {@link
+ * BlockSigner#add(DataHash, long, SignatureMetadata)} and/or {@link BlockSigner#add(DataHash)} can be used to add new
+ * input hash to the block signer. Method {@link BlockSigner#sign()} must be called to get the final signatures.
  *
- * @param <T>
+ *  @param <T>
  *         type of the created block signature
  */
 public interface BlockSigner<T> {
 
     /**
-     * Adds a new hash to the block signature
+     * Adds a new hash to the signer
+     */
+    KsiBlockSigner add(DataHash dataHash) throws KSIException;
+
+    /**
+     * Adds a new hash to the signer
      */
     KsiBlockSigner add(DataHash dataHash, SignatureMetadata metadata) throws KSIException;
 
     /**
-     * Adds a new hash to the block signature
+     * Adds a new hash to the signer
      */
     KsiBlockSigner add(DataHash dataHash, long level, SignatureMetadata metadata) throws KSIException;
 

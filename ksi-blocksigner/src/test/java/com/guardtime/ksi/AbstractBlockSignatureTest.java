@@ -16,16 +16,15 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-
 package com.guardtime.ksi;
-
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
 import com.guardtime.ksi.tree.ImprintNode;
 import org.testng.annotations.BeforeMethod;
 
-public abstract class AbstractBlockSignatureTest {
+public abstract class AbstractBlockSignatureTest extends AbstractCommonIntegrationTest {
 
     protected DataHash dataHash;
     protected DataHash dataHash2;
@@ -37,6 +36,7 @@ public abstract class AbstractBlockSignatureTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
+        super.setUp();
         dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
         dataHash2 = new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1});
         dataHash3 = new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2});

@@ -35,6 +35,8 @@ import java.security.cert.X509Certificate;
 
 public class AbstractCommonServiceTest {
 
+    protected static final String PUBLICATIONS_FILE_15_04_2014 = "publications.15042014.tlv";
+
     protected KSISigningClient mockedSigningClient;
     protected KSIExtenderClient mockedExtenderClient;
     protected KSIPublicationsFileClient mockedPublicationsFileClient;
@@ -53,7 +55,8 @@ public class AbstractCommonServiceTest {
         Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(TestUtil.CREDENTIALS_ANONYMOUS);
         Mockito.when(mockedTrustStore.isTrusted(Mockito.any(X509Certificate.class), Mockito.any(Store.class))).thenReturn(true);
 
-        ksiService = Mockito.spy(new KSIServiceImpl(mockedSigningClient, mockedExtenderClient, mockedPublicationsFileClient, new InMemoryKsiSignatureFactory(), new InMemoryPublicationsFileFactory(mockedTrustStore)));
+        InMemoryPublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(mockedTrustStore);
+        ksiService = Mockito.spy(new KSIServiceImpl(mockedSigningClient, mockedExtenderClient, new NonCachingPublicationsFileClientAdapter(mockedPublicationsFileClient, publicationsFileFactory), new InMemoryKsiSignatureFactory()));
         mockedResponse = Mockito.mock(Future.class);
         mockedPublicationsFileResponse = Mockito.mock(Future.class);
         Mockito.when(ksiService.generateRandomId()).thenReturn(42275443333883166L);

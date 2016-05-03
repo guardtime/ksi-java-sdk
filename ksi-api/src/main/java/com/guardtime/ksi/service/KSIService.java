@@ -61,10 +61,10 @@ public interface KSIService {
     /**
      * Execute asynchronous publications file download call.
      *
-     * @return request future object
+     * @return instance of {@link PublicationsFile}
      * @throws KSIProtocolException
      *         if publications file future creation fails
      */
-    Future<PublicationsFile> getPublicationsFile() throws KSIException;
+    PublicationsFile getPublicationsFile() throws KSIException;
 
 }

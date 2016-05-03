@@ -36,7 +36,6 @@ import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.util.Util;
 
 import java.io.ByteArrayInputStream;
-import java.nio.ByteBuffer;
 import java.util.Date;
 
 /**
@@ -46,9 +45,8 @@ public class KSIServiceImpl implements KSIService {
 
     private KSISigningClient signerClient;
     private KSIExtenderClient extenderClient;
-    private KSIPublicationsFileClient publicationsFileClient;
+    private PublicationsFileClientAdapter publicationsFileAdapter;
     private KSISignatureFactory signatureFactory;
-    private PublicationsFileFactory publicationsFileFactory;
 
     /**
      * Creates new instance of {@link KSIServiceImpl}.
@@ -57,30 +55,26 @@ public class KSIServiceImpl implements KSIService {
      *         - KSI client to be used for signing. May not be null.
      * @param extenderClient
      *         - KSI HTTP client to be used for extending. May not be null.
-     * @param publicationsFileClient
+     * @param publicationsFileAdapter
      *         - KSI HTTP client to be used for fetching the publications file. May not be null.
      */
-    public KSIServiceImpl(KSISigningClient signerClient, KSIExtenderClient extenderClient, KSIPublicationsFileClient publicationsFileClient, KSISignatureFactory signatureFactory, PublicationsFileFactory publicationsFileFactory) throws KSIException {
+    public KSIServiceImpl(KSISigningClient signerClient, KSIExtenderClient extenderClient, PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory) throws KSIException {
         if (signerClient == null) {
             throw new KSIException("Invalid input parameter. Singer client can not be null");
         }
         if (extenderClient == null) {
             throw new KSIException("Invalid input parameter. Extender client can not be null");
         }
-        if (publicationsFileClient == null) {
-            throw new KSIException("Invalid input parameter. Publications file client can not be null");
+        if (publicationsFileAdapter == null) {
+            throw new KSIException("Invalid input parameter. Publications file client adapter can not be null");
         }
         if (signatureFactory == null) {
             throw new KSIException("Invalid input parameter. KSI signature factory can not be null");
         }
-        if (publicationsFileFactory == null) {
-            throw new KSIException("Invalid input parameter. Publications file factory can not be null");
-        }
         this.signerClient = signerClient;
         this.extenderClient = extenderClient;
-        this.publicationsFileClient = publicationsFileClient;
+        this.publicationsFileAdapter = publicationsFileAdapter;
         this.signatureFactory = signatureFactory;
-        this.publicationsFileFactory = publicationsFileFactory;
     }
 
     public CreateSignatureFuture sign(DataHash dataHash) throws KSIException {
@@ -106,9 +100,8 @@ public class KSIServiceImpl implements KSIService {
         return extendSignature(new ExtensionRequestPayload(aggregationTime, publicationTime, requestId));
     }
 
-    public Future<PublicationsFile> getPublicationsFile() throws KSIException {
-        Future<ByteBuffer> future = publicationsFileClient.getPublicationsFile();
-        return new PublicationsFileFuture(publicationsFileFactory, future);
+    public PublicationsFile getPublicationsFile() throws KSIException {
+        return publicationsFileAdapter.getPublicationsFile();
     }
 
     protected Long generateRandomId() {
@@ -140,7 +133,7 @@ public class KSIServiceImpl implements KSIService {
         return signerClient;
     }
 
-    public KSIPublicationsFileClient getPublicationsFileClient() {
-        return publicationsFileClient;
+    public KSIPublicationsFileClient getPublicationsFileAdapter() {
+        return publicationsFileAdapter.getPublicationsFileClient();
     }
 }

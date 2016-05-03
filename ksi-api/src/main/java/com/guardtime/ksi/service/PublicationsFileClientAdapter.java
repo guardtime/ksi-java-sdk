@@ -16,29 +16,26 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+
 package com.guardtime.ksi.service;
 
-import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.publication.PublicationsFile;
-import com.guardtime.ksi.util.Util;
-import org.mockito.Mockito;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 
-import java.nio.ByteBuffer;
+/**
+ * Adapter interface for publication file clients
+ */
+public interface PublicationsFileClientAdapter {
 
-import static com.guardtime.ksi.TestUtil.load;
+    /**
+     * Returns the instance of the {@link PublicationsFile}.
+     */
+    PublicationsFile getPublicationsFile() throws KSIException;
 
-public class PublicationsFileServiceTest extends AbstractCommonServiceTest {
-
-    @Test
-    public void testCreateSignature_Ok() throws Exception {
-        Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load(PUBLICATIONS_FILE_15_04_2014))));
-        Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(mockedPublicationsFileResponse);
-
-        PublicationsFile response = ksiService.getPublicationsFile();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(response, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_15_04_2014));
-    }
+    /**
+     * Returns the publication file client used by adapter
+     */
+    KSIPublicationsFileClient getPublicationsFileClient();
 
 }

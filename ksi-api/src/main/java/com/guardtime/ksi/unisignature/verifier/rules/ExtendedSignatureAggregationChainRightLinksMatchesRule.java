@@ -29,8 +29,10 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 
+// TODO: Fix javadoc
 /**
  * This rule checks that: <ul> <li>the extended signature contains the same count of right aggregation hash chain
  * links</li> <li>the extended signature right aggregation hash chain links are equal to the not extended signature
@@ -44,21 +46,20 @@ public class ExtendedSignatureAggregationChainRightLinksMatchesRule extends Base
         KSISignature signature = context.getSignature();
         CalendarHashChain extendedCalendarHashChain = context.getExtendedCalendarHashChain(signature.getCalendarHashChain().getPublicationTime());
 
-        List<CalendarHashChainLink> signatureLinks = signature.getCalendarHashChain().getChainLinks();
-        List<CalendarHashChainLink> extendedSignatureLinks = extendedCalendarHashChain.getChainLinks();
+        List<CalendarHashChainLink> signatureRightLinks = getRightLinks(signature.getCalendarHashChain());
+        List<CalendarHashChainLink> extendedSignatureRightLinks = getRightLinks(extendedCalendarHashChain);
 
-        if (signatureLinks.size() != extendedSignatureLinks.size()) {
-            LOGGER.info("Extended signature aggregation chain links count does not match with initial signature aggregation chain links count. Expected {}, found {}.", signatureLinks.size(), extendedSignatureLinks.size());
+        if(signatureRightLinks.size() != extendedSignatureRightLinks.size()) {
+            LOGGER.info("Extended signature calendar hash chain right links count does not match with initial signature calendar hash chain right links count. Expected {}, found {}.", signatureRightLinks.size(), extendedSignatureRightLinks.size());
             return VerificationResultCode.FAIL;
         }
-        for (int i = 0; i < extendedSignatureLinks.size(); i++) {
-            CalendarHashChainLink link = extendedSignatureLinks.get(i);
-            if (link.isRightLink()) {
-                CalendarHashChainLink initialLink = signatureLinks.get(i);
-                if (!link.equals(initialLink)) {
-                    LOGGER.info("Extended signature contains different aggregation hash chain right link");
-                    return VerificationResultCode.FAIL;
-                }
+
+        for (int i = 0; i < extendedSignatureRightLinks.size(); i++) {
+            CalendarHashChainLink link = extendedSignatureRightLinks.get(i);
+            CalendarHashChainLink initialLink = signatureRightLinks.get(i);
+            if (!link.equals(initialLink)) {
+                LOGGER.info("Extended signature contains different calendar hash chain right link");
+                return VerificationResultCode.FAIL;
             }
         }
 
@@ -67,6 +68,16 @@ public class ExtendedSignatureAggregationChainRightLinksMatchesRule extends Base
 
     public VerificationErrorCode getErrorCode() {
         return VerificationErrorCode.CAL_04;
+    }
+
+    private List<CalendarHashChainLink> getRightLinks(CalendarHashChain hashChain) {
+        List<CalendarHashChainLink> returnable = new LinkedList<CalendarHashChainLink>();
+        for(CalendarHashChainLink link : hashChain.getChainLinks()) {
+            if(link.isRightLink()) {
+                returnable.add(link);
+            }
+        }
+        return returnable;
     }
 
 }

@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedList;
 import java.util.List;
 
-// TODO: Fix javadoc
-
 /**
  * This rule checks that: <ul> <li>the extended calendar hash chain contains the same count of right links</li> <li>the
  * extended calendar hash chain right links are equal to the not extended calendar hash chain right links</li> </ul>

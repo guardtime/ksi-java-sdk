@@ -20,11 +20,12 @@ package com.guardtime.ksi.service.extension;
 
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.service.KSIMessageHeader;
 import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.service.KSIRequestContext;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Date;
@@ -33,11 +34,17 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class ExtensionRequestTest {
 
-    private static final KSIRequestContext CONTEXT = new KSIRequestContext(TestUtil.CREDENTIALS_ANONYMOUS, 1234L);
+    public static final byte[] LOGIN_KEY = TestUtil.CREDENTIALS_ANONYMOUS.getLoginKey();
+    private KSIMessageHeader header;
+
+    @BeforeMethod
+    public void setUp() throws Exception {
+        this.header = new KSIMessageHeader(TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
+    }
 
     @Test
     public void testCreateExtensionRequestInstance_Ok() throws Exception {
-        ExtensionRequest extensionRequest = new ExtensionRequest((ExtensionRequestPayload) null, CONTEXT);
+        ExtensionRequest extensionRequest = new ExtensionRequest(header, null, LOGIN_KEY);
         Assert.assertNotNull(extensionRequest.getHeader());
         Assert.assertEquals(extensionRequest.getHeader().getLoginId(), TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
         Assert.assertNull(extensionRequest.getHeader().getInstanceId());
@@ -48,14 +55,14 @@ public class ExtensionRequestTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Invalid KSI request. Extension request payload is missing")
     public void testEncodeExtensionRequestWithoutPayload_Ok() throws Exception {
-        ExtensionRequest extensionRequest = new ExtensionRequest((ExtensionRequestPayload) null, CONTEXT);
+        ExtensionRequest extensionRequest = new ExtensionRequest(header, null, LOGIN_KEY);
         load(encode(extensionRequest));
     }
 
     @Test
     public void testEncodeExtensionRequestWithAggregationTime_Ok() throws Exception {
         ExtensionRequestPayload payload = new ExtensionRequestPayload(new Date(), Util.nextLong());
-        ExtensionRequest extensionRequest = new ExtensionRequest(payload, CONTEXT);
+        ExtensionRequest extensionRequest = new ExtensionRequest(header, payload, LOGIN_KEY);
         ExtensionRequest request = load(encode(extensionRequest));
         Assert.assertEquals(extensionRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
     }
@@ -63,7 +70,7 @@ public class ExtensionRequestTest {
     @Test
     public void testEncodeExtensionRequestWithPublicationTime_Ok() throws Exception {
         ExtensionRequestPayload payload = new ExtensionRequestPayload(new Date(), new Date(), Util.nextLong());
-        ExtensionRequest extensionRequest = new ExtensionRequest(payload, CONTEXT);
+        ExtensionRequest extensionRequest = new ExtensionRequest(header, payload, LOGIN_KEY);
         ExtensionRequest request = load(encode(extensionRequest));
         Assert.assertEquals(extensionRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
         Assert.assertEquals(extensionRequest.getRequestPayload().getAggregationTime().getTime() / 1000, request.getRequestPayload().getAggregationTime().getTime() / 1000);
@@ -72,8 +79,8 @@ public class ExtensionRequestTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. AggregationTime is null.")
     public void testEncodeExtensionRequestWithoutAggregationTime_ThrowsIllegalArgumentException() throws Exception {
-        ExtensionRequestPayload payload = new ExtensionRequestPayload((Date) null, Util.nextLong());
-        ExtensionRequest extensionRequest = new ExtensionRequest(payload, CONTEXT);
+        ExtensionRequestPayload payload = new ExtensionRequestPayload(null, Util.nextLong());
+        ExtensionRequest extensionRequest = new ExtensionRequest(header, payload, LOGIN_KEY);
         ExtensionRequest request = load(encode(extensionRequest));
         Assert.assertEquals(extensionRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
     }
@@ -82,7 +89,7 @@ public class ExtensionRequestTest {
     public void testEncodeExtensionRequestPublicationTimeAfterAggregationTime_Ok() throws Exception {
         Date currentDate = new Date();
         ExtensionRequestPayload payload = new ExtensionRequestPayload(currentDate, new Date(currentDate.getTime() - 1000), Util.nextLong());
-        ExtensionRequest extensionRequest = new ExtensionRequest(payload, CONTEXT);
+        ExtensionRequest extensionRequest = new ExtensionRequest(header, payload, LOGIN_KEY);
         ExtensionRequest request = load(encode(extensionRequest));
         Assert.assertEquals(extensionRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
     }
@@ -92,7 +99,7 @@ public class ExtensionRequestTest {
     }
 
     private ExtensionRequest load(byte[] data) throws Exception {
-        return new ExtensionRequest(loadTlv(data), CONTEXT);
+        return new ExtensionRequest(loadTlv(data), LOGIN_KEY);
     }
 
 }

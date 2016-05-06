@@ -18,6 +18,10 @@
  */
 package com.guardtime.ksi.service;
 
+import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
+import java.util.Date;
+
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -27,6 +31,7 @@ import com.guardtime.ksi.service.aggregation.AggregationRequestPayload;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.extension.ExtensionRequest;
 import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -35,14 +40,12 @@ import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.util.Util;
 
-import java.io.ByteArrayInputStream;
-import java.util.Date;
-
 /**
  * {@link KSIService} implementation
  */
 public class KSIServiceImpl implements KSIService {
 
+    private static final long DEFAULT_LEVEL = 0L;
     private KSISigningClient signerClient;
     private KSIExtenderClient extenderClient;
     private PublicationsFileClientAdapter publicationsFileAdapter;
@@ -78,25 +81,18 @@ public class KSIServiceImpl implements KSIService {
     }
 
     public CreateSignatureFuture sign(DataHash dataHash) throws KSIException {
-        Long requestId = generateRandomId();
-        AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId);
-        KSIRequestContext requestContext = new KSIRequestContext(signerClient.getServiceCredentials(), requestId);
-        AggregationRequest requestMessage = new AggregationRequest(request, requestContext);
+        Long requestId = generateRequestId();
+        AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId, DEFAULT_LEVEL);
+        ServiceCredentials credentials = signerClient.getServiceCredentials();
+        KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId);
+        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
+        AggregationRequest requestMessage = new AggregationRequest(header, request, credentials.getLoginKey());
         Future<TLVElement> future = signerClient.sign(convert(requestMessage));
         return new CreateSignatureFuture(future, requestContext, signatureFactory);
     }
 
-    /**
-     * @param aggregationTime
-     *         the time of the aggregation round from which the calendar hash chain should start. must not be null.
-     * @param publicationTime
-     *         the time of the calendar root hash value to which the aggregation hash value should be connected by the
-     *         calendar hash chain.Its absence means a request for a calendar hash chain from aggregation time to the
-     *         most recent calendar record the extension server has.
-     * @return instance of {@link ExtensionRequestFuture}
-     */
     public ExtensionRequestFuture extend(Date aggregationTime, Date publicationTime) throws KSIException {
-        Long requestId = generateRandomId();
+        Long requestId = generateRequestId();
         return extendSignature(new ExtensionRequestPayload(aggregationTime, publicationTime, requestId));
     }
 
@@ -104,14 +100,16 @@ public class KSIServiceImpl implements KSIService {
         return publicationsFileAdapter.getPublicationsFile();
     }
 
-    protected Long generateRandomId() {
+    protected Long generateRequestId() {
         return Util.nextLong();
     }
 
     private ExtensionRequestFuture extendSignature(ExtensionRequestPayload extensionRequest)
             throws KSIException {
-        KSIRequestContext requestContext = new KSIRequestContext(extenderClient.getServiceCredentials(), extensionRequest.getRequestId());
-        ExtensionRequest requestMessage = new ExtensionRequest(extensionRequest, requestContext);
+        ServiceCredentials credentials = extenderClient.getServiceCredentials();
+        KSIRequestContext requestContext = new KSIRequestContext(credentials, extensionRequest.getRequestId());
+        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
+        ExtensionRequest requestMessage = new ExtensionRequest(header, extensionRequest, credentials.getLoginKey());
         ByteArrayInputStream inputStream = convert(requestMessage);
         Future<TLVElement> future = extenderClient.extend(inputStream);
         return new ExtensionRequestFuture(future, requestContext, signatureFactory);

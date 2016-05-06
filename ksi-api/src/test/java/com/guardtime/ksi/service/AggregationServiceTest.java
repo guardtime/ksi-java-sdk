@@ -52,7 +52,7 @@ public class AggregationServiceTest extends AbstractCommonServiceTest {
     public void testResponseContainsInvalidRequestId_ThrowsKSIProtocolException() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-response.tlv"));
         Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(ksiService.generateRandomId()).thenReturn(42275443333883167L);
+        Mockito.when(ksiService.generateRequestId()).thenReturn(42275443333883167L);
         CreateSignatureFuture future = ksiService.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         future.getResult();
     }

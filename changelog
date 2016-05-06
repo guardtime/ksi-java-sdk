@@ -2,6 +2,7 @@ Version 4.3
 
 * IMPROVEMENT: Now publications file can be cached by using method KSIBuilder.setPublicationsFileCacheExpirationTime(..)
 * BUGFIX: Fixed a bug where Calendar Hash Chain rule checked wrong links.
+* FEATURE: Added support for local aggregation.
 
 Version 4.2
 

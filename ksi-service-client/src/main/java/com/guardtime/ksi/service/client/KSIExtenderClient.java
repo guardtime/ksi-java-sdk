@@ -33,7 +33,7 @@ public interface KSIExtenderClient extends KSICredentialsAwareClient {
      * Used to extend existing signatures.
      *
      * @param request
-     *         - instance of {@link InputStream} that contains request data.
+     *         instance of {@link InputStream} that contains request data.
      * @return instance of {@link Future} containing KSI response data.
      * @throws KSIClientException
      */

@@ -34,6 +34,11 @@ class RightAggregationChainLink extends InMemoryAggregationChainLink {
 
     public static final int ELEMENT_TYPE_RIGHT_LINK = 0x08;
 
+    RightAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
+        super(siblingHash, levelCorrection);
+    }
+
+
     RightAggregationChainLink(TLVElement element) throws KSIException {
         super(element);
     }
@@ -56,6 +61,9 @@ class RightAggregationChainLink extends InMemoryAggregationChainLink {
         return new InMemoryChainResult(hash, level);
     }
 
+    public boolean isLeft() {
+        return false;
+    }
 
     @Override
     public int getElementType() {

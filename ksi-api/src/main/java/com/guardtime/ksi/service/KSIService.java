@@ -18,11 +18,11 @@
  */
 package com.guardtime.ksi.service;
 
+import java.util.Date;
+
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationsFile;
-
-import java.util.Date;
 
 /**
  * KSI service interface. Contains the following services <ul> <li>signature creation service <li>signature extension

@@ -25,6 +25,7 @@ import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
@@ -39,12 +40,12 @@ import static com.guardtime.ksi.util.Util.copyOf;
 
 /**
  * Abstract class for LeftAggregationChainLink and RightAggregationChainLink implementations. AggregationChainLink
- * structure contains the following information: <ul> <li>May contain level correction value. Default value is 0</li>
- * <li>One and only one of the following three fields</li> <ul> <li>sibling hash - an `imprint' representing a hash
- * value from the sibling node in the tree</li> <li>metadata - a sub-structure that provides the ability to incorporate
- * client identity and other information about the request into the hash chain.</li> <li>metadata hash - metadata of
- * limited length encoded as an imprint. This option is present for backwards compatibility with existing signatures
- * created before the structured `metadata' field was introduced.</li> </ul>
+ * structure contains the following information: <ul> <li>a level correction value</li> <li>One and only one of the
+ * following three fields</li> <ul> <li>sibling hash - an `imprint' representing a hash value from the sibling node in
+ * the tree</li> <li>metadata - a sub-structure that provides the ability to incorporate client identity and other
+ * information about the request into the hash chain.</li> <li>legacy client identifier - a client identifier converted
+ * from a legacy signature. This option is present for backwards compatibility with existing signatures created before
+ * the structured `metadata' field was introduced.</li> </ul>
  * <p/>
  * </ul>
  */
@@ -58,10 +59,26 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     private static final byte[] LEGACY_ID_PREFIX = new byte[]{0x03, 0x00};
     private static final int LEGACY_ID_OCTET_STRING_MAX_LENGTH = 25;
 
-    private Long levelCorrection = 0L;
+    private long levelCorrection = 0L;
     private DataHash siblingHash;
     private byte[] legacyId;
     private LinkMetadata metadata;
+
+    InMemoryAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
+        this.levelCorrection = levelCorrection;
+        this.siblingHash = siblingHash;
+        this.rootElement = new TLVElement(false, false, getElementType());
+        addLevelCorrectionTlvElement();
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash));
+    }
+
+    InMemoryAggregationChainLink(String clientId, long levelCorrection) throws KSIException {
+        this.levelCorrection = levelCorrection;
+        this.rootElement = new TLVElement(false, false, getElementType());
+        addLevelCorrectionTlvElement();
+        this.metadata = new LinkMetadata(clientId);
+        this.rootElement.addChildElement(metadata.getRootElement());
+    }
 
     InMemoryAggregationChainLink(TLVElement element) throws KSIException {
         super(element);
@@ -218,6 +235,10 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         return levelCorrection;
     }
 
+    private void addLevelCorrectionTlvElement() throws TLVParserException {
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_LEVEL_CORRECTION, this.levelCorrection));
+    }
+
     public boolean isLeft() {
         return getElementType() == ELEMENT_TYPE_LEFT_LINK;
     }
@@ -232,6 +253,12 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         public static final int ELEMENT_TYPE_REQUEST_TIME = 0x04;
 
         private String clientId;
+
+        public LinkMetadata(String clientId) throws KSIException {
+            this.clientId = clientId;
+            this.rootElement = new TLVElement(false, false, getElementType());
+            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CLIENT_ID, clientId));
+        }
 
         public LinkMetadata(TLVElement tlvElement) throws KSIException {
             super(tlvElement);

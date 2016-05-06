@@ -60,6 +60,7 @@
 		<module>ksi-service-client-apache-http</module>
 		<module>ksi-service-client-tcp</module>
 		<module>ksi-api</module>
+		<module>ksi-blocksigner</module>
 	</modules>
 
 	<properties>

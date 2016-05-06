@@ -55,6 +55,7 @@ import java.security.Security;
  * </pre>
  */
 public class DataHasher {
+
     private static final int DEFAULT_STREAM_BUFFER_SIZE = 8192;
     private HashAlgorithm algorithm;
     private MessageDigest messageDigest;
@@ -169,6 +170,19 @@ public class DataHasher {
         return addData(file, DEFAULT_STREAM_BUFFER_SIZE);
     }
 
+    /**
+     * Adds the {@link DataHash#getValue()} to the da
+     * @param dataHash
+     * @return
+     * @throws HashException
+     */
+    public DataHasher addData(DataHash dataHash) throws HashException {
+        if (dataHash == null) {
+            throw new HashException("Invalid data added to hasher: null");
+        }
+
+        return addData(dataHash.getValue());
+    }
 
     /**
      * Adds data to the digest using the specified input stream of bytes, starting at an offset of 0.

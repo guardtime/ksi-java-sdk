@@ -19,18 +19,19 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.ChainResult;
-
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Aggregation hash chain structures consist of the following fields: <ul> <li>index fields: an `aggregation time' and a
@@ -47,20 +48,34 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
     private static final int ELEMENT_TYPE_INPUT_HASH = 0x05;
     private static final int ELEMENT_TYPE_AGGREGATION_ALGORITHM = 0x06;
 
+    protected LinkedList<AggregationChainLink> chain = new LinkedList<AggregationChainLink>();
     private Date aggregationTime;
-
     private List<Long> chainIndex = new LinkedList<Long>();
-
     @SuppressWarnings("unused")
     private byte[] inputData;
-
     private DataHash inputHash;
-
     private HashAlgorithm aggregationAlgorithm;
-
-    private List<AggregationChainLink> chain = new LinkedList<AggregationChainLink>();
-
     private DataHash outputHash;
+
+    public InMemoryAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> chainIndex, LinkedList<AggregationChainLink> links) throws KSIException {
+        this.inputHash = inputHash;
+        this.aggregationAlgorithm = inputHash.getAlgorithm();
+        this.aggregationTime = aggregationTime;
+        this.chainIndex = chainIndex;
+        this.chain = links;
+
+        this.rootElement = new TLVElement(false, false, getElementType());
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_AGGREGATION_TIME, aggregationTime.getTime()));
+        for (Long index : chainIndex) {
+            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CHAIN_INDEX, index));
+        }
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_INPUT_HASH, inputHash));
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_AGGREGATION_ALGORITHM, inputHash.getAlgorithm().getId()));
+
+        for (AggregationChainLink link : links) {
+            this.rootElement.addChildElement(((InMemoryAggregationChainLink) link).getRootElement());
+        }
+    }
 
     /**
      * Creates aggregation hash chain form TLV element.
@@ -176,6 +191,10 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
 
     public Date getAggregationTime() {
         return aggregationTime;
+    }
+
+    public void setAggregationTime(Date aggregationTime) throws TLVParserException {
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_AGGREGATION_TIME, aggregationTime));
     }
 
     @Override

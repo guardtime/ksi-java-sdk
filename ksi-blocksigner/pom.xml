@@ -24,12 +24,37 @@
     <parent>
         <artifactId>ksi</artifactId>
         <groupId>com.guardtime</groupId>
-        <version>4.3.33-SNAPSHOT</version>
+        <version>4.3.35-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ksi-blocksigner</artifactId>
 
+    <description>KSI block signer</description>
+    <url>https://guardtime.com/ksi-technology</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Guardtime</name>
+            <email>support@guardtime.com</email>
+            <organization>Guardtime</organization>
+            <organizationUrl>https://guardtime.com/</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:GuardTime/ksi-java-sdk</connection>
+        <developerConnection>scm:git:git@github.com:GuardTime/ksi-java-sdk</developerConnection>
+        <url>git@github.com:GuardTime/ksi-java-sdk</url>
+    </scm>
+    
     <dependencies>
         <dependency>
             <groupId>com.guardtime</groupId>

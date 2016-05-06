@@ -28,7 +28,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ksi-block-signature</artifactId>
+    <artifactId>ksi-blocksigner</artifactId>
 
     <dependencies>
         <dependency>

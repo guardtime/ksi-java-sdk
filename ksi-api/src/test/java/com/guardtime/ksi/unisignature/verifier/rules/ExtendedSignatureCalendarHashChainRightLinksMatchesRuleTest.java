@@ -32,7 +32,7 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
-public class ExtendedSignatureAggregationChainRightLinksMatchesRuleTest extends AbstractRuleTest {
+public class ExtendedSignatureCalendarHashChainRightLinksMatchesRuleTest extends AbstractRuleTest {
 
     private Rule rule = new ExtendedSignatureCalendarHashChainRightLinksMatchesRule();
     private VerificationContext mockedVerificationContext;
@@ -46,7 +46,7 @@ public class ExtendedSignatureAggregationChainRightLinksMatchesRuleTest extends 
     }
 
     @Test
-    public void testVerifyExtendedSignatureContainsMoreLinks_Fail() throws Exception {
+    public void testVerifyExtendedSignatureContainsMoreRightLinks() throws Exception {
         Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig").getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
@@ -54,14 +54,14 @@ public class ExtendedSignatureAggregationChainRightLinksMatchesRuleTest extends 
     }
 
     @Test
-    public void testVerifyExtendedSignatureContainsSameLinks_Ok() throws Exception {
+    public void testVerifyExtendedSignatureContainsSameRightLinks() throws Exception {
         Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("ok-sig-2014-04-30.1-extended.ksig").getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
-    public void testVerifyExtendedSignatureRightLinksAreDifferent_Fail() throws Exception {
+    public void testVerifyExtendedSignatureRightLinksAreDifferent() throws Exception {
         Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("signature/invalid-calendar-right-link-sig-2014-04-30.1-extended.ksig").getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);

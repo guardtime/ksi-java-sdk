@@ -23,9 +23,12 @@ import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
 import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.service.IoService;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -36,6 +39,8 @@ import java.util.concurrent.Executors;
  * KSI TCP client for signing.
  */
 public class TCPClient implements KSISigningClient {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TCPClient.class);
 
     private IoSession tcpSession;
     private ExecutorService executorService;
@@ -49,12 +54,16 @@ public class TCPClient implements KSISigningClient {
 
 
     public Future<TLVElement> sign(InputStream request) throws KSITCPTransactionException {
-        if (tcpSession == null) {
-            tcpSession = createTCPSession();
+        synchronized (this) {
+            if (tcpSession == null || tcpSession.isClosing()) {
+                this.tcpSession = createTCPSession();
+            }
         }
+
         try {
-            return new KSITCPRequestFuture(executorService.submit(new TCPTransactionHolder(request, tcpSession, tcpClientSettings.getTcpTransactionTimeoutSec())));
-        } catch (Throwable e) {
+            return new KSITCPRequestFuture(executorService.submit(new TCPTransactionHolder(request, tcpSession,
+                    tcpClientSettings.getTcpTransactionTimeoutSec())));
+        }  catch (Throwable e) {
             throw new KSITCPTransactionException("There was a problem with initiating a TCP signing transaction with endpoint " +
                     tcpClientSettings.getEndpoint() + ".", e);
         }
@@ -71,8 +80,8 @@ public class TCPClient implements KSISigningClient {
     }
 
     private IoSession createTCPSession() throws KSITCPTransactionException {
-
         InetSocketAddress endpoint = tcpClientSettings.getEndpoint();
+        LOGGER.debug("Creating a new TCP session with host '" + endpoint.getHostName() + "'...");
         NioSocketConnector connector = new NioSocketConnector();
         connector.setConnectTimeoutMillis(tcpClientSettings.getTcpTransactionTimeoutSec() * 1000);
         connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TransactionCodecFactory()));
@@ -86,4 +95,5 @@ public class TCPClient implements KSISigningClient {
             throw new KSITCPTransactionException("Failed to initiate the TCP session with signer. Signer endpoint: " + endpoint, e);
         }
     }
+
 }

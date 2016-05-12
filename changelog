@@ -1,5 +1,9 @@
 Version 4.2
 
+2016-05-12 4.2.33
+
+* BUGFIX: TCP Client will now open a new connection, the moment it realizes that the old one is closed.
+
 2016-04-19 4.2.32
 
 * IMPROVEMENT: Changed signature identity separator to <space>::<space>.

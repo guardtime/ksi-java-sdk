@@ -42,6 +42,7 @@ class TCPSessionHandler implements IoHandler {
 
     public void exceptionCaught(IoSession session, Throwable t) throws Exception {
         logger.error("An exception occurred while making a TCP request.", t);
+        reconnect(session);
     }
 
     public void messageReceived(IoSession session, Object message) throws Exception {

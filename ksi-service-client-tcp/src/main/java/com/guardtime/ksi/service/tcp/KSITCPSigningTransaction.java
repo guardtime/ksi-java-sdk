@@ -129,7 +129,7 @@ class KSITCPSigningTransaction {
     void blockUntilResponseOrTimeout(WriteFuture writeFuture, int timeoutSec) throws KSITCPTransactionException {
         try {
             if (!writeFuture.await(timeoutSec, TimeUnit.SECONDS)) {
-                throw new KSITCPTransactionException("Timeout: TCP request could not be sent in " + timeoutSec + " seconds.");
+                throw new TCPTimeoutException("Request could not be sent in " + timeoutSec + " seconds.");
             }
             if (writeFuture.getException() != null) {
                 throw new KSITCPTransactionException("An exception occurred with the TCP transaction.", writeFuture.getException());
@@ -137,7 +137,7 @@ class KSITCPSigningTransaction {
             waitResponse(timeoutSec);
             ActiveTransactionsHolder.remove(this);
             if (response == null) {
-                throw new KSITCPTransactionException("Timeout: TCP response was not received in " + timeoutSec + " seconds.");
+                throw new TCPTimeoutException("Response was not received in " + timeoutSec + " seconds.");
             }
 
         } catch (InterruptedException e) {

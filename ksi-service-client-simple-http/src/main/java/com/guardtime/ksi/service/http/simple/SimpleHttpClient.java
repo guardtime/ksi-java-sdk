@@ -69,6 +69,7 @@ public class SimpleHttpClient extends AbstractHttpClient implements KSISigningCl
             connection.setDoOutput(true);
             outputStream = connection.getOutputStream();
             Util.copyData(request, outputStream);
+
             return new SimpleHttpPostRequestFuture(connection);
         } catch (IOException e) {
             throw new KSIClientException("HTTP request failed", e);

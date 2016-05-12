@@ -1,6 +1,6 @@
 Version 4.2
 
-2016-05-12 4.2.32
+2016-05-12 4.2.33
 
 * BUGFIX: TCP Client will now open a new connection, the moment it realizes that the old one is closed.
 

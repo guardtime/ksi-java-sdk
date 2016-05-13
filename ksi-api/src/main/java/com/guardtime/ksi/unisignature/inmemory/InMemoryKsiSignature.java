@@ -169,7 +169,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
         }
         InMemoryAggregationHashChain chain = new InMemoryAggregationHashChain(aggregationHashChain.getInputHash(),
                 aggregationHashChain.getAggregationTime(), new LinkedList(aggregationHashChain.getChainIndex()),
-                new LinkedList(aggregationHashChain.getChainLinks()));
+                new LinkedList(aggregationHashChain.getChainLinks()), aggregationHashChain.getAggregationAlgorithm());
 
         aggregationChains.add(chain);
         this.aggregationChains = sortAggregationHashChains(aggregationChains);

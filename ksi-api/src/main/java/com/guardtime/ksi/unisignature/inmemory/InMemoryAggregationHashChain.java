@@ -57,15 +57,15 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
     private HashAlgorithm aggregationAlgorithm;
     private DataHash outputHash;
 
-    public InMemoryAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> chainIndex, LinkedList<AggregationChainLink> links) throws KSIException {
+    public InMemoryAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> chainIndex, LinkedList<AggregationChainLink> links, HashAlgorithm aggregationAlgorithm) throws KSIException {
         this.inputHash = inputHash;
-        this.aggregationAlgorithm = inputHash.getAlgorithm();
+        this.aggregationAlgorithm = aggregationAlgorithm;
         this.aggregationTime = aggregationTime;
         this.chainIndex = chainIndex;
         this.chain = links;
 
         this.rootElement = new TLVElement(false, false, getElementType());
-        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_AGGREGATION_TIME, aggregationTime.getTime()));
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_AGGREGATION_TIME, aggregationTime));
         for (Long index : chainIndex) {
             this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CHAIN_INDEX, index));
         }
@@ -152,6 +152,10 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
         }
         this.outputHash = lastHash;
         return new InMemoryChainResult(lastHash, currentLevel);
+    }
+
+    public HashAlgorithm getAggregationAlgorithm() {
+        return aggregationAlgorithm;
     }
 
     /**

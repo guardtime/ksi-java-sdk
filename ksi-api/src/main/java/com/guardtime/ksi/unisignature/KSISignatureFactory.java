@@ -21,6 +21,7 @@ package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
 
@@ -90,7 +91,7 @@ public interface KSISignatureFactory {
     /**
      * Creates a new aggregation hash chain
      */
-    AggregationHashChain createAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> indexes, LinkedList<AggregationChainLink> links) throws KSIException;
+    AggregationHashChain createAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> indexes, LinkedList<AggregationChainLink> links, HashAlgorithm aggregationAlgorithm) throws KSIException;
 
     /**
      * Creates a new left aggregation hash chain link with given sibling hash and level.

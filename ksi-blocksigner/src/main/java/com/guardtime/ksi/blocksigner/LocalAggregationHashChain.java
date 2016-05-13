@@ -23,6 +23,7 @@ import java.util.LinkedList;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
@@ -30,6 +31,7 @@ import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 class LocalAggregationHashChain {
 
     private static final InMemoryKsiSignatureFactory SIGNATURE_ELEMENT_FACTORY = new InMemoryKsiSignatureFactory();
+    private final HashAlgorithm hashAlgorithm;
     private ChainResult latestChainResult;
     private LinkedList<AggregationChainLink> links = new LinkedList<AggregationChainLink>();
 
@@ -37,8 +39,9 @@ class LocalAggregationHashChain {
     private DataHash currentOutputHash;
     private long currentLevel;
 
-    public LocalAggregationHashChain(DataHash inputHash, long level, SignatureMetadata metadata) throws KSIException {
+    public LocalAggregationHashChain(DataHash inputHash, long level, SignatureMetadata metadata, HashAlgorithm hashAlgorithm) throws KSIException {
         this.inputHash = inputHash;
+        this.hashAlgorithm = hashAlgorithm;
         this.currentOutputHash = inputHash;
         AggregationChainLink link = SIGNATURE_ELEMENT_FACTORY.createLeftAggregationChainLink(metadata.getClientId(), level);
         links.addLast(link);
@@ -54,7 +57,7 @@ class LocalAggregationHashChain {
         DataHash lastHash = inputHash;
         long calculatedLevel = level;
         for (AggregationChainLink aggregationChainLink : links) {
-            ChainResult step = aggregationChainLink.calculateChainStep(lastHash.getImprint(), calculatedLevel, inputHash.getAlgorithm());
+            ChainResult step = aggregationChainLink.calculateChainStep(lastHash.getImprint(), calculatedLevel, hashAlgorithm);
             lastHash = step.getOutputHash();
             calculatedLevel = step.getLevel();
         }

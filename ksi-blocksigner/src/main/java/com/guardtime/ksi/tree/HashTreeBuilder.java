@@ -84,7 +84,7 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
             ImprintNode head = heads.getLast();
             if (head.getLevel() <= n.getLevel()) {
                 heads.removeLast();
-                add(aggregate(head, n, algorithm));
+                add(aggregate(head, n));
                 return;
             }
         }
@@ -113,13 +113,13 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
         if (heads.size() > 1) {
             for (int i = 1; i < heads.size(); i++) {
                 ImprintNode current = heads.get(i);
-                previous = aggregate(previous, current, algorithm);
+                previous = aggregate(previous, current);
             }
         }
         return previous;
     }
 
-    private ImprintNode aggregate(ImprintNode left, ImprintNode right, HashAlgorithm algorithm) throws HashException {
+    private ImprintNode aggregate(ImprintNode left, ImprintNode right) throws HashException {
         long newLevel = Math.max(left.getLevel(), right.getLevel()) + 1;
         LOGGER.debug("Aggregating. Left {}(level={}), right {}(level={}), newLevel={}", left.getValue(), left.getLevel(), right.getValue(), right.getLevel(), newLevel);
         DataHash nodeHash = hash(algorithm, left.getValue(), right.getValue(), newLevel);

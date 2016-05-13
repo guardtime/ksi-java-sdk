@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
@@ -77,8 +78,8 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         return new InMemoryAggregationHashChain(element);
     }
 
-    public AggregationHashChain createAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> indexes, LinkedList<AggregationChainLink> links) throws KSIException {
-        return new InMemoryAggregationHashChain(inputHash, aggregationTime, indexes, links);
+    public AggregationHashChain createAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> indexes, LinkedList<AggregationChainLink> links, HashAlgorithm aggregationAlgorithm) throws KSIException {
+        return new InMemoryAggregationHashChain(inputHash, aggregationTime, indexes, links, aggregationAlgorithm);
     }
 
     public CalendarAuthenticationRecord createCalendarAuthenticationRecord(TLVElement element) throws KSIException {

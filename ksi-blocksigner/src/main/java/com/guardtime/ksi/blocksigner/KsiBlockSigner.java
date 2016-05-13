@@ -136,7 +136,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
             metadata = new KsiSignatureMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION);
         }
         LOGGER.debug("New input hash '{}' with level '{}' added to block signer.", dataHash, level);
-        LocalAggregationHashChain chain = new LocalAggregationHashChain(dataHash, level, metadata);
+        LocalAggregationHashChain chain = new LocalAggregationHashChain(dataHash, level, metadata, algorithm);
         DataHash output = chain.getLatestOutputHash();
         ImprintNode leaf = new ImprintNode(output, chain.getCurrentLevel());
         chains.put(leaf, chain);
@@ -161,10 +161,10 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         for (LocalAggregationHashChain chain : aggregatedChains) {
             LinkedList<Long> chainIndex = new LinkedList<Long>(firstChain.getChainIndex());
             chainIndex.add(calculateIndex(chain.getLinks()));
-            AggregationHashChain aggregationHashChain = SIGNATURE_ELEMENT_FACTORY.createAggregationHashChain(chain.getInputHash(), firstChain.getAggregationTime(), chainIndex, chain.getLinks());
-            KSISignature signature1 = SIGNATURE_ELEMENT_FACTORY.createSignature(new ByteArrayInputStream(bytes));
-            signature1.addAggregationHashChain(aggregationHashChain);
-            signatures.add(signature1);
+            AggregationHashChain aggregationHashChain = SIGNATURE_ELEMENT_FACTORY.createAggregationHashChain(chain.getInputHash(), firstChain.getAggregationTime(), chainIndex, chain.getLinks(), algorithm);
+            KSISignature signature = SIGNATURE_ELEMENT_FACTORY.createSignature(new ByteArrayInputStream(bytes));
+            signature.addAggregationHashChain(aggregationHashChain);
+            signatures.add(signature);
         }
         return signatures;
     }

@@ -53,6 +53,11 @@ KSISignature sig2 = future.getResult();
 ```
 The API full reference is available here [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
 
+## Assembly ##
+
+To generate assembly package use the following command from the project root:
+mvn clean package -P release
+
 ## License ##
 
 See LICENSE file.

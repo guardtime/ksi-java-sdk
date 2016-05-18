@@ -30,11 +30,11 @@ public class InMemorySignatureMetadata implements SignatureMetadata {
     private long requestTime;
 
     public InMemorySignatureMetadata(String clientId) {
-        Util.notNull(clientId, "Client Identifier");
-        this.clientId = clientId;
+        this(clientId, null, null, null);
     }
 
     public InMemorySignatureMetadata(String clientId, String machineId, Long sequenceNumber, Long requestTime) {
+        Util.notNull(clientId, "Client Identifier");
         this.clientId = clientId;
         if (machineId != null) this.machineId = machineId;
         if (sequenceNumber != null) this.sequenceNumber = sequenceNumber;

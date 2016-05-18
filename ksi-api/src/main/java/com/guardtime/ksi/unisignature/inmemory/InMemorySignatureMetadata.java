@@ -17,17 +17,43 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.blocksigner;
+package com.guardtime.ksi.unisignature.inmemory;
 
-public class KsiSignatureMetadata implements SignatureMetadata {
+import com.guardtime.ksi.unisignature.SignatureMetadata;
+import com.guardtime.ksi.util.Util;
+
+public class InMemorySignatureMetadata implements SignatureMetadata {
 
     private final String clientId;
+    private String machineId;
+    private long sequenceNumber;
+    private long requestTime;
 
-    public KsiSignatureMetadata(String clientId) {
+    public InMemorySignatureMetadata(String clientId) {
+        Util.notNull(clientId, "Client Identifier");
         this.clientId = clientId;
+    }
+
+    public InMemorySignatureMetadata(String clientId, String machineId, Long sequenceNumber, Long requestTime) {
+        this.clientId = clientId;
+        if (machineId != null) this.machineId = machineId;
+        if (sequenceNumber != null) this.sequenceNumber = sequenceNumber;
+        if (requestTime != null) this.requestTime = requestTime;
     }
 
     public String getClientId() {
         return clientId;
+    }
+
+    public String getMachineId() {
+        return machineId;
+    }
+
+    public Long getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public Long getRequestTime() {
+        return requestTime;
     }
 }

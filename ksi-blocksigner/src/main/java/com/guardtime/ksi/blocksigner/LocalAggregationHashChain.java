@@ -26,6 +26,7 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
+import com.guardtime.ksi.unisignature.SignatureMetadata;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 
 class LocalAggregationHashChain {
@@ -43,7 +44,7 @@ class LocalAggregationHashChain {
         this.inputHash = inputHash;
         this.hashAlgorithm = hashAlgorithm;
         this.currentOutputHash = inputHash;
-        AggregationChainLink link = SIGNATURE_ELEMENT_FACTORY.createLeftAggregationChainLink(metadata.getClientId(), level);
+        AggregationChainLink link = SIGNATURE_ELEMENT_FACTORY.createLeftAggregationChainLink(metadata, level);
         links.addLast(link);
         this.latestChainResult = calculateOutputHash(0L);
     }

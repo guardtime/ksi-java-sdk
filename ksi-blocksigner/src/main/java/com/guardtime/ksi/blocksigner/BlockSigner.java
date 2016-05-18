@@ -21,6 +21,7 @@ package com.guardtime.ksi.blocksigner;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.unisignature.SignatureMetadata;
 
 /**
  * A signer class to create block signatures. Methods {@link BlockSigner#add(DataHash, long, SignatureMetadata)}, {@link

@@ -29,6 +29,7 @@ import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
+import com.guardtime.ksi.unisignature.SignatureMetadata;
 import com.guardtime.ksi.util.Util;
 
 import java.nio.charset.CharacterCodingException;
@@ -72,11 +73,11 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash));
     }
 
-    InMemoryAggregationChainLink(String clientId, long levelCorrection) throws KSIException {
+    InMemoryAggregationChainLink(SignatureMetadata signatureMetadata, long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
         this.rootElement = new TLVElement(false, false, getElementType());
         addLevelCorrectionTlvElement();
-        this.metadata = new LinkMetadata(clientId);
+        this.metadata = new LinkMetadata(signatureMetadata);
         this.rootElement.addChildElement(metadata.getRootElement());
     }
 
@@ -252,26 +253,47 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         public static final int ELEMENT_TYPE_SEQUENCE_NUMBER = 0x03;
         public static final int ELEMENT_TYPE_REQUEST_TIME = 0x04;
 
-        private String clientId;
+        private SignatureMetadata metadata;
 
-        public LinkMetadata(String clientId) throws KSIException {
-            this.clientId = clientId;
+        public LinkMetadata(SignatureMetadata metadata) throws KSIException {
+            this.metadata = metadata;
             this.rootElement = new TLVElement(false, false, getElementType());
-            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CLIENT_ID, clientId));
+            addMetadataChildElements();
+        }
+
+        private void addMetadataChildElements() throws TLVParserException {
+            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CLIENT_ID, metadata.getClientId()));
+            if (metadata.getMachineId() != null) {
+                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_MACHINE_ID, metadata.getMachineId()));
+            }
+            if (metadata.getSequenceNumber() != null) {
+                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SEQUENCE_NUMBER, metadata.getSequenceNumber()));
+            }
+            if (metadata.getRequestTime() != null) {
+                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_REQUEST_TIME, metadata.getRequestTime()));
+            }
         }
 
         public LinkMetadata(TLVElement tlvElement) throws KSIException {
             super(tlvElement);
             List<TLVElement> children = tlvElement.getChildElements();
+            String clientId = null;
+            String machineId = null;
+            Long sequenceNumber = null;
+            Long requestTime = null;
             for (TLVElement child : children) {
                 switch (child.getType()) {
                     case ELEMENT_TYPE_CLIENT_ID:
-                        this.clientId = readOnce(child).getDecodedString();
+                        clientId = readOnce(child).getDecodedString();
                         continue;
                     case ELEMENT_TYPE_MACHINE_ID:
+                        machineId = readOnce(child).getDecodedString();
+                        continue;
                     case ELEMENT_TYPE_SEQUENCE_NUMBER:
+                        sequenceNumber = readOnce(child).getDecodedLong();
+                        continue;
                     case ELEMENT_TYPE_REQUEST_TIME:
-                        readOnce(child);
+                        requestTime = readOnce(child).getDecodedLong();
                         continue;
                     default:
                         verifyCriticalFlag(child);
@@ -280,11 +302,12 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             if (clientId == null) {
                 throw new InvalidAggregationHashChainException("AggregationChainLink metadata does not contain clientId element");
             }
+            this.metadata = new InMemorySignatureMetadata(clientId, machineId, sequenceNumber, requestTime);
 
         }
 
         public String getClientId() {
-            return clientId;
+            return metadata.getClientId();
         }
 
         @Override

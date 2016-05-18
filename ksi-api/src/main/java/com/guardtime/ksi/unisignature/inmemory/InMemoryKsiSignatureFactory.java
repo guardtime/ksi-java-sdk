@@ -102,8 +102,8 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         return new LeftAggregationChainLink(siblingHash, levelCorrection);
     }
 
-    public AggregationChainLink createLeftAggregationChainLink(String clientId, long levelCorrection) throws KSIException {
-        return new LeftAggregationChainLink(clientId, levelCorrection);
+    public AggregationChainLink createLeftAggregationChainLink(SignatureMetadata metadata, long levelCorrection) throws KSIException {
+        return new LeftAggregationChainLink(metadata, levelCorrection);
     }
 
     public AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {

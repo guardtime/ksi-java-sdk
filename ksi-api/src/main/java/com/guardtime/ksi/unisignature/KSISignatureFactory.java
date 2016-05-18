@@ -106,7 +106,7 @@ public interface KSISignatureFactory {
     /**
      * Creates a new left aggregation hash chain link with given clientId and level.
      */
-    AggregationChainLink createLeftAggregationChainLink(String clientId, long level) throws KSIException;
+    AggregationChainLink createLeftAggregationChainLink(SignatureMetadata metadata, long level) throws KSIException;
 
     /**
      * Creates calendar authentication record from input TLV element.

@@ -35,7 +35,9 @@ import com.guardtime.ksi.tree.TreeNode;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.SignatureMetadata;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
+import com.guardtime.ksi.unisignature.inmemory.InMemorySignatureMetadata;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +135,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
             throw new IllegalStateException("Level must be between 0 and 255");
         }
         if (metadata == null) {
-            metadata = new KsiSignatureMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION);
+            metadata = new InMemorySignatureMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION);
         }
         LOGGER.debug("New input hash '{}' with level '{}' added to block signer.", dataHash, level);
         LocalAggregationHashChain chain = new LocalAggregationHashChain(dataHash, level, metadata, algorithm);

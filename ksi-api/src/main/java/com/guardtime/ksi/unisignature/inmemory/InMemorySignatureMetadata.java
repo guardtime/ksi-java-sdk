@@ -28,17 +28,19 @@ public class InMemorySignatureMetadata implements SignatureMetadata {
     private String machineId;
     private long sequenceNumber;
     private long requestTime;
+    private byte[] padding;
 
     public InMemorySignatureMetadata(String clientId) {
-        this(clientId, null, null, null);
+        this(clientId, null, null, null, new byte[0]);
     }
 
-    public InMemorySignatureMetadata(String clientId, String machineId, Long sequenceNumber, Long requestTime) {
+    public InMemorySignatureMetadata(String clientId, String machineId, Long sequenceNumber, Long requestTime, byte[] paddingBytes) {
         Util.notNull(clientId, "Client Identifier");
         this.clientId = clientId;
         if (machineId != null) this.machineId = machineId;
         if (sequenceNumber != null) this.sequenceNumber = sequenceNumber;
         if (requestTime != null) this.requestTime = requestTime;
+        this.padding = paddingBytes;
     }
 
     public String getClientId() {
@@ -55,5 +57,9 @@ public class InMemorySignatureMetadata implements SignatureMetadata {
 
     public Long getRequestTime() {
         return requestTime;
+    }
+
+    public byte[] getPadding() {
+        return padding;
     }
 }

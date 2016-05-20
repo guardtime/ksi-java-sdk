@@ -32,6 +32,7 @@ import com.guardtime.ksi.unisignature.ChainResult;
 import com.guardtime.ksi.unisignature.SignatureMetadata;
 import com.guardtime.ksi.util.Util;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
 import java.util.List;
@@ -244,6 +245,10 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         return getElementType() == ELEMENT_TYPE_LEFT_LINK;
     }
 
+    public SignatureMetadata getMetadata() {
+        return metadata.metadata;
+    }
+
     private static class LinkMetadata extends TLVStructure {
 
         public static final int ELEMENT_TYPE_METADATA = 0x04;
@@ -252,6 +257,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         public static final int ELEMENT_TYPE_MACHINE_ID = 0x02;
         public static final int ELEMENT_TYPE_SEQUENCE_NUMBER = 0x03;
         public static final int ELEMENT_TYPE_REQUEST_TIME = 0x04;
+        private static final int ELEMENT_TYPE_PADDING = 0x1E;
 
         private SignatureMetadata metadata;
 
@@ -261,19 +267,6 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             addMetadataChildElements();
         }
 
-        private void addMetadataChildElements() throws TLVParserException {
-            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CLIENT_ID, metadata.getClientId()));
-            if (metadata.getMachineId() != null) {
-                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_MACHINE_ID, metadata.getMachineId()));
-            }
-            if (metadata.getSequenceNumber() != null) {
-                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SEQUENCE_NUMBER, metadata.getSequenceNumber()));
-            }
-            if (metadata.getRequestTime() != null) {
-                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_REQUEST_TIME, metadata.getRequestTime()));
-            }
-        }
-
         public LinkMetadata(TLVElement tlvElement) throws KSIException {
             super(tlvElement);
             List<TLVElement> children = tlvElement.getChildElements();
@@ -281,6 +274,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             String machineId = null;
             Long sequenceNumber = null;
             Long requestTime = null;
+            byte[] padding = null;
             for (TLVElement child : children) {
                 switch (child.getType()) {
                     case ELEMENT_TYPE_CLIENT_ID:
@@ -295,6 +289,12 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
                     case ELEMENT_TYPE_REQUEST_TIME:
                         requestTime = readOnce(child).getDecodedLong();
                         continue;
+                    case ELEMENT_TYPE_PADDING:
+                        // TODO: Verify it is the first element.  HOW to move this to verification side easily?
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        child.writeTo(bos);
+                        padding =  bos.toByteArray();
+                        continue;
                     default:
                         verifyCriticalFlag(child);
                 }
@@ -302,8 +302,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             if (clientId == null) {
                 throw new InvalidAggregationHashChainException("AggregationChainLink metadata does not contain clientId element");
             }
-            this.metadata = new InMemorySignatureMetadata(clientId, machineId, sequenceNumber, requestTime);
-
+            this.metadata = new InMemorySignatureMetadata(clientId, machineId, sequenceNumber, requestTime, padding);
         }
 
         public String getClientId() {
@@ -313,6 +312,32 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         @Override
         public int getElementType() {
             return ELEMENT_TYPE_METADATA;
+        }
+
+        private void addMetadataChildElements() throws TLVParserException {
+            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CLIENT_ID, metadata.getClientId()));
+            if (metadata.getMachineId() != null) {
+                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_MACHINE_ID, metadata.getMachineId()));
+            }
+            if (metadata.getSequenceNumber() != null) {
+                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SEQUENCE_NUMBER, metadata.getSequenceNumber()));
+            }
+            if (metadata.getRequestTime() != null) {
+                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_REQUEST_TIME, metadata.getRequestTime()));
+            }
+            this.rootElement.addFirstChildElement(createPaddingTlvElement());
+        }
+
+        private TLVElement createPaddingTlvElement() throws TLVParserException {
+            TLVElement element = new TLVElement(true, true, ELEMENT_TYPE_PADDING);
+            int padding = 1;
+            if(this.rootElement.getContentLength() % 2 == 0) {
+                padding = 2;
+            }
+            byte[] bytes = new byte[padding];
+            Arrays.fill(bytes, (byte) 0x01);
+            element.setContent(bytes);
+            return element;
         }
     }
 }

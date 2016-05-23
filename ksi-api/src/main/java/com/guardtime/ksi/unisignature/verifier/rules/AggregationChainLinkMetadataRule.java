@@ -23,6 +23,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.SignatureMetadata;
+import com.guardtime.ksi.unisignature.inmemory.LinkMetadata;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
@@ -45,10 +46,14 @@ public final class AggregationChainLinkMetadataRule extends BaseRule {
         for (AggregationHashChain chain : aggregationChains) {
             for(AggregationChainLink link : chain.getChainLinks()) {
                 SignatureMetadata metadata = link.getMetadata();
-                if(metadata == null) continue; // No metadata, nothing to verify. In all honesty at most only the first chain link will have the metadata so maybe this whole for loop is unnecessary?
-                TLVElement paddingElement = TLVElement.create(metadata.getPadding());
+                if(metadata == null) continue; // No metadata, nothing to verify.
+                LinkMetadata linkMetadata = (LinkMetadata) metadata;
                 // TODO: Do the stuff for padding verification:
-                // it must be first element in metadata  --> Can't currently verify this here. Must be done in parsing or must be possible to access the whole metadata TLVElement here
+                // it must be first element in metadata
+                TLVElement paddingElement = linkMetadata.getRootElement().getChildElements().get(0);
+                if(paddingElement.getType() != LinkMetadata.ELEMENT_TYPE_PADDING) {
+                    // NOK!
+                }
 
                 // it must be TLV8
                 // it must have N and F flags set

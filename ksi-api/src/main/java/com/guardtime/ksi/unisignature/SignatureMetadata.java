@@ -47,10 +47,4 @@ public interface SignatureMetadata {
      * Optional metadata element
      */
     Long getRequestTime();
-
-    /**
-     * Returns the padding used for metadata in signature.
-     * Mandatory metadata element
-     */
-    byte[] getPadding();
 }

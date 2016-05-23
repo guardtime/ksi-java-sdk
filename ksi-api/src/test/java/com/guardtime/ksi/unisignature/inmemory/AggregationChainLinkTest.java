@@ -136,7 +136,7 @@ public class AggregationChainLinkTest {
 
     @Test
     public void testCreateNewLeftLink() throws Exception {
-        SignatureMetadata metadata = new InMemorySignatureMetadata("kala");
+        SignatureMetadata metadata = new LinkMetadata("kala");
         LeftAggregationChainLink link = new LeftAggregationChainLink(metadata, 20L);
         Assert.assertEquals(link, new LeftAggregationChainLink(link.getRootElement()));
     }

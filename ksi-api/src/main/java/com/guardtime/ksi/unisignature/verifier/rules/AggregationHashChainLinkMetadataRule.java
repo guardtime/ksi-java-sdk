@@ -53,15 +53,15 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
 
                 TLVElement linkMetadataRootElement = ((LinkMetadata) metadata).getRootElement();
 
-                if (paddingElementMissingAndContentCanBeMistakenForHashImprint(linkMetadataRootElement)) {
-                    LOGGER.info("Metadata might be hash!");
-                    return VerificationResultCode.NA;
-                }
-
-                if (multiplePaddingElements(linkMetadataRootElement) ||
-                        firstChildElementIsNotPadding(linkMetadataRootElement) ||
-                        paddingElementHasInvalidFlags(linkMetadataRootElement) ||
-                        paddingHasInvalidContent(linkMetadataRootElement)) {
+                if (paddingElementMissing(linkMetadataRootElement)) {
+                    if(contentCanBeMistakenForHashImprint(linkMetadataRootElement)) {
+                        LOGGER.info("Metadata might be hash!");
+                        return VerificationResultCode.NA;
+                    }
+                } else if (multiplePaddingElements(linkMetadataRootElement) ||
+                            firstChildElementIsNotPadding(linkMetadataRootElement) ||
+                            paddingElementHasInvalidFlags(linkMetadataRootElement) ||
+                            paddingHasInvalidContent(linkMetadataRootElement)) {
                     LOGGER.info("Metadata can not be determined to be valid!");
                     return VerificationResultCode.FAIL;
                 }
@@ -74,15 +74,17 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
         return VerificationErrorCode.INT_11;
     }
 
-    private boolean paddingElementMissingAndContentCanBeMistakenForHashImprint(TLVElement rootElement) throws TLVParserException {
+    private boolean paddingElementMissing(TLVElement rootElement) {
+        TLVElement paddingElement = rootElement.getFirstChildElement(LinkMetadata.ELEMENT_TYPE_PADDING);
+        return paddingElement == null;
+    }
+
+    private boolean contentCanBeMistakenForHashImprint(TLVElement rootElement) throws TLVParserException {
         try {
-            TLVElement paddingElement = rootElement.getFirstChildElement(LinkMetadata.ELEMENT_TYPE_PADDING);
-            if (paddingElement == null) {
-                byte firstByte = rootElement.getContent()[0];
-                HashAlgorithm.getById(firstByte);
-                return contentHasHashImprintLength(rootElement);
-            }
-            return true;
+            byte[] content = rootElement.getContent();
+            byte firstByte = content[0];
+            HashAlgorithm.getById(firstByte);
+            return contentHasHashImprintLength(rootElement);
         } catch (UnknownHashAlgorithmException e) {
             // This is what we want, the first byte doesn't resolve to any known hash.
             return false;

@@ -58,7 +58,6 @@ public class LinkMetadata extends TLVStructure implements SignatureMetadata {
                     requestTime = readOnce(child).getDecodedLong();
                     continue;
                 case ELEMENT_TYPE_PADDING:
-                    // TODO: Verify it is the first element.
                     continue;
                 default:
                     verifyCriticalFlag(child);

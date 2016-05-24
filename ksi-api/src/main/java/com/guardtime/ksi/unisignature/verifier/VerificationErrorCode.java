@@ -36,6 +36,7 @@ public enum VerificationErrorCode {
     INT_08("INT-08", "Calendar hash chain root has inconsistent with calendar auth record time"),
     INT_09("INT-09", "Calendar hash chain root has inconsistent with publication time"),
     INT_10("INT-10", "Aggregation hash chain does not match corresponding chain index"),
+    INT_11("INT-11", "The meta-data record, in the aggregation hash chain may not be trusted."),
     PUB_01("PUB-01", "Extender response calendar root hash mismatch"),
     PUB_02("PUB-02", "Extender response inconsistent"),
     PUB_03("PUB-03", "Extender response input hash mismatch"),

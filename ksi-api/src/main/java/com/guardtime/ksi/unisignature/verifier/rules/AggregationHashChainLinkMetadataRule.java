@@ -55,8 +55,7 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
 
                 if (paddingElementMissing(linkMetadataRootElement)) {
                     if(contentCanBeMistakenForHashImprint(linkMetadataRootElement)) {
-                        LOGGER.info("Metadata might be hash!");
-                        return VerificationResultCode.NA;
+                        LOGGER.warn("Metadata might be hash!");
                     }
                 } else if (multiplePaddingElements(linkMetadataRootElement) ||
                             firstChildElementIsNotPadding(linkMetadataRootElement) ||

@@ -22,7 +22,7 @@ package com.guardtime.ksi.unisignature.inmemory;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.unisignature.SignatureMetadata;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -136,7 +136,7 @@ public class AggregationChainLinkTest {
 
     @Test
     public void testCreateNewLeftLink() throws Exception {
-        SignatureMetadata metadata = new LinkMetadata("kala");
+        LinkMetadata metadata = new InMemoryLinkMetadata("kala");
         LeftAggregationChainLink link = new LeftAggregationChainLink(metadata, 20L);
         Assert.assertEquals(link, new LeftAggregationChainLink(link.getRootElement()));
     }

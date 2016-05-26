@@ -29,7 +29,7 @@ import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
-import com.guardtime.ksi.unisignature.SignatureMetadata;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.util.Util;
 
 import java.nio.charset.CharacterCodingException;
@@ -63,7 +63,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     private long levelCorrection = 0L;
     private DataHash siblingHash;
     private byte[] legacyId;
-    private LinkMetadata metadata;
+    private InMemoryLinkMetadata metadata;
 
     InMemoryAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
@@ -73,11 +73,11 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash));
     }
 
-    InMemoryAggregationChainLink(SignatureMetadata signatureMetadata, long levelCorrection) throws KSIException {
+    InMemoryAggregationChainLink(LinkMetadata linkMetadata, long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
         this.rootElement = new TLVElement(false, false, getElementType());
         addLevelCorrectionTlvElement();
-        this.metadata = new LinkMetadata(signatureMetadata);
+        this.metadata = new InMemoryLinkMetadata(linkMetadata);
         this.rootElement.addChildElement(metadata.getRootElement());
     }
 
@@ -96,8 +96,8 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
                     this.legacyId = readOnce(child).getContent();
                     verifyLegacyId(legacyId);
                     continue;
-                case LinkMetadata.ELEMENT_TYPE_METADATA:
-                    this.metadata = new LinkMetadata(readOnce(child));
+                case InMemoryLinkMetadata.ELEMENT_TYPE_METADATA:
+                    this.metadata = new InMemoryLinkMetadata(readOnce(child));
                     continue;
                 default:
                     verifyCriticalFlag(child);

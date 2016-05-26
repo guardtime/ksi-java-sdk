@@ -19,12 +19,6 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
@@ -34,6 +28,12 @@ import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.*;
 import com.guardtime.ksi.util.Util;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * In memory implementation of the {@link KSISignatureFactory} interface.
@@ -102,8 +102,16 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         return new LeftAggregationChainLink(siblingHash, levelCorrection);
     }
 
-    public AggregationChainLink createLeftAggregationChainLink(SignatureMetadata metadata, long levelCorrection) throws KSIException {
+    public AggregationChainLink createLeftAggregationChainLink(LinkMetadata metadata, long levelCorrection) throws KSIException {
         return new LeftAggregationChainLink(metadata, levelCorrection);
+    }
+
+    public LinkMetadata createAggregationChainLinkMetadata(String clientId) throws KSIException {
+        return createAggregationChainLinkMetadata(clientId, null, null);
+    }
+
+    public LinkMetadata createAggregationChainLinkMetadata(String clientId, String machineId, Long sequenceNumber) throws KSIException {
+        return new InMemoryLinkMetadata(clientId, machineId, sequenceNumber, null);
     }
 
     public AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {

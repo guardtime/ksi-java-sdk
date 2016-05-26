@@ -22,10 +22,13 @@ package com.guardtime.ksi.unisignature.inmemory;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.Date;
 
 public class AggregationChainLinkTest {
 
@@ -104,9 +107,15 @@ public class AggregationChainLinkTest {
         clientId.setStringContent("abc");
         TLVElement machineId = new TLVElement(false, false, 0x02);
         machineId.setStringContent("123");
+        TLVElement sequenceNumber = new TLVElement(false, false, 0x03);
+        sequenceNumber.setLongContent(888L);
+        TLVElement requestTime = new TLVElement(false, false, 0x04);
+        requestTime.setLongContent(new Date().getTime());
 
         metadata.addChildElement(clientId);
         metadata.addChildElement(machineId);
+        metadata.addChildElement(sequenceNumber);
+        metadata.addChildElement(requestTime);
         TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(metadata);
 
@@ -127,7 +136,8 @@ public class AggregationChainLinkTest {
 
     @Test
     public void testCreateNewLeftLink() throws Exception {
-        LeftAggregationChainLink link = new LeftAggregationChainLink("kala", 20L);
+        LinkMetadata metadata = new InMemoryLinkMetadata("kala");
+        LeftAggregationChainLink link = new LeftAggregationChainLink(metadata, 20L);
         Assert.assertEquals(link, new LeftAggregationChainLink(link.getRootElement()));
     }
 

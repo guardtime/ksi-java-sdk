@@ -106,7 +106,17 @@ public interface KSISignatureFactory {
     /**
      * Creates a new left aggregation hash chain link with given clientId and level.
      */
-    AggregationChainLink createLeftAggregationChainLink(String clientId, long level) throws KSIException;
+    AggregationChainLink createLeftAggregationChainLink(LinkMetadata metadata, long level) throws KSIException;
+
+    /**
+     * Creates a new aggregation hash chain link metadata with given client identifier.
+     */
+    LinkMetadata createAggregationChainLinkMetadata(String clientId) throws KSIException;
+
+    /**
+     * Creates a new aggregation hash chain link metadata with given client id, machine id and sequence number.
+     */
+    LinkMetadata createAggregationChainLinkMetadata(String clientId, String machineId, Long sequenceNumber) throws KSIException;
 
     /**
      * Creates calendar authentication record from input TLV element.
@@ -151,6 +161,5 @@ public interface KSISignatureFactory {
      *         when error occurs (e.g input data is invalid)
      */
     SignaturePublicationRecord createPublicationRecord(TLVElement element) throws KSIException;
-
 
 }

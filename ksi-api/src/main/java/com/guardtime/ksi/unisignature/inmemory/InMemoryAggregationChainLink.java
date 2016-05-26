@@ -29,6 +29,7 @@ import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.util.Util;
 
 import java.nio.charset.CharacterCodingException;
@@ -62,7 +63,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     private long levelCorrection = 0L;
     private DataHash siblingHash;
     private byte[] legacyId;
-    private LinkMetadata metadata;
+    private InMemoryLinkMetadata metadata;
 
     InMemoryAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
@@ -72,11 +73,11 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash));
     }
 
-    InMemoryAggregationChainLink(String clientId, long levelCorrection) throws KSIException {
+    InMemoryAggregationChainLink(LinkMetadata linkMetadata, long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
         this.rootElement = new TLVElement(false, false, getElementType());
         addLevelCorrectionTlvElement();
-        this.metadata = new LinkMetadata(clientId);
+        this.metadata = new InMemoryLinkMetadata(linkMetadata);
         this.rootElement.addChildElement(metadata.getRootElement());
     }
 
@@ -95,8 +96,8 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
                     this.legacyId = readOnce(child).getContent();
                     verifyLegacyId(legacyId);
                     continue;
-                case LinkMetadata.ELEMENT_TYPE_METADATA:
-                    this.metadata = new LinkMetadata(readOnce(child));
+                case InMemoryLinkMetadata.ELEMENT_TYPE_METADATA:
+                    this.metadata = new InMemoryLinkMetadata(readOnce(child));
                     continue;
                 default:
                     verifyCriticalFlag(child);
@@ -241,55 +242,5 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
 
     public boolean isLeft() {
         return getElementType() == ELEMENT_TYPE_LEFT_LINK;
-    }
-
-    private static class LinkMetadata extends TLVStructure {
-
-        public static final int ELEMENT_TYPE_METADATA = 0x04;
-
-        public static final int ELEMENT_TYPE_CLIENT_ID = 0x01;
-        public static final int ELEMENT_TYPE_MACHINE_ID = 0x02;
-        public static final int ELEMENT_TYPE_SEQUENCE_NUMBER = 0x03;
-        public static final int ELEMENT_TYPE_REQUEST_TIME = 0x04;
-
-        private String clientId;
-
-        public LinkMetadata(String clientId) throws KSIException {
-            this.clientId = clientId;
-            this.rootElement = new TLVElement(false, false, getElementType());
-            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CLIENT_ID, clientId));
-        }
-
-        public LinkMetadata(TLVElement tlvElement) throws KSIException {
-            super(tlvElement);
-            List<TLVElement> children = tlvElement.getChildElements();
-            for (TLVElement child : children) {
-                switch (child.getType()) {
-                    case ELEMENT_TYPE_CLIENT_ID:
-                        this.clientId = readOnce(child).getDecodedString();
-                        continue;
-                    case ELEMENT_TYPE_MACHINE_ID:
-                    case ELEMENT_TYPE_SEQUENCE_NUMBER:
-                    case ELEMENT_TYPE_REQUEST_TIME:
-                        readOnce(child);
-                        continue;
-                    default:
-                        verifyCriticalFlag(child);
-                }
-            }
-            if (clientId == null) {
-                throw new InvalidAggregationHashChainException("AggregationChainLink metadata does not contain clientId element");
-            }
-
-        }
-
-        public String getClientId() {
-            return clientId;
-        }
-
-        @Override
-        public int getElementType() {
-            return ELEMENT_TYPE_METADATA;
-        }
     }
 }

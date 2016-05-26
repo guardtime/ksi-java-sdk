@@ -21,10 +21,11 @@ package com.guardtime.ksi.blocksigner;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 
 /**
- * A signer class to create block signatures. Methods {@link BlockSigner#add(DataHash, long, SignatureMetadata)}, {@link
- * BlockSigner#add(DataHash, long, SignatureMetadata)} and/or {@link BlockSigner#add(DataHash)} can be used to add new
+ * A signer class to create block signatures. Methods {@link BlockSigner#add(DataHash, long, LinkMetadata)}, {@link
+ * BlockSigner#add(DataHash, long, LinkMetadata)} and/or {@link BlockSigner#add(DataHash)} can be used to add new
  * input hash to the block signer. Method {@link BlockSigner#sign()} must be called to get the final signatures.
  *
  *  @param <T>
@@ -40,12 +41,12 @@ public interface BlockSigner<T> {
     /**
      * Adds a new hash to the signer
      */
-    KsiBlockSigner add(DataHash dataHash, SignatureMetadata metadata) throws KSIException;
+    KsiBlockSigner add(DataHash dataHash, LinkMetadata metadata) throws KSIException;
 
     /**
      * Adds a new hash to the signer
      */
-    KsiBlockSigner add(DataHash dataHash, long level, SignatureMetadata metadata) throws KSIException;
+    KsiBlockSigner add(DataHash dataHash, long level, LinkMetadata metadata) throws KSIException;
 
     /**
      * Creates a block signature

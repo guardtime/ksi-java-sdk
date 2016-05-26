@@ -17,16 +17,35 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.blocksigner;
+package com.guardtime.ksi.unisignature;
 
 /**
- * Interface for describing data that can be added to the signature.
+ * Interface for describing data that is added to the signature aggregation hash chain.
  */
-public interface SignatureMetadata {
+public interface LinkMetadata {
 
     /**
      * Returns the client id to be added to the signature.
+     * Mandatory metadata element
      */
     String getClientId();
+
+    /**
+     * Returns the machine id to be added to the signature.
+     * Optional metadata element
+     */
+    String getMachineId();
+
+    /**
+     * Returns the sequence number to be added to the signature.
+     * Optional metadata element
+     */
+    Long getSequenceNumber();
+
+    /**
+     * Returns the request time to be added to the signature.
+     * Optional metadata element
+     */
+    Long getRequestTime();
 
 }

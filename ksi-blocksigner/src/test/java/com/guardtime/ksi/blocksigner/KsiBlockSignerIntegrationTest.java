@@ -24,6 +24,9 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.KSISignatureFactory;
+import com.guardtime.ksi.unisignature.LinkMetadata;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -37,11 +40,12 @@ import static org.testng.Assert.*;
 public class KsiBlockSignerIntegrationTest extends AbstractBlockSignatureTest {
 
     private static final String WORKING_HASH_ALGORITHMS = "workingHashAlgorithms";
+    private static final KSISignatureFactory SIGNATURE_FACTORY = new InMemoryKsiSignatureFactory();
 
-    private KsiSignatureMetadata metadata = new KsiSignatureMetadata("test1");
-    private KsiSignatureMetadata metadata2 = new KsiSignatureMetadata("test2");
-    private KsiSignatureMetadata metadata3 = new KsiSignatureMetadata("test3");
-    private KsiSignatureMetadata metadata4 = new KsiSignatureMetadata("test4");
+    private LinkMetadata metadata;
+    private LinkMetadata metadata2;
+    private LinkMetadata metadata3;
+    private LinkMetadata metadata4;
     private DataHash dataHashSha1;
     private DataHash dataHashSha386;
     private DataHash dataHashSha512;
@@ -51,6 +55,10 @@ public class KsiBlockSignerIntegrationTest extends AbstractBlockSignatureTest {
     @BeforeMethod
     public void setUp() throws Exception {
         super.setUp();
+        metadata = SIGNATURE_FACTORY.createAggregationChainLinkMetadata("test1");
+        metadata2 = SIGNATURE_FACTORY.createAggregationChainLinkMetadata("test2", "machine-id-1", 1L);
+        metadata3 = SIGNATURE_FACTORY.createAggregationChainLinkMetadata("test3");
+        metadata4 = SIGNATURE_FACTORY.createAggregationChainLinkMetadata("test4");
         this.dataHashSha1 = new DataHash(HashAlgorithm.SHA1, new byte[20]);
         this.dataHashSha386 = new DataHash(HashAlgorithm.SHA2_384, new byte[48]);
         this.dataHashSha512 = new DataHash(HashAlgorithm.SHA2_512, new byte[64]);

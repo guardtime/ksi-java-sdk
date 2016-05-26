@@ -68,6 +68,7 @@ import static com.guardtime.ksi.util.Util.notNull;
  * signer.add(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
  * signer.add(dataHash2);
  * signer.add(dataHash3);
+ * signer.add(dataHash4, new IdentityMetadata("my_client_id", "my_machine_id", SEQUENCE_NUMBER, REQUEST_TIME));
  *
  * // call sign methods to get final signatures
  * List<KSISignature> signatures = signer.sign();
@@ -134,7 +135,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
             throw new IllegalStateException("Level must be between 0 and 255");
         }
         if (metadata == null) {
-            metadata = SIGNATURE_ELEMENT_FACTORY.createAggregationChainLinkMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION);
+            metadata = new IdentityMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION);
         }
         LOGGER.debug("New input hash '{}' with level '{}' added to block signer.", dataHash, level);
         LocalAggregationHashChain chain = new LocalAggregationHashChain(dataHash, level, metadata, algorithm);

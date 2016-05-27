@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.UnknownHashAlgorithmException;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -81,14 +82,12 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
         return paddingElement == null;
     }
 
-    private boolean contentCanBeMistakenForHashImprint(TLVElement rootElement) throws TLVParserException {
+    private boolean contentCanBeMistakenForHashImprint(TLVElement rootElement) {
         try {
-            byte[] content = rootElement.getContent();
-            byte firstByte = content[0];
-            HashAlgorithm.getById(firstByte);
-            return contentHasHashImprintLength(rootElement);
-        } catch (UnknownHashAlgorithmException e) {
-            // This is what we want, the first byte doesn't resolve to any known hash.
+            rootElement.getDecodedDataHash();
+            return true;
+        } catch (TLVParserException e) {
+            // This is what we want, the content doesn't resolve to any known hash.
             return false;
         }
     }
@@ -111,7 +110,8 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
     private boolean paddingHasInvalidContent(TLVElement rootElement) throws TLVParserException {
         byte[] paddingContent = rootElement.getFirstChildElement(ELEMENT_TYPE_PADDING).getContent();
         int paddingLength = paddingContent.length;
-        if (contentHasHashImprintLength(rootElement)
+        int contentLength = rootElement.getContent().length;
+        if ( contentLength % 2 != 0
                 || paddingLength > 2) {
             return true;
         }
@@ -121,11 +121,6 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
             }
         }
         return false;
-    }
-
-    private boolean contentHasHashImprintLength(TLVElement element) throws TLVParserException {
-        int contentLength = element.getContent().length;
-        return contentLength % 2 != 0;
     }
 
 

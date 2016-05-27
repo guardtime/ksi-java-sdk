@@ -35,9 +35,8 @@ import com.guardtime.ksi.tree.TreeNode;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.SignatureMetadata;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
-import com.guardtime.ksi.unisignature.inmemory.LinkMetadata;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +51,8 @@ import java.util.Map;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * A signer class to create a list of unisigantures. Methods {@link KsiBlockSigner#add(DataHash, long, SignatureMetadata)},
- * {@link KsiBlockSigner#add(DataHash)} and/or {@link KsiBlockSigner#add(DataHash, long, SignatureMetadata)} can be used
+ * A signer class to create a list of unisigantures. Methods {@link KsiBlockSigner#add(DataHash, long, LinkMetadata)},
+ * {@link KsiBlockSigner#add(DataHash)} and/or {@link KsiBlockSigner#add(DataHash, long, LinkMetadata)} can be used
  * to add new input hash to the block signer. Method {@link KsiBlockSigner#sign()} must be called to get the final
  * signatures. <p/> Current implementation returns one signature per input hash. <p/> Note that this class can not be
  * used multiple times. </p> The following sample shows how to use {@link KsiBlockSigner} class:
@@ -69,6 +68,7 @@ import static com.guardtime.ksi.util.Util.notNull;
  * signer.add(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
  * signer.add(dataHash2);
  * signer.add(dataHash3);
+ * signer.add(dataHash4, new IdentityMetadata("my_client_id", "my_machine_id", SEQUENCE_NUMBER, REQUEST_TIME));
  *
  * // call sign methods to get final signatures
  * List<KSISignature> signatures = signer.sign();
@@ -115,7 +115,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     /**
      * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
      */
-    public KsiBlockSigner add(DataHash dataHash, SignatureMetadata metadata) throws KSIException {
+    public KsiBlockSigner add(DataHash dataHash, LinkMetadata metadata) throws KSIException {
         return add(dataHash, 0L, metadata);
     }
 
@@ -129,13 +129,13 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     /**
      * Adds a hash (with specific level) and a signature metadata to the {@link KsiBlockSigner}.
      */
-    public KsiBlockSigner add(DataHash dataHash, long level, SignatureMetadata metadata) throws KSIException {
+    public KsiBlockSigner add(DataHash dataHash, long level, LinkMetadata metadata) throws KSIException {
         notNull(dataHash, "DataHash");
         if (level < 0 || level > MAXIMUM_LEVEL) {
             throw new IllegalStateException("Level must be between 0 and 255");
         }
         if (metadata == null) {
-            metadata = new LinkMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION);
+            metadata = new IdentityMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION);
         }
         LOGGER.debug("New input hash '{}' with level '{}' added to block signer.", dataHash, level);
         LocalAggregationHashChain chain = new LocalAggregationHashChain(dataHash, level, metadata, algorithm);

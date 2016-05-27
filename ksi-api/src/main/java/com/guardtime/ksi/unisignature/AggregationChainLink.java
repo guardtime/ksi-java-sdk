@@ -41,5 +41,5 @@ public interface AggregationChainLink {
 
     boolean isLeft();
 
-    SignatureMetadata getMetadata();
+    LinkMetadata getMetadata();
 }

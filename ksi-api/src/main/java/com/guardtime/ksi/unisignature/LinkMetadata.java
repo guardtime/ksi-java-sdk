@@ -20,9 +20,9 @@
 package com.guardtime.ksi.unisignature;
 
 /**
- * Interface for describing data that can be added to the signature.
+ * Interface for describing data that is added to the signature aggregation hash chain.
  */
-public interface SignatureMetadata {
+public interface LinkMetadata {
 
     /**
      * Returns the client id to be added to the signature.
@@ -47,4 +47,5 @@ public interface SignatureMetadata {
      * Optional metadata element
      */
     Long getRequestTime();
+
 }

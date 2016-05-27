@@ -26,8 +26,8 @@ import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
-import com.guardtime.ksi.unisignature.SignatureMetadata;
-import com.guardtime.ksi.unisignature.inmemory.LinkMetadata;
+import com.guardtime.ksi.unisignature.LinkMetadata;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryLinkMetadata;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
@@ -35,6 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+
+import static com.guardtime.ksi.unisignature.inmemory.InMemoryLinkMetadata.ELEMENT_TYPE_PADDING;
 
 /**
  * This rule verifies that all metadata structures in aggregation hash chain links are valid.
@@ -48,10 +50,10 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
         AggregationHashChain[] aggregationChains = context.getAggregationHashChains();
         for (AggregationHashChain chain : aggregationChains) {
             for (AggregationChainLink link : chain.getChainLinks()) {
-                SignatureMetadata metadata = link.getMetadata();
+                LinkMetadata metadata = link.getMetadata();
                 if (metadata == null) continue; // No metadata, nothing to verify.
 
-                TLVElement linkMetadataRootElement = ((LinkMetadata) metadata).getRootElement();
+                TLVElement linkMetadataRootElement = ((InMemoryLinkMetadata) metadata).getRootElement();
 
                 if (paddingElementMissing(linkMetadataRootElement)) {
                     if(contentCanBeMistakenForHashImprint(linkMetadataRootElement)) {
@@ -74,7 +76,7 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
     }
 
     private boolean paddingElementMissing(TLVElement rootElement) {
-        TLVElement paddingElement = rootElement.getFirstChildElement(LinkMetadata.ELEMENT_TYPE_PADDING);
+        TLVElement paddingElement = rootElement.getFirstChildElement(ELEMENT_TYPE_PADDING);
         return paddingElement == null;
     }
 
@@ -91,22 +93,22 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
     }
 
     private boolean multiplePaddingElements(TLVElement rootElement) {
-        List<TLVElement> paddingElements = rootElement.getChildElements(LinkMetadata.ELEMENT_TYPE_PADDING);
+        List<TLVElement> paddingElements = rootElement.getChildElements(ELEMENT_TYPE_PADDING);
         return paddingElements.size() > 1;
     }
 
     private boolean firstChildElementIsNotPadding(TLVElement rootElement) {
         TLVElement firstChildElement = rootElement.getChildElements().get(0);
-        return firstChildElement.getType() != LinkMetadata.ELEMENT_TYPE_PADDING;
+        return firstChildElement.getType() != ELEMENT_TYPE_PADDING;
     }
 
     private boolean paddingElementHasInvalidFlags(TLVElement rootElement) {
-        TLVElement paddingElement = rootElement.getFirstChildElement(LinkMetadata.ELEMENT_TYPE_PADDING);
+        TLVElement paddingElement = rootElement.getFirstChildElement(ELEMENT_TYPE_PADDING);
         return paddingElement.isTlv16() || !paddingElement.isForwarded() || !paddingElement.isNonCritical();
     }
 
     private boolean paddingHasInvalidContent(TLVElement rootElement) throws TLVParserException {
-        byte[] paddingContent = rootElement.getFirstChildElement(LinkMetadata.ELEMENT_TYPE_PADDING).getContent();
+        byte[] paddingContent = rootElement.getFirstChildElement(ELEMENT_TYPE_PADDING).getContent();
         int paddingLength = paddingContent.length;
         if (contentHasHashImprintLength(rootElement)
                 || paddingLength > 2) {

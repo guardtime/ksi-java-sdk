@@ -56,14 +56,14 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
                 TLVElement linkMetadataRootElement = ((InMemoryLinkMetadata) metadata).getRootElement();
 
                 if (paddingElementMissing(linkMetadataRootElement)) {
-                    if(contentCanBeMistakenForHashImprint(linkMetadataRootElement)) {
+                    if (contentCanBeMistakenForHashImprint(linkMetadataRootElement)) {
                         LOGGER.warn("Metadata might be hash!");
                         return VerificationResultCode.FAIL;
                     }
                 } else if (multiplePaddingElements(linkMetadataRootElement) ||
-                            firstChildElementIsNotPadding(linkMetadataRootElement) ||
-                            paddingElementHasInvalidFlags(linkMetadataRootElement) ||
-                            paddingHasInvalidContent(linkMetadataRootElement)) {
+                        firstChildElementIsNotPadding(linkMetadataRootElement) ||
+                        paddingElementHasInvalidFlags(linkMetadataRootElement) ||
+                        paddingHasInvalidContent(linkMetadataRootElement)) {
                     LOGGER.info("Metadata can not be determined to be valid!");
                     return VerificationResultCode.FAIL;
                 }

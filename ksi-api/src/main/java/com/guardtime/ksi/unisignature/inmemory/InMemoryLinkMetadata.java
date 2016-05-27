@@ -109,7 +109,7 @@ public class InMemoryLinkMetadata extends TLVStructure implements com.guardtime.
     private TLVElement createPaddingTlvElement() throws TLVParserException {
         TLVElement element = new TLVElement(true, true, ELEMENT_TYPE_PADDING);
         int padding = 1;
-        if(this.rootElement.getContentLength() % 2 == 0) {
+        if (this.rootElement.getContentLength() % 2 == 0) {
             padding = 2;
         }
         byte[] bytes = new byte[padding];

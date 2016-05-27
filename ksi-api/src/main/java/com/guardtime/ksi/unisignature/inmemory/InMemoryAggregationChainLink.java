@@ -32,7 +32,6 @@ import com.guardtime.ksi.unisignature.ChainResult;
 import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.util.Util;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
 import java.util.List;

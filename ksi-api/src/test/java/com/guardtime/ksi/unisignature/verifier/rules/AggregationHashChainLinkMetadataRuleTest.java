@@ -15,12 +15,12 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
     private static final String SIGNATURE_WITH_METADATA_PADDING_FLAGS_NOT_SET = "aggregation-hash-chain-metadata/metadata-padding-flags-not-set.ksig";
     private static final String SIGNATURE_WITH_METADATA_PADDING_F_FLAG_NOT_SET = "aggregation-hash-chain-metadata/metadata-padding-forward-flag-not-set.ksig";
     private static final String SIGNATURE_WITH_METADATA_PADDING_N_FLAG_NOT_SET = "aggregation-hash-chain-metadata/metadata-padding-noncritical-flag-not-set.ksig";
+    private static final String SIGNATURE_WITH_METADATA_PADDING_TLV_16_FLAG_SET = "aggregation-hash-chain-metadata/metadata-padding-16-bit-flag-set.ksig";
     private static final String SIGNATURE_WITH_METADATA_PADDING_TOO_LONG = "aggregation-hash-chain-metadata/metadata-padding-too-long.ksig";
     private static final String SIGNATURE_WITH_METADATA_PADDING_TOO_SHORT = "aggregation-hash-chain-metadata/metadata-padding-too-short.ksig";
     private static final String SIGNATURE_WITH_BAD_METADATA_PADDING = "aggregation-hash-chain-metadata/metadata-padding-wrong-content.ksig";
     private static final String SIGNATURE_WITH_WRONG_METADATA_ORDER = "aggregation-hash-chain-metadata/metadata-wrong-order.ksig";
     private static final String SIGNATURE_WITH_VALID_METADATA = "aggregation-hash-chain-metadata/metadata-signed-ok.ksig";
-    private static final String SIGNATURE_WITH_METADATA_PADDING_TLV_16_FLAG_SET = "aggregation-hash-chain-metadata/metadata-padding-16-bit-flag-set.ksig";
     private AggregationHashChainLinkMetadataRule rule = new AggregationHashChainLinkMetadataRule();
 
     @Test
@@ -115,7 +115,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
     public void testMetadataMatchesHashImprint() throws Exception {
         RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_WITH_METADATA_MATCHING_HASH_IMPRINT)));
         Assert.assertNotNull(result);
-        Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK); // TODO: Talk to spec owner what is the actual expected outcome here, logger warning and verification OK or logged warning and verification NA/FAIL ?
+        Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
     }
 

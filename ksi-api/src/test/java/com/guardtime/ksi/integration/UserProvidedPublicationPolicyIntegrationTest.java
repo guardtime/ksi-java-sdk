@@ -97,8 +97,8 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
         String responseFile = "publication-based-verification/another-core-response-with-only-cal-chain.tlv";
         mockExtenderResponseCalendarHashCain(responseFile, mockedExtenderClient);
 
-        KSISignature signature = TestUtil.loadSignature("publication-based-verification/correct-core-signature_2015-09-13_21-34-00.ksig");
-        PublicationData publicationData = new PublicationData("AAAAAA-CV6Z3M-EAM2OL-PO3DU7-SQMPO6-KONYI3-HLRICR-6LUQS5-PTFAGI-CYSUP3-KSENF5-BKWK4G");
+        KSISignature signature = TestUtil.loadSignature("publication-based-verification/correct-core-signature_2016-05-10_08-46-59.ksig");
+        PublicationData publicationData = new PublicationData("AAAAAA-CXG66A-AAPBX3-OIZG3G-W5FIJN-Q5H2R3-ZMIFS6-ASTHGX-BISQOO-756MXG-ZUZWW5-ARVC23");
 
         VerificationResult result = verify(ksi, mockedExtenderClient, signature, policy, publicationData, true);
         Assert.assertFalse(result.isOk());

@@ -75,7 +75,7 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyNewerSignatureWithOlderPublicationFile_VerificationReturnsGen2() throws Exception {
-        VerificationResult results = publicationFileBasedVerification("signature_2015-09-13_21-34-00.ksig", "publication-based-verification/old-publications.tlv", true, simpleHttpClient);
+        VerificationResult results = publicationFileBasedVerification("signature_2016-05-10_08-46-59.ksig", "publication-based-verification/old-publications.tlv", true, simpleHttpClient);
         Assert.assertFalse(results.isOk());
         Assert.assertEquals(results.getErrorCode(), VerificationErrorCode.GEN_2);
     }

@@ -53,20 +53,24 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
             for (AggregationChainLink link : chain.getChainLinks()) {
                 LinkMetadata metadata = link.getMetadata();
                 if (metadata == null) continue; // No metadata, nothing to verify.
+                try{
+                    TLVElement linkMetadataRootElement = ((InMemoryLinkMetadata) metadata).getRootElement();
 
-                TLVElement linkMetadataRootElement = ((InMemoryLinkMetadata) metadata).getRootElement();
-
-                if (paddingElementMissing(linkMetadataRootElement)) {
-                    if (contentCanBeMistakenForHashImprint(linkMetadataRootElement)) {
-                        LOGGER.warn("Metadata might be hash!");
+                    if (paddingElementMissing(linkMetadataRootElement)) {
+                        if (contentCanBeMistakenForHashImprint(linkMetadataRootElement)) {
+                            LOGGER.info("Metadata might be hash!");
+                            return VerificationResultCode.FAIL;
+                        }
+                    } else if (multiplePaddingElements(linkMetadataRootElement) ||
+                            firstChildElementIsNotPadding(linkMetadataRootElement) ||
+                            paddingElementHasInvalidFlags(linkMetadataRootElement) ||
+                            paddingHasInvalidContent(linkMetadataRootElement)) {
+                        LOGGER.info("Metadata can not be determined to be valid!");
                         return VerificationResultCode.FAIL;
                     }
-                } else if (multiplePaddingElements(linkMetadataRootElement) ||
-                        firstChildElementIsNotPadding(linkMetadataRootElement) ||
-                        paddingElementHasInvalidFlags(linkMetadataRootElement) ||
-                        paddingHasInvalidContent(linkMetadataRootElement)) {
-                    LOGGER.info("Metadata can not be determined to be valid!");
-                    return VerificationResultCode.FAIL;
+                } catch (ClassCastException e) {
+                    LOGGER.info("Unknown metadata, can't verify!");
+                    return VerificationResultCode.NA;
                 }
             }
         }

@@ -22,16 +22,18 @@ import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.util.Util;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 
 public class CommonTestUtil {
 
     public static InputStream load(String file) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
+    }
+
+    public static byte[] loadBytes(String file) throws Exception {
+        InputStream input = load(file);
+        return Util.toByteArray(input);
     }
 
     public static File loadFile(String file) throws Exception {

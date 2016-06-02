@@ -21,7 +21,6 @@ package com.guardtime.ksi.service.tcp;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,12 +30,6 @@ import org.slf4j.LoggerFactory;
 class TCPSessionHandler implements IoHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TCPSessionHandler.class);
-
-    private NioSocketConnector connector;
-
-    TCPSessionHandler(NioSocketConnector connector) {
-        this.connector = connector;
-    }
 
     public void exceptionCaught(IoSession session, Throwable t) throws Exception {
         LOGGER.error("An exception occurred while making a TCP request.", t);

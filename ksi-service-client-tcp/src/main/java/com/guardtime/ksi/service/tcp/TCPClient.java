@@ -45,11 +45,10 @@ public class TCPClient implements KSISigningClient {
     private IoSession tcpSession;
     private ExecutorService executorService;
     private TCPClientSettings tcpClientSettings;
-    private TCPSessionHandler tcpSessionHandler;
 
     public TCPClient(TCPClientSettings tcpClientSettings) {
         this.tcpClientSettings = tcpClientSettings;
-        executorService = Executors.newCachedThreadPool()/*newFixedThreadPool(tcpClientSettings.getTcpTransactionThreadPoolSize())*/;
+        executorService = Executors.newCachedThreadPool();
         ((ThreadPoolExecutor)executorService).setMaximumPoolSize(tcpClientSettings.getTcpTransactionThreadPoolSize());
     }
 
@@ -86,8 +85,7 @@ public class TCPClient implements KSISigningClient {
         NioSocketConnector connector = new NioSocketConnector();
         connector.setConnectTimeoutMillis(tcpClientSettings.getTcpTransactionTimeoutSec() * 1000);
         connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TransactionCodecFactory()));
-        tcpSessionHandler = new TCPSessionHandler(connector);
-        connector.setHandler(tcpSessionHandler);
+        connector.setHandler(new TCPSessionHandler());
         ConnectFuture connectFuture = connector.connect(endpoint);
 
         try {

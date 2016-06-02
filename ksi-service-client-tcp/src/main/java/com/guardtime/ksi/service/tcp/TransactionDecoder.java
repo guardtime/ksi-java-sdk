@@ -29,40 +29,68 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 class TransactionDecoder extends CumulativeProtocolDecoder {
 
     private static final int TLV16_MASK = 0x80;
+    private static final int TLV8_HEADER_LENGTH = 2;
+    private static final int TLV16_HEADER_LENGTH = 4;
+    private static final int NOT_ENOUGH_DATA = -1;
 
-    protected boolean doDecode(IoSession session, IoBuffer tcpResponse, ProtocolDecoderOutput decoder) throws Exception {
-        int tlvLength = extractTLVLengthFromResponse(tcpResponse);
-        int remaining = tcpResponse.remaining();
-        int initialLimit = tcpResponse.limit();
+    protected boolean doDecode(IoSession session, IoBuffer responseBuffer, ProtocolDecoderOutput decoder) throws Exception {
+        int tlvLength = extractNextTlvElementLength(responseBuffer);
+        if (tlvLength == NOT_ENOUGH_DATA) {
+            return false;
+        }
+        int remaining = responseBuffer.remaining();
+        int initialLimit = responseBuffer.limit();
         while (remaining >= tlvLength) {
-            int limit = tcpResponse.position() + tlvLength;
-            tcpResponse.limit(limit);
-            KSITCPSigningTransaction ksitcpSigningTransaction = KSITCPSigningTransaction.fromResponse(tcpResponse.slice());
+            int limit = responseBuffer.position() + tlvLength;
+            responseBuffer.limit(limit);
+            KSITCPSigningTransaction ksitcpSigningTransaction = KSITCPSigningTransaction.fromResponse(responseBuffer.slice());
             decoder.write(ksitcpSigningTransaction);
-            tcpResponse.limit(initialLimit);
-            tcpResponse.position(limit);
+            responseBuffer.limit(initialLimit);
+            responseBuffer.position(limit);
             if (remaining == tlvLength) {
                 return true;
             }
-            remaining = tcpResponse.remaining();
-            tlvLength = extractTLVLengthFromResponse(tcpResponse);
+            remaining = responseBuffer.remaining();
+            tlvLength = extractNextTlvElementLength(responseBuffer);
+            if (tlvLength == NOT_ENOUGH_DATA) {
+                return false;
+            }
         }
         return false;
     }
 
-    private int extractTLVLengthFromResponse(IoBuffer in) {
-        in.mark();
-        int firstByte = in.getUnsigned();
-        boolean tlv8 = (firstByte & TLV16_MASK) == 0;
-        if (tlv8) {
-            in.reset();
-            return firstByte + 1;
+    /**
+     * Returns the length of the next TLV element. Returns -1 when buffer doesn't contain enough data for next TLV
+     * element.
+     */
+    private int extractNextTlvElementLength(IoBuffer in) {
+        if (!hasRemainingData(in, 2)) {
+            return NOT_ENOUGH_DATA;
         }
-        in.skip(1);
-        int thirdByte = in.getUnsigned();
-        int fourthByte = in.getUnsigned();
-        in.reset();
-        return (thirdByte << 8) + (fourthByte << 0) + 4;
+        try {
+            in.mark();
+            int firstByte = in.getUnsigned();
+            boolean tlv8 = (firstByte & TLV16_MASK) == 0;
+            if (tlv8) {
+                // 8 bit length. NB! Reads one unsigned byte as an integer
+                return in.getUnsigned() + TLV8_HEADER_LENGTH;
+            }
+            // skip tlv16 LSB byte
+            in.skip(1);
+            if (!hasRemainingData(in, 2)) {
+                return NOT_ENOUGH_DATA;
+            }
+            // 16 bit length. NB! Reads two bytes unsigned integer
+            return in.getUnsignedShort() + TLV16_HEADER_LENGTH;
+        } finally {
+            in.reset();
+        }
+    }
+
+    private boolean hasRemainingData(IoBuffer buffer, int expectedDataLength) {
+        int position = buffer.position();
+        int limit = buffer.limit();
+        return limit - position >= expectedDataLength;
     }
 
 }

@@ -1,5 +1,6 @@
 Version 4.3
 
+* BUGFIX: Fixed a bug where TCP client had trouble splitting aggregator responses
 * BUGFIX: Fixed a bug where TCP client CPU consumption didn't drop after high load
 * IMPROVEMENT: Now publications file can be cached by using method KSIBuilder.setPublicationsFileCacheExpirationTime(..)
 * BUGFIX: Fixed a bug where Calendar Hash Chain rule checked wrong links.

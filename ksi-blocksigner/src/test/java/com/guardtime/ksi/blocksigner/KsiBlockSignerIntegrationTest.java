@@ -23,8 +23,8 @@ import com.guardtime.ksi.AbstractBlockSignatureTest;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.unisignature.IdentityMetadata;
 import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -39,10 +39,10 @@ public class KsiBlockSignerIntegrationTest extends AbstractBlockSignatureTest {
 
     private static final String WORKING_HASH_ALGORITHMS = "workingHashAlgorithms";
 
-    private LinkMetadata metadata;
-    private LinkMetadata metadata2;
-    private LinkMetadata metadata3;
-    private LinkMetadata metadata4;
+    private IdentityMetadata metadata;
+    private IdentityMetadata metadata2;
+    private IdentityMetadata metadata3;
+    private IdentityMetadata metadata4;
     private DataHash dataHashSha1;
     private DataHash dataHashSha386;
     private DataHash dataHashSha512;

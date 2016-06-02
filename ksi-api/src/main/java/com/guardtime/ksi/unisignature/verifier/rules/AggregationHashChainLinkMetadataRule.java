@@ -20,15 +20,11 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.hashing.UnknownHashAlgorithmException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.LinkMetadata;
-import com.guardtime.ksi.unisignature.inmemory.InMemoryLinkMetadata;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
@@ -37,15 +33,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static com.guardtime.ksi.unisignature.inmemory.InMemoryLinkMetadata.ELEMENT_TYPE_PADDING;
-
 /**
  * This rule verifies that all metadata structures in aggregation hash chain links are valid.
  */
 public final class AggregationHashChainLinkMetadataRule extends BaseRule {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AggregationHashChainConsistencyRule.class);
     private static final int EXPECTED_PADDING_CONTENT = 0x01;
+    private static final int ELEMENT_TYPE_PADDING = 0x1E;
+
+    private static final Logger logger = LoggerFactory.getLogger(AggregationHashChainConsistencyRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         AggregationHashChain[] aggregationChains = context.getAggregationHashChains();
@@ -53,24 +48,19 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
             for (AggregationChainLink link : chain.getChainLinks()) {
                 LinkMetadata metadata = link.getMetadata();
                 if (metadata == null) continue; // No metadata, nothing to verify.
-                try{
-                    TLVElement linkMetadataRootElement = ((InMemoryLinkMetadata) metadata).getRootElement();
+                TLVElement linkMetadataRootElement = metadata.getMetadataStructure().getRootElement();
 
-                    if (paddingElementMissing(linkMetadataRootElement)) {
-                        if (contentCanBeMistakenForHashImprint(linkMetadataRootElement)) {
-                            LOGGER.info("Metadata might be hash!");
-                            return VerificationResultCode.FAIL;
-                        }
-                    } else if (multiplePaddingElements(linkMetadataRootElement) ||
-                            firstChildElementIsNotPadding(linkMetadataRootElement) ||
-                            paddingElementHasInvalidFlags(linkMetadataRootElement) ||
-                            paddingHasInvalidContent(linkMetadataRootElement)) {
-                        LOGGER.info("Metadata can not be determined to be valid!");
+                if (paddingElementMissing(linkMetadataRootElement)) {
+                    if (contentCanBeMistakenForHashImprint(linkMetadataRootElement)) {
+                        logger.info("Metadata might be hash!");
                         return VerificationResultCode.FAIL;
                     }
-                } catch (ClassCastException e) {
-                    LOGGER.info("Unknown metadata, can't verify!");
-                    return VerificationResultCode.NA;
+                } else if (multiplePaddingElements(linkMetadataRootElement) ||
+                        firstChildElementIsNotPadding(linkMetadataRootElement) ||
+                        paddingElementHasInvalidFlags(linkMetadataRootElement) ||
+                        paddingHasInvalidContent(linkMetadataRootElement)) {
+                    logger.info("Metadata can not be determined to be valid!");
+                    return VerificationResultCode.FAIL;
                 }
             }
         }
@@ -115,7 +105,7 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
         byte[] paddingContent = rootElement.getFirstChildElement(ELEMENT_TYPE_PADDING).getContent();
         int paddingLength = paddingContent.length;
         int contentLength = rootElement.getContent().length;
-        if ( contentLength % 2 != 0
+        if (contentLength % 2 != 0
                 || paddingLength > 2) {
             return true;
         }

@@ -4,12 +4,13 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
-import com.guardtime.ksi.util.Util;
+import com.guardtime.ksi.unisignature.IdentityMetadata;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class InMemoryLinkMetadata extends TLVStructure implements com.guardtime.ksi.unisignature.LinkMetadata {
+class InMemoryLinkMetadata extends TLVStructure implements LinkMetadata {
 
     public static final int ELEMENT_TYPE_METADATA = 0x04;
 
@@ -19,25 +20,10 @@ public class InMemoryLinkMetadata extends TLVStructure implements com.guardtime.
     public static final int ELEMENT_TYPE_REQUEST_TIME = 0x04;
     public static final int ELEMENT_TYPE_PADDING = 0x1E;
 
-    private String clientId;
-    private String machineId;
-    private Long sequenceNumber;
-    private Long requestTime;
+    private IdentityMetadata identityMetadata;
 
-    public InMemoryLinkMetadata(String clientId) throws KSIException {
-        this(clientId, null, null, null);
-    }
-
-    public InMemoryLinkMetadata(com.guardtime.ksi.unisignature.LinkMetadata metadata) throws KSIException {
-        this(metadata.getClientId(), metadata.getMachineId(), metadata.getSequenceNumber(), metadata.getRequestTime());
-    }
-
-    public InMemoryLinkMetadata(String clientId, String machineId, Long sequenceNumber, Long requestTime) throws KSIException {
-        Util.notNull(clientId, "Client Identifier");
-        this.clientId = clientId;
-        this.machineId = machineId;
-        this.sequenceNumber = sequenceNumber;
-        this.requestTime = requestTime;
+    public InMemoryLinkMetadata(IdentityMetadata metadata) throws KSIException {
+        this.identityMetadata = metadata;
         this.rootElement = new TLVElement(false, false, getElementType());
         addMetadataChildElements();
     }
@@ -45,6 +31,10 @@ public class InMemoryLinkMetadata extends TLVStructure implements com.guardtime.
     public InMemoryLinkMetadata(TLVElement tlvElement) throws KSIException {
         super(tlvElement);
         List<TLVElement> children = tlvElement.getChildElements();
+        String clientId = null;
+        String machineId = null;
+        Long sequenceNumber = null;
+        Long requestTime = null;
         for (TLVElement child : children) {
             switch (child.getType()) {
                 case ELEMENT_TYPE_CLIENT_ID:
@@ -68,23 +58,7 @@ public class InMemoryLinkMetadata extends TLVStructure implements com.guardtime.
         if (clientId == null) {
             throw new InvalidAggregationHashChainException("AggregationChainLink metadata does not contain clientId element");
         }
-
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public String getMachineId() {
-        return machineId;
-    }
-
-    public Long getSequenceNumber() {
-        return sequenceNumber;
-    }
-
-    public Long getRequestTime() {
-        return requestTime;
+        this.identityMetadata = new IdentityMetadata(clientId, machineId, sequenceNumber, requestTime);
     }
 
     @Override
@@ -93,15 +67,15 @@ public class InMemoryLinkMetadata extends TLVStructure implements com.guardtime.
     }
 
     private void addMetadataChildElements() throws TLVParserException {
-        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CLIENT_ID, clientId));
-        if (machineId != null) {
-            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_MACHINE_ID, machineId));
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CLIENT_ID, identityMetadata.getClientId()));
+        if (identityMetadata.getMachineId() != null) {
+            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_MACHINE_ID, identityMetadata.getMachineId()));
         }
-        if (sequenceNumber != null) {
-            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SEQUENCE_NUMBER, sequenceNumber));
+        if (identityMetadata.getSequenceNumber() != null) {
+            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SEQUENCE_NUMBER, identityMetadata.getSequenceNumber()));
         }
-        if (requestTime != null) {
-            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_REQUEST_TIME, requestTime));
+        if (identityMetadata.getRequestTime() != null) {
+            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_REQUEST_TIME, identityMetadata.getRequestTime()));
         }
         this.rootElement.addFirstChildElement(createPaddingTlvElement());
     }
@@ -116,5 +90,13 @@ public class InMemoryLinkMetadata extends TLVStructure implements com.guardtime.
         Arrays.fill(bytes, (byte) 0x01);
         element.setContent(bytes);
         return element;
+    }
+
+    public IdentityMetadata getIdentityMetadata() {
+        return identityMetadata;
+    }
+
+    public TLVStructure getMetadataStructure() {
+        return this;
     }
 }

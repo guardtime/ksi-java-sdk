@@ -35,7 +35,7 @@ import com.guardtime.ksi.tree.TreeNode;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.LinkMetadata;
+import com.guardtime.ksi.unisignature.IdentityMetadata;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
@@ -51,8 +51,8 @@ import java.util.Map;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * A signer class to create a list of unisigantures. Methods {@link KsiBlockSigner#add(DataHash, long, LinkMetadata)},
- * {@link KsiBlockSigner#add(DataHash)} and/or {@link KsiBlockSigner#add(DataHash, long, LinkMetadata)} can be used
+ * A signer class to create a list of unisigantures. Methods {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)},
+ * {@link KsiBlockSigner#add(DataHash)} and/or {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)} can be used
  * to add new input hash to the block signer. Method {@link KsiBlockSigner#sign()} must be called to get the final
  * signatures. <p/> Current implementation returns one signature per input hash. <p/> Note that this class can not be
  * used multiple times. </p> The following sample shows how to use {@link KsiBlockSigner} class:
@@ -115,7 +115,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     /**
      * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
      */
-    public KsiBlockSigner add(DataHash dataHash, LinkMetadata metadata) throws KSIException {
+    public KsiBlockSigner add(DataHash dataHash, IdentityMetadata metadata) throws KSIException {
         return add(dataHash, 0L, metadata);
     }
 
@@ -129,7 +129,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     /**
      * Adds a hash (with specific level) and a signature metadata to the {@link KsiBlockSigner}.
      */
-    public KsiBlockSigner add(DataHash dataHash, long level, LinkMetadata metadata) throws KSIException {
+    public KsiBlockSigner add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException {
         notNull(dataHash, "DataHash");
         if (level < 0 || level > MAXIMUM_LEVEL) {
             throw new IllegalStateException("Level must be between 0 and 255");

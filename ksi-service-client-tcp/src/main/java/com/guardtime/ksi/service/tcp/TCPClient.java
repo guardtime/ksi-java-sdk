@@ -23,7 +23,6 @@ import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
 import org.apache.mina.core.future.ConnectFuture;
-import org.apache.mina.core.service.IoService;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
@@ -34,6 +33,7 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * KSI TCP client for signing.
@@ -49,7 +49,8 @@ public class TCPClient implements KSISigningClient {
 
     public TCPClient(TCPClientSettings tcpClientSettings) {
         this.tcpClientSettings = tcpClientSettings;
-        executorService = Executors.newFixedThreadPool(tcpClientSettings.getTcpTransactionThreadPoolSize());
+        executorService = Executors.newCachedThreadPool()/*newFixedThreadPool(tcpClientSettings.getTcpTransactionThreadPoolSize())*/;
+        ((ThreadPoolExecutor)executorService).setMaximumPoolSize(tcpClientSettings.getTcpTransactionThreadPoolSize());
     }
 
 
@@ -71,7 +72,7 @@ public class TCPClient implements KSISigningClient {
 
     public void close() {
         if (tcpSession != null) {
-            tcpSessionHandler.closeSessionManually(tcpSession);
+            tcpSession.closeOnFlush();
         }
     }
 
@@ -92,6 +93,7 @@ public class TCPClient implements KSISigningClient {
         try {
             return connectFuture.await().getSession();
         } catch (Exception e) {
+            connectFuture.cancel();
             throw new KSITCPTransactionException("Failed to initiate the TCP session with signer. Signer endpoint: " + endpoint, e);
         }
     }

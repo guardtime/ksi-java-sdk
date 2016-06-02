@@ -135,13 +135,14 @@ class KSITCPSigningTransaction {
                 throw new KSITCPTransactionException("An exception occurred with the TCP transaction.", writeFuture.getException());
             }
             waitResponse(timeoutSec);
-            ActiveTransactionsHolder.remove(this);
             if (response == null) {
                 throw new TCPTimeoutException("Response was not received in " + timeoutSec + " seconds.");
             }
 
         } catch (InterruptedException e) {
             throw new KSITCPTransactionException("Waiting for TCP response was interrupted.", e);
+        } finally {
+            ActiveTransactionsHolder.remove(this);
         }
     }
 }

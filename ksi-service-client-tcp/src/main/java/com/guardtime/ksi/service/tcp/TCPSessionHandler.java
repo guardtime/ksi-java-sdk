@@ -34,8 +34,6 @@ class TCPSessionHandler implements IoHandler {
 
     private NioSocketConnector connector;
 
-    private boolean sessionManuallyCosed = false;
-
     TCPSessionHandler(NioSocketConnector connector) {
         this.connector = connector;
     }
@@ -55,13 +53,6 @@ class TCPSessionHandler implements IoHandler {
     }
 
     public void sessionClosed(IoSession session) throws Exception {
-        if (!sessionManuallyCosed) {
-            reconnect(session);
-        }
-    }
-
-    private void reconnect(IoSession session) {
-        connector.connect(session.getRemoteAddress());
     }
 
     public void sessionCreated(IoSession session) throws Exception {
@@ -74,15 +65,5 @@ class TCPSessionHandler implements IoHandler {
 
     public void sessionOpened(IoSession session) throws Exception {
         LOGGER.debug("TCP session {} with signer is opened.", session.getId());
-    }
-
-    /**
-     * Closes the given TCP session and sets the sessionManuallyClosed flag so that reconnecting would not be attempted.
-     *
-     * @param tcpSession - Session to close. Should be the same session that is handled by this handler.
-     */
-    public void closeSessionManually(IoSession tcpSession) {
-        sessionManuallyCosed = true;
-        tcpSession.getCloseFuture().awaitUninterruptibly();
     }
 }

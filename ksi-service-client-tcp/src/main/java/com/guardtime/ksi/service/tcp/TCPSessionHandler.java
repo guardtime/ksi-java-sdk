@@ -33,6 +33,7 @@ class TCPSessionHandler implements IoHandler {
 
     public void exceptionCaught(IoSession session, Throwable t) throws Exception {
         LOGGER.error("An exception occurred while making a TCP request.", t);
+        session.closeNow();
     }
 
     public void messageReceived(IoSession session, Object message) throws Exception {
@@ -43,6 +44,7 @@ class TCPSessionHandler implements IoHandler {
     }
 
     public void inputClosed(IoSession session) throws Exception {
+        session.closeNow();
     }
 
     public void sessionClosed(IoSession session) throws Exception {

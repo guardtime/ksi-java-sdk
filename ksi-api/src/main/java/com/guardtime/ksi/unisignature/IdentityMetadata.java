@@ -17,14 +17,14 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.blocksigner;
+package com.guardtime.ksi.unisignature;
 
-import com.guardtime.ksi.unisignature.LinkMetadata;
+import com.guardtime.ksi.util.Util;
 
 /**
  * Metadata to be added to the signature.
  */
-public class IdentityMetadata implements LinkMetadata {
+public class IdentityMetadata {
 
     private String clientId;
     private String machineId;
@@ -36,24 +36,41 @@ public class IdentityMetadata implements LinkMetadata {
     }
 
     public IdentityMetadata(String clientId, String machineId, Long sequenceNumber, Long requestTime) {
+        Util.notNull(clientId, "Client Identifier");
         this.clientId = clientId;
         this.machineId = machineId;
         this.sequenceNumber = sequenceNumber;
         this.requestTime = requestTime;
     }
 
+    /**
+     * Returns the client id to be added to the signature.
+     * Mandatory metadata element
+     */
     public String getClientId() {
         return clientId;
     }
 
+    /**
+     * Returns the machine id to be added to the signature.
+     * Optional metadata element
+     */
     public String getMachineId() {
         return machineId;
     }
 
+    /**
+     * Returns the sequence number to be added to the signature.
+     * Optional metadata element
+     */
     public Long getSequenceNumber() {
         return sequenceNumber;
     }
 
+    /**
+     * Returns the request time to be added to the signature.
+     * Optional metadata element
+     */
     public Long getRequestTime() {
         return requestTime;
     }

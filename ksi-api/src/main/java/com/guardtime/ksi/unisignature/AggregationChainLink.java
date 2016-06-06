@@ -40,4 +40,6 @@ public interface AggregationChainLink {
     String getIdentity() throws InvalidSignatureException;
 
     boolean isLeft();
+
+    LinkMetadata getMetadata();
 }

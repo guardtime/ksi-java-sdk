@@ -29,6 +29,7 @@ import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
+import com.guardtime.ksi.unisignature.IdentityMetadata;
 import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.util.Util;
 
@@ -73,11 +74,11 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash));
     }
 
-    InMemoryAggregationChainLink(LinkMetadata linkMetadata, long levelCorrection) throws KSIException {
+    InMemoryAggregationChainLink(IdentityMetadata identityMetadata, long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
         this.rootElement = new TLVElement(false, false, getElementType());
         addLevelCorrectionTlvElement();
-        this.metadata = new InMemoryLinkMetadata(linkMetadata);
+        this.metadata = new InMemoryLinkMetadata(identityMetadata);
         this.rootElement.addChildElement(metadata.getRootElement());
     }
 
@@ -156,7 +157,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             return getIdentityFromLegacyId();
         }
         if (metadata != null) {
-            return metadata.getClientId();
+            return metadata.getIdentityMetadata().getClientId();
         }
         return "";
     }
@@ -243,4 +244,9 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     public boolean isLeft() {
         return getElementType() == ELEMENT_TYPE_LEFT_LINK;
     }
+
+    public LinkMetadata getMetadata() {
+        return metadata;
+    }
+
 }

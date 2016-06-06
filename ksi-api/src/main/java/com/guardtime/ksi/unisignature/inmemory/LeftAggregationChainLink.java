@@ -24,7 +24,7 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.ChainResult;
-import com.guardtime.ksi.unisignature.LinkMetadata;
+import com.guardtime.ksi.unisignature.IdentityMetadata;
 
 /**
  * Left link implementation.
@@ -39,7 +39,7 @@ class LeftAggregationChainLink extends InMemoryAggregationChainLink {
         super(siblingHash, levelCorrection);
     }
 
-    LeftAggregationChainLink(LinkMetadata metadata, long levelCorrection) throws KSIException {
+    LeftAggregationChainLink(IdentityMetadata metadata, long levelCorrection) throws KSIException {
         super(metadata, levelCorrection);
     }
 

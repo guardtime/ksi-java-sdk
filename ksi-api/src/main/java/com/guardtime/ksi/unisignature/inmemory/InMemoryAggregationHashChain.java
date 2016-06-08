@@ -70,7 +70,7 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
             this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_CHAIN_INDEX, index));
         }
         this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_INPUT_HASH, inputHash));
-        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_AGGREGATION_ALGORITHM, inputHash.getAlgorithm().getId()));
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_AGGREGATION_ALGORITHM, aggregationAlgorithm.getId()));
 
         for (AggregationChainLink link : links) {
             this.rootElement.addChildElement(((InMemoryAggregationChainLink) link).getRootElement());

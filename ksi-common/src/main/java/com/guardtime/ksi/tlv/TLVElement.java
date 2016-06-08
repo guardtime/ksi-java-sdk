@@ -48,6 +48,11 @@ public final class TLVElement {
     public static final int MAX_TLV16_CONTENT_LENGTH = 0xFFFF;
 
     /**
+     * TLV 16 bit flag
+     */
+    private boolean tlv16;
+
+    /**
      * Non-critical flag
      */
     private boolean nonCritical;
@@ -65,6 +70,11 @@ public final class TLVElement {
     private byte[] content = new byte[0];
 
     public TLVElement(boolean nonCritical, boolean forwarded, int type) {
+        this(type > TLVInputStream.TYPE_MASK, nonCritical, forwarded, type);
+    }
+
+    public TLVElement(boolean tlv16, boolean nonCritical, boolean forwarded, int type) {
+        this.tlv16 = tlv16;
         this.nonCritical = nonCritical;
         this.forwarded = forwarded;
         this.type = type;
@@ -337,7 +347,7 @@ public final class TLVElement {
     }
 
     public boolean isTlv16() {
-        return getType() > TLVInputStream.TYPE_MASK || (getContentLength() > TLVInputStream.BYTE_MAX);
+        return this.tlv16 || (getContentLength() > TLVInputStream.BYTE_MAX);
     }
 
     public boolean isNonCritical() {

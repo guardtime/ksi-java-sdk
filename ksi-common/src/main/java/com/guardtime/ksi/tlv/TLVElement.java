@@ -70,7 +70,7 @@ public final class TLVElement {
     private byte[] content = new byte[0];
 
     public TLVElement(boolean nonCritical, boolean forwarded, int type) {
-        this(type > TLVInputStream.TYPE_MASK, nonCritical, forwarded, type);
+        this(false, nonCritical, forwarded, type);
     }
 
     public TLVElement(boolean tlv16, boolean nonCritical, boolean forwarded, int type) {
@@ -347,7 +347,7 @@ public final class TLVElement {
     }
 
     public boolean isTlv16() {
-        return this.tlv16 || (getContentLength() > TLVInputStream.BYTE_MAX);
+        return type > TLVInputStream.TYPE_MASK || (getContentLength() > TLVInputStream.BYTE_MAX) || this.tlv16;
     }
 
     public boolean isNonCritical() {

@@ -347,7 +347,7 @@ public final class TLVElement {
     }
 
     public boolean isTlv16() {
-        return type > TLVInputStream.TYPE_MASK || (getContentLength() > TLVInputStream.BYTE_MAX) || this.tlv16;
+        return getType() > TLVInputStream.TYPE_MASK || (getContentLength() > TLVInputStream.BYTE_MAX) || this.tlv16;
     }
 
     public boolean isNonCritical() {

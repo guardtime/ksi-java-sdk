@@ -334,7 +334,9 @@ public final class KSIBuilder {
                 throw new KSIException("Invalid input parameter. KSI signature must be present.");
             }
             PublicationRecord publicationRecord = getPublicationsFile().getPublicationRecord(signature.getAggregationTime());
-            if(publicationRecord == null) throw new KSIException("No suitable publication yet");
+            if(publicationRecord == null) {
+                throw new KSIException("No suitable publication yet");
+            }
             return asyncExtend(signature, publicationRecord);
         }
 

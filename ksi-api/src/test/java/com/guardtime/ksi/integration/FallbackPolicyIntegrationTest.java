@@ -30,7 +30,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 
-public class FallbackPolicyTest extends AbstractCommonIntegrationTest {
+public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testFallbackFromKeyBasedVerificationToCalendarBasedVerification_Ok() throws Exception {

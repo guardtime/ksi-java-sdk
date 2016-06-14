@@ -92,7 +92,7 @@ internal-verification-aggr-chain/too-short-legacy-id.ksig:false:false: :InvalidA
 internal-verification-aggr-chain/too-long-legacy-id.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId length
 internal-verification-aggr-chain/invalid-legacy-id-content.ksig:true:false:INT_01: : 
 internal-verification-aggr-chain/legacy-id-content-null.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/invalid-legacy-id-content-length.ksig:true:false:INT_01: : 
+internal-verification-aggr-chain/invalid-legacy-id-content-length.ksig:true:false:INT_01: :
 aggregation-hash-chain-metadata/sig-2016-05-26-141356-empty-padding.ksig:true:false:INT_11: : 
 aggregation-hash-chain-metadata/metadata-padding-wrong-content.ksig:true:false:INT_11: : 
 aggregation-hash-chain-metadata/metadata-padding-too-short.ksig:true:false:INT_11: : 
@@ -105,4 +105,4 @@ aggregation-hash-chain-metadata/metadata-padding-16-bit-flag-set.ksig:true:false
 aggregation-hash-chain-metadata/metadata-multiple-padding-elements.ksig:true:false:INT_11: : 
 aggregation-hash-chain-metadata/metadata-missing-padding-element.ksig:true:false:INT_01: : 
 aggregation-hash-chain-metadata/metadata-wrong-order.ksig:true:false:INT_11: : 
-##internal-verification-aggr-chain/invalid-chain-index.ksig:true:false:INT_10: : 
+internal-verification-aggr-chain/invalid-chain-index.ksig:true:false:INT_10: :

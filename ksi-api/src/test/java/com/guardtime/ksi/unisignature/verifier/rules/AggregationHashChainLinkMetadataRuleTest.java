@@ -15,7 +15,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
     private static final String SIGNATURE_WITH_METADATA_PADDING_FLAGS_NOT_SET = "aggregation-hash-chain-metadata/metadata-padding-flags-not-set.ksig";
     private static final String SIGNATURE_WITH_METADATA_PADDING_F_FLAG_NOT_SET = "aggregation-hash-chain-metadata/metadata-padding-forward-flag-not-set.ksig";
     private static final String SIGNATURE_WITH_METADATA_PADDING_N_FLAG_NOT_SET = "aggregation-hash-chain-metadata/metadata-padding-noncritical-flag-not-set.ksig";
-    private static final String SIGNATURE_WITH_METADATA_PADDING_TLV_16_FLAG_SET = "aggregation-hash-chain-metadata/metadata-padding-16-bit-flag-set.ksig";
+    private static final String SIGNATURE_WITH_METADATA_PADDING_TLV_16_FLAG_SET = "aggregation-hash-chain-metadata/TestAggregationHashChainMetadataPaddingNotTlv8Fail.ksig";
     private static final String SIGNATURE_WITH_METADATA_PADDING_TOO_LONG = "aggregation-hash-chain-metadata/metadata-padding-too-long.ksig";
     private static final String SIGNATURE_WITH_METADATA_PADDING_TOO_SHORT = "aggregation-hash-chain-metadata/metadata-padding-too-short.ksig";
     private static final String SIGNATURE_WITH_BAD_METADATA_PADDING = "aggregation-hash-chain-metadata/metadata-padding-wrong-content.ksig";

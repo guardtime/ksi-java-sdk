@@ -48,6 +48,11 @@ public final class TLVElement {
     public static final int MAX_TLV16_CONTENT_LENGTH = 0xFFFF;
 
     /**
+     * TLV 16 bit flag
+     */
+    private boolean inputTlv16;
+
+    /**
      * Non-critical flag
      */
     private boolean nonCritical;
@@ -65,6 +70,11 @@ public final class TLVElement {
     private byte[] content = new byte[0];
 
     public TLVElement(boolean nonCritical, boolean forwarded, int type) {
+        this(false, nonCritical, forwarded, type);
+    }
+
+    public TLVElement(boolean inputTlv16, boolean nonCritical, boolean forwarded, int type) {
+        this.inputTlv16 = inputTlv16;
         this.nonCritical = nonCritical;
         this.forwarded = forwarded;
         this.type = type;
@@ -336,8 +346,21 @@ public final class TLVElement {
         this.type = type;
     }
 
+    /**
+     * @return true if the TLVElement has type or length over TLV8 maximums.
+     * @deprecated Use {@link #isOutputTlv16}
+     */
+    @Deprecated
     public boolean isTlv16() {
+        return isOutputTlv16();
+    }
+
+    public boolean isOutputTlv16() {
         return getType() > TLVInputStream.TYPE_MASK || (getContentLength() > TLVInputStream.BYTE_MAX);
+    }
+
+    public boolean isInputTlv16() {
+        return this.inputTlv16;
     }
 
     public boolean isNonCritical() {
@@ -363,7 +386,7 @@ public final class TLVElement {
 
             int dataLength = getContentLength();
 
-            boolean tlv16 = isTlv16();
+            boolean tlv16 = isOutputTlv16();
             int firstByte = (tlv16 ? TLVInputStream.TLV16_FLAG : 0) + (isNonCritical() ? TLVInputStream.NON_CRITICAL_FLAG : 0)
                     + (isForwarded() ? TLVInputStream.FORWARD_FLAG : 0);
 
@@ -408,7 +431,7 @@ public final class TLVElement {
     }
 
     public int getHeaderLength() {
-        return isTlv16() ? 4 : 2;
+        return isOutputTlv16() ? 4 : 2;
     }
 
     /**

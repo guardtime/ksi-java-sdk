@@ -98,7 +98,7 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
 
     private boolean paddingElementHasInvalidFlags(TLVElement rootElement) {
         TLVElement paddingElement = rootElement.getFirstChildElement(ELEMENT_TYPE_PADDING);
-        return paddingElement.isTlv16() || !paddingElement.isForwarded() || !paddingElement.isNonCritical();
+        return paddingElement.isInputTlv16() || !paddingElement.isForwarded() || !paddingElement.isNonCritical();
     }
 
     private boolean paddingHasInvalidContent(TLVElement rootElement) throws TLVParserException {

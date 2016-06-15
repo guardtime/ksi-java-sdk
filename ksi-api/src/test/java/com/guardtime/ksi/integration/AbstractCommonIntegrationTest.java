@@ -261,7 +261,7 @@ public abstract class AbstractCommonIntegrationTest {
             ArrayList<String> lines = new ArrayList<String>();
             String line;
             while ((line = fileReader.readLine()) != null) {
-                if (!line.startsWith("#")) {
+                if (!line.startsWith("#") || line.trim().length() < 1) {
                     lines.add(line);
                 }
             }

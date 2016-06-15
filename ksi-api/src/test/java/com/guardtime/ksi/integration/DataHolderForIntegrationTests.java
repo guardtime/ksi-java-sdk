@@ -36,8 +36,8 @@ public class DataHolderForIntegrationTests {
             throw new IllegalArgumentException("Test file is null");
         }
         this.testFile = inputData[0];
-        this.expectException = inputData[1].equals("true");
-        this.expectFailureWithErrorCode = inputData[2].equals("true");
+        this.expectException = Boolean.valueOf(inputData[1].trim());
+        this.expectFailureWithErrorCode =  Boolean.valueOf(inputData[2].trim());
 
         if (inputData[3] == null) {
             throw new IllegalArgumentException("Failure code is null");

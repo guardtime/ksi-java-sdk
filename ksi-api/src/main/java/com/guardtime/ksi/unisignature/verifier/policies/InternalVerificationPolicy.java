@@ -41,7 +41,7 @@ public abstract class InternalVerificationPolicy implements Policy {
         rules.add(new AggregationHashChainLinkMetadataRule());
         rules.add(new AggregationHashChainConsistencyRule());
         rules.add(new AggregationHashChainTimeConsistencyRule());
-        //rules.add(new AggregationHashChainIndexConsistencyRule());
+        rules.add(new AggregationHashChainIndexConsistencyRule());
 
         // verify calendar hash chain (if present)
         rules.add(new CalendarHashChainInputHashVerificationRule());

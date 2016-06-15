@@ -104,4 +104,4 @@ aggregation-hash-chain-metadata/metadata-multiple-padding-elements.ksig:true:fal
 aggregation-hash-chain-metadata/metadata-missing-padding-element.ksig:true:false:INT_01: : 
 aggregation-hash-chain-metadata/metadata-wrong-order.ksig:true:false:INT_11: : 
 aggregation-hash-chain-metadata/TestAggregationHashChainMetadataPaddingNotTlv8Fail.ksig:true:false:INT_11: : 
-internal-verification-aggr-chain/invalid-chain-index.ksig:true:false:INT_10: : 
+##internal-verification-aggr-chain/invalid-chain-index.ksig:true:false:INT_10: :

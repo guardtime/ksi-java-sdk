@@ -300,6 +300,7 @@ public abstract class AbstractCommonIntegrationTest {
             if (!(e.getMessage().contains(testData.getExpectedExceptionMessage()) &&
                     e.getClass().toString().contains(testData.getExpectedExceptionClass()) &&
                     !testData.getExpectException() && testData.getExpectedFailureCode().equals(" "))) {
+                LOGGER.warn("Test failed with " + testData.getTestDataInformation() + "; Policy: " + policy.getName());
                 throw e;
             }
         }

@@ -22,13 +22,20 @@ import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.util.Util;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URL;
 
 public class CommonTestUtil {
 
-    public static InputStream load(String file) {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
+    public static InputStream load(String file) throws FileNotFoundException {
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
+        if (stream == null) {
+            throw new FileNotFoundException(file + " not found");
+        }
+        return stream;
     }
 
     public static byte[] loadBytes(String file) throws Exception {
@@ -62,7 +69,6 @@ public class CommonTestUtil {
             Util.closeQuietly(tlvInputStream);
         }
     }
-
 
 
 }

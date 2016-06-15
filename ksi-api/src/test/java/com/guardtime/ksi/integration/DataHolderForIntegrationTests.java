@@ -35,24 +35,24 @@ public class DataHolderForIntegrationTests {
         if (inputData[0] == null) {
             throw new IllegalArgumentException("Test file is null");
         }
-        this.testFile = inputData[0];
-        this.expectException = inputData[1].equals("true");
-        this.expectFailureWithErrorCode = inputData[2].equals("true");
+        this.testFile = inputData[0].trim();
+        this.expectException = Boolean.valueOf(inputData[1].trim());
+        this.expectFailureWithErrorCode =  Boolean.valueOf(inputData[2].trim());
 
         if (inputData[3] == null) {
             throw new IllegalArgumentException("Failure code is null");
         }
-        this.expectedFailureCode = inputData[3];
+        this.expectedFailureCode = inputData[3].trim();
 
         if (inputData[4] == null) {
             throw new IllegalArgumentException("Expected exception is null");
         }
-        this.expectedExceptionClass = inputData[4];
+        this.expectedExceptionClass = inputData[4].trim();
 
         if (inputData[5] == null) {
             throw new IllegalArgumentException("Expected exception message is null");
         }
-        this.exceptionMessage = inputData[5];
+        this.exceptionMessage = inputData[5].trim();
 
         if (httpClient == null) {
             throw new IllegalArgumentException("HttpClientSettings is null");

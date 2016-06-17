@@ -1,5 +1,7 @@
 Version 4.3
 
+2016-06-17 4.3.54
+
 * IMPROVEMENT: Added stronger check for aggregation hash chain index consistency
 * BUGFIX: Fixed a bug where server closed TCP connection due to inactivity and we did not close session in our side
 * BUGFIX: Fixed a bug where TCP client had trouble splitting aggregator responses

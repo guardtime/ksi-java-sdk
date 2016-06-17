@@ -31,10 +31,10 @@ import java.util.List;
  */
 public class ExtensionRequestPayload extends TLVStructure {
 
-    public static final int ELEMENT_TYPE_EXTENSION_REQUEST_PAYLOAD = 0x301;
-    public static final int ELEMENT_TYPE_REQUEST_ID = 0x1;
-    public static final int ELEMENT_TYPE_AGGREGATION_TIME = 0x2;
-    public static final int ELEMENT_TYPE_PUBLICATION_TIME = 0x3;
+    public static final int ELEMENT_TYPE = 0x301;
+    private static final int ELEMENT_TYPE_REQUEST_ID = 0x1;
+    private static final int ELEMENT_TYPE_AGGREGATION_TIME = 0x2;
+    private static final int ELEMENT_TYPE_PUBLICATION_TIME = 0x3;
 
     private Long requestId;
     private Date aggregationTime;
@@ -55,8 +55,7 @@ public class ExtensionRequestPayload extends TLVStructure {
 
         this.requestId = requestId;
         this.aggregationTime = aggregationTime;
-
-        this.rootElement = new TLVElement(false, false, ELEMENT_TYPE_EXTENSION_REQUEST_PAYLOAD);
+        this.rootElement = new TLVElement(false, false, ELEMENT_TYPE);
 
         //requestID
         TLVElement requestIdElement = new TLVElement(false, false, ELEMENT_TYPE_REQUEST_ID);
@@ -139,6 +138,6 @@ public class ExtensionRequestPayload extends TLVStructure {
 
     @Override
     public int getElementType() {
-        return ELEMENT_TYPE_EXTENSION_REQUEST_PAYLOAD;
+        return ELEMENT_TYPE;
     }
 }

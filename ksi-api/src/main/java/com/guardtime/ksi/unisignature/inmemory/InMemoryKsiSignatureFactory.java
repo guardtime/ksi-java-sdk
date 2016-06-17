@@ -20,6 +20,8 @@
 package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
@@ -29,6 +31,8 @@ import com.guardtime.ksi.util.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -74,6 +78,10 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         return new InMemoryAggregationHashChain(element);
     }
 
+    public AggregationHashChain createAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> indexes, LinkedList<AggregationChainLink> links, HashAlgorithm aggregationAlgorithm) throws KSIException {
+        return new InMemoryAggregationHashChain(inputHash, aggregationTime, indexes, links, aggregationAlgorithm);
+    }
+
     public CalendarAuthenticationRecord createCalendarAuthenticationRecord(TLVElement element) throws KSIException {
         return new InMemoryCalendarAuthenticationRecord(element);
     }
@@ -88,6 +96,18 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
 
     public SignaturePublicationRecord createPublicationRecord(TLVElement element) throws KSIException {
         return new InMemorySignaturePublicationRecord(element);
+    }
+
+    public AggregationChainLink createLeftAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
+        return new LeftAggregationChainLink(siblingHash, levelCorrection);
+    }
+
+    public AggregationChainLink createLeftAggregationChainLink(IdentityMetadata metadata, long levelCorrection) throws KSIException {
+        return new LeftAggregationChainLink(metadata, levelCorrection);
+    }
+
+    public AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
+        return new RightAggregationChainLink(siblingHash, levelCorrection);
     }
 
     private void addTlvStructure(TLVElement root, TLVStructure structure) throws KSIException {

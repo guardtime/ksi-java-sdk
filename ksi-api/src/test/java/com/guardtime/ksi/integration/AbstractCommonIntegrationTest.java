@@ -261,7 +261,8 @@ public abstract class AbstractCommonIntegrationTest {
             ArrayList<String> lines = new ArrayList<String>();
             String line;
             while ((line = fileReader.readLine()) != null) {
-                if (!line.startsWith("#")) {
+                if (!line.startsWith("#") || line.trim().length() < 1) {
+                    line = line.replace(";","; ");
                     lines.add(line);
                 }
             }
@@ -271,7 +272,7 @@ public abstract class AbstractCommonIntegrationTest {
             SimpleHttpClient httpClient = new SimpleHttpClient(loadHTTPSettings());
 
             for (int i = 0; i < linesCount; i++) {
-                data[i] = new Object[]{new DataHolderForIntegrationTests(lines.get(i).split(":"), httpClient)};
+                data[i] = new Object[]{new DataHolderForIntegrationTests(lines.get(i).split(";"), httpClient)};
             }
             return data;
         } finally {
@@ -299,7 +300,8 @@ public abstract class AbstractCommonIntegrationTest {
         } catch (Exception e) {
             if (!(e.getMessage().contains(testData.getExpectedExceptionMessage()) &&
                     e.getClass().toString().contains(testData.getExpectedExceptionClass()) &&
-                    !testData.getExpectException() && testData.getExpectedFailureCode().equals(" "))) {
+                    !testData.getExpectException() && testData.getExpectedFailureCode().equals(""))) {
+                LOGGER.warn("Test failed with " + testData.getTestDataInformation() + "; Policy: " + policy.getName());
                 throw e;
             }
         }

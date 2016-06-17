@@ -53,7 +53,7 @@ public class TLVInputStreamTest {
         input = new TLVInputStream(new ByteArrayInputStream(new byte[]{1, 4, 4, 2, 1, 0}));
         Assert.assertTrue(input.hasNextElement());
         TLVElement tlvElement = input.readElement();
-        Assert.assertFalse(tlvElement.isTlv16());
+        Assert.assertFalse(tlvElement.isOutputTlv16());
         Assert.assertFalse(tlvElement.isForwarded());
         Assert.assertFalse(tlvElement.isNonCritical());
         Assert.assertEquals(tlvElement.getContent().length, 4);
@@ -66,7 +66,7 @@ public class TLVInputStreamTest {
 
         Assert.assertTrue(input.hasNextElement());
         TLVElement tlvElement = input.readElement();
-        Assert.assertFalse(tlvElement.isTlv16());
+        Assert.assertFalse(tlvElement.isOutputTlv16());
         Assert.assertFalse(tlvElement.isForwarded());
         Assert.assertTrue(tlvElement.isNonCritical());
         Assert.assertEquals(tlvElement.getContent().length, 4);
@@ -79,7 +79,7 @@ public class TLVInputStreamTest {
 
         Assert.assertTrue(input.hasNextElement());
         TLVElement tlvElement = input.readElement();
-        Assert.assertFalse(tlvElement.isTlv16());
+        Assert.assertFalse(tlvElement.isOutputTlv16());
         Assert.assertTrue(tlvElement.isForwarded());
         Assert.assertTrue(tlvElement.isNonCritical());
         Assert.assertEquals(tlvElement.getContent().length, 4);
@@ -92,7 +92,7 @@ public class TLVInputStreamTest {
 
         Assert.assertTrue(input.hasNextElement());
         TLVElement tlvElement = input.readElement();
-        Assert.assertTrue(tlvElement.isTlv16());
+        Assert.assertTrue(tlvElement.isOutputTlv16());
         Assert.assertFalse(tlvElement.isForwarded());
         Assert.assertFalse(tlvElement.isNonCritical());
         Assert.assertEquals(tlvElement.getContent().length, 2);

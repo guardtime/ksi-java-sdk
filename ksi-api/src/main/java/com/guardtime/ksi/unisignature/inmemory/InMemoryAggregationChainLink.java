@@ -25,9 +25,12 @@ import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
+import com.guardtime.ksi.unisignature.IdentityMetadata;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.util.Util;
 
 import java.nio.charset.CharacterCodingException;
@@ -39,12 +42,12 @@ import static com.guardtime.ksi.util.Util.copyOf;
 
 /**
  * Abstract class for LeftAggregationChainLink and RightAggregationChainLink implementations. AggregationChainLink
- * structure contains the following information: <ul> <li>May contain level correction value. Default value is 0</li>
- * <li>One and only one of the following three fields</li> <ul> <li>sibling hash - an `imprint' representing a hash
- * value from the sibling node in the tree</li> <li>metadata - a sub-structure that provides the ability to incorporate
- * client identity and other information about the request into the hash chain.</li> <li>metadata hash - metadata of
- * limited length encoded as an imprint. This option is present for backwards compatibility with existing signatures
- * created before the structured `metadata' field was introduced.</li> </ul>
+ * structure contains the following information: <ul> <li>a level correction value</li> <li>One and only one of the
+ * following three fields</li> <ul> <li>sibling hash - an `imprint' representing a hash value from the sibling node in
+ * the tree</li> <li>metadata - a sub-structure that provides the ability to incorporate client identity and other
+ * information about the request into the hash chain.</li> <li>legacy client identifier - a client identifier converted
+ * from a legacy signature. This option is present for backwards compatibility with existing signatures created before
+ * the structured `metadata' field was introduced.</li> </ul>
  * <p/>
  * </ul>
  */
@@ -58,10 +61,26 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     private static final byte[] LEGACY_ID_PREFIX = new byte[]{0x03, 0x00};
     private static final int LEGACY_ID_OCTET_STRING_MAX_LENGTH = 25;
 
-    private Long levelCorrection = 0L;
+    private long levelCorrection = 0L;
     private DataHash siblingHash;
     private byte[] legacyId;
-    private LinkMetadata metadata;
+    private InMemoryLinkMetadata metadata;
+
+    InMemoryAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
+        this.levelCorrection = levelCorrection;
+        this.siblingHash = siblingHash;
+        this.rootElement = new TLVElement(false, false, getElementType());
+        addLevelCorrectionTlvElement();
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash));
+    }
+
+    InMemoryAggregationChainLink(IdentityMetadata identityMetadata, long levelCorrection) throws KSIException {
+        this.levelCorrection = levelCorrection;
+        this.rootElement = new TLVElement(false, false, getElementType());
+        addLevelCorrectionTlvElement();
+        this.metadata = new InMemoryLinkMetadata(identityMetadata);
+        this.rootElement.addChildElement(metadata.getRootElement());
+    }
 
     InMemoryAggregationChainLink(TLVElement element) throws KSIException {
         super(element);
@@ -78,8 +97,8 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
                     this.legacyId = readOnce(child).getContent();
                     verifyLegacyId(legacyId);
                     continue;
-                case LinkMetadata.ELEMENT_TYPE_METADATA:
-                    this.metadata = new LinkMetadata(readOnce(child));
+                case InMemoryLinkMetadata.ELEMENT_TYPE_METADATA:
+                    this.metadata = new InMemoryLinkMetadata(readOnce(child));
                     continue;
                 default:
                     verifyCriticalFlag(child);
@@ -138,7 +157,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             return getIdentityFromLegacyId();
         }
         if (metadata != null) {
-            return metadata.getClientId();
+            return metadata.getIdentityMetadata().getClientId();
         }
         return "";
     }
@@ -218,51 +237,16 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         return levelCorrection;
     }
 
+    private void addLevelCorrectionTlvElement() throws TLVParserException {
+        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_LEVEL_CORRECTION, this.levelCorrection));
+    }
+
     public boolean isLeft() {
         return getElementType() == ELEMENT_TYPE_LEFT_LINK;
     }
 
-    private static class LinkMetadata extends TLVStructure {
-
-        public static final int ELEMENT_TYPE_METADATA = 0x04;
-
-        public static final int ELEMENT_TYPE_CLIENT_ID = 0x01;
-        public static final int ELEMENT_TYPE_MACHINE_ID = 0x02;
-        public static final int ELEMENT_TYPE_SEQUENCE_NUMBER = 0x03;
-        public static final int ELEMENT_TYPE_REQUEST_TIME = 0x04;
-
-        private String clientId;
-
-        public LinkMetadata(TLVElement tlvElement) throws KSIException {
-            super(tlvElement);
-            List<TLVElement> children = tlvElement.getChildElements();
-            for (TLVElement child : children) {
-                switch (child.getType()) {
-                    case ELEMENT_TYPE_CLIENT_ID:
-                        this.clientId = readOnce(child).getDecodedString();
-                        continue;
-                    case ELEMENT_TYPE_MACHINE_ID:
-                    case ELEMENT_TYPE_SEQUENCE_NUMBER:
-                    case ELEMENT_TYPE_REQUEST_TIME:
-                        readOnce(child);
-                        continue;
-                    default:
-                        verifyCriticalFlag(child);
-                }
-            }
-            if (clientId == null) {
-                throw new InvalidAggregationHashChainException("AggregationChainLink metadata does not contain clientId element");
-            }
-
-        }
-
-        public String getClientId() {
-            return clientId;
-        }
-
-        @Override
-        public int getElementType() {
-            return ELEMENT_TYPE_METADATA;
-        }
+    public LinkMetadata getMetadata() {
+        return metadata;
     }
+
 }

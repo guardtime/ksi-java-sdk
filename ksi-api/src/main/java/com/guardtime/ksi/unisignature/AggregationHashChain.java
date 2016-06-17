@@ -21,6 +21,7 @@ package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 
 import java.util.Date;
 import java.util.List;
@@ -70,4 +71,13 @@ public interface AggregationHashChain {
      */
     String getChainIdentity(String separator) throws KSIException;
 
+    /**
+     * Calculates the aggregation hash chain ouput hash.
+     */
+    ChainResult calculateOutputHash(long level) throws KSIException;
+
+    /**
+     * Returns hash function algorithm used to compute the output hash values of the link structures
+     */
+    HashAlgorithm getAggregationAlgorithm();
 }

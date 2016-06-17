@@ -20,10 +20,14 @@
 package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
 
 import java.io.InputStream;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -68,7 +72,6 @@ public interface KSISignatureFactory {
      *         signature publication record.
      * @param rfc3161Record
      *         signature RFC3161 record
-     *
      * @return instance of {@link KSISignature}
      * @throws KSIException
      *         when error occurs (e.g input data is invalid)
@@ -84,6 +87,26 @@ public interface KSISignatureFactory {
      * @throws KSIException
      */
     AggregationHashChain createAggregationHashChain(TLVElement element) throws KSIException;
+
+    /**
+     * Creates a new aggregation hash chain
+     */
+    AggregationHashChain createAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> indexes, LinkedList<AggregationChainLink> links, HashAlgorithm aggregationAlgorithm) throws KSIException;
+
+    /**
+     * Creates a new left aggregation hash chain link with given sibling hash and level.
+     */
+    AggregationChainLink createLeftAggregationChainLink(DataHash siblingHash, long level) throws KSIException;
+
+    /**
+     * Creates a new right aggregation hash chain link with given sibling hash and level.
+     */
+    AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long level) throws KSIException;
+
+    /**
+     * Creates a new left aggregation hash chain link with given clientId and level.
+     */
+    AggregationChainLink createLeftAggregationChainLink(IdentityMetadata metadata, long level) throws KSIException;
 
     /**
      * Creates calendar authentication record from input TLV element.

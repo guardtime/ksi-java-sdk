@@ -30,8 +30,17 @@ import java.net.URL;
 
 public class CommonTestUtil {
 
-    public static InputStream load(String file) {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
+    public static InputStream load(String file) throws FileNotFoundException {
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
+        if (stream == null) {
+            throw new FileNotFoundException(file + " not found");
+        }
+        return stream;
+    }
+
+    public static byte[] loadBytes(String file) throws Exception {
+        InputStream input = load(file);
+        return Util.toByteArray(input);
     }
 
     public static File loadFile(String file) throws Exception {
@@ -60,7 +69,6 @@ public class CommonTestUtil {
             Util.closeQuietly(tlvInputStream);
         }
     }
-
 
 
 }

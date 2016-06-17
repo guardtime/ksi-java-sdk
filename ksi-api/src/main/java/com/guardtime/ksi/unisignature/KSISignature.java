@@ -19,12 +19,12 @@
 
 package com.guardtime.ksi.unisignature;
 
+import java.io.OutputStream;
+import java.util.Date;
+
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationRecord;
-
-import java.io.OutputStream;
-import java.util.Date;
 
 /**
  * This interface represents a keyless uni-signature. KSI signature consist of the following components: <ul> <li>One or
@@ -42,6 +42,14 @@ public interface KSISignature {
      * indexes. At least one aggregation hash chain is always present.
      */
     AggregationHashChain[] getAggregationHashChains();
+
+    /**
+     * Adds a new aggregation hash chain to the signature
+
+     * @throws KSIException
+     *         will be thrown when aggregation hash chain is invalid
+     */
+    void addAggregationHashChain(AggregationHashChain aggregationHashChain) throws KSIException;
 
     /**
      * Returns the signature calendar hash chain.

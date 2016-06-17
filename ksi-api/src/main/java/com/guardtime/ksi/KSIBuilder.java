@@ -67,6 +67,7 @@ public final class KSIBuilder {
     private KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory();
 
     private KeyStore trustStore;
+    private long publicationsFileCacheExpirationTime = 0L;
 
     /**
      * Sets the default signing algorithm to be used to create new KSI signatures. When using {@link KSI#sign(DataHash)}
@@ -180,6 +181,14 @@ public final class KSIBuilder {
     }
 
     /**
+     * This method can be used to set the publications file expiration time. Default value is 0.
+     */
+    public KSIBuilder setPublicationsFileCacheExpirationTime(long expirationTime) {
+        this.publicationsFileCacheExpirationTime = expirationTime;
+        return this;
+    }
+
+    /**
      * Builds the {@link KSI} instance. Checks that the signing, extender and publications file clients are set.
      *
      * @return instance of {@link KSI} class
@@ -207,8 +216,16 @@ public final class KSIBuilder {
         }
         PKITrustStore jksTrustStore = new JKSTrustStore(trustStore, certSelector);
         PublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(jksTrustStore);
-        KSIService ksiService = new KSIServiceImpl(signingClient, extenderClient, publicationsFileClient, uniSignatureFactory, publicationsFileFactory);
+        PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
+        KSIService ksiService = new KSIServiceImpl(signingClient, extenderClient, publicationsFileAdapter, uniSignatureFactory);
         return new KSIImpl(ksiService, uniSignatureFactory, defaultHashAlgorithm);
+    }
+
+    private PublicationsFileClientAdapter createPublicationsFileAdapter(KSIPublicationsFileClient publicationsFileClient, PublicationsFileFactory publicationsFileFactory, long expirationTime) {
+        if (expirationTime > 0) {
+            return new CachingPublicationsFileClientAdapter(publicationsFileClient, publicationsFileFactory, expirationTime);
+        }
+        return new NonCachingPublicationsFileClientAdapter(publicationsFileClient, publicationsFileFactory);
     }
 
     private String getDefaultTrustStore() {
@@ -367,7 +384,7 @@ public final class KSIBuilder {
         }
 
         public PublicationsFile getPublicationsFile() throws KSIException {
-            return ksiService.getPublicationsFile().getResult();
+            return ksiService.getPublicationsFile();
         }
 
         public void close() throws IOException {

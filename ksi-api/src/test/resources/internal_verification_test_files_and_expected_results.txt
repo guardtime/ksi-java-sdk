@@ -1,96 +1,107 @@
-#signature file location with full path:pass signature internal verification:pass signature verification with OK results:verification error code (" " if none):expected exception class (" " if none):expected excpetion message (" " if none)
-internal-verification-aggr-chain/wrongTimes.ksig:true:false:INT_05: :  
-internal-verification-aggr-chain/ExtendedSignature-WrongAllTimes.ksig:true:false:INT_05: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingAggrAlg.ksig:false:false: :InvalidAggregationHashChainException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingAggrTime.ksig:false:false: :InvalidAggregationHashChainException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingChainIndex.ksig:false:false: :InvalidAggregationHashChainException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingCoreAggr.ksig:true:false:INT_03: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingInputHash.ksig:false:false: :InvalidAggregationHashChainException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingLeftLink.ksig:true:false:INT_3: :
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingRightLink.ksig:true:false:INT_3: :
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoAggrAlg.ksig:true:false:INT_03: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoAggrTime.ksig:true:false:INT_02: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoChainIndex.ksig:false:false: :InvalidSignatureException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoCoreAggr.ksig:false:false: :InvalidAggregationHashChainException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoInputHash.ksig:false:false: :TLVParserException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoLeftLink.ksig:false:false: :InvalidAggregationHashChainException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoLeftLink1.ksig:true:false:INT_03: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoLeftLink2.ksig:false:false: :TLVParserException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoRightLink.ksig:false:false: :TLVParserException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoRightLink1.ksig:false:false: :InvalidAggregationHashChainException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongRightLink.ksig:true:false:INT_03: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongAggrAlg.ksig:true:false:INT_03: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongAggrTime.ksig:true:false:INT_02: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongChainIndex.ksig:false:false: :InvalidSignatureException: 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongInputHash.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongLeftLink1.ksig:true:false:INT_03: : 
-internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongLeftLink2.ksig:true:false:INT_03: : 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-MissingLeftLinkClientId.ksig:false:false: :InvalidAggregationHashChainException: 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-MissingReqTime.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-NoInputHash.ksig:false:false: :TLVParserException: 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-NoLeftLinkClientId.ksig:false:false: :TLVParserException: 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-NoReqTime.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongAggrAlgo2.ksig:false:false: :HashAlgorithmNotImplementedException: 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongAggrTime.ksig:true:false:INT_02: : 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongChainID2.ksig:false:false: :InvalidSignatureException: 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongInputHash.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongLeftLinkClientId.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongReqTimeFuture.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongReqTimePast.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/NewSignature-AggrHash-WrongLeftLinkLevelCorrector.ksig:true:false:INT_01: : 
-internal-verification-calendar-chain/NewSignature-CalHash-MissingAggrTime.ksig:true:false:INT_04: : 
-internal-verification-calendar-chain/NewSignature-CalHash-MissingCalHashAndAuthReq.ksig:true:false:GEN_2: : 
-internal-verification-calendar-chain/NewSignature-CalHash-MissingInputHash.ksig:false:false: :InvalidCalendarHashChainException: 
-internal-verification-calendar-chain/NewSignature-CalHash-MissingLeftLinkLast.ksig:false:false: :InvalidCalendarHashChainException: 
-internal-verification-calendar-chain/NewSignature-CalHash-MissingPubTime.ksig:false:false: :InvalidCalendarHashChainException: 
-internal-verification-calendar-chain/NewSignature-CalHash-MissingRightLink1.ksig:false:false: :InvalidCalendarHashChainException: 
-internal-verification-calendar-chain/NewSignature-CalHash-NoAggrTime.ksig:true:false:INT_04: : 
-internal-verification-calendar-chain/NewSignature-CalHash-NoCalHash.ksig:false:false: :InvalidCalendarHashChainException: 
-internal-verification-calendar-chain/NewSignature-CalHash-NoInputHash.ksig:false:false: :TLVParserException: 
-internal-verification-calendar-chain/NewSignature-CalHash-NoLeftLink1.ksig:false:false: :TLVParserException: 
-internal-verification-calendar-chain/NewSignature-CalHash-NoPubTime.ksig:false:false: :InvalidCalendarHashChainException: 
-internal-verification-calendar-chain/NewSignature-CalHash-NoRightLinkLast.ksig:false:false: :TLVParserException: 
-internal-verification-calendar-chain/NewSignature-CalHash-WrongAggrTime.ksig:true:false:INT_04: : 
-internal-verification-calendar-chain/NewSignature-CalHash-WrongInputHash.ksig:true:false:INT_03: : 
-internal-verification-calendar-chain/NewSignature-CalHash-WrongLeftLinkLast.ksig:true:false:INT_08: : 
-internal-verification-calendar-chain/NewSignature-CalHash-WrongPubTime.ksig:false:false: :InvalidCalendarHashChainException: 
-internal-verification-calendar-chain/NewSignature-CalHash-WrongRightLink1.ksig:true:false:INT_08: : 
-internal-verification-authentication-records/NewSignature-CalAuth-WrongSigType.ksig:false:false: :TLVParserException:Malformed UTF-8 data
-internal-verification-authentication-records/NewSignature-CalAuth-WrongPubTime.ksig:true:false:INT_06: : 
-internal-verification-authentication-records/NewSignature-CalAuth-WrongPubHash.ksig:true:false:INT_08: : 
-internal-verification-authentication-records/NewSignature-CalAuth-NoSigType.ksig:false:false: :TLVParserException: 
-internal-verification-authentication-records/NewSignature-CalAuth-NoPubTime.ksig:true:false:INT_06: : 
-internal-verification-authentication-records/NewSignature-CalAuth-NoPubHash.ksig:false:false: :TLVParserException: 
-internal-verification-authentication-records/NewSignature-CalAuth-MissingSigType.ksig:false:false: :InvalidSignatureDataException: 
-internal-verification-authentication-records/NewSignature-CalAuth-MissingSigningValue.ksig:false:false: :InvalidSignatureDataException: 
-internal-verification-authentication-records/NewSignature-CalAuth-MissingPubTime.ksig:false:false: :InvalidPublicationDataException: 
-internal-verification-authentication-records/NewSignature-CalAuth-MissingPubHash.ksig:false:false: :InvalidPublicationDataException: 
-internal-verification-authentication-records/NewSignature-CalAuth-MissingCertID.ksig:false:false: :InvalidSignatureDataException: 
-internal-verification-aggr-chain/timesMissing.ksig:true:false:INT_05: : 
-ExtendedSignature-EmptyPubRec.ksig:false:false: :InvalidPublicationRecordException: 
-internal-verification-calendar-chain/ExtendedSignature-MissingCalChain.ksig:false:false: :InvalidSignatureException: 
-internal-verification-aggr-chain/ExtendedSignature-MissingCalChainMissingPubRecHash.ksig:false:false: :InvalidPublicationDataException: 
-internal-verification-aggr-chain/ExtendedSignature-MissingCalChainEmptyPubRecHash.ksig:false:false: :TLVParserException: 
-internal-verification-calendar-chain/ExtendedSignature-WrongPubTime.ksig:true:false:INT_07: : 
-internal-verification-calendar-chain/ExtendedSignature_WithNewerPublicationTime.ksig:true:false:INT_09: : 
-internal-verification-calendar-chain/ExtendedSignature_WithOlderPublicationTime.ksig:true:false:INT_09: : 
-publication-based-verification/ok-sig-2014-06-2-extended-empty-publication-hash.ksig:false:false: :TLVParserException:Invalid DataHash
-publication-based-verification/ok-sig-2014-06-2-extended-empty-publication-reference.ksig:false:false: :TLVParserException:String must be null terminated
-publication-based-verification/ok-sig-2014-06-2-extended-empty-publication-time.ksig:true:false:INT_07: : 
-publication-based-verification/ok-sig-2014-06-2-extended-empty-publication-url.ksig:false:false: :TLVParserException:String must be null terminated
-publication-based-verification/ok-sig-2014-06-2-extended-no-publication-hash.ksig:false:false: :InvalidPublicationDataException:Publication data publication hash can not be null
-publication-based-verification/ok-sig-2014-06-2-extended-no-publication-time.ksig:false:false: :InvalidPublicationDataException:Publication data publication time can not be null
-publication-based-verification/ok-sig-2014-06-2-extended-one-empty-publication-reference.ksig:false:false: :TLVParserException:String must be null terminated
-signature/signature-with-rfc3161-record-ok.ksig:true:true: : : 
-non-signature-file.ksig:false:false: :TLVParserException:Invalid TLV element. Expected=0x800, got=0x701
-internal-verification-aggr-chain/invalid-sibling-algorithm-legacy-id-tlv-changed-to-sibling-hash.ksig:false:false: :TLVParserException:Invalid DataHash
-internal-verification-aggr-chain/single-invalid-chain-index.ksig:false:false: :InvalidSignatureException:Aggregation chain indexes are invalid. Invalid value. Expected 6275039, got 6275038
-internal-verification-aggr-chain/invalid-legacy-id-prefix.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId prefix
-internal-verification-aggr-chain/invalid-legacy-id-ending-byte.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId padding
-internal-verification-aggr-chain/legacy-id-algorithm.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId prefix
-internal-verification-aggr-chain/too-short-legacy-id.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId length
-internal-verification-aggr-chain/too-long-legacy-id.ksig:false:false: :InvalidAggregationHashChainException:Invalid legacyId length
-internal-verification-aggr-chain/invalid-legacy-id-content.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/legacy-id-content-null.ksig:true:false:INT_01: : 
-internal-verification-aggr-chain/invalid-legacy-id-content-length.ksig:true:false:INT_01: : 
-#internal-verification-aggr-chain/invalid-chain-index.ksig:true:false:INT_10: :
+#signature file location with full path;pass signature internal verification;pass signature verification with OK results;verification error code (" " if none);expected exception class (" " if none);expected excpetion message (" " if none)
+internal-verification-aggr-chain/wrongTimes.ksig;true;false;INT_05;; 
+internal-verification-aggr-chain/ExtendedSignature-WrongAllTimes.ksig;true;false;INT_05;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingAggrAlg.ksig;false;false;;InvalidAggregationHashChainException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingAggrTime.ksig;false;false;;InvalidAggregationHashChainException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingChainIndex.ksig;false;false;;InvalidAggregationHashChainException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingCoreAggr.ksig;true;false;INT_03;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingInputHash.ksig;false;false;;InvalidAggregationHashChainException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingLeftLink.ksig;true;false;INT_10;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingRightLink.ksig;true;false;INT_10;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoAggrAlg.ksig;true;false;INT_03;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoAggrTime.ksig;true;false;INT_02;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoChainIndex.ksig;false;false;;InvalidSignatureException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoCoreAggr.ksig;false;false;;InvalidAggregationHashChainException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoInputHash.ksig;false;false;;TLVParserException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoLeftLink.ksig;false;false;;InvalidAggregationHashChainException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoLeftLink1.ksig;true;false;INT_03;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoLeftLink2.ksig;false;false;;TLVParserException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoRightLink.ksig;false;false;;TLVParserException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoRightLink1.ksig;false;false;;InvalidAggregationHashChainException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongRightLink.ksig;true;false;INT_03;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongAggrAlg.ksig;true;false;INT_03;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongAggrTime.ksig;true;false;INT_02;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongChainIndex.ksig;false;false;;InvalidSignatureException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongInputHash.ksig;true;false;INT_01;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongLeftLink1.ksig;true;false;INT_03;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongLeftLink2.ksig;true;false;INT_03;;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-MissingLeftLinkClientId.ksig;false;false;;InvalidAggregationHashChainException;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-MissingReqTime.ksig;true;false;INT_01;;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-NoInputHash.ksig;false;false;;TLVParserException;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-NoLeftLinkClientId.ksig;false;false;;TLVParserException;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-NoReqTime.ksig;true;false;INT_01;;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongAggrAlgo2.ksig;false;false;;HashAlgorithmNotImplementedException;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongAggrTime.ksig;true;false;INT_02;;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongChainID2.ksig;false;false;;InvalidSignatureException;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongInputHash.ksig;true;false;INT_01;;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongLeftLinkClientId.ksig;true;false;INT_01;;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongReqTimeFuture.ksig;true;false;INT_01;;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongReqTimePast.ksig;true;false;INT_01;;
+internal-verification-aggr-chain/NewSignature-AggrHash-WrongLeftLinkLevelCorrector.ksig;true;false;INT_01;;
+internal-verification-calendar-chain/NewSignature-CalHash-MissingAggrTime.ksig;true;false;INT_04;;
+internal-verification-calendar-chain/NewSignature-CalHash-MissingCalHashAndAuthReq.ksig;true;false;GEN_2;;
+internal-verification-calendar-chain/NewSignature-CalHash-MissingInputHash.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-MissingLeftLinkLast.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-MissingPubTime.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-MissingRightLink1.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-NoAggrTime.ksig;true;false;INT_04;;
+internal-verification-calendar-chain/NewSignature-CalHash-NoCalHash.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-NoInputHash.ksig;false;false;;TLVParserException;
+internal-verification-calendar-chain/NewSignature-CalHash-NoLeftLink1.ksig;false;false;;TLVParserException;
+internal-verification-calendar-chain/NewSignature-CalHash-NoPubTime.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-NoRightLinkLast.ksig;false;false;;TLVParserException;
+internal-verification-calendar-chain/NewSignature-CalHash-WrongAggrTime.ksig;true;false;INT_04;;
+internal-verification-calendar-chain/NewSignature-CalHash-WrongInputHash.ksig;true;false;INT_03;;
+internal-verification-calendar-chain/NewSignature-CalHash-WrongLeftLinkLast.ksig;true;false;INT_08;;
+internal-verification-calendar-chain/NewSignature-CalHash-WrongPubTime.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-WrongRightLink1.ksig;true;false;INT_08;;
+internal-verification-authentication-records/NewSignature-CalAuth-WrongSigType.ksig;false;false;;TLVParserException;Malformed UTF-8 data
+internal-verification-authentication-records/NewSignature-CalAuth-WrongPubTime.ksig;true;false;INT_06;;
+internal-verification-authentication-records/NewSignature-CalAuth-WrongPubHash.ksig;true;false;INT_08;;
+internal-verification-authentication-records/NewSignature-CalAuth-NoSigType.ksig;false;false;;TLVParserException;
+internal-verification-authentication-records/NewSignature-CalAuth-NoPubTime.ksig;true;false;INT_06;;
+internal-verification-authentication-records/NewSignature-CalAuth-NoPubHash.ksig;false;false;;TLVParserException;
+internal-verification-authentication-records/NewSignature-CalAuth-MissingSigType.ksig;false;false;;InvalidSignatureDataException;
+internal-verification-authentication-records/NewSignature-CalAuth-MissingSigningValue.ksig;false;false;;InvalidSignatureDataException;
+internal-verification-authentication-records/NewSignature-CalAuth-MissingPubTime.ksig;false;false;;InvalidPublicationDataException;
+internal-verification-authentication-records/NewSignature-CalAuth-MissingPubHash.ksig;false;false;;InvalidPublicationDataException;
+internal-verification-authentication-records/NewSignature-CalAuth-MissingCertID.ksig;false;false;;InvalidSignatureDataException;
+internal-verification-aggr-chain/timesMissing.ksig;true;false;INT_05;;
+ExtendedSignature-EmptyPubRec.ksig;false;false;;InvalidPublicationRecordException;
+internal-verification-calendar-chain/ExtendedSignature-MissingCalChain.ksig;false;false;;InvalidSignatureException;
+internal-verification-aggr-chain/ExtendedSignature-MissingCalChainMissingPubRecHash.ksig;false;false;;InvalidPublicationDataException;
+internal-verification-aggr-chain/ExtendedSignature-MissingCalChainEmptyPubRecHash.ksig;false;false;;TLVParserException;
+internal-verification-calendar-chain/ExtendedSignature-WrongPubTime.ksig;true;false;INT_07;;
+internal-verification-calendar-chain/ExtendedSignature_WithNewerPublicationTime.ksig;true;false;INT_09;;
+internal-verification-calendar-chain/ExtendedSignature_WithOlderPublicationTime.ksig;true;false;INT_09;;
+publication-based-verification/ok-sig-2014-06-2-extended-empty-publication-hash.ksig;false;false;;TLVParserException;Invalid DataHash
+publication-based-verification/ok-sig-2014-06-2-extended-empty-publication-reference.ksig;false;false;;TLVParserException;String must be null terminated
+publication-based-verification/ok-sig-2014-06-2-extended-empty-publication-time.ksig;true;false;INT_07;;
+publication-based-verification/ok-sig-2014-06-2-extended-empty-publication-url.ksig;false;false;;TLVParserException;String must be null terminated
+publication-based-verification/ok-sig-2014-06-2-extended-no-publication-hash.ksig;false;false;;InvalidPublicationDataException;Publication data publication hash can not be null
+publication-based-verification/ok-sig-2014-06-2-extended-no-publication-time.ksig;false;false;;InvalidPublicationDataException;Publication data publication time can not be null
+publication-based-verification/ok-sig-2014-06-2-extended-one-empty-publication-reference.ksig;false;false;;TLVParserException;String must be null terminated
+signature/signature-with-rfc3161-record-ok.ksig;true;true;;;
+non-signature-file.ksig;false;false;;TLVParserException;Invalid TLV element. Expected=0x800, got=0x701
+internal-verification-aggr-chain/invalid-sibling-algorithm-legacy-id-tlv-changed-to-sibling-hash.ksig;false;false;;TLVParserException;Invalid DataHash
+internal-verification-aggr-chain/single-invalid-chain-index.ksig;false;false;;InvalidSignatureException;Aggregation chain indexes are invalid. Invalid value. Expected 6275039, got 6275038
+internal-verification-aggr-chain/invalid-legacy-id-prefix.ksig;false;false;;InvalidAggregationHashChainException;Invalid legacyId prefix
+internal-verification-aggr-chain/invalid-legacy-id-ending-byte.ksig;false;false;;InvalidAggregationHashChainException;Invalid legacyId padding
+internal-verification-aggr-chain/legacy-id-algorithm.ksig;false;false;;InvalidAggregationHashChainException;Invalid legacyId prefix
+internal-verification-aggr-chain/too-short-legacy-id.ksig;false;false;;InvalidAggregationHashChainException;Invalid legacyId length
+internal-verification-aggr-chain/too-long-legacy-id.ksig;false;false;;InvalidAggregationHashChainException;Invalid legacyId length
+internal-verification-aggr-chain/invalid-legacy-id-content.ksig;true;false;INT_01;;
+internal-verification-aggr-chain/legacy-id-content-null.ksig;true;false;INT_01;;
+internal-verification-aggr-chain/invalid-legacy-id-content-length.ksig;true;false;INT_01;;
+aggregation-hash-chain-metadata/sig-2016-05-26-141356-empty-padding.ksig;true;false;INT_11;;
+aggregation-hash-chain-metadata/metadata-padding-wrong-content.ksig;true;false;INT_11;;
+aggregation-hash-chain-metadata/metadata-padding-too-short.ksig;true;false;INT_11;;
+aggregation-hash-chain-metadata/metadata-padding-too-long.ksig;true;false;INT_11;;
+aggregation-hash-chain-metadata/metadata-padding-noncritical-flag-not-set.ksig;true;false;INT_11;;
+aggregation-hash-chain-metadata/metadata-padding-forward-flag-not-set.ksig;true;false;INT_11;;
+aggregation-hash-chain-metadata/metadata-padding-flags-not-set.ksig;true;false;INT_11;;
+aggregation-hash-chain-metadata/metadata-multiple-padding-elements.ksig;true;false;INT_11;;
+aggregation-hash-chain-metadata/metadata-missing-padding-element.ksig;true;false;INT_01;;
+aggregation-hash-chain-metadata/metadata-wrong-order.ksig;true;false;INT_11;;
+aggregation-hash-chain-metadata/TestAggregationHashChainMetadataPaddingNotTlv8Fail.ksig;true;false;INT_11;;
+internal-verification-aggr-chain/invalid-chain-index.ksig;true;false;INT_10;;

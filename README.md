@@ -19,13 +19,13 @@ dependencies in your pom.xml:
 <dependency>
     <groupId>com.guardtime</groupId>
     <artifactId>ksi-api</artifactId>
-    <version>4.2.32</version>
+    <version>4.3.54</version>
 </dependency>
 
 <dependency>
     <groupId>com.guardtime</groupId>
     <artifactId>ksi-service-client-simple-http</artifactId>
-    <version>4.2.32</version>
+    <version>4.3.54</version>
 </dependency>
 ```
 If you need the latest version, download the source and build using Maven.
@@ -52,6 +52,11 @@ Future<KSISignature> future = ksi.asyncSign(new File("asyncFile.txt"));
 KSISignature sig2 = future.getResult();
 ```
 The API full reference is available here [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
+
+## Assembly ##
+
+To generate assembly package use the following command from the project root:
+mvn clean package -P release
 
 ## License ##
 

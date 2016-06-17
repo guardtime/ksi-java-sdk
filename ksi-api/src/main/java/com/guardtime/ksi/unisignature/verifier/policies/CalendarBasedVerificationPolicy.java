@@ -43,7 +43,7 @@ public class CalendarBasedVerificationPolicy extends InternalVerificationPolicy 
                 new CompositeRule(true,
                         new CompositeRule(false,
                                 new SignatureDoesNotContainPublicationRule(),
-                                new ExtendedSignatureAggregationChainRightLinksMatchesRule()
+                                new ExtendedSignatureCalendarHashChainRightLinksMatchesRule()
                         ),
 
                         new CompositeRule(false,

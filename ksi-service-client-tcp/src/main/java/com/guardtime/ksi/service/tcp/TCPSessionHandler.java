@@ -21,7 +21,6 @@ package com.guardtime.ksi.service.tcp;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,19 +29,11 @@ import org.slf4j.LoggerFactory;
  */
 class TCPSessionHandler implements IoHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(TCPSessionHandler.class);
-
-    private NioSocketConnector connector;
-
-    private boolean sessionManuallyCosed = false;
-
-    TCPSessionHandler(NioSocketConnector connector) {
-        this.connector = connector;
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(TCPSessionHandler.class);
 
     public void exceptionCaught(IoSession session, Throwable t) throws Exception {
-        logger.error("An exception occurred while making a TCP request.", t);
-        reconnect(session);
+        LOGGER.error("An exception occurred while making a TCP request.", t);
+        session.closeNow();
     }
 
     public void messageReceived(IoSession session, Object message) throws Exception {
@@ -53,37 +44,21 @@ class TCPSessionHandler implements IoHandler {
     }
 
     public void inputClosed(IoSession session) throws Exception {
+        session.closeNow();
     }
 
     public void sessionClosed(IoSession session) throws Exception {
-        if (!sessionManuallyCosed) {
-            reconnect(session);
-        }
-    }
-
-    private void reconnect(IoSession session) {
-        connector.connect(session.getRemoteAddress());
     }
 
     public void sessionCreated(IoSession session) throws Exception {
-        logger.debug("TCP session {} with signer created.", session.getId());
+        LOGGER.debug("TCP session {} with signer created.", session.getId());
     }
 
     public void sessionIdle(IoSession session, IdleStatus idleStatus) throws Exception {
-        logger.debug("TCP session {} with signer is idle.", session.getId());
+        LOGGER.debug("TCP session {} with signer is idle.", session.getId());
     }
 
     public void sessionOpened(IoSession session) throws Exception {
-        logger.debug("TCP session {} with signer is opened.", session.getId());
-    }
-
-    /**
-     * Closes the given TCP session and sets the sessionManuallyClosed flag so that reconnecting would not be attempted.
-     *
-     * @param tcpSession - Session to close. Should be the same session that is handled by this handler.
-     */
-    public void closeSessionManually(IoSession tcpSession) {
-        sessionManuallyCosed = true;
-        tcpSession.getCloseFuture().awaitUninterruptibly();
+        LOGGER.debug("TCP session {} with signer is opened.", session.getId());
     }
 }

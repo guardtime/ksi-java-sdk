@@ -33,13 +33,12 @@ public class PublicationsFileServiceTest extends AbstractCommonServiceTest {
 
     @Test
     public void testCreateSignature_Ok() throws Exception {
-        Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load("publications.15042014.tlv"))));
+        Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load(PUBLICATIONS_FILE_15_04_2014))));
         Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(mockedPublicationsFileResponse);
 
-        Future<PublicationsFile> response = ksiService.getPublicationsFile();
+        PublicationsFile response = ksiService.getPublicationsFile();
         Assert.assertNotNull(response);
-        Assert.assertNotNull(response.getResult());
-        Assert.assertEquals(response.getResult(), (TestUtil.loadPublicationsFile("publications.15042014.tlv")));
+        Assert.assertEquals(response, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_15_04_2014));
     }
 
 }

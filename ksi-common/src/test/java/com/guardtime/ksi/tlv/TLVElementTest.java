@@ -61,7 +61,7 @@ public class TLVElementTest {
 
         element = load(new ByteArrayInputStream(out.toByteArray()));
         Assert.assertEquals(element.getType(), 0x0202);
-        Assert.assertTrue(element.isTlv16());
+        Assert.assertTrue(element.isOutputTlv16());
         Assert.assertTrue(element.isForwarded());
         Assert.assertTrue(element.isNonCritical());
     }
@@ -75,7 +75,7 @@ public class TLVElementTest {
 
         element = load(new ByteArrayInputStream(out.toByteArray()));
         Assert.assertEquals(element.getType(), 0x0202);
-        Assert.assertTrue(element.isTlv16());
+        Assert.assertTrue(element.isOutputTlv16());
         Assert.assertTrue(element.isForwarded());
         Assert.assertTrue(element.isNonCritical());
         Assert.assertEquals(element.getDecodedString(), "OK");
@@ -103,7 +103,7 @@ public class TLVElementTest {
     public void testDecodeTlvElementContainingStringValue_Ok() throws Exception {
         TLVElement element = load(new ByteArrayInputStream(new byte[]{0x02, 0x03, 'O', 'K', 0x0}));
         Assert.assertEquals(element.getType(), 2);
-        Assert.assertFalse(element.isTlv16());
+        Assert.assertFalse(element.isOutputTlv16());
         Assert.assertFalse(element.isForwarded());
         Assert.assertFalse(element.isNonCritical());
         Assert.assertEquals(element.getDecodedString(), "OK");
@@ -113,7 +113,7 @@ public class TLVElementTest {
     public void testDecodeTlvElementContainingEmptyStringValue_Ok() throws Exception {
         TLVElement element = load(new ByteArrayInputStream(new byte[]{0x02, 0x01, 0x0}));
         Assert.assertEquals(element.getType(), 2);
-        Assert.assertFalse(element.isTlv16());
+        Assert.assertFalse(element.isOutputTlv16());
         Assert.assertFalse(element.isForwarded());
         Assert.assertFalse(element.isNonCritical());
         Assert.assertEquals(element.getDecodedString(), "");
@@ -256,7 +256,7 @@ public class TLVElementTest {
 
     @Test
     public void testCreateTlvElementFromOkBytes_OK() throws Exception {
-        TLVElement element = TLVElement.createFromBytes(new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+        TLVElement element = TLVElement.create(new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         element.writeTo(out);
         Assert.assertEquals(out.toByteArray(), new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
@@ -264,24 +264,24 @@ public class TLVElementTest {
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Reading TLV bytes failed")
     public void testCreateTlvElementFromNokBytes_ExpectedTlvParserException() throws Exception {
-        TLVElement.createFromBytes(new byte[]{0x0, 2, 0x0});
+        TLVElement.create(new byte[]{0x0, 2, 0x0});
     }
 
     @Test(expectedExceptions = MultipleTLVElementException.class, expectedExceptionsMessageRegExp = "Message outer most layer consists of more than one TLV elements.")
     public void TestCreateTlvElementFromNokBytes_ExpectedMultipleTlvElementException() throws Exception {
-        TLVElement.createFromBytes(new byte[]{0, 0, 0});
+        TLVElement.create(new byte[]{0, 0, 0});
     }
 
     @Test
     public void testGetDecodedHashAlgorithm_OK() throws Exception {
-        TLVElement element = TLVElement.createFromBytes(new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+        TLVElement element = TLVElement.create(new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
         element.setLongContent(0x0A);
         Assert.assertEquals(element.getDecodedHashAlgorithm(), HashAlgorithm.SHA3_512);
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown hash algorithm")
     public void testGetDecodedHashAlgorithm_UnknownHashAlgorithm() throws Exception {
-        TLVElement element = TLVElement.createFromBytes(new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+        TLVElement element = TLVElement.create(new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
         element.setLongContent(0xFF);
         element.getDecodedHashAlgorithm();
     }
@@ -296,20 +296,20 @@ public class TLVElementTest {
     @Test(expectedExceptions = MultipleTLVElementException.class)
     public void testCreateTlvElementFromTooLargeInput_ThrowsMultipleTLVElementException() throws Exception {
         byte[] tmp = Files.readFile(CommonTestUtil.loadFile("root_content_larger_than_max.tlv")).getBytes();
-        TLVElement.createFromBytes(tmp);
+        TLVElement.create(tmp);
     }
 
     @Test
     public void testTlvWithLongTypeIsAlwaysEncodedAsTlv16() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x800);
-        Assert.assertTrue(element.isTlv16());
+        Assert.assertTrue(element.isOutputTlv16());
     }
 
     @Test
     public void testCreateShortTlv8_Ok() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x05);
         element.setContent(new byte[200]);
-        Assert.assertFalse(element.isTlv16());
+        Assert.assertFalse(element.isOutputTlv16());
         Assert.assertEquals(200, element.getContentLength());
         Assert.assertEquals(2, element.getHeaderLength());
     }
@@ -318,8 +318,7 @@ public class TLVElementTest {
     public void testCreateShortTlv16_Ok() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x05);
         element.setContent(new byte[257]);
-        Assert.assertTrue(element.isTlv16());
-        Assert.assertTrue(element.isTlv16());
+        Assert.assertTrue(element.isOutputTlv16());
         Assert.assertEquals(257, element.getContentLength());
         Assert.assertEquals(4, element.getHeaderLength());
     }
@@ -328,7 +327,7 @@ public class TLVElementTest {
     public void testCreateTlvElementWithMaximumContentLength_Ok() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x1);
         element.setContent(new byte[TLVElement.MAX_TLV16_CONTENT_LENGTH]);
-        Assert.assertTrue(element.isTlv16());
+        Assert.assertTrue(element.isOutputTlv16());
         Assert.assertEquals(TLVElement.MAX_TLV16_CONTENT_LENGTH, element.getContentLength());
     }
 

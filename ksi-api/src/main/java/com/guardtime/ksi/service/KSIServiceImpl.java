@@ -18,6 +18,10 @@
  */
 package com.guardtime.ksi.service;
 
+import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
+import java.util.Date;
+
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -27,6 +31,7 @@ import com.guardtime.ksi.service.aggregation.AggregationRequestPayload;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.extension.ExtensionRequest;
 import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -35,20 +40,16 @@ import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.util.Util;
 
-import java.io.ByteArrayInputStream;
-import java.nio.ByteBuffer;
-import java.util.Date;
-
 /**
  * {@link KSIService} implementation
  */
 public class KSIServiceImpl implements KSIService {
 
+    private static final long DEFAULT_LEVEL = 0L;
     private KSISigningClient signerClient;
     private KSIExtenderClient extenderClient;
-    private KSIPublicationsFileClient publicationsFileClient;
+    private PublicationsFileClientAdapter publicationsFileAdapter;
     private KSISignatureFactory signatureFactory;
-    private PublicationsFileFactory publicationsFileFactory;
 
     /**
      * Creates new instance of {@link KSIServiceImpl}.
@@ -57,68 +58,58 @@ public class KSIServiceImpl implements KSIService {
      *         - KSI client to be used for signing. May not be null.
      * @param extenderClient
      *         - KSI HTTP client to be used for extending. May not be null.
-     * @param publicationsFileClient
+     * @param publicationsFileAdapter
      *         - KSI HTTP client to be used for fetching the publications file. May not be null.
      */
-    public KSIServiceImpl(KSISigningClient signerClient, KSIExtenderClient extenderClient, KSIPublicationsFileClient publicationsFileClient, KSISignatureFactory signatureFactory, PublicationsFileFactory publicationsFileFactory) throws KSIException {
+    public KSIServiceImpl(KSISigningClient signerClient, KSIExtenderClient extenderClient, PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory) throws KSIException {
         if (signerClient == null) {
             throw new KSIException("Invalid input parameter. Singer client can not be null");
         }
         if (extenderClient == null) {
             throw new KSIException("Invalid input parameter. Extender client can not be null");
         }
-        if (publicationsFileClient == null) {
-            throw new KSIException("Invalid input parameter. Publications file client can not be null");
+        if (publicationsFileAdapter == null) {
+            throw new KSIException("Invalid input parameter. Publications file client adapter can not be null");
         }
         if (signatureFactory == null) {
             throw new KSIException("Invalid input parameter. KSI signature factory can not be null");
         }
-        if (publicationsFileFactory == null) {
-            throw new KSIException("Invalid input parameter. Publications file factory can not be null");
-        }
         this.signerClient = signerClient;
         this.extenderClient = extenderClient;
-        this.publicationsFileClient = publicationsFileClient;
+        this.publicationsFileAdapter = publicationsFileAdapter;
         this.signatureFactory = signatureFactory;
-        this.publicationsFileFactory = publicationsFileFactory;
     }
 
     public CreateSignatureFuture sign(DataHash dataHash) throws KSIException {
-        Long requestId = generateRandomId();
-        AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId);
-        KSIRequestContext requestContext = new KSIRequestContext(signerClient.getServiceCredentials(), requestId);
-        AggregationRequest requestMessage = new AggregationRequest(request, requestContext);
+        Long requestId = generateRequestId();
+        AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId, DEFAULT_LEVEL);
+        ServiceCredentials credentials = signerClient.getServiceCredentials();
+        KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId);
+        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
+        AggregationRequest requestMessage = new AggregationRequest(header, request, credentials.getLoginKey());
         Future<TLVElement> future = signerClient.sign(convert(requestMessage));
         return new CreateSignatureFuture(future, requestContext, signatureFactory);
     }
 
-    /**
-     * @param aggregationTime
-     *         the time of the aggregation round from which the calendar hash chain should start. must not be null.
-     * @param publicationTime
-     *         the time of the calendar root hash value to which the aggregation hash value should be connected by the
-     *         calendar hash chain.Its absence means a request for a calendar hash chain from aggregation time to the
-     *         most recent calendar record the extension server has.
-     * @return instance of {@link ExtensionRequestFuture}
-     */
     public ExtensionRequestFuture extend(Date aggregationTime, Date publicationTime) throws KSIException {
-        Long requestId = generateRandomId();
+        Long requestId = generateRequestId();
         return extendSignature(new ExtensionRequestPayload(aggregationTime, publicationTime, requestId));
     }
 
-    public Future<PublicationsFile> getPublicationsFile() throws KSIException {
-        Future<ByteBuffer> future = publicationsFileClient.getPublicationsFile();
-        return new PublicationsFileFuture(publicationsFileFactory, future);
+    public PublicationsFile getPublicationsFile() throws KSIException {
+        return publicationsFileAdapter.getPublicationsFile();
     }
 
-    protected Long generateRandomId() {
+    protected Long generateRequestId() {
         return Util.nextLong();
     }
 
     private ExtensionRequestFuture extendSignature(ExtensionRequestPayload extensionRequest)
             throws KSIException {
-        KSIRequestContext requestContext = new KSIRequestContext(extenderClient.getServiceCredentials(), extensionRequest.getRequestId());
-        ExtensionRequest requestMessage = new ExtensionRequest(extensionRequest, requestContext);
+        ServiceCredentials credentials = extenderClient.getServiceCredentials();
+        KSIRequestContext requestContext = new KSIRequestContext(credentials, extensionRequest.getRequestId());
+        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
+        ExtensionRequest requestMessage = new ExtensionRequest(header, extensionRequest, credentials.getLoginKey());
         ByteArrayInputStream inputStream = convert(requestMessage);
         Future<TLVElement> future = extenderClient.extend(inputStream);
         return new ExtensionRequestFuture(future, requestContext, signatureFactory);
@@ -140,7 +131,7 @@ public class KSIServiceImpl implements KSIService {
         return signerClient;
     }
 
-    public KSIPublicationsFileClient getPublicationsFileClient() {
-        return publicationsFileClient;
+    public KSIPublicationsFileClient getPublicationsFileAdapter() {
+        return publicationsFileAdapter.getPublicationsFileClient();
     }
 }

@@ -53,7 +53,7 @@ public final class AggregationHashChainIndexConsistencyRule extends BaseRule {
                     chainToIndex |= 1L << i;
                 }
             }
-            chainToIndex |= 1 << links.size();
+            chainToIndex |= 1L << links.size();
 
             if (index != chainToIndex) {
                 LOGGER.info("Chain index {} does not match corresponding chain {}", index, chainToIndex);

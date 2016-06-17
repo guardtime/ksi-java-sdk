@@ -71,7 +71,7 @@ public class TLVInputStream extends InputStream {
      */
     public TLVElement readElement() throws IOException, TLVParserException {
         TlvHeader header = readHeader();
-        TLVElement element = new TLVElement(header.nonCritical, header.forwarded, header.type);
+        TLVElement element = new TLVElement(header.tlv16, header.nonCritical, header.forwarded, header.type);
         int count = countNestedTlvElements(header);
         if (count > 0) {
             readNestedElements(element, count);

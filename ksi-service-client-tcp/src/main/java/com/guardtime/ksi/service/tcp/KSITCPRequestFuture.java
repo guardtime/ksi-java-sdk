@@ -44,8 +44,10 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
         try {
             return responseFuture.get();
         } catch (InterruptedException e) {
+            responseFuture.cancel(true);
             throw new KSITCPTransactionException("TCP transaction response waiting thread was interrupted.", e);
         } catch (ExecutionException e) {
+            responseFuture.cancel(true);
             throw new KSITCPTransactionException("An exception occurred while executing TCP transaction.", e);
         }
     }

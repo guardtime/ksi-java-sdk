@@ -1,10 +1,10 @@
-#signature file location with full path:pass signature internal verification:pass signature verification with OK results:verification error code (" " if none):expected exception class (" " if none):expected excpetion message (" " if none)
-signature/signature-without-calendar-elements.ksig:true:false:GEN_2: : 
-signature/signature-without-calendar-authentication-record.ksig:true:false:GEN_2: : 
-signature/signature-with-invalid-calendar-authentication-record-hash.ksig:true:false:INT_08: : 
-signature/signature-with-invalid-certificate-id.ksig:true:false:KEY_01: : 
-signature/signature-with-invalid-pki-signature.ksig:true:false:KEY_02: : 
-ok-sig-2014-06-2.ksig:true:true: : : 
-internal-verification-authentication-records/NewSignature-CalAuth-WrongSigningValue.ksig:true:false:KEY_02: : 
-internal-verification-authentication-records/NewSignature-CalAuth-NoSigningValue.ksig:true:false:KEY_02: : 
-internal-verification-authentication-records/NewSignature-CalAuth-NoCertID.ksig:true:false:KEY_01: : 
+#signature file location with full path;pass signature internal verification;pass signature verification with OK results;verification error code (" " if none);expected exception class (" " if none);expected excpetion message (" " if none)
+signature/signature-without-calendar-elements.ksig;true;false;GEN_2;;
+signature/signature-without-calendar-authentication-record.ksig;true;false;GEN_2;;
+signature/signature-with-invalid-calendar-authentication-record-hash.ksig;true;false;INT_08;;
+signature/signature-with-invalid-certificate-id.ksig;true;false;KEY_01;;
+signature/signature-with-invalid-pki-signature.ksig;true;false;KEY_02;;
+ok-sig-2014-06-2.ksig;true;true;;;
+internal-verification-authentication-records/NewSignature-CalAuth-WrongSigningValue.ksig;true;false;KEY_02;;
+internal-verification-authentication-records/NewSignature-CalAuth-NoSigningValue.ksig;true;false;KEY_02;;
+internal-verification-authentication-records/NewSignature-CalAuth-NoCertID.ksig;true;false;KEY_01;;

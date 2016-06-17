@@ -19,19 +19,19 @@
 
 package com.guardtime.ksi.tlv;
 
-import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.hashing.HashException;
-import com.guardtime.ksi.hashing.UnknownHashAlgorithmException;
-import com.guardtime.ksi.util.Base16;
-import com.guardtime.ksi.util.Util;
-
 import java.io.*;
 import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.hashing.HashException;
+import com.guardtime.ksi.hashing.UnknownHashAlgorithmException;
+import com.guardtime.ksi.util.Base16;
+import com.guardtime.ksi.util.Util;
 
 /**
  * <p> This class represents the Type-Length-Value (TLV) element. The TLV scheme is used to encode both the KSI data
@@ -46,6 +46,11 @@ import java.util.List;
 public final class TLVElement {
 
     public static final int MAX_TLV16_CONTENT_LENGTH = 0xFFFF;
+
+    /**
+     * TLV 16 bit flag
+     */
+    private boolean inputTlv16;
 
     /**
      * Non-critical flag
@@ -65,6 +70,11 @@ public final class TLVElement {
     private byte[] content = new byte[0];
 
     public TLVElement(boolean nonCritical, boolean forwarded, int type) {
+        this(false, nonCritical, forwarded, type);
+    }
+
+    public TLVElement(boolean inputTlv16, boolean nonCritical, boolean forwarded, int type) {
+        this.inputTlv16 = inputTlv16;
         this.nonCritical = nonCritical;
         this.forwarded = forwarded;
         this.type = type;
@@ -79,8 +89,17 @@ public final class TLVElement {
      * @throws MultipleTLVElementException
      *         - Thrown if the outer most layer is composed of more than one TLV.
      * @throws TLVParserException
+     * @deprecated use {@link TLVElement#create(byte[])}.
      */
+    @Deprecated
     public static TLVElement createFromBytes(byte[] bytes) throws TLVParserException {
+        return create(bytes);
+    }
+
+    /**
+     * Creates TLVElement form byte array.
+     */
+    public static TLVElement create(byte[] bytes) throws TLVParserException {
         TLVInputStream input = null;
         try {
             input = new TLVInputStream(new ByteArrayInputStream(bytes));
@@ -94,6 +113,48 @@ public final class TLVElement {
         } finally {
             Util.closeQuietly(input);
         }
+    }
+
+    /**
+     * Static factory method for creating TLV element with {@link Long} content. TLV element nonCritical and forwarded
+     * flags are set to false.
+     */
+    public static TLVElement create(int type, long value) throws TLVParserException {
+        TLVElement element = create(type);
+        element.setLongContent(value);
+        return element;
+    }
+
+    /**
+     * Static factory method for creating TLV element with {@link Date} content. TLV element nonCritical and forwarded
+     * flags are set to false.
+     */
+    public static TLVElement create(int type, Date value) throws TLVParserException {
+        return create(type, value.getTime() / 1000);
+    }
+
+    /**
+     * Static factory method for creating TLV element with {@link DataHash} content. TLV element nonCritical and forwarded
+     * flags are set to false.
+     */
+    public static TLVElement create(int type, DataHash value) throws TLVParserException {
+        TLVElement element = create(type);
+        element.setDataHashContent(value);
+        return element;
+    }
+
+    /**
+     * Static factory method for creating TLV element with {@link String} content. TLV element nonCritical and forwarded
+     * flags are set to false.
+     */
+    public static TLVElement create(int type, String value) throws TLVParserException {
+        TLVElement element = create(type);
+        element.setStringContent(value);
+        return element;
+    }
+
+    private static TLVElement create(int type) throws TLVParserException {
+        return new TLVElement(false, false, type);
     }
 
     /**
@@ -227,11 +288,6 @@ public final class TLVElement {
         setContent(dataHash.getImprint());
     }
 
-    public void addChildElement(TLVElement element) throws TLVParserException {
-        this.children.add(element);
-        assertActualContentLengthIsInTLVLimits(getContentLength());
-    }
-
     /**
      * Returns the first child element with specified tag. If tag doesn't exist then null is returned
      *
@@ -290,8 +346,21 @@ public final class TLVElement {
         this.type = type;
     }
 
+    /**
+     * @return true if the TLVElement has type or length over TLV8 maximums.
+     * @deprecated Use {@link #isOutputTlv16}
+     */
+    @Deprecated
     public boolean isTlv16() {
+        return isOutputTlv16();
+    }
+
+    public boolean isOutputTlv16() {
         return getType() > TLVInputStream.TYPE_MASK || (getContentLength() > TLVInputStream.BYTE_MAX);
+    }
+
+    public boolean isInputTlv16() {
+        return this.inputTlv16;
     }
 
     public boolean isNonCritical() {
@@ -317,7 +386,7 @@ public final class TLVElement {
 
             int dataLength = getContentLength();
 
-            boolean tlv16 = isTlv16();
+            boolean tlv16 = isOutputTlv16();
             int firstByte = (tlv16 ? TLVInputStream.TLV16_FLAG : 0) + (isNonCritical() ? TLVInputStream.NON_CRITICAL_FLAG : 0)
                     + (isForwarded() ? TLVInputStream.FORWARD_FLAG : 0);
 
@@ -362,7 +431,7 @@ public final class TLVElement {
     }
 
     public int getHeaderLength() {
-        return isTlv16() ? 4 : 2;
+        return isOutputTlv16() ? 4 : 2;
     }
 
     /**
@@ -384,6 +453,16 @@ public final class TLVElement {
 
     public void remove(TLVElement elementToRemoved) {
         children.remove(elementToRemoved);
+    }
+
+    public void addChildElement(TLVElement element) throws TLVParserException {
+        this.children.add(element);
+        assertActualContentLengthIsInTLVLimits(getContentLength());
+    }
+
+    public void addFirstChildElement(TLVElement element) throws TLVParserException {
+        this.children.add(0, element);
+        assertActualContentLengthIsInTLVLimits(getContentLength());
     }
 
     /**
@@ -414,10 +493,8 @@ public final class TLVElement {
         return Util.join(encodeHeader(), getContent());
     }
 
-
     @Override
     public String toString() {
-
         StringBuilder builder = new StringBuilder(convertHeader());
         builder.append(":");
         if (children.isEmpty()) {
@@ -456,7 +533,6 @@ public final class TLVElement {
         if (type != that.type) return false;
         if (children != null ? !children.equals(that.children) : that.children != null) return false;
         return Arrays.equals(content, that.content);
-
     }
 
     @Override

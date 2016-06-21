@@ -231,27 +231,47 @@ public abstract class AbstractCommonIntegrationTest {
 
     @DataProvider(name = INTERNAL_VERIFICATION_DATA_PROVIDER)
     public static Object[][] getTestFilesAndResultsForInternalVerification() throws Exception {
-        return getTestFilesAndResults(CommonTestUtil.loadFile("internal_verification_test_files_and_expected_results.txt"));
+        try{
+            return getTestFilesAndResults(CommonTestUtil.loadFile("internal_verification_test_files_and_expected_results.txt"));
+        } catch (Throwable e){
+            return new Object[][] {{}};
+        }
     }
 
     @DataProvider(name = CALENDAR_BASED_VERIFICATION_DATA_PROVIDER)
     public static Object[][] getTestFilesAndResultsForCalendarBasedVerification() throws Exception {
-        return getTestFilesAndResults(CommonTestUtil.loadFile("calendar_based_verification_test_files_and_expected_results.txt"));
+        try{
+            return getTestFilesAndResults(CommonTestUtil.loadFile("calendar_based_verification_test_files_and_expected_results.txt"));
+        } catch (Throwable e){
+            return new Object[][] {{}};
+        }
     }
 
     @DataProvider(name = KEY_BASED_VERIFICATION_DATA_PROVIDER)
     public static Object[][] getTestFilesAndResultsForKeyBasedVerification() throws Exception {
-        return getTestFilesAndResults(CommonTestUtil.loadFile("key_based_verification_test_files_and_expected_results.txt"));
+        try{
+            return getTestFilesAndResults(CommonTestUtil.loadFile("key_based_verification_test_files_and_expected_results.txt"));
+        } catch (Throwable e){
+            return new Object[][] {{}};
+        }
     }
 
     @DataProvider(name = TLV_PARSER_VERIFICATION_DATA_PROVIDER)
     public static Object[][] getTestFilesAndResultsForTlvParserVerification() throws Exception {
-        return getTestFilesAndResults(CommonTestUtil.loadFile("tlv_parser_verification_test_files_and_expected_results.txt"));
+        try{
+            return getTestFilesAndResults(CommonTestUtil.loadFile("tlv_parser_verification_test_files_and_expected_results.txt"));
+        } catch (Throwable e){
+            return new Object[][] {{}};
+        }
     }
 
     @DataProvider(name = EXTENDER_RESPONSES_DATA_PROVIDER)
     public static Object[][] getExtenderResponsesAndResultsForTlvParserVerification() throws Exception {
-        return getTestFilesAndResults(CommonTestUtil.loadFile("tlv_parser_verification_test_extender_responses_and_expected_results.txt"));
+        try{
+            return getTestFilesAndResults(CommonTestUtil.loadFile("tlv_parser_verification_test_extender_responses_and_expected_results.txt"));
+        } catch (Throwable e){
+            return new Object[][] {{}};
+        }
     }
 
     private static Object[][] getTestFilesAndResults(File inFile) throws Exception {
@@ -272,7 +292,12 @@ public abstract class AbstractCommonIntegrationTest {
             SimpleHttpClient httpClient = new SimpleHttpClient(loadHTTPSettings());
 
             for (int i = 0; i < linesCount; i++) {
-                data[i] = new Object[]{new DataHolderForIntegrationTests(lines.get(i).split(";"), httpClient)};
+                try{
+                    data[i] = new Object[]{new DataHolderForIntegrationTests(lines.get(i).split(";"), httpClient)};
+                } catch (Exception e){
+                    LOGGER.warn("Error while parsing the following line: " + lines.get(i));
+                    throw e;
+                }
             }
             return data;
         } finally {

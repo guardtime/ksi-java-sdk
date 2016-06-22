@@ -24,6 +24,7 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
 import com.guardtime.ksi.publication.PublicationData;
+import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -187,5 +188,18 @@ public class KSITest {
         Assert.assertTrue(result.isOk());
     }
 
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "No suitable publication yet")
+    public void testExtendingSignatureWithoutAvailablePublicationRecord_ThrowsKSIException() throws Exception {
+        KSISignature signature = ksi.sign("Random Text That Will Be Signed".getBytes());
+        ksi.extend(signature);
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
+    public void testExtendingSignatureWithOlderPublicationRecord_ThrowsKSIException() throws Exception {
+        KSISignature signature = ksi.sign("Random Text That Will Be Signed".getBytes());
+        PublicationData publicationData = new PublicationData(new Date(1410739200000L), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("C1679EDC2E2A23D1BA9B4F49845C7607AEEF48AD1A344A1572A70907A86FF040")));
+        PublicationsFilePublicationRecord publicationRecord = new PublicationsFilePublicationRecord(publicationData);
+        ksi.extend(signature, publicationRecord);
+    }
 
 }

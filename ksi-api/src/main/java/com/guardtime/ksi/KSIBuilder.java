@@ -334,6 +334,9 @@ public final class KSIBuilder {
                 throw new KSIException("Invalid input parameter. KSI signature must be present.");
             }
             PublicationRecord publicationRecord = getPublicationsFile().getPublicationRecord(signature.getAggregationTime());
+            if(publicationRecord == null) {
+                throw new KSIException("No suitable publication yet");
+            }
             return asyncExtend(signature, publicationRecord);
         }
 
@@ -345,7 +348,7 @@ public final class KSIBuilder {
                 throw new KSIException("Invalid input parameter. Publication record must be present");
             }
             if (signature.getAggregationTime().after(publicationRecord.getPublicationTime())) {
-                throw new KSIException("No suitable publication yet");
+                throw new KSIException("Publication is before signature");
             }
             Date publicationDate = publicationRecord.getPublicationTime();
             ExtensionRequestFuture serviceFuture = ksiService.extend(signature.getAggregationTime(), publicationDate);

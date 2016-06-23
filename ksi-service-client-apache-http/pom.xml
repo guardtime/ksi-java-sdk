@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2013-2015 Guardtime, Inc.
+  ~ Copyright 2013-2016 Guardtime, Inc.
   ~
   ~ This file is part of the Guardtime client SDK.
   ~
@@ -27,7 +27,7 @@
 	<parent>
 		<groupId>com.guardtime</groupId>
 		<artifactId>ksi</artifactId>
-		<version>4.3.54</version>
+		<version>4.3.55-SNAPSHOT</version>
 	</parent>
 
 	<name>KSI Apache Service Client</name>

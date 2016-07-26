@@ -5,8 +5,9 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.service.KSIMessageHeader;
 import com.guardtime.ksi.service.KSIRequestContext;
 import com.guardtime.ksi.service.pdu.AggregationRequest;
+import com.guardtime.ksi.service.pdu.AggregationResponse;
 import com.guardtime.ksi.service.pdu.PduFactory;
-import com.guardtime.ksi.tlv.TLVInputStream;
+import com.guardtime.ksi.tlv.TLVElement;
 
 /**
  * Legacy implementation of {@link PduFactory}.
@@ -33,8 +34,14 @@ public class LegacyKsiPduFactory implements PduFactory {
         return new LegacyAggregationRequest(header, request, context.getLoginKey());
     }
 
-    public AggregationRequest readAggregationResponse(TLVInputStream input) {
-        return null;
+    public AggregationResponse readAggregationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
+        if (context == null) {
+            throw new NullPointerException("KsiRequestContext can not be null");
+        }
+        if (input == null) {
+            throw new NullPointerException("Input TLV element can not be null");
+        }
+        return new LegacyAggregationResponse(input, context);
     }
 
 }

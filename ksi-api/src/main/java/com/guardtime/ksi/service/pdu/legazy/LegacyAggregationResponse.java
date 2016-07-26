@@ -16,38 +16,35 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.aggregation;
+package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.AbstractKSIResponse;
-import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.KSIRequestContext;
+import com.guardtime.ksi.service.pdu.AggregationResponse;
 import com.guardtime.ksi.tlv.TLVElement;
 
 /**
- * <p> This class is used to describe an aggregation response protocol data unit (PDU).</p>
+ * This class is describes a legacy KSI aggregation response protocol data unit (PDU).
  */
-public class AggregationResponse extends AbstractKSIResponse<AggregationResponsePayload> {
+class LegacyAggregationResponse extends AbstractKSIResponse<LegacyAggregationResponsePayload> implements AggregationResponse {
 
     public static final int ELEMENT_TYPE_AGGREGATION_RESPONSE = 0x0200;
 
     /**
-     * This constructor is used to parse response messages. Also does the basic validation.
+     * Constructor used to parse response messages. Also does the basic validation.
      *
-     * @param rootElement
-     *         instance of{@link TLVElement}
-     * @param context
-     *         instance of {@link KSIRequestContext}. may not be null
-     * @throws KSIProtocolException
-     *         will be thrown when TLV message parsing fails
+     * @param rootElement instance of{@link TLVElement}
+     * @param context     instance of {@link KSIRequestContext}. may not be null
+     * @throws KSIException will be thrown when TLV message parsing fails
      */
-    public AggregationResponse(TLVElement rootElement, KSIRequestContext context) throws KSIException {
+    public LegacyAggregationResponse(TLVElement rootElement, KSIRequestContext context) throws KSIException {
         super(rootElement, context);
     }
 
     @Override
-    protected AggregationResponsePayload parse(TLVElement element) throws KSIException {
-        return new AggregationResponsePayload(element);
+    protected LegacyAggregationResponsePayload parse(TLVElement element) throws KSIException {
+        return new LegacyAggregationResponsePayload(element);
     }
 
     @Override
@@ -55,4 +52,9 @@ public class AggregationResponse extends AbstractKSIResponse<AggregationResponse
         return ELEMENT_TYPE_AGGREGATION_RESPONSE;
     }
 
+
+    //TODO move ?
+    public TLVElement getPayload() {
+        return getResponsePayload().getRootElement();
+    }
 }

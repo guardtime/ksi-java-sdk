@@ -22,7 +22,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
-import com.guardtime.ksi.service.aggregation.AggregationResponsePayload;
 import com.guardtime.ksi.service.extension.ExtensionResponsePayload;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
@@ -87,7 +86,8 @@ public abstract class AbstractKSIResponse<T extends KSIResponsePayload> extends 
                 case ELEMENT_TYPE_AGGREGATION_ERROR_PAYLOAD:
                 case ELEMENT_TYPE_EXTENSION_ERROR_PAYLOAD:
                     throwErrorPayloadException(child);
-                case AggregationResponsePayload.ELEMENT_TYPE:
+                //TODO
+                case 0x0202:
                 case ExtensionResponsePayload.ELEMENT_TYPE:
                     if (response != null) {
                         throw new KSIProtocolException("Invalid response message. Message contains multiple response payloads");

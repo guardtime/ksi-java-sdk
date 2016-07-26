@@ -20,8 +20,9 @@ package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.HashException;
-import com.guardtime.ksi.service.aggregation.AggregationResponse;
-import com.guardtime.ksi.service.aggregation.AggregationResponsePayload;
+import com.guardtime.ksi.service.pdu.AggregationResponse;
+import com.guardtime.ksi.service.pdu.PduFactory;
+import com.guardtime.ksi.service.pdu.legazy.LegacyKsiPduFactory;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -40,6 +41,8 @@ public final class CreateSignatureFuture implements Future<KSISignature> {
     private KSIRequestContext requestContext;
     private KSISignature response;
     private KSISignatureFactory signatureFactory;
+    //TODO
+    private PduFactory pduFactory = new LegacyKsiPduFactory();
 
     public CreateSignatureFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, KSISignatureFactory signatureFactory) {
         this.requestFuture = requestFuture;
@@ -51,8 +54,8 @@ public final class CreateSignatureFuture implements Future<KSISignature> {
         try {
             if (response == null) {
                 TLVElement response = requestFuture.getResult();
-                AggregationResponse aggregationResponse = new AggregationResponse(response, requestContext);
-                this.response = signatureFactory.createSignature(convert(aggregationResponse.getResponsePayload()));
+                AggregationResponse aggregationResponse = pduFactory.readAggregationResponse(requestContext, response);
+                this.response = signatureFactory.createSignature(convert(aggregationResponse.getPayload()));
             }
             return response;
         } catch (com.guardtime.ksi.tlv.TLVParserException e) {
@@ -66,9 +69,10 @@ public final class CreateSignatureFuture implements Future<KSISignature> {
         return this.requestFuture.isFinished();
     }
 
-    private TLVElement convert(AggregationResponsePayload response) throws TLVParserException {
+    private TLVElement convert(TLVElement response) throws TLVParserException {
+        //TODO use signature factory?
         TLVElement element = new TLVElement(false, false, 0x0800);
-        List<TLVElement> children = response.getRootElement().getChildElements();
+        List<TLVElement> children = response.getChildElements();
         for (TLVElement child : children) {
             if (child.getType() > 0x800 && child.getType() < 0x900) {
                 element.addChildElement(child);

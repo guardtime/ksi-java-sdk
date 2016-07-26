@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.aggregation;
+package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIProtocolException;
@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Aggregation response payload.
  */
-public class AggregationResponsePayload extends KSIResponsePayload {
+class LegacyAggregationResponsePayload extends KSIResponsePayload {
 
     public static final int ELEMENT_TYPE = 0x0202;
     private static final int ELEMENT_TYPE_REQUEST_ID = 0x1;
@@ -49,7 +49,7 @@ public class AggregationResponsePayload extends KSIResponsePayload {
      * @param element
      *         TLV element
      */
-    public AggregationResponsePayload(TLVElement element) throws KSIException {
+    public LegacyAggregationResponsePayload(TLVElement element) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {

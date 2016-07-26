@@ -17,6 +17,6 @@
  * reserves and retains all trademark rights.
  */
 /**
- * Contains classes related to signature creation.
+ * Contains classes related to old legacy KSI PDU implementation
  */
-package com.guardtime.ksi.service.aggregation;
+package com.guardtime.ksi.service.pdu.legazy;

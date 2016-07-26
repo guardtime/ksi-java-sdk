@@ -19,7 +19,6 @@
 package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.aggregation.AggregationResponsePayload;
 import com.guardtime.ksi.service.extension.ExtensionResponsePayload;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
@@ -27,7 +26,6 @@ import com.guardtime.ksi.tlv.TLVStructure;
 /**
  * Common abstract class for all KSI related response payloads.
  *
- * @see AggregationResponsePayload
  * @see ExtensionResponsePayload
  */
 public abstract class KSIResponsePayload extends TLVStructure {
@@ -35,8 +33,7 @@ public abstract class KSIResponsePayload extends TLVStructure {
     /**
      * Constructor used to parse response payload.
      *
-     * @param element
-     *         instance of {@link TLVElement} to createSignature
+     * @param element instance of {@link TLVElement} to createSignature
      */
     public KSIResponsePayload(TLVElement element) throws KSIException {
         super(element);

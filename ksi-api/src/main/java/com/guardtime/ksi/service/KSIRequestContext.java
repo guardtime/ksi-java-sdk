@@ -22,38 +22,50 @@ import com.guardtime.ksi.service.client.ServiceCredentials;
 
 
 /**
- * <p>
  * Helper class for KSI request/response. This class holds additional data that
- * that can be used when sending request and parsing responses. Contains request
  * specific data like request identifier and login key.
- * </p>
- * 
- * 
+ * can be used when sending request and parsing responses.
  */
 public final class KSIRequestContext {
 
     private Long requestId;
+    private Long instanceId;
+    private Long messageId;
     private ServiceCredentials credentials;
-    
+
     /**
-     * 
      * @param credentials instance of {@link ServiceCredentials} object
-     * @param requestId - request id
+     * @param requestId   - request id
      */
     public KSIRequestContext(ServiceCredentials credentials, Long requestId) {
         this.credentials = credentials;
         this.requestId = requestId;
     }
 
+    public KSIRequestContext(ServiceCredentials credentials, Long requestId, Long instanceId, Long messageId) {
+        this.requestId = requestId;
+        this.instanceId = instanceId;
+        this.messageId = messageId;
+        this.credentials = credentials;
+    }
+
     public Long getRequestId() {
         return requestId;
     }
-    
+
     public String getLoginId() {
         return credentials.getLoginId();
     }
 
     public byte[] getLoginKey() {
         return credentials.getLoginKey();
+    }
+
+    public Long getInstanceId() {
+        return instanceId;
+    }
+
+    public Long getMessageId() {
+        return messageId;
     }
 }

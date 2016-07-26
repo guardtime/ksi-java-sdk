@@ -22,20 +22,23 @@ package com.guardtime.ksi.blocksigner;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.service.*;
-import com.guardtime.ksi.service.aggregation.AggregationRequest;
-import com.guardtime.ksi.service.aggregation.AggregationRequestPayload;
+import com.guardtime.ksi.service.CreateSignatureFuture;
+import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSIRequestContext;
+import com.guardtime.ksi.service.PduIdentifiers;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
+import com.guardtime.ksi.service.pdu.AggregationRequest;
+import com.guardtime.ksi.service.pdu.PduFactory;
+import com.guardtime.ksi.service.pdu.legazy.LegacyKsiPduFactory;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
-import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.IdentityMetadata;
+import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
@@ -56,7 +59,7 @@ import static com.guardtime.ksi.util.Util.notNull;
  * to add new input hash to the block signer. Method {@link KsiBlockSigner#sign()} must be called to get the final
  * signatures. <p/> Current implementation returns one signature per input hash. <p/> Note that this class can not be
  * used multiple times. </p> The following sample shows how to use {@link KsiBlockSigner} class:
- * <p/>
+ * <p>
  * <pre>
  * {@code
  *
@@ -83,6 +86,9 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     private static final String DEFAULT_CLIENT_ID_LOCAL_AGGREGATION = "local-aggregation";
     private static final int MAXIMUM_LEVEL = 255;
 
+    //TODO Support old and new PDU's
+    private final PduFactory pduFactory = new LegacyKsiPduFactory();
+
     private final KSISigningClient signingClient;
     private final Map<TreeNode, LocalAggregationHashChain> chains = new HashMap<TreeNode, LocalAggregationHashChain>();
     private final HashTreeBuilder treeBuilder;
@@ -93,8 +99,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}. Default hash algorithm is
      * used to create signature.
      *
-     * @param signingClient
-     *         an instance of {@link KSISigningClient}
+     * @param signingClient an instance of {@link KSISigningClient}
      */
     public KsiBlockSigner(KSISigningClient signingClient) {
         this(signingClient, null);
@@ -173,19 +178,12 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private KSISignature signRootNode(TreeNode rootNode) throws KSIException {
         DataHash dataHash = new DataHash(rootNode.getValue());
-        Long requestId = Util.nextLong();
-        AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId, rootNode.getLevel());
         ServiceCredentials credentials = signingClient.getServiceCredentials();
-        KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId);
-        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
-        AggregationRequest requestMessage = new AggregationRequest(header, request, credentials.getLoginKey());
-        Future<TLVElement> future = signingClient.sign(convert(requestMessage));
+        KSIRequestContext requestContext = new KSIRequestContext(credentials, Util.nextLong(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
+        AggregationRequest requestMessage = pduFactory.createAggregationRequest(requestContext, dataHash, rootNode.getLevel());
+        Future<TLVElement> future = signingClient.sign(new ByteArrayInputStream(requestMessage.toByteArray()));
         CreateSignatureFuture signatureFuture = new CreateSignatureFuture(future, requestContext, SIGNATURE_ELEMENT_FACTORY);
         return signatureFuture.getResult();
-    }
-
-    private ByteArrayInputStream convert(TLVStructure request) throws KSIException {
-        return new ByteArrayInputStream(request.getRootElement().getEncoded());
     }
 
     private List<LocalAggregationHashChain> buildChains() throws KSIException {

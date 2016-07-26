@@ -16,31 +16,33 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.aggregation;
+package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.AbstractKSIRequest;
 import com.guardtime.ksi.service.KSIMessageHeader;
+import com.guardtime.ksi.service.pdu.AggregationRequest;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 
 /**
  * Outgoing aggregation message TLV object.
  */
-public class AggregationRequest extends AbstractKSIRequest<AggregationRequestPayload> {
+class LegacyAggregationRequest extends AbstractKSIRequest<LegacyAggregationRequestPayload> implements AggregationRequest {
 
     private static final int ELEMENT_TYPE = 0x200;
 
-    public AggregationRequest(KSIMessageHeader header, AggregationRequestPayload payload, byte[] loginKey) throws KSIException {
+    public LegacyAggregationRequest(KSIMessageHeader header, LegacyAggregationRequestPayload payload, byte[] loginKey) throws KSIException {
         super(header, payload, loginKey);
     }
 
-    public AggregationRequest(TLVElement element, byte[] loginKey) throws KSIException {
+    public LegacyAggregationRequest(TLVElement element, byte[] loginKey) throws KSIException {
         super(element, loginKey);
     }
 
     @Override
-    protected AggregationRequestPayload readPayload(TLVElement element) throws KSIException {
-        return new AggregationRequestPayload(element);
+    protected LegacyAggregationRequestPayload readPayload(TLVElement element) throws KSIException {
+        return new LegacyAggregationRequestPayload(element);
     }
 
     @Override
@@ -48,4 +50,11 @@ public class AggregationRequest extends AbstractKSIRequest<AggregationRequestPay
         return ELEMENT_TYPE;
     }
 
+    public byte[] toByteArray() {
+        try {
+            return getRootElement().getEncoded();
+        } catch (TLVParserException e) {
+           throw new IllegalArgumentException("Invalid aggregation request state");
+        }
+    }
 }

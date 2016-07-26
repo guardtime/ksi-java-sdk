@@ -19,21 +19,19 @@
 package com.guardtime.ksi.service;
 
 import java.io.ByteArrayInputStream;
-import java.nio.ByteBuffer;
 import java.util.Date;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationsFile;
-import com.guardtime.ksi.publication.PublicationsFileFactory;
-import com.guardtime.ksi.service.aggregation.AggregationRequest;
-import com.guardtime.ksi.service.aggregation.AggregationRequestPayload;
+import com.guardtime.ksi.service.pdu.AggregationRequest;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.extension.ExtensionRequest;
 import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
+import com.guardtime.ksi.service.pdu.legazy.LegacyKsiPduFactory;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
@@ -50,6 +48,9 @@ public class KSIServiceImpl implements KSIService {
     private KSIExtenderClient extenderClient;
     private PublicationsFileClientAdapter publicationsFileAdapter;
     private KSISignatureFactory signatureFactory;
+
+
+    private LegacyKsiPduFactory pduFactory = new LegacyKsiPduFactory();
 
     /**
      * Creates new instance of {@link KSIServiceImpl}.
@@ -82,12 +83,10 @@ public class KSIServiceImpl implements KSIService {
 
     public CreateSignatureFuture sign(DataHash dataHash) throws KSIException {
         Long requestId = generateRequestId();
-        AggregationRequestPayload request = new AggregationRequestPayload(dataHash, requestId, DEFAULT_LEVEL);
         ServiceCredentials credentials = signerClient.getServiceCredentials();
-        KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId);
-        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
-        AggregationRequest requestMessage = new AggregationRequest(header, request, credentials.getLoginKey());
-        Future<TLVElement> future = signerClient.sign(convert(requestMessage));
+        KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId, PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
+        AggregationRequest requestMessage = pduFactory.createAggregationRequest(requestContext, dataHash, DEFAULT_LEVEL);
+        Future<TLVElement> future = signerClient.sign(new ByteArrayInputStream(requestMessage.toByteArray()));
         return new CreateSignatureFuture(future, requestContext, signatureFactory);
     }
 

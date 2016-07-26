@@ -22,7 +22,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
-import com.guardtime.ksi.service.aggregation.AggregationRequestPayload;
 import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
@@ -79,7 +78,8 @@ public abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStru
                 case KSIMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER:
                     this.header = new KSIMessageHeader(readOnce(child));
                     continue;
-                case AggregationRequestPayload.ELEMENT_TYPE:
+                    //TODO
+                case 0x0201:
                 case ExtensionRequestPayload.ELEMENT_TYPE:
                     this.payload = readPayload(readOnce(child));
                     continue;

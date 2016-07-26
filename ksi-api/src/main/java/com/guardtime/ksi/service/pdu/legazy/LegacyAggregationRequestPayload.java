@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.aggregation;
+package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Aggregation request payload.
  */
-public class AggregationRequestPayload extends TLVStructure {
+class LegacyAggregationRequestPayload extends TLVStructure {
 
     public static final int ELEMENT_TYPE = 0x0201;
 
@@ -42,7 +42,7 @@ public class AggregationRequestPayload extends TLVStructure {
     private Long requestId;
     private DataHash requestHash;
 
-    public AggregationRequestPayload(Long requestId) throws KSIException {
+    public LegacyAggregationRequestPayload(Long requestId) throws KSIException {
         this.requestId = requestId;
         this.rootElement = new TLVElement(false, false, ELEMENT_TYPE);
         TLVElement requestIdElement = new TLVElement(false, false, ELEMENT_TYPE_REQUEST_ID);
@@ -50,7 +50,7 @@ public class AggregationRequestPayload extends TLVStructure {
         this.rootElement.addChildElement(requestIdElement);
     }
 
-    public AggregationRequestPayload(DataHash dataHash, Long requestId, long level) throws KSIException {
+    public LegacyAggregationRequestPayload(DataHash dataHash, Long requestId, long level) throws KSIException {
         this(dataHash, requestId);
         this.level = level;
 
@@ -64,11 +64,11 @@ public class AggregationRequestPayload extends TLVStructure {
      * Create new aggregation request.
      *
      * @param dataHash
-     *         request hashvalue.
+     *         request hash value.
      * @param requestId
      *         request id
      */
-    public AggregationRequestPayload(DataHash dataHash, Long requestId) throws KSIException {
+    public LegacyAggregationRequestPayload(DataHash dataHash, Long requestId) throws KSIException {
         this(requestId);
         this.requestHash = dataHash;
         TLVElement requestHashElement = new TLVElement(false, false, ELEMENT_TYPE_REQUEST_HASH);
@@ -82,7 +82,7 @@ public class AggregationRequestPayload extends TLVStructure {
      * @param element
      *         TLV element
      */
-    public AggregationRequestPayload(TLVElement element) throws KSIException {
+    public LegacyAggregationRequestPayload(TLVElement element) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {

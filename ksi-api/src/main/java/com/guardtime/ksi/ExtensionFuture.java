@@ -16,52 +16,64 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service;
+
+package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.legazy.LegacyKsiPduFactory;
+import com.guardtime.ksi.publication.PublicationRecord;
+import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
+import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 
 /**
- * Extension service request response future.
+ * The future of the signature extension process.
  *
  * @see Future
  */
-public class ExtensionRequestFuture implements Future<CalendarHashChain> {
+final class ExtensionFuture implements Future<KSISignature> {
+
+    private final Future<TLVElement> future;
+    private final PublicationRecord publicationRecord;
+    private final KSISignature signature;
+    private final KSIRequestContext context;
 
     private final KSISignatureFactory signatureFactory;
-    private Future<TLVElement> future;
-    private KSIRequestContext context;
-    private CalendarHashChain response;
-    //TODO
-    private PduFactory pduFactory = new LegacyKsiPduFactory();
+    private final PduFactory pduFactory;
 
-    public ExtensionRequestFuture(Future<TLVElement> future, KSIRequestContext requestContext, KSISignatureFactory signatureFactory) {
+    private KSISignature extendedSignature;
+
+    public ExtensionFuture(Future<TLVElement> future, PublicationRecord publicationRecord, KSISignature signature, KSIRequestContext context, KSISignatureFactory signatureFactory, PduFactory pduFactory) {
         this.future = future;
-        this.context = requestContext;
+        this.publicationRecord = publicationRecord;
+        this.signature = signature;
+        this.context = context;
         this.signatureFactory = signatureFactory;
+        this.pduFactory = pduFactory;
     }
 
-    public CalendarHashChain getResult() throws KSIException {
-        if (response == null) {
+    public KSISignature getResult() throws KSIException {
+        if (extendedSignature == null) {
             try {
                 TLVElement tlvElement = future.getResult();
                 ExtensionResponse extensionResponse = pduFactory.readExtensionResponse(context, tlvElement);
-                response = signatureFactory.createCalendarHashChain(extensionResponse.getPayload());
+                CalendarHashChain calendarHashChain = signatureFactory.createCalendarHashChain(extensionResponse.getPayload());
+                extendedSignature = signature.extend(calendarHashChain, publicationRecord);
             } catch (com.guardtime.ksi.tlv.TLVParserException e) {
                 throw new KSIProtocolException("Can't parse response message", e);
             }
+
+
         }
-        return response;
+        return extendedSignature;
     }
 
     public boolean isFinished() {
         return future.isFinished();
     }
-
 }

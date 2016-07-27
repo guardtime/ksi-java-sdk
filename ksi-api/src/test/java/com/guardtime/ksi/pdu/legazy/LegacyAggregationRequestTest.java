@@ -22,6 +22,7 @@ import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
 
 import com.guardtime.ksi.tlv.TLVStructure;
@@ -34,7 +35,7 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class LegacyAggregationRequestTest {
 
-    public static final byte[] LOGIN_KEY = TestUtil.CREDENTIALS_ANONYMOUS.getLoginKey();
+    public static final KSIRequestContext REQUEST_CONTEXT = new KSIRequestContext(TestUtil.CREDENTIALS_ANONYMOUS, 42L, 42L, 42L);
     private PduMessageHeader header;
 
     @BeforeMethod
@@ -44,7 +45,7 @@ public class LegacyAggregationRequestTest {
 
     @Test
     public void testCreateAggregationRequestInstance_Ok() throws Exception {
-        LegacyAggregationRequest aggregationRequest = new LegacyAggregationRequest(header, null, LOGIN_KEY);
+        LegacyAggregationRequest aggregationRequest = new LegacyAggregationRequest(header, null, REQUEST_CONTEXT);
         Assert.assertNotNull(aggregationRequest.getHeader());
         Assert.assertEquals(aggregationRequest.getHeader().getLoginId(), TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
         Assert.assertNull(aggregationRequest.getHeader().getInstanceId());
@@ -55,7 +56,7 @@ public class LegacyAggregationRequestTest {
 
     @Test
     public void testEncodeAggregationRequestWithoutPayload_Ok() throws Exception {
-        LegacyAggregationRequest aggregationRequest = new LegacyAggregationRequest(header, null, LOGIN_KEY);
+        LegacyAggregationRequest aggregationRequest = new LegacyAggregationRequest(header, null, REQUEST_CONTEXT);
         LegacyAggregationRequest request = load(encode(aggregationRequest));
         Assert.assertEquals(aggregationRequest.getRequestPayload(), request.getRequestPayload());
         Assert.assertEquals(aggregationRequest.getHeader(), request.getHeader());
@@ -64,7 +65,7 @@ public class LegacyAggregationRequestTest {
     @Test
     public void testEncodeAggregationRequestWithPayload_Ok() throws Exception {
         LegacyAggregationRequestPayload payload = new LegacyAggregationRequestPayload(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), Util.nextLong());
-        LegacyAggregationRequest aggregationRequest = new LegacyAggregationRequest(header, payload, LOGIN_KEY);
+        LegacyAggregationRequest aggregationRequest = new LegacyAggregationRequest(header, payload, REQUEST_CONTEXT);
         LegacyAggregationRequest request = load(encode(aggregationRequest));
         Assert.assertEquals(aggregationRequest.getRequestPayload().getRequestHash(), request.getRequestPayload().getRequestHash());
     }
@@ -72,7 +73,7 @@ public class LegacyAggregationRequestTest {
     @Test
     public void testEncodeAggregationRequestWithoutPayloadDataHash_Ok() throws Exception {
         LegacyAggregationRequestPayload payload = new LegacyAggregationRequestPayload(Util.nextLong());
-        LegacyAggregationRequest aggregationRequest = new LegacyAggregationRequest(header, payload, LOGIN_KEY);
+        LegacyAggregationRequest aggregationRequest = new LegacyAggregationRequest(header, payload, REQUEST_CONTEXT);
         LegacyAggregationRequest request = load(encode(aggregationRequest));
         Assert.assertEquals(aggregationRequest.getRequestPayload().getRequestHash(), request.getRequestPayload().getRequestHash());
         Assert.assertEquals(request.getRequestPayload().getRequestHash(), null);
@@ -83,7 +84,7 @@ public class LegacyAggregationRequestTest {
     }
 
     private LegacyAggregationRequest load(byte[] data) throws Exception {
-        return new LegacyAggregationRequest(loadTlv(data), LOGIN_KEY);
+        return new LegacyAggregationRequest(loadTlv(data), REQUEST_CONTEXT);
     }
 
 }

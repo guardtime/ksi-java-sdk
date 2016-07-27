@@ -19,30 +19,21 @@
 
 package com.guardtime.ksi.publication.adapter;
 
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.publication.adapter.NonCachingPublicationsFileClientAdapter;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
-import com.guardtime.ksi.service.AbstractCommonServiceTest;
-import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.nio.ByteBuffer;
-
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.testng.AssertJUnit.assertNotNull;
 
-public class NonCachingPublicationsFileClientAdapterTest extends AbstractCommonServiceTest {
+public class NonCachingPublicationsFileClientAdapterTest extends AbstractPublicationsFileClientAdapterTest {
 
     private NonCachingPublicationsFileClientAdapter adapter;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(TestUtil.loadBytes(PUBLICATIONS_FILE_15_04_2014)));
-        when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(mockedPublicationsFileResponse);
+        super.setUp();
         this.adapter = new NonCachingPublicationsFileClientAdapter(mockedPublicationsFileClient, new InMemoryPublicationsFileFactory(mockedTrustStore));
     }
 

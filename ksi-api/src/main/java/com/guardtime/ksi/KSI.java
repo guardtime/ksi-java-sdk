@@ -22,12 +22,14 @@ package com.guardtime.ksi;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
@@ -111,6 +113,17 @@ public interface KSI extends Closeable {
     KSISignature sign(byte[] bytes) throws KSIException;
 
     /**
+     * TODO
+     *
+     * @param request
+     *         instance of aggregation request. not null.
+     * @return instance of {@link KSISignature}
+     * @throws KSIException
+     *         when error occurs (e.g when communication with KSI service fails)
+     */
+    KSISignature sign(AggregationRequest request) throws KSIException;
+
+    /**
      * This method is used to sign data hash asynchronously. Use method {@link Future#getResult()} to get keyless
      * signature.
      *
@@ -145,6 +158,17 @@ public interface KSI extends Closeable {
      *         when error occurs (e.g when communication with KSI service fails)
      */
     Future<KSISignature> asyncSign(byte[] bytes) throws KSIException;
+
+    /**
+     * TODO
+     *
+     * @param request
+     *         instance of aggregation request. not null.
+     * @return instance of {@link  Future<KSISignature>}
+     * @throws KSIException
+     *         when error occurs (e.g when communication with KSI service fails)
+     */
+    Future<KSISignature> asyncSign(AggregationRequest request) throws KSIException;
 
     /**
      * Extends signature to the "closest" publication in publication file.
@@ -280,5 +304,7 @@ public interface KSI extends Closeable {
      *         when error occurs (e.g when communication with KSI service fails)
      */
     PublicationsFile getPublicationsFile() throws KSIException;
+
+    ServiceCredentials getSigningCredentials();
 
 }

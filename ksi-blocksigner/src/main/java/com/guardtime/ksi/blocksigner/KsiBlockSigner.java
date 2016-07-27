@@ -19,19 +19,17 @@
 
 package com.guardtime.ksi.blocksigner;
 
+import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.service.CreateSignatureFuture;
-import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.PduIdentifiers;
+import com.guardtime.ksi.pdu.legazy.LegacyKsiPduFactory;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.pdu.AggregationRequest;
-import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.legazy.LegacyKsiPduFactory;
-import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
@@ -64,7 +62,7 @@ import static com.guardtime.ksi.util.Util.notNull;
  * {@code
  *
  * // initialize ksi block signer
- * KSISigningClient signingClient = getSigningClient()
+ * KSI ksi = initKsi()
  * KsiBlockSigner signer = new KsiBlockSigner(signingClient);
  *
  * // add data hashes
@@ -89,31 +87,31 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     //TODO Support old and new PDU's
     private final PduFactory pduFactory = new LegacyKsiPduFactory();
 
-    private final KSISigningClient signingClient;
+    private final KSI ksi;
     private final Map<TreeNode, LocalAggregationHashChain> chains = new HashMap<TreeNode, LocalAggregationHashChain>();
     private final HashTreeBuilder treeBuilder;
 
     private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
 
     /**
-     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}. Default hash algorithm is
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSI}. Default hash algorithm is
      * used to create signature.
      *
-     * @param signingClient an instance of {@link KSISigningClient}
+     * @param ksi an instance of {@link KSI}
      */
-    public KsiBlockSigner(KSISigningClient signingClient) {
-        this(signingClient, null);
+    public KsiBlockSigner(KSI ksi) {
+        this(ksi, null);
     }
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient} and {@link HashAlgorithm}.
      */
-    public KsiBlockSigner(KSISigningClient signingClient, HashAlgorithm algorithm) {
-        notNull(signingClient, "KSI signing client");
+    public KsiBlockSigner(KSI ksi, HashAlgorithm algorithm) {
+        notNull(ksi, "KSI");
         if (algorithm != null) {
             this.algorithm = algorithm;
         }
-        this.signingClient = signingClient;
+        this.ksi = ksi;
         this.treeBuilder = new HashTreeBuilder(this.algorithm);
     }
 
@@ -178,12 +176,10 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private KSISignature signRootNode(TreeNode rootNode) throws KSIException {
         DataHash dataHash = new DataHash(rootNode.getValue());
-        ServiceCredentials credentials = signingClient.getServiceCredentials();
+        ServiceCredentials credentials = ksi.getSigningCredentials();
         KSIRequestContext requestContext = new KSIRequestContext(credentials, Util.nextLong(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
         AggregationRequest requestMessage = pduFactory.createAggregationRequest(requestContext, dataHash, rootNode.getLevel());
-        Future<TLVElement> future = signingClient.sign(new ByteArrayInputStream(requestMessage.toByteArray()));
-        CreateSignatureFuture signatureFuture = new CreateSignatureFuture(future, requestContext, SIGNATURE_ELEMENT_FACTORY);
-        return signatureFuture.getResult();
+        return ksi.sign(requestMessage);
     }
 
     private List<LocalAggregationHashChain> buildChains() throws KSIException {

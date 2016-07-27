@@ -19,8 +19,9 @@
 package com.guardtime.ksi.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 
@@ -30,13 +31,16 @@ import com.guardtime.ksi.tlv.TLVParserException;
 class LegacyAggregationRequest extends AbstractKSIRequest<LegacyAggregationRequestPayload> implements AggregationRequest {
 
     private static final int ELEMENT_TYPE = 0x200;
+    private final KSIRequestContext requestContext;
 
-    public LegacyAggregationRequest(PduMessageHeader header, LegacyAggregationRequestPayload payload, byte[] loginKey) throws KSIException {
-        super(header, payload, loginKey);
+    public LegacyAggregationRequest(PduMessageHeader header, LegacyAggregationRequestPayload payload, KSIRequestContext requestContext) throws KSIException {
+        super(header, payload, requestContext.getLoginKey());
+        this.requestContext = requestContext;
     }
 
-    public LegacyAggregationRequest(TLVElement element, byte[] loginKey) throws KSIException {
-        super(element, loginKey);
+    public LegacyAggregationRequest(TLVElement element, KSIRequestContext requestContext) throws KSIException {
+        super(element, requestContext.getLoginKey());
+        this.requestContext = requestContext;
     }
 
     @Override
@@ -53,7 +57,11 @@ class LegacyAggregationRequest extends AbstractKSIRequest<LegacyAggregationReque
         try {
             return getRootElement().getEncoded();
         } catch (TLVParserException e) {
-           throw new IllegalArgumentException("Invalid aggregation request state");
+            throw new IllegalArgumentException("Invalid aggregation request state");
         }
+    }
+
+    public KSIRequestContext getRequestContext() {
+        return requestContext;
     }
 }

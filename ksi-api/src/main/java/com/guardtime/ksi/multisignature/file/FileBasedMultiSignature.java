@@ -19,6 +19,7 @@
 
 package com.guardtime.ksi.multisignature.file;
 
+import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
@@ -26,8 +27,7 @@ import com.guardtime.ksi.multisignature.KSIMultiSignature;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
-import com.guardtime.ksi.service.ExtensionRequestFuture;
-import com.guardtime.ksi.service.KSIService;
+import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
@@ -65,16 +65,16 @@ final class FileBasedMultiSignature implements KSIMultiSignature {
     private final FileBasedMultiSignatureFactory.FileBasedMultiSignatureWriter writer;
 
     private final KSISignatureFactory uniSignatureFactory;
-    private final KSIService ksiService;
+    private final KSI ksi;
 
-    FileBasedMultiSignature(FileBasedMultiSignatureFactory.FileBasedMultiSignatureWriter writer, KSIService ksiService, KSISignatureFactory uniSignatureFactory) {
+    FileBasedMultiSignature(FileBasedMultiSignatureFactory.FileBasedMultiSignatureWriter writer, KSI ksi, KSISignatureFactory uniSignatureFactory) {
         this.writer = writer;
-        this.ksiService = ksiService;
+        this.ksi = ksi;
         this.uniSignatureFactory = uniSignatureFactory;
     }
 
-    FileBasedMultiSignature(InputStream input, FileBasedMultiSignatureFactory.FileBasedMultiSignatureWriter writer, KSIService ksiService, KSISignatureFactory uniSignatureFactory) throws KSIException {
-        this(writer, ksiService, uniSignatureFactory);
+    FileBasedMultiSignature(InputStream input, FileBasedMultiSignatureFactory.FileBasedMultiSignatureWriter writer, KSI ksi, KSISignatureFactory uniSignatureFactory) throws KSIException {
+        this(writer, ksi, uniSignatureFactory);
         TLVInputStream tlvInputStream = new TLVInputStream(input);
         verifyMagicBytes(tlvInputStream);
         try {
@@ -206,9 +206,9 @@ final class FileBasedMultiSignature implements KSIMultiSignature {
             throw new KSIException("Invalid input parameter. KSI trust store is missing.");
         }
         Collection<AggregationHashChainKey> aggregationHashChainKeys = getFirstAggregationHashChains();
-        Map<KSISignature, ExtensionRequestFuture> futures = new LinkedHashMap<KSISignature, ExtensionRequestFuture>();
+        Map<KSISignature, Future<KSISignature>> futures = new LinkedHashMap<KSISignature, Future<KSISignature>>();
         Map<KSISignature, PublicationRecord> publications = new LinkedHashMap<KSISignature, PublicationRecord>();
-        Map<PublicationRecord, ExtensionRequestFuture> requests = new HashMap<PublicationRecord, ExtensionRequestFuture>();
+        Map<PublicationRecord, Future<KSISignature>> requests = new HashMap<PublicationRecord, Future<KSISignature>>();
         for (AggregationHashChainKey key : aggregationHashChainKeys) {
             AggregationHashChain chain = aggregationHashChains.get(key);
             DataHash inputHash = chain.getInputHash();
@@ -222,7 +222,7 @@ final class FileBasedMultiSignature implements KSIMultiSignature {
                 if (!requests.containsKey(publicationRecord)) {
                     publications.put(signature, publicationRecord);
                     LOGGER.info("Sending extension request. Aggregation time is {}, publication time is {}", signature.getAggregationTime(), publicationTime);
-                    ExtensionRequestFuture future = ksiService.extend(signature.getAggregationTime(), publicationTime);
+                    Future<KSISignature> future = ksi.asyncExtend(signature, publicationRecord);
                     futures.put(signature, future);
                     requests.put(publicationRecord, future);
                 } else {
@@ -233,10 +233,9 @@ final class FileBasedMultiSignature implements KSIMultiSignature {
         }
         LOGGER.info("Sent {} extension requests.", futures.size());
         for (KSISignature signature : futures.keySet()) {
-            ExtensionRequestFuture requestFuture = futures.get(signature);
-            CalendarHashChain extendedCalendarHashChain = requestFuture.getResult();
+            Future<KSISignature> requestFuture = futures.get(signature);
+            KSISignature extendedSignature = requestFuture.getResult();
             remove(signature.getInputHash());
-            KSISignature extendedSignature = signature.extend(extendedCalendarHashChain, publications.get(signature));
             add(extendedSignature);
         }
         writer.write(this);
@@ -252,8 +251,8 @@ final class FileBasedMultiSignature implements KSIMultiSignature {
             throw new KSIException("Invalid input parameter. Publication record is missing.");
         }
         Collection<AggregationHashChainKey> aggregationHashChainKeys = getFirstAggregationHashChains();
-        Map<KSISignature, ExtensionRequestFuture> futures = new LinkedHashMap<KSISignature, ExtensionRequestFuture>();
-        Map<Date, ExtensionRequestFuture> requests = new HashMap<Date, ExtensionRequestFuture>();
+        Map<KSISignature, Future<KSISignature>> futures = new LinkedHashMap<KSISignature, Future<KSISignature>>();
+        Map<Date, Future<KSISignature>> requests = new HashMap<Date, Future<KSISignature>>();
         for (AggregationHashChainKey key : aggregationHashChainKeys) {
             AggregationHashChain chain = aggregationHashChains.get(key);
             DataHash inputHash = chain.getInputHash();
@@ -263,7 +262,7 @@ final class FileBasedMultiSignature implements KSIMultiSignature {
             if (aggregationTime.before(publicationTime)) {
                 if (!requests.containsKey(aggregationTime)) {
                     LOGGER.info("Sending extension request. Aggregation time is {}, publication time is {}", aggregationTime, publicationTime);
-                    ExtensionRequestFuture future = ksiService.extend(aggregationTime, publicationTime);
+                    Future<KSISignature> future = ksi.asyncExtend(signature, publicationRecord);
                     futures.put(signature, future);
                     requests.put(aggregationTime, future);
                 } else {
@@ -274,11 +273,10 @@ final class FileBasedMultiSignature implements KSIMultiSignature {
         }
         LOGGER.info("Sent {} extension requests.", requests.size());
         for (KSISignature signature : futures.keySet()) {
-            ExtensionRequestFuture requestFuture = futures.get(signature);
-            CalendarHashChain extendedCalendarHashChain = requestFuture.getResult();
+            Future<KSISignature> requestFuture = futures.get(signature);
+            KSISignature extendedSignatrue = requestFuture.getResult();
             remove(signature.getInputHash());
-            KSISignature extendedSignature = signature.extend(extendedCalendarHashChain, publicationRecord);
-            add(extendedSignature);
+            add(extendedSignatrue);
         }
         writer.write(this);
     }

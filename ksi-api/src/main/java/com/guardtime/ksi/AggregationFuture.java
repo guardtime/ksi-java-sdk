@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service;
+package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.HashException;
@@ -24,6 +24,8 @@ import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.legazy.LegacyKsiPduFactory;
+import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -36,19 +38,20 @@ import java.util.List;
  *
  * @see Future
  */
-public final class CreateSignatureFuture implements Future<KSISignature> {
+final class AggregationFuture implements Future<KSISignature> {
 
     private final Future<TLVElement> requestFuture;
-    private KSIRequestContext requestContext;
-    private KSISignature response;
-    private KSISignatureFactory signatureFactory;
-    //TODO
-    private PduFactory pduFactory = new LegacyKsiPduFactory();
+    private final KSIRequestContext requestContext;
+    private final KSISignatureFactory signatureFactory;
+    private final PduFactory pduFactory;
 
-    public CreateSignatureFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, KSISignatureFactory signatureFactory) {
+    private KSISignature response;
+
+    public AggregationFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, KSISignatureFactory signatureFactory, PduFactory pduFactory) {
         this.requestFuture = requestFuture;
         this.requestContext = requestContext;
         this.signatureFactory = signatureFactory;
+        this.pduFactory = pduFactory;
     }
 
     public final KSISignature getResult() throws KSIException {

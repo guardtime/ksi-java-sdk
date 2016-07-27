@@ -43,7 +43,7 @@ import java.util.Date;
 
 import static org.testng.Assert.assertNotNull;
 
-public class KSITest {
+public class KSIIntegrationTest {
 
     private KSI ksi;
     private SimpleHttpClient client;
@@ -62,65 +62,16 @@ public class KSITest {
                 build();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI signing client must be present")
-    public void testCreateKsiInstanceWithoutSigningClient_ThrowsKsiException() throws Exception {
-        this.ksi = new KSIBuilder().
-                setKsiProtocolExtenderClient(client).
-                setKsiProtocolPublicationsFileClient(client).
-                setPublicationsFileTrustedCertSelector(certSelector)
-                .build();
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI publications file client must be present")
-    public void testCreateKsiInstanceWithoutPublicationsFileClient_ThrowsKsiException() throws Exception {
-        this.ksi = new KSIBuilder().
-                setKsiProtocolSignerClient(client).
-                setKsiProtocolExtenderClient(client).
-                setPublicationsFileTrustedCertSelector(certSelector).
-                build();
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI extender client must be present")
-    public void testCreateKsiInstanceWithoutExtenderClient_ThrowsKsiException() throws Exception {
-        this.ksi = new KSIBuilder().
-                setKsiProtocolSignerClient(client).
-                setKsiProtocolPublicationsFileClient(client).
-                setPublicationsFileTrustedCertSelector(certSelector).build();
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI publications file trusted certificate selector must be present")
-    public void testCreateKsiInstanceWithoutPublicationsFileTrustedCertSelector_ThrowsKsiException() throws Exception {
-        this.ksi = new KSIBuilder().
-                setKsiProtocolSignerClient(client).
-                setKsiProtocolExtenderClient(client).
-                setKsiProtocolPublicationsFileClient(client).build();
-    }
-
     @Test
     public void testReadUniSignatureFromFile_OK() throws Exception {
         KSISignature signature = ksi.read(TestUtil.loadFile("ok-sig-2014-04-30.1.ksig"));
         assertNotNull(signature);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "File not-present-signature.ksig not found")
-    public void testReadUniSignatureUsingFileNotPresent_ThrowsKSIException() throws Exception {
-        ksi.read(new File("not-present-signature.ksig"));
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. File can not be null")
-    public void testReadUniSignatureUsingInvalidFileInput_ThrowsKSIException() throws Exception {
-        ksi.read((File) null);
-    }
-
     @Test
     public void testReadUniSignatureFromByteArray_OK() throws Exception {
         KSISignature signature = ksi.read(TestUtil.loadBytes("ok-sig-2014-04-30.1.ksig"));
         assertNotNull(signature);
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Byte array can not be null")
-    public void testReadUniSignatureUsingInvalidByteArrayInput_ThrowsKSIException() throws Exception {
-        ksi.read((byte[]) null);
     }
 
     @Test
@@ -135,27 +86,6 @@ public class KSITest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         signature.writeTo(output);
         Assert.assertEquals(signature, ksi.read(output.toByteArray()));
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Output stream can not be null")
-    public void testWriteUniSignatureToNullStream_ThrowsKSIException() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-04-30.1.ksig"));
-        signature.writeTo(null);
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Input stream can not be null")
-    public void testReadUniSignatureUsingInvalidInputStream_ThrowsKSIException() throws Exception {
-        ksi.read((InputStream) null);
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Data hash must not be null")
-    public void testSignDataHashUsingInvalidInputStream_ThrowsKSIException() throws Exception {
-        ksi.sign((DataHash) null);
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. File must not be null")
-    public void testSignFileUsingInvalidInputStream_ThrowsKSIException() throws Exception {
-        ksi.sign((File) null);
     }
 
     @Test

@@ -31,7 +31,7 @@ public class LegacyKsiPduFactory implements PduFactory {
 
         PduMessageHeader header = new PduMessageHeader(context.getLoginId(), context.getInstanceId(), context.getMessageId());
         LegacyAggregationRequestPayload request = new LegacyAggregationRequestPayload(imprint, context.getRequestId(), requestLevel);
-        return new LegacyAggregationRequest(header, request, context.getLoginKey());
+        return new LegacyAggregationRequest(header, request, context);
     }
 
     public AggregationResponse readAggregationResponse(KSIRequestContext context, TLVElement input) throws KSIException {

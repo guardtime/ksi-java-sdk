@@ -24,7 +24,7 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.*;
-import com.guardtime.ksi.pdu.legazy.LegacyKsiPduFactory;
+import com.guardtime.ksi.pdu.legacy.LegacyKsiPduFactory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;

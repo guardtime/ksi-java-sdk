@@ -27,7 +27,7 @@ import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.PduIdentifiers;
-import com.guardtime.ksi.pdu.legazy.LegacyKsiPduFactory;
+import com.guardtime.ksi.pdu.legacy.LegacyKsiPduFactory;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tree.HashTreeBuilder;

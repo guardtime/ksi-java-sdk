@@ -17,7 +17,7 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.pdu.legazy;
+package com.guardtime.ksi.pdu.legacy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIProtocolException;

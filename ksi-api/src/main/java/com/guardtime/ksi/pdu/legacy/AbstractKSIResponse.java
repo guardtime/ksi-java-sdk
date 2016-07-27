@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.pdu.legazy;
+package com.guardtime.ksi.pdu.legacy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;

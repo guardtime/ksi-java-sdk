@@ -16,7 +16,39 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+package com.guardtime.ksi.pdu.legacy;
+
+import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVStructure;
+
 /**
- * Contains classes related to old legacy KSI PDU implementation
+ * Common abstract class for all KSI related response payloads.
  */
-package com.guardtime.ksi.pdu.legazy;
+abstract class LegacyPduResponsePayload extends TLVStructure {
+
+    /**
+     * Constructor used to parse response payload.
+     *
+     * @param element instance of {@link TLVElement} to createSignature
+     */
+    public LegacyPduResponsePayload(TLVElement element) throws KSIException {
+        super(element);
+    }
+
+    /**
+     * @return returns request id
+     */
+    public abstract Long getRequestId();
+
+    /**
+     * @return returns error code
+     */
+    public abstract Long getError();
+
+    /**
+     * @return returns error message
+     */
+    public abstract String getErrorMessage();
+
+}

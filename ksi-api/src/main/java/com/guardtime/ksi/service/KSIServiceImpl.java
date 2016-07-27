@@ -24,17 +24,17 @@ import java.util.Date;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationsFile;
+import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.pdu.AggregationRequest;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.service.extension.ExtensionRequest;
-import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
+import com.guardtime.ksi.service.pdu.ExtensionRequest;
+import com.guardtime.ksi.service.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.pdu.PduIdentifiers;
 import com.guardtime.ksi.service.pdu.legazy.LegacyKsiPduFactory;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.tlv.TLVParserException;
-import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.util.Util;
 
@@ -48,7 +48,6 @@ public class KSIServiceImpl implements KSIService {
     private KSIExtenderClient extenderClient;
     private PublicationsFileClientAdapter publicationsFileAdapter;
     private KSISignatureFactory signatureFactory;
-
 
     private LegacyKsiPduFactory pduFactory = new LegacyKsiPduFactory();
 
@@ -92,7 +91,14 @@ public class KSIServiceImpl implements KSIService {
 
     public ExtensionRequestFuture extend(Date aggregationTime, Date publicationTime) throws KSIException {
         Long requestId = generateRequestId();
-        return extendSignature(new ExtensionRequestPayload(aggregationTime, publicationTime, requestId));
+        ServiceCredentials credentials = extenderClient.getServiceCredentials();
+        KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId, PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
+
+        ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, aggregationTime, publicationTime);
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(requestMessage.toByteArray());
+        Future<TLVElement> future = extenderClient.extend(inputStream);
+        return new ExtensionRequestFuture(future, requestContext, signatureFactory);
     }
 
     public PublicationsFile getPublicationsFile() throws KSIException {
@@ -101,25 +107,6 @@ public class KSIServiceImpl implements KSIService {
 
     protected Long generateRequestId() {
         return Util.nextLong();
-    }
-
-    private ExtensionRequestFuture extendSignature(ExtensionRequestPayload extensionRequest)
-            throws KSIException {
-        ServiceCredentials credentials = extenderClient.getServiceCredentials();
-        KSIRequestContext requestContext = new KSIRequestContext(credentials, extensionRequest.getRequestId());
-        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
-        ExtensionRequest requestMessage = new ExtensionRequest(header, extensionRequest, credentials.getLoginKey());
-        ByteArrayInputStream inputStream = convert(requestMessage);
-        Future<TLVElement> future = extenderClient.extend(inputStream);
-        return new ExtensionRequestFuture(future, requestContext, signatureFactory);
-    }
-
-    private ByteArrayInputStream convert(TLVStructure request) throws KSIProtocolException {
-        try {
-            return new ByteArrayInputStream(request.getRootElement().getEncoded());
-        } catch (TLVParserException e) {
-            throw new KSIProtocolException("Request message converting failed", e);
-        }
     }
 
     public KSIExtenderClient getExtenderClient() {

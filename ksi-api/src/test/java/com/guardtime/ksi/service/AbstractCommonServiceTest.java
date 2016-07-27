@@ -19,6 +19,7 @@
 package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.publication.adapter.NonCachingPublicationsFileClientAdapter;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;

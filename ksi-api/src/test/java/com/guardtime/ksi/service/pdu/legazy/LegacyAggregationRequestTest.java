@@ -22,7 +22,7 @@ import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.service.KSIMessageHeader;
+import com.guardtime.ksi.service.pdu.PduMessageHeader;
 
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
@@ -35,11 +35,11 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 public class LegacyAggregationRequestTest {
 
     public static final byte[] LOGIN_KEY = TestUtil.CREDENTIALS_ANONYMOUS.getLoginKey();
-    private KSIMessageHeader header;
+    private PduMessageHeader header;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        this.header = new KSIMessageHeader(TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
+        this.header = new PduMessageHeader(TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
     }
 
     @Test

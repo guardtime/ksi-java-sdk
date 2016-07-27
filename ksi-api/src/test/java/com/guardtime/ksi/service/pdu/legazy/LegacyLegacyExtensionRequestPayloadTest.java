@@ -16,26 +16,21 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+package com.guardtime.ksi.service.pdu.legazy;
 
-package com.guardtime.ksi.service;
+import java.util.Date;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.publication.PublicationsFile;
-import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
+import com.guardtime.ksi.service.KSIProtocolException;
+import org.testng.annotations.Test;
 
-/**
- * Adapter interface for publication file clients
- */
-public interface PublicationsFileClientAdapter {
+import com.guardtime.ksi.service.pdu.legazy.LegacyExtensionRequestPayload;
+import com.guardtime.ksi.util.Util;
 
-    /**
-     * Returns the instance of the {@link PublicationsFile}.
-     */
-    PublicationsFile getPublicationsFile() throws KSIException;
+public class LegacyLegacyExtensionRequestPayloadTest {
 
-    /**
-     * Returns the publication file client used by adapter
-     */
-    KSIPublicationsFileClient getPublicationsFileClient();
-
+    @Test(expectedExceptions = KSIProtocolException.class)
+    public void testCreateExtensionRequestTimeFail() throws KSIException {
+        new LegacyExtensionRequestPayload(new Date(423654196), new Date(421280000), Util.nextLong());
+    }
 }

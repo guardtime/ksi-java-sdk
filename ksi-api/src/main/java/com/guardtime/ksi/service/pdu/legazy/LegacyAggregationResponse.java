@@ -19,8 +19,7 @@
 package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.AbstractKSIResponse;
-import com.guardtime.ksi.service.KSIRequestContext;
+import com.guardtime.ksi.service.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.pdu.AggregationResponse;
 import com.guardtime.ksi.tlv.TLVElement;
 

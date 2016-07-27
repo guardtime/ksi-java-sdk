@@ -21,6 +21,7 @@ package com.guardtime.ksi.service;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.service.pdu.AggregationResponse;
+import com.guardtime.ksi.service.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.pdu.PduFactory;
 import com.guardtime.ksi.service.pdu.legazy.LegacyKsiPduFactory;
 import com.guardtime.ksi.tlv.TLVElement;

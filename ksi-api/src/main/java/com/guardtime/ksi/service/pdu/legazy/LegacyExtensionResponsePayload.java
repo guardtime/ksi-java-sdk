@@ -16,10 +16,9 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.extension;
+package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.KSIResponsePayload;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 
@@ -29,7 +28,7 @@ import java.util.List;
 /**
  * Signature extension response TLV object.
  */
-public class ExtensionResponsePayload extends KSIResponsePayload {
+class LegacyExtensionResponsePayload extends LegacyPduResponsePayload {
 
     public static final int ELEMENT_TYPE = 0x0302;
 
@@ -50,7 +49,7 @@ public class ExtensionResponsePayload extends KSIResponsePayload {
      * @param element
      *         inmemory element
      */
-    public ExtensionResponsePayload(TLVElement element) throws KSIException {
+    public LegacyExtensionResponsePayload(TLVElement element) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {

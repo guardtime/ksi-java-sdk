@@ -16,7 +16,30 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+
+package com.guardtime.ksi.service.pdu;
+
+import com.guardtime.ksi.util.Util;
+
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
- * Contains classes related to signature extension.
+ * PDU request identifiers.
  */
-package com.guardtime.ksi.service.extension;
+public final class PduIdentifiers {
+
+    private static final long INSTANCE_ID = Util.nextLong();
+    private static AtomicLong messageId = new AtomicLong();
+
+    private PduIdentifiers() {
+    }
+
+    public static final long nextMessageId() {
+        return messageId.incrementAndGet();
+    }
+
+    public static long getInstanceId() {
+        return INSTANCE_ID;
+    }
+
+}

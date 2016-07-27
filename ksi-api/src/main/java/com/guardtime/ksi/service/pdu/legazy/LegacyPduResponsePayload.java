@@ -16,30 +16,39 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+package com.guardtime.ksi.service.pdu.legazy;
 
-package com.guardtime.ksi.service;
-
-import com.guardtime.ksi.util.Util;
-
-import java.util.concurrent.atomic.AtomicLong;
+import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVStructure;
 
 /**
- * PDU request identifiers.
+ * Common abstract class for all KSI related response payloads.
  */
-public final class PduIdentifiers {
+abstract class LegacyPduResponsePayload extends TLVStructure {
 
-    private static final long INSTANCE_ID = Util.nextLong();
-    private static AtomicLong messageId = new AtomicLong();
-
-    private PduIdentifiers() {
+    /**
+     * Constructor used to parse response payload.
+     *
+     * @param element instance of {@link TLVElement} to createSignature
+     */
+    public LegacyPduResponsePayload(TLVElement element) throws KSIException {
+        super(element);
     }
 
-    public static final long nextMessageId() {
-        return messageId.incrementAndGet();
-    }
+    /**
+     * @return returns request id
+     */
+    public abstract Long getRequestId();
 
-    public static long getInstanceId() {
-        return INSTANCE_ID;
-    }
+    /**
+     * @return returns error code
+     */
+    public abstract Long getError();
+
+    /**
+     * @return returns error message
+     */
+    public abstract String getErrorMessage();
 
 }

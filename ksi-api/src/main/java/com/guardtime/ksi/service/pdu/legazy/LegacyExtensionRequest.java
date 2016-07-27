@@ -16,28 +16,29 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.extension;
+package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.AbstractKSIRequest;
-import com.guardtime.ksi.service.KSIMessageHeader;
+import com.guardtime.ksi.service.pdu.PduMessageHeader;
 import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.service.pdu.ExtensionRequest;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 
 /**
  * Outgoing extension message TLV object.
  */
-public class ExtensionRequest extends AbstractKSIRequest<ExtensionRequestPayload> {
+class LegacyExtensionRequest extends AbstractKSIRequest<LegacyExtensionRequestPayload> implements ExtensionRequest {
 
     public static final int ELEMENT_TYPE = 0x300;
 
 
-    public ExtensionRequest(KSIMessageHeader header, ExtensionRequestPayload payload, byte[] loginKey) throws KSIException {
+    public LegacyExtensionRequest(PduMessageHeader header, LegacyExtensionRequestPayload payload, byte[] loginKey) throws KSIException {
         super(header, payload, loginKey);
 
     }
 
-    public ExtensionRequest(TLVElement element, byte[] loginKey) throws KSIException {
+    public LegacyExtensionRequest(TLVElement element, byte[] loginKey) throws KSIException {
         super(element, loginKey);
         if (getRequestPayload() == null) {
             throw new KSIProtocolException("Invalid KSI request. Extension request payload is missing");
@@ -46,8 +47,8 @@ public class ExtensionRequest extends AbstractKSIRequest<ExtensionRequestPayload
     }
 
     @Override
-    protected ExtensionRequestPayload readPayload(TLVElement element) throws KSIException {
-        return new ExtensionRequestPayload(element);
+    protected LegacyExtensionRequestPayload readPayload(TLVElement element) throws KSIException {
+        return new LegacyExtensionRequestPayload(element);
     }
 
     @Override
@@ -56,4 +57,11 @@ public class ExtensionRequest extends AbstractKSIRequest<ExtensionRequestPayload
     }
 
 
+    public byte[] toByteArray() {
+        try {
+            return getRootElement().getEncoded();
+        } catch (TLVParserException e) {
+            throw new IllegalArgumentException("Invalid aggregation request state");
+        }
+    }
 }

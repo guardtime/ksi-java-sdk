@@ -2,8 +2,8 @@ package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.service.KSIRequestContext;
-import com.guardtime.ksi.service.PduIdentifiers;
+import com.guardtime.ksi.service.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.pdu.PduIdentifiers;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.pdu.AggregationRequest;
 import org.testng.Assert;

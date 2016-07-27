@@ -16,13 +16,16 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service;
+package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
-import com.guardtime.ksi.service.extension.ExtensionResponsePayload;
+import com.guardtime.ksi.service.*;
+import com.guardtime.ksi.service.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.pdu.PduMessageHeader;
+import com.guardtime.ksi.service.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
@@ -38,7 +41,7 @@ import java.util.List;
 /**
  * Contains the common logic for all KSI related responses.
  */
-public abstract class AbstractKSIResponse<T extends KSIResponsePayload> extends TLVStructure {
+abstract class AbstractKSIResponse<T extends LegacyPduResponsePayload> extends TLVStructure {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractKSIResponse.class);
     private static final int ELEMENT_TYPE_AGGREGATION_ERROR_PAYLOAD = 0x0203;
@@ -50,7 +53,7 @@ public abstract class AbstractKSIResponse<T extends KSIResponsePayload> extends 
     /**
      * KSI message header
      */
-    private KSIMessageHeader header;
+    private PduMessageHeader header;
 
     /**
      * KSI response protocol data unit
@@ -80,15 +83,14 @@ public abstract class AbstractKSIResponse<T extends KSIResponsePayload> extends 
         List<TLVElement> children = rootElement.getChildElements();
         for (TLVElement child : children) {
             switch (child.getType()) {
-                case KSIMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER:
-                    this.header = new KSIMessageHeader(readOnce(child));
+                case PduMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER:
+                    this.header = new PduMessageHeader(readOnce(child));
                     continue;
                 case ELEMENT_TYPE_AGGREGATION_ERROR_PAYLOAD:
                 case ELEMENT_TYPE_EXTENSION_ERROR_PAYLOAD:
                     throwErrorPayloadException(child);
-                //TODO
-                case 0x0202:
-                case ExtensionResponsePayload.ELEMENT_TYPE:
+                case LegacyAggregationResponsePayload.ELEMENT_TYPE:
+                case LegacyExtensionResponsePayload.ELEMENT_TYPE:
                     if (response != null) {
                         throw new KSIProtocolException("Invalid response message. Message contains multiple response payloads");
                     }

@@ -20,7 +20,6 @@ package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.service.KSIResponsePayload;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.AggregationAuthenticationRecord;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
@@ -32,7 +31,7 @@ import java.util.List;
 /**
  * Aggregation response payload.
  */
-class LegacyAggregationResponsePayload extends KSIResponsePayload {
+class LegacyAggregationResponsePayload extends LegacyPduResponsePayload {
 
     public static final int ELEMENT_TYPE = 0x0202;
     private static final int ELEMENT_TYPE_REQUEST_ID = 0x1;

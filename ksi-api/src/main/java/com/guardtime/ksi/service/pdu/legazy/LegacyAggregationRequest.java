@@ -19,8 +19,7 @@
 package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.AbstractKSIRequest;
-import com.guardtime.ksi.service.KSIMessageHeader;
+import com.guardtime.ksi.service.pdu.PduMessageHeader;
 import com.guardtime.ksi.service.pdu.AggregationRequest;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
@@ -32,7 +31,7 @@ class LegacyAggregationRequest extends AbstractKSIRequest<LegacyAggregationReque
 
     private static final int ELEMENT_TYPE = 0x200;
 
-    public LegacyAggregationRequest(KSIMessageHeader header, LegacyAggregationRequestPayload payload, byte[] loginKey) throws KSIException {
+    public LegacyAggregationRequest(PduMessageHeader header, LegacyAggregationRequestPayload payload, byte[] loginKey) throws KSIException {
         super(header, payload, loginKey);
     }
 

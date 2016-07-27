@@ -19,7 +19,10 @@
 package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.extension.ExtensionResponse;
+import com.guardtime.ksi.service.pdu.ExtensionResponse;
+import com.guardtime.ksi.service.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.pdu.PduFactory;
+import com.guardtime.ksi.service.pdu.legazy.LegacyKsiPduFactory;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
@@ -35,6 +38,8 @@ public class ExtensionRequestFuture implements Future<CalendarHashChain> {
     private Future<TLVElement> future;
     private KSIRequestContext context;
     private CalendarHashChain response;
+    //TODO
+    private PduFactory pduFactory = new LegacyKsiPduFactory();
 
     public ExtensionRequestFuture(Future<TLVElement> future, KSIRequestContext requestContext, KSISignatureFactory signatureFactory) {
         this.future = future;
@@ -46,8 +51,8 @@ public class ExtensionRequestFuture implements Future<CalendarHashChain> {
         if (response == null) {
             try {
                 TLVElement tlvElement = future.getResult();
-                ExtensionResponse extensionResponse = new ExtensionResponse(tlvElement, context);
-                response = signatureFactory.createCalendarHashChain(extensionResponse.getCalendarHashChainTlvElement());
+                ExtensionResponse extensionResponse = pduFactory.readExtensionResponse(context, tlvElement);
+                response = signatureFactory.createCalendarHashChain(extensionResponse.getPayload());
             } catch (com.guardtime.ksi.tlv.TLVParserException e) {
                 throw new KSIProtocolException("Can't parse response message", e);
             }

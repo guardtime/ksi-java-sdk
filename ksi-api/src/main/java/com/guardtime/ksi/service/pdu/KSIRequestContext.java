@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service;
+package com.guardtime.ksi.service.pdu;
 
 import com.guardtime.ksi.service.client.ServiceCredentials;
 

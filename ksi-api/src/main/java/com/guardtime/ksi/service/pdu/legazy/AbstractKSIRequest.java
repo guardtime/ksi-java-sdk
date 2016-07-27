@@ -16,13 +16,14 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service;
+package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
-import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
+import com.guardtime.ksi.service.pdu.PduMessageHeader;
+import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
@@ -36,16 +37,16 @@ import java.util.List;
 /**
  * Contains the common logic for all KSI related request messages.
  */
-public abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStructure {
+abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStructure {
 
     private static final int ELEMENT_TYPE_MAC = 0x1F;
 
     private byte[] loginKey;
-    private KSIMessageHeader header;
+    private PduMessageHeader header;
     private P payload;
     private DataHash mac;
 
-    public AbstractKSIRequest(KSIMessageHeader header, P payload, byte[] loginKey) throws KSIException {
+    public AbstractKSIRequest(PduMessageHeader header, P payload, byte[] loginKey) throws KSIException {
         this.loginKey = loginKey;
         this.header = header;
         this.payload = payload;
@@ -75,12 +76,11 @@ public abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStru
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {
             switch (child.getType()) {
-                case KSIMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER:
-                    this.header = new KSIMessageHeader(readOnce(child));
+                case PduMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER:
+                    this.header = new PduMessageHeader(readOnce(child));
                     continue;
-                    //TODO
-                case 0x0201:
-                case ExtensionRequestPayload.ELEMENT_TYPE:
+                case LegacyAggregationRequestPayload.ELEMENT_TYPE:
+                case LegacyExtensionRequestPayload.ELEMENT_TYPE:
                     this.payload = readPayload(readOnce(child));
                     continue;
                 case ELEMENT_TYPE_MAC:
@@ -103,7 +103,7 @@ public abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStru
     /**
      * Returns the header of the message.
      */
-    public KSIMessageHeader getHeader() {
+    public PduMessageHeader getHeader() {
         return this.header;
     }
 

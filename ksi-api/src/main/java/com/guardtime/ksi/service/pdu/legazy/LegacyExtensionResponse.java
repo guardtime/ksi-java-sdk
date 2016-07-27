@@ -17,15 +17,15 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.service.extension;
+package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.AbstractKSIResponse;
 import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.service.KSIRequestContext;
+import com.guardtime.ksi.service.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.pdu.ExtensionResponse;
 import com.guardtime.ksi.tlv.TLVElement;
 
-public class ExtensionResponse extends AbstractKSIResponse<ExtensionResponsePayload> {
+class LegacyExtensionResponse extends AbstractKSIResponse<LegacyExtensionResponsePayload> implements ExtensionResponse {
 
     public static final int ELEMENT_TYPE = 0x0300;
 
@@ -39,13 +39,13 @@ public class ExtensionResponse extends AbstractKSIResponse<ExtensionResponsePayl
      * @throws KSIProtocolException
      *         - will be thrown when TLV message parsing fails
      */
-    public ExtensionResponse(TLVElement rootElement, KSIRequestContext context) throws KSIException {
+    public LegacyExtensionResponse(TLVElement rootElement, KSIRequestContext context) throws KSIException {
         super(rootElement, context);
     }
 
     @Override
-    protected final ExtensionResponsePayload parse(TLVElement element) throws KSIException {
-        return new ExtensionResponsePayload(element);
+    protected final LegacyExtensionResponsePayload parse(TLVElement element) throws KSIException {
+        return new LegacyExtensionResponsePayload(element);
     }
 
     /**
@@ -60,5 +60,8 @@ public class ExtensionResponse extends AbstractKSIResponse<ExtensionResponsePayl
         return ELEMENT_TYPE;
     }
 
-
+    //TODO
+    public TLVElement getPayload() {
+        return getCalendarHashChainTlvElement();
+    }
 }

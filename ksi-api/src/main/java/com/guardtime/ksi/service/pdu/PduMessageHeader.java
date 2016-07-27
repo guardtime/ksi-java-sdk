@@ -16,9 +16,10 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service;
+package com.guardtime.ksi.service.pdu;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 
@@ -46,7 +47,7 @@ import java.util.List;
  * applications that typically send only a single request; for long-lived processes the `instance identifier' and
  * `message identifier' fields should be considered mandatory. </p>
  */
-public class KSIMessageHeader extends TLVStructure {
+public class PduMessageHeader extends TLVStructure {
 
     public static final int ELEMENT_TYPE_MESSAGE_HEADER = 0x1;
 
@@ -66,7 +67,7 @@ public class KSIMessageHeader extends TLVStructure {
      * @param loginId
      *         - identifier of the client host for MAC key lookup
      */
-    public KSIMessageHeader(String loginId) throws KSIException {
+    public PduMessageHeader(String loginId) throws KSIException {
         if (loginId == null) {
             throw new IllegalArgumentException("Invalid input parameter. LoginId is null.");
         }
@@ -87,7 +88,7 @@ public class KSIMessageHeader extends TLVStructure {
      * @param messageId
      *         - message number for duplicate filtering. Must be not null when instance identifier is present.
      */
-    public KSIMessageHeader(String loginId, Long instanceId, Long messageId) throws KSIException {
+    public PduMessageHeader(String loginId, Long instanceId, Long messageId) throws KSIException {
         this(loginId);
         if (instanceId == null) {
             throw new IllegalArgumentException("Invalid input parameter. InstanceId is null.");
@@ -113,7 +114,7 @@ public class KSIMessageHeader extends TLVStructure {
      * @param rootElement
      *         instance of{@link TLVElement}
      */
-    public KSIMessageHeader(TLVElement rootElement) throws KSIException {
+    public PduMessageHeader(TLVElement rootElement) throws KSIException {
         super(rootElement);
         List<TLVElement> children = rootElement.getChildElements();
         for (TLVElement child : children) {

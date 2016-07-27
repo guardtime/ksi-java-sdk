@@ -17,11 +17,12 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.service;
+package com.guardtime.ksi.publication.adapter;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.PublicationsFileFactory;
+import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 
 import java.io.ByteArrayInputStream;

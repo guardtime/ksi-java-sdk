@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service;
 
+import com.guardtime.ksi.service.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 import org.mockito.Mockito;
 import org.testng.Assert;

@@ -16,21 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-
-package com.guardtime.ksi.service;
-
 /**
- * This exception is used when KSI protocol message contains invalid MAC code or MAC code can not be calculated.
+ * Public KSI Protocol Data Unit interfaces
  */
-public class InvalidMessageAuthenticationCodeException extends KSIProtocolException {
-
-    private static final long serialVersionUID = 1;
-
-    public InvalidMessageAuthenticationCodeException(String message) {
-        super(message);
-    }
-
-    public InvalidMessageAuthenticationCodeException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
+package com.guardtime.ksi.service.pdu;

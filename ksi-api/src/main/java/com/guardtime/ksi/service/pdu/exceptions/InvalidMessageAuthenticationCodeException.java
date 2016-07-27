@@ -16,20 +16,23 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service;
 
-import java.util.Date;
+package com.guardtime.ksi.service.pdu.exceptions;
 
-import com.guardtime.ksi.exceptions.KSIException;
-import org.testng.annotations.Test;
+import com.guardtime.ksi.service.KSIProtocolException;
 
-import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
-import com.guardtime.ksi.util.Util;
+/**
+ * This exception is used when KSI protocol message contains invalid MAC code or MAC code can not be calculated.
+ */
+public class InvalidMessageAuthenticationCodeException extends KSIProtocolException {
 
-public class ExtensionRequestPayloadTest {
+    private static final long serialVersionUID = 1;
 
-    @Test(expectedExceptions = KSIProtocolException.class)
-    public void testCreateExtensionRequestTimeFail() throws KSIException {
-        new ExtensionRequestPayload(new Date(423654196), new Date(421280000), Util.nextLong());
+    public InvalidMessageAuthenticationCodeException(String message) {
+        super(message);
+    }
+
+    public InvalidMessageAuthenticationCodeException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

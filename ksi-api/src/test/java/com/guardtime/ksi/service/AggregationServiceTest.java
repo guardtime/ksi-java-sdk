@@ -20,6 +20,7 @@ package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.service.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;

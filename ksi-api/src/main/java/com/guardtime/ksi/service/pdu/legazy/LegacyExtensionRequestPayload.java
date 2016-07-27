@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.extension;
+package com.guardtime.ksi.service.pdu.legazy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIProtocolException;
@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Signature extension request TLV object.
  */
-public class ExtensionRequestPayload extends TLVStructure {
+class LegacyExtensionRequestPayload extends TLVStructure {
 
     public static final int ELEMENT_TYPE = 0x301;
     private static final int ELEMENT_TYPE_REQUEST_ID = 0x1;
@@ -48,7 +48,7 @@ public class ExtensionRequestPayload extends TLVStructure {
      * @param requestId
      *         request identifier
      */
-    public ExtensionRequestPayload(Date aggregationTime, Long requestId) throws KSIException {
+    public LegacyExtensionRequestPayload(Date aggregationTime, Long requestId) throws KSIException {
         if (aggregationTime == null) {
             throw new IllegalArgumentException("Invalid input parameter. AggregationTime is null.");
         }
@@ -80,7 +80,7 @@ public class ExtensionRequestPayload extends TLVStructure {
      * @throws KSIProtocolException
      *         if request requires hash chain going backwards in time
      */
-    public ExtensionRequestPayload(Date aggregationTime, Date publicationTime, Long requestId) throws KSIException {
+    public LegacyExtensionRequestPayload(Date aggregationTime, Date publicationTime, Long requestId) throws KSIException {
         this(aggregationTime, requestId);
         if (publicationTime != null) {
             if (aggregationTime.after(publicationTime)) {
@@ -94,7 +94,7 @@ public class ExtensionRequestPayload extends TLVStructure {
         }
     }
 
-    public ExtensionRequestPayload(TLVElement element) throws KSIException {
+    public LegacyExtensionRequestPayload(TLVElement element) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {

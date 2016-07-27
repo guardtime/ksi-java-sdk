@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service;
+package com.guardtime.ksi.service.pdu;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -24,24 +24,24 @@ import org.testng.annotations.Test;
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 
-public class KSIMessageHeaderTest {
+public class PduMessageHeaderTest {
 
+    public static final String TEST_LOGIN_ID = "anon";
     private static final long INSTANCE_ID = 111111L;
     private static final long MESSAGE_ID = 333331L;
-    public static final String TEST_LOGIN_ID = "anon";
 
     @Test
     public void testCreateMessageHeader_Ok() throws Exception {
-        KSIMessageHeader messageHeader = new KSIMessageHeader(TEST_LOGIN_ID);
-        KSIMessageHeader header = load(messageHeader.getRootElement().getEncoded());
+        PduMessageHeader messageHeader = new PduMessageHeader(TEST_LOGIN_ID);
+        PduMessageHeader header = load(messageHeader.getRootElement().getEncoded());
         Assert.assertEquals(header.getLoginId(), TEST_LOGIN_ID);
         Assert.assertEquals(header.getLoginId(), messageHeader.getLoginId());
     }
 
     @Test
     public void testCreateMessageHeaderWithMessageId_Ok() throws Exception {
-        KSIMessageHeader messageHeader = new KSIMessageHeader(TEST_LOGIN_ID, INSTANCE_ID, MESSAGE_ID);
-        KSIMessageHeader header = load(messageHeader.getRootElement().getEncoded());
+        PduMessageHeader messageHeader = new PduMessageHeader(TEST_LOGIN_ID, INSTANCE_ID, MESSAGE_ID);
+        PduMessageHeader header = load(messageHeader.getRootElement().getEncoded());
         Assert.assertEquals(header.getLoginId(), TEST_LOGIN_ID);
         Assert.assertEquals(header.getLoginId(), messageHeader.getLoginId());
         Assert.assertEquals(header.getInstanceId().longValue(), INSTANCE_ID);
@@ -50,21 +50,21 @@ public class KSIMessageHeaderTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. LoginId is null.")
     public void testCreateMessageHeaderUsingInvalidLoginId_ThrowsIllegalArgumentException() throws Exception {
-        new KSIMessageHeader((String) null);
+        new PduMessageHeader((String) null);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. InstanceId is null.")
     public void testCreateMessageHeaderUsingInvalidInstanceId_ThrowsIllegalArgumentException() throws Exception {
-        new KSIMessageHeader(TEST_LOGIN_ID, null, 1L);
+        new PduMessageHeader(TEST_LOGIN_ID, null, 1L);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. MessageId is null.")
     public void testCreateMessageHeaderUsingInvalidMessageId_ThrowsIllegalArgumentException() throws Exception {
-        new KSIMessageHeader(TEST_LOGIN_ID, 1L, null);
+        new PduMessageHeader(TEST_LOGIN_ID, 1L, null);
     }
 
-    private KSIMessageHeader load(byte[] data) throws Exception {
-        return new KSIMessageHeader(loadTlv(data));
+    private PduMessageHeader load(byte[] data) throws Exception {
+        return new PduMessageHeader(loadTlv(data));
     }
 
 }

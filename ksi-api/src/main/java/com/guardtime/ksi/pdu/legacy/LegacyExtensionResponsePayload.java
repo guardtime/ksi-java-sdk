@@ -19,6 +19,7 @@
 package com.guardtime.ksi.pdu.legacy;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 
@@ -28,7 +29,7 @@ import java.util.List;
 /**
  * Signature extension response TLV object.
  */
-class LegacyExtensionResponsePayload extends LegacyPduResponsePayload {
+class LegacyExtensionResponsePayload extends LegacyPduResponsePayload implements ExtensionResponse {
 
     public static final int ELEMENT_TYPE = 0x0302;
 
@@ -76,13 +77,6 @@ class LegacyExtensionResponsePayload extends LegacyPduResponsePayload {
     }
 
     /**
-     * @return calendar hash chain
-     */
-    public TLVElement getCalendarHashChainTlvElement() {
-        return hashChain;
-    }
-
-    /**
      * @return error number
      */
     public Long getError() {
@@ -113,5 +107,9 @@ class LegacyExtensionResponsePayload extends LegacyPduResponsePayload {
     @Override
     public int getElementType() {
         return ELEMENT_TYPE;
+    }
+
+    public TLVElement getPayload() {
+        return hashChain;
     }
 }

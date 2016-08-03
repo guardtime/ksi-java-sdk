@@ -23,13 +23,7 @@ import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.AggregationRequest;
-import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.PduIdentifiers;
-import com.guardtime.ksi.pdu.legacy.LegacyKsiPduFactory;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
@@ -38,7 +32,6 @@ import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.IdentityMetadata;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
-import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,9 +76,6 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     private static final InMemoryKsiSignatureFactory SIGNATURE_ELEMENT_FACTORY = new InMemoryKsiSignatureFactory();
     private static final String DEFAULT_CLIENT_ID_LOCAL_AGGREGATION = "local-aggregation";
     private static final int MAXIMUM_LEVEL = 255;
-
-    //TODO Support old and new PDU's
-    private final PduFactory pduFactory = new LegacyKsiPduFactory();
 
     private final KSI ksi;
     private final Map<TreeNode, LocalAggregationHashChain> chains = new HashMap<TreeNode, LocalAggregationHashChain>();
@@ -176,10 +166,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private KSISignature signRootNode(TreeNode rootNode) throws KSIException {
         DataHash dataHash = new DataHash(rootNode.getValue());
-        ServiceCredentials credentials = ksi.getSigningCredentials();
-        KSIRequestContext requestContext = new KSIRequestContext(credentials, Util.nextLong(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
-        AggregationRequest requestMessage = pduFactory.createAggregationRequest(requestContext, dataHash, rootNode.getLevel());
-        return ksi.sign(requestMessage);
+        return ksi.sign(dataHash, rootNode.getLevel());
     }
 
     private List<LocalAggregationHashChain> buildChains() throws KSIException {

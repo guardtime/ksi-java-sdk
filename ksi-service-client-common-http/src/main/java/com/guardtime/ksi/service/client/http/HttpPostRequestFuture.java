@@ -54,21 +54,22 @@ public abstract class HttpPostRequestFuture implements Future<TLVElement> {
      */
     protected TLVElement parse(int statusCode, String responseMessage, InputStream response, String contentType) throws HttpProtocolException {
         try {
-            TLVElement tlv = TLVElement.createFromBytes(Util.toByteArray(response));
-            int tlvType = tlv.getType();
-            for (int type : SUPPORTED_TLV_TYPES) {
-                if (tlvType == type) {
-                    return tlv;
-                }
-            }
+            return TLVElement.create(Util.toByteArray(response));
+//            int tlvType = tlv.getType();
+//            //TODO remove this.
+//            for (int type : SUPPORTED_TLV_TYPES) {
+//                if (tlvType == type) {
+//                    return tlv;
+//                }
+//            }
         } catch (Exception e) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Invalid TLV response.", e);
             }
             throw new HttpProtocolException(statusCode, responseMessage);
         }
-        LOGGER.error("Invalid KSI Protocol response. HTTP status code is {}, HTTP response message is {} and content type is {}", statusCode, responseMessage, contentType);
-        throw new HttpProtocolException(statusCode, responseMessage);
+//        LOGGER.error("Invalid KSI Protocol response. HTTP status code is {}, HTTP response message is {} and content type is {}", statusCode, responseMessage, contentType);
+//        throw new HttpProtocolException(statusCode, responseMessage);
     }
 
 }

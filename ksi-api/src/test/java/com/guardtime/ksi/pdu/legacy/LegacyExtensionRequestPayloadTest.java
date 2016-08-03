@@ -26,7 +26,7 @@ import org.testng.annotations.Test;
 
 import com.guardtime.ksi.util.Util;
 
-public class LegacyLegacyExtensionRequestPayloadTest {
+public class LegacyExtensionRequestPayloadTest {
 
     @Test(expectedExceptions = KSIProtocolException.class)
     public void testCreateExtensionRequestTimeFail() throws KSIException {

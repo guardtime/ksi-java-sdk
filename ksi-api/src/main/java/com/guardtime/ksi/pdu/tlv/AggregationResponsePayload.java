@@ -1,27 +1,10 @@
-/*
- * Copyright 2013-2016 Guardtime, Inc.
- *
- * This file is part of the Guardtime client SDK.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
- */
-package com.guardtime.ksi.pdu.legacy;
+package com.guardtime.ksi.pdu.tlv;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationAuthenticationRecord;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
@@ -29,27 +12,19 @@ import com.guardtime.ksi.unisignature.CalendarHashChain;
 
 import java.util.List;
 
-/**
- * Aggregation response payload.
- */
-class LegacyAggregationResponsePayload extends LegacyPduResponsePayload implements AggregationResponse {
+class AggregationResponsePayload extends TLVStructure implements AggregationResponse {
 
-    public static final int ELEMENT_TYPE = 0x0202;
-    private static final int ELEMENT_TYPE_REQUEST_ID = 0x1;
-    private static final int ELEMENT_TYPE_ERROR = 0x4;
-    private static final int ELEMENT_TYPE_ERROR_MESSAGE = 0x5;
+    static final int ELEMENT_TYPE = 0x0202;
+
+    private static final int ELEMENT_TYPE_REQUEST_ID = 0x01;
+    private static final int ELEMENT_TYPE_ERROR = 0x04;
+    private static final int ELEMENT_TYPE_ERROR_MESSAGE = 0x05;
 
     private Long requestId;
     private Long error;
-    private String errorMsg;
+    private String errorMessage;
 
-    /**
-     * Create aggregation response from TLVTag.
-     *
-     * @param element
-     *         TLV element
-     */
-    public LegacyAggregationResponsePayload(TLVElement element) throws KSIException {
+    public AggregationResponsePayload(TLVElement element) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {
@@ -61,7 +36,7 @@ class LegacyAggregationResponsePayload extends LegacyPduResponsePayload implemen
                     this.error = readOnce(child).getDecodedLong();
                     continue;
                 case ELEMENT_TYPE_ERROR_MESSAGE:
-                    this.errorMsg = readOnce(child).getDecodedString();
+                    this.errorMessage = readOnce(child).getDecodedString();
                     continue;
                 case AggregationHashChain.ELEMENT_TYPE:
                 case AggregationAuthenticationRecord.ELEMENT_TYPE:
@@ -80,19 +55,19 @@ class LegacyAggregationResponsePayload extends LegacyPduResponsePayload implemen
     /**
      * @return error number
      */
-    public Long getError() {
+    public Long getStatus() {
         return error;
     }
 
     /**
-     * @return error message
+     * returns an error message
      */
     public String getErrorMessage() {
-        return errorMsg;
+        return errorMessage;
     }
 
     /**
-     * @return request id
+     * Returns the request identifier
      */
     public final Long getRequestId() {
         return requestId;
@@ -104,6 +79,6 @@ class LegacyAggregationResponsePayload extends LegacyPduResponsePayload implemen
     }
 
     public TLVElement getPayload() {
-        return getRootElement();
+        return this.getRootElement();
     }
 }

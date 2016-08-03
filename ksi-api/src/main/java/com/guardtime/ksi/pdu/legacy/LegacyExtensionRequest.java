@@ -32,7 +32,6 @@ class LegacyExtensionRequest extends AbstractKSIRequest<LegacyExtensionRequestPa
 
     public static final int ELEMENT_TYPE = 0x300;
 
-
     public LegacyExtensionRequest(PduMessageHeader header, LegacyExtensionRequestPayload payload, byte[] loginKey) throws KSIException {
         super(header, payload, loginKey);
 
@@ -43,7 +42,6 @@ class LegacyExtensionRequest extends AbstractKSIRequest<LegacyExtensionRequestPa
         if (getRequestPayload() == null) {
             throw new KSIProtocolException("Invalid KSI request. Extension request payload is missing");
         }
-
     }
 
     @Override
@@ -61,7 +59,7 @@ class LegacyExtensionRequest extends AbstractKSIRequest<LegacyExtensionRequestPa
         try {
             return getRootElement().getEncoded();
         } catch (TLVParserException e) {
-            throw new IllegalArgumentException("Invalid aggregation request state");
+            throw new IllegalArgumentException("Invalid extension request state");
         }
     }
 }

@@ -53,7 +53,7 @@ class KSITCPSigningTransaction {
 
     static KSITCPSigningTransaction fromRequest(InputStream request) throws IOException, KSIException {
         KSITCPSigningTransaction transaction = new KSITCPSigningTransaction();
-        TLVElement tlv = TLVElement.createFromBytes(Util.toByteArray(request));
+        TLVElement tlv = TLVElement.create(Util.toByteArray(request));
         transaction.correlationId = extractTransactionIdFromRequestTLV(tlv);
         transaction.request = tlv;
         return transaction;
@@ -71,7 +71,7 @@ class KSITCPSigningTransaction {
 
     static TLVElement parse(byte[] data) throws KSIProtocolException {
         try {
-            return TLVElement.createFromBytes(data);
+            return TLVElement.create(data);
         } catch (MultipleTLVElementException e) {
             throw new KSIProtocolException("Invalid KSI response. Response message contains multiple TLV elements", e);
         } catch (TLVParserException e) {

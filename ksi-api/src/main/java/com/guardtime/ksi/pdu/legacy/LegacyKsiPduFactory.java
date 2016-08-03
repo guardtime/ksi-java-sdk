@@ -2,10 +2,15 @@ package com.guardtime.ksi.pdu.legacy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.pdu.PduMessageHeader;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.ExtensionRequest;
+import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.util.Util;
 
 import java.util.Date;
 
@@ -15,55 +20,31 @@ import java.util.Date;
 public class LegacyKsiPduFactory implements PduFactory {
 
     public AggregationRequest createAggregationRequest(KSIRequestContext context, DataHash imprint, Long level) throws KSIException {
-        if (context == null) {
-            throw new NullPointerException("KsiRequestContext can not be null");
-        }
-        if (imprint == null) {
-            throw new NullPointerException("DataHash can not be null");
-        }
-        Long requestLevel = 0L;
-        if (level != null) {
-            if (level < 0) {
-                throw new IllegalArgumentException("Level can not be negative");
-            }
-            requestLevel = level;
-        }
-
+        Util.notNull(context, "KsiRequestContext");
+        Util.notNull(context, "DataHash");
         PduMessageHeader header = new PduMessageHeader(context.getLoginId(), context.getInstanceId(), context.getMessageId());
-        LegacyAggregationRequestPayload request = new LegacyAggregationRequestPayload(imprint, context.getRequestId(), requestLevel);
+        LegacyAggregationRequestPayload request = new LegacyAggregationRequestPayload(imprint, context.getRequestId(), level);
         return new LegacyAggregationRequest(header, request, context);
     }
 
     public AggregationResponse readAggregationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
-        if (context == null) {
-            throw new NullPointerException("KsiRequestContext can not be null");
-        }
-        if (input == null) {
-            throw new NullPointerException("Input TLV element can not be null");
-        }
-        return new LegacyAggregationResponse(input, context);
+        Util.notNull(context, "KsiRequestContext");
+        Util.notNull(context, "Input TLV");
+        return new LegacyAggregationResponse(input, context).getResponsePayload();
     }
 
     public ExtensionRequest createExtensionRequest(KSIRequestContext context, Date aggregationTime, Date publicationTime) throws KSIException {
-        if (context == null) {
-            throw new NullPointerException("KsiRequestContext can not be null");
-        }
-        if (aggregationTime == null) {
-            throw new NullPointerException("AggregationTime can not be null");
-        }
+        Util.notNull(context, "KsiRequestContext");
+        Util.notNull(context, "AggregationTime");
         PduMessageHeader header = new PduMessageHeader(context.getLoginId(), context.getInstanceId(), context.getMessageId());
         LegacyExtensionRequestPayload extensionRequest = new LegacyExtensionRequestPayload(aggregationTime, publicationTime, context.getRequestId());
         return new LegacyExtensionRequest(header, extensionRequest, context.getLoginKey());
     }
 
     public ExtensionResponse readExtensionResponse(KSIRequestContext context, TLVElement input) throws KSIException {
-        if (context == null) {
-            throw new NullPointerException("KsiRequestContext can not be null");
-        }
-        if (input == null) {
-            throw new NullPointerException("Input TLV element can not be null");
-        }
-        return new LegacyExtensionResponse(input, context);
+        Util.notNull(context, "KsiRequestContext");
+        Util.notNull(context, "Input TLV");
+        return new LegacyExtensionResponse(input, context).getResponsePayload();
     }
 
 }

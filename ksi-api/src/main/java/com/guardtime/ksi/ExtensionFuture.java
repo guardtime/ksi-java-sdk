@@ -67,8 +67,6 @@ final class ExtensionFuture implements Future<KSISignature> {
             } catch (com.guardtime.ksi.tlv.TLVParserException e) {
                 throw new KSIProtocolException("Can't parse response message", e);
             }
-
-
         }
         return extendedSignature;
     }

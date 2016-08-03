@@ -20,13 +20,12 @@ package com.guardtime.ksi.pdu.legacy;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.tlv.TLVElement;
 
 /**
  * This class is describes a legacy KSI aggregation response protocol data unit (PDU).
  */
-class LegacyAggregationResponse extends AbstractKSIResponse<LegacyAggregationResponsePayload> implements AggregationResponse {
+class LegacyAggregationResponse extends AbstractKSIResponse<LegacyAggregationResponsePayload> {
 
     public static final int ELEMENT_TYPE_AGGREGATION_RESPONSE = 0x0200;
 
@@ -51,9 +50,4 @@ class LegacyAggregationResponse extends AbstractKSIResponse<LegacyAggregationRes
         return ELEMENT_TYPE_AGGREGATION_RESPONSE;
     }
 
-
-    //TODO move ?
-    public TLVElement getPayload() {
-        return getResponsePayload().getRootElement();
-    }
 }

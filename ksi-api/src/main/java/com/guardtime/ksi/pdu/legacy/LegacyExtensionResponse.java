@@ -22,10 +22,9 @@ package com.guardtime.ksi.pdu.legacy;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.tlv.TLVElement;
 
-class LegacyExtensionResponse extends AbstractKSIResponse<LegacyExtensionResponsePayload> implements ExtensionResponse {
+class LegacyExtensionResponse extends AbstractKSIResponse<LegacyExtensionResponsePayload>  {
 
     public static final int ELEMENT_TYPE = 0x0300;
 
@@ -48,20 +47,9 @@ class LegacyExtensionResponse extends AbstractKSIResponse<LegacyExtensionRespons
         return new LegacyExtensionResponsePayload(element);
     }
 
-    /**
-     * @return returns extension response calendar hash chain
-     */
-    public TLVElement getCalendarHashChainTlvElement() {
-        return getResponsePayload().getCalendarHashChainTlvElement();
-    }
-
     @Override
     public int getElementType() {
         return ELEMENT_TYPE;
     }
 
-    //TODO
-    public TLVElement getPayload() {
-        return getCalendarHashChainTlvElement();
-    }
 }

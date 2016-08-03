@@ -89,6 +89,18 @@ public interface KSI extends Closeable {
     KSISignature sign(DataHash dataHash) throws KSIException;
 
     /**
+     * This method is used to sign data hash with specific level value of the aggregation tree node from which the data hash comes.
+     *
+     * @param dataHash
+     *         instance of {@link DataHash} to sign. not null.
+     * @param level the  level value of the aggregation tree node from which the data hash comes.
+     * @return instance of {@link KSISignature}
+     * @throws KSIException
+     *         when error occurs (e.g when communication with KSI service fails)
+     */
+    KSISignature sign(DataHash dataHash, long level) throws KSIException;
+
+    /**
      * This method is used to sign a file. Uses hash algorithm defined by method {@link
      * KSIBuilder#setDefaultSigningHashAlgorithm(HashAlgorithm)}.
      *
@@ -113,17 +125,6 @@ public interface KSI extends Closeable {
     KSISignature sign(byte[] bytes) throws KSIException;
 
     /**
-     * TODO
-     *
-     * @param request
-     *         instance of aggregation request. not null.
-     * @return instance of {@link KSISignature}
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    KSISignature sign(AggregationRequest request) throws KSIException;
-
-    /**
      * This method is used to sign data hash asynchronously. Use method {@link Future#getResult()} to get keyless
      * signature.
      *
@@ -134,6 +135,19 @@ public interface KSI extends Closeable {
      *         when error occurs (e.g when communication with KSI service fails)
      */
     Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException;
+
+    /**
+     * This method is used to sign data hash  with specific level value of the aggregation tree node from which the
+     * data hash comes asynchronously. Use method {@link Future#getResult()} to get keyless signature.
+     *
+     * @param dataHash
+     *         instance of {@link DataHash} to sign. not null.
+     * @param level the  level value of the aggregation tree node from which the data hash comes.
+     * @return instance of {@link Future}
+     * @throws KSIException
+     *         when error occurs (e.g when communication with KSI service fails)
+     */
+    Future<KSISignature> asyncSign(DataHash dataHash, long level) throws KSIException;
 
     /**
      * This method is used to sign a file asynchronously. Use method {@link Future#getResult()} to get keyless
@@ -158,17 +172,6 @@ public interface KSI extends Closeable {
      *         when error occurs (e.g when communication with KSI service fails)
      */
     Future<KSISignature> asyncSign(byte[] bytes) throws KSIException;
-
-    /**
-     * TODO
-     *
-     * @param request
-     *         instance of aggregation request. not null.
-     * @return instance of {@link  Future<KSISignature>}
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    Future<KSISignature> asyncSign(AggregationRequest request) throws KSIException;
 
     /**
      * Extends signature to the "closest" publication in publication file.

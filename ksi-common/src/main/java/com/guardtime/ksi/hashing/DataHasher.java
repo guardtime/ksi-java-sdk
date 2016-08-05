@@ -18,11 +18,15 @@
  */
 package com.guardtime.ksi.hashing;
 
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.util.Util;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -43,9 +47,7 @@ import java.security.Security;
  * }
  * </pre>
  * <br><br> <h3>Call chaining</h3> <p> DataHashser addData() functions always return the same hasher so it is possible
- * to chain calls to the hasher, if needed. </p>
- * <p/>
- * For example
+ * to chain calls to the hasher, if needed. </p> <p/> For example
  * <pre>
  * {@code
  * DataHasher hasher = new DataHasher();
@@ -64,15 +66,11 @@ public class DataHasher {
     /**
      * Create new data hasher for specified algorithm.
      *
-     * @param algorithm
-     *         HashAlgorithm describing the algorithm to be used in hashing.
-     * @throws HashException
-     *         when hash algorithm is unknown or input algorithm is null
+     * @param algorithm HashAlgorithm describing the algorithm to be used in hashing.
+     * @throws HashException when hash algorithm is unknown or input algorithm is null
      */
-    public DataHasher(HashAlgorithm algorithm) throws HashException {
-        if (algorithm == null) {
-            throw new HashException("Invalid algorithm added to hasher: null");
-        }
+    public DataHasher(HashAlgorithm algorithm) {
+        Util.notNull(algorithm, "Hash algorithm");
 
         /*
             If an algorithm is given which is not implemented, an HashAlgorithmNotImplementedException is thrown
@@ -101,26 +99,22 @@ public class DataHasher {
     /**
      * Create new data hasher for the default algorithm(SHA-256).
      */
-    public DataHasher() throws HashException {
+    public DataHasher() {
         this(HashAlgorithm.getByName("DEFAULT"));
     }
 
     /**
      * Updates the digest using the specified array of bytes, starting at the specified offset.
      *
-     * @param data
-     *         the array of bytes.
-     * @param offset
-     *         the offset to start from in the array of bytes.
-     * @param length
-     *         the number of bytes to use, starting at the offset.
+     * @param data   the array of bytes.
+     * @param offset the offset to start from in the array of bytes.
+     * @param length the number of bytes to use, starting at the offset.
      * @return the same DataHasher object for chaining calls
-     * @throws HashException
-     *         when hash is already been calculated
+     * @throws IllegalStateException when hash is already been calculated
      */
-    public final DataHasher addData(byte[] data, int offset, int length) throws HashException {
+    public final DataHasher addData(byte[] data, int offset, int length) {
         if (outputHash != null) {
-            throw new HashException("Output hash has already been calculated");
+            throw new IllegalStateException("Output hash has already been calculated");
         }
 
         messageDigest.update(data, offset, length);
@@ -130,16 +124,12 @@ public class DataHasher {
     /**
      * Adds data to the digest using the specified array of bytes, starting at an offset of 0.
      *
-     * @param data
-     *         the array of bytes.
+     * @param data the array of bytes.
      * @return the same DataHasher object for chaining calls
-     * @throws HashException
-     *         when input data is invalid (e.g null)
+     * @throws NullPointerException when input data is null
      */
-    public final DataHasher addData(byte[] data) throws HashException {
-        if (data == null) {
-            throw new HashException("Invalid data added to hasher: null");
-        }
+    public final DataHasher addData(byte[] data) {
+        Util.notNull(data, "Date");
 
         return addData(data, 0, data.length);
     }
@@ -147,58 +137,47 @@ public class DataHasher {
     /**
      * Adds data to the digest using the specified input stream of bytes, starting at an offset of 0.
      *
-     * @param inStream
-     *         input stream of bytes.
+     * @param inStream input stream of bytes.
      * @return the same DataHasher object for chaining calls
-     * @throws HashException
-     *         when hash calculation fails.
+     * @throws HashException when hash calculation fails.
      */
-    public final DataHasher addData(InputStream inStream) throws HashException {
+    public final DataHasher addData(InputStream inStream) {
         return addData(inStream, DEFAULT_STREAM_BUFFER_SIZE);
     }
 
     /**
      * Adds data to the digest using the specified file, starting at the offset 0.
      *
-     * @param file
-     *         input file.
+     * @param file input file.
      * @return the same DataHasher object for chaining calls
-     * @throws HashException
-     *         when hash calculation fails.
+     * @throws HashException when hash calculation fails.
      */
-    public final DataHasher addData(File file) throws KSIException {
+    public final DataHasher addData(File file) {
         return addData(file, DEFAULT_STREAM_BUFFER_SIZE);
     }
 
     /**
-     * Adds the {@link DataHash#getValue()} to the da
-     * @param dataHash
-     * @return
-     * @throws HashException
+     * Adds the {@link DataHash#getValue()} to the digest
+     *
+     * @param dataHash input digest
+     * @return the same DataHasher object for chaining calls
+     * @throws NullPointerException when input value is null
      */
-    public DataHasher addData(DataHash dataHash) throws HashException {
-        if (dataHash == null) {
-            throw new HashException("Invalid data added to hasher: null");
-        }
-
+    public final DataHasher addData(DataHash dataHash) {
+        Util.notNull(dataHash, "DataHash");
         return addData(dataHash.getValue());
     }
 
     /**
      * Adds data to the digest using the specified input stream of bytes, starting at an offset of 0.
      *
-     * @param inStream
-     *         input stream of bytes.
-     * @param bufferSize
-     *         maximum allowed buffer size for reading data
+     * @param inStream   input stream of bytes.
+     * @param bufferSize maximum allowed buffer size for reading data
      * @return the same DataHasher object for chaining calls
-     * @throws HashException
-     *         when hash calculation fails.
+     * @throws HashException when hash calculation fails.
      */
-    public final DataHasher addData(InputStream inStream, int bufferSize) throws HashException {
-        if (inStream == null) {
-            throw new HashException("Invalid input stream added to hasher: null");
-        }
+    public final DataHasher addData(InputStream inStream, int bufferSize) {
+        Util.notNull(inStream, "Input stream");
         try {
             byte[] buffer = new byte[bufferSize];
             while (true) {
@@ -217,25 +196,19 @@ public class DataHasher {
     /**
      * Adds data to the digest using the specified file, starting at the offset 0.
      *
-     * @param file
-     *         input file.
-     * @param bufferSize
-     *         size of buffer for reading data
+     * @param file       input file.
+     * @param bufferSize size of buffer for reading data
      * @return the same DataHasher object for chaining calls
-     * @throws HashException
-     *         when hash calculation fails.
+     * @throws HashException when hash calculation fails.
      */
-    public final DataHasher addData(File file, int bufferSize) throws KSIException {
-        if (file == null) {
-            throw new HashException("Invalid file added to hasher: null");
-        }
-
+    public final DataHasher addData(File file, int bufferSize) {
+        Util.notNull(file, "File");
         FileInputStream inStream = null;
         try {
             inStream = new FileInputStream(file);
             return addData(inStream, bufferSize);
         } catch (FileNotFoundException e) {
-            throw new KSIException("File not found", e);
+            throw new HashException("File not found, when calculating data hash", e);
         } finally {
             Util.closeQuietly(inStream);
         }
@@ -243,15 +216,12 @@ public class DataHasher {
 
 
     /**
-     * Get the final hash value for the digest.
-     * <p/>
-     * This will not reset hash calculation.
+     * Get the final hash value for the digest. <p/> This will not reset hash calculation.
      *
      * @return hashValue with computed hash value.
-     * @throws HashException
-     *         when exception occurs turning hash calculation.
+     * @throws HashException when exception occurs turning hash calculation.
      */
-    public final DataHash getHash() throws HashException {
+    public final DataHash getHash() {
         if (outputHash == null) {
             byte[] hash = messageDigest.digest();
             outputHash = new DataHash(algorithm, hash);
@@ -272,6 +242,5 @@ public class DataHasher {
         messageDigest.reset();
         return this;
     }
-
 
 }

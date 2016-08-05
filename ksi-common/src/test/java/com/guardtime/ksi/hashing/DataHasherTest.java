@@ -141,7 +141,7 @@ public class DataHasherTest {
         Assert.assertEquals(hash, hasher.getHash());
     }
 
-    @Test(expectedExceptions = HashException.class, expectedExceptionsMessageRegExp = "Output hash has already been calculated")
+    @Test(expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "Output hash has already been calculated")
     public void testAddDataAfterGettingResult() throws Exception {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData(testData);
@@ -149,25 +149,25 @@ public class DataHasherTest {
         hasher.addData(testData);
     }
 
-    @Test(expectedExceptions = HashException.class, expectedExceptionsMessageRegExp = "Invalid file added to hasher: null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "File can not be null")
     public void testAddDataInvalidFileException() throws Exception {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData((File) null);
     }
 
-    @Test(expectedExceptions = HashException.class, expectedExceptionsMessageRegExp = "Invalid input stream added to hasher: null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Input stream can not be null")
     public void testAddDataInvalidInputStreamException() throws Exception {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData((InputStream) null);
     }
 
-    @Test(expectedExceptions = HashException.class, expectedExceptionsMessageRegExp = "Invalid data added to hasher: null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Date can not be null")
     public void testAddInvalidData_ThrowsIllegalArgumentException() throws Exception {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData((byte[]) null);
     }
 
-    @Test(expectedExceptions = HashException.class, expectedExceptionsMessageRegExp = "Invalid algorithm added to hasher: null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Hash algorithm can not be null")
     public void testAlgorithmIsNullException() throws Exception {
         new DataHasher(null);
     }

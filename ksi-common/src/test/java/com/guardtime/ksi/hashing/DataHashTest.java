@@ -23,17 +23,17 @@ import org.testng.annotations.Test;
 
 public class DataHashTest {
 
-    @Test(expectedExceptions = InvalidHashFormatException.class, expectedExceptionsMessageRegExp="Algorithm missing")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp="Hash algorithm can not be null")
     public void testAlgorithmMissing() throws Exception {
         new DataHash(null, new byte[] {1});
     }
 
-    @Test(expectedExceptions = InvalidHashFormatException.class, expectedExceptionsMessageRegExp="Hash value missing")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp="Hash value can not be null")
     public void testHashValueMissing() throws Exception {
         new DataHash(HashAlgorithm.SHA2_256, null);
     }
 
-    @Test(expectedExceptions = HashException.class, expectedExceptionsMessageRegExp = "Hash size\\(1\\) does not match SHA-256 size\\(32\\)")
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash size\\(1\\) does not match SHA-256 size\\(32\\)")
     public void testWrongLengthValue() throws Exception {
         new DataHash(HashAlgorithm.SHA2_256, new byte[] {1});
     }

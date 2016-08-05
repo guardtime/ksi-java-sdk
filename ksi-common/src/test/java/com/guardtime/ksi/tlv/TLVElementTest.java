@@ -239,7 +239,7 @@ public class TLVElementTest {
         element.getDecodedDataHash();
     }
 
-    @Test(expectedExceptions = HashException.class, expectedExceptionsMessageRegExp = "Hash size\\(31\\) does not match SHA-256 size\\(32\\)")
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash size\\(31\\) does not match SHA-256 size\\(32\\)")
     public void testCreateTlvElementWithWrongImprintLength_ThrowsFormatException() throws Exception {
         TLVElement element = new TLVElement(false, false, 2);
         element.setDataHashContent(new DataHash(HashAlgorithm.SHA2_256, new byte[31]));

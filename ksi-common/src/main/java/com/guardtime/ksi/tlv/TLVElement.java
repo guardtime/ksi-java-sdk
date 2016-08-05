@@ -209,7 +209,7 @@ public final class TLVElement {
     public final DataHash getDecodedDataHash() throws TLVParserException {
         try {
             return new DataHash(getContent());
-        } catch (HashException e) {
+        } catch (IllegalArgumentException e) {
             throw new TLVParserException("Invalid DataHash", e);
         }
     }
@@ -233,7 +233,7 @@ public final class TLVElement {
     public HashAlgorithm getDecodedHashAlgorithm() throws TLVParserException {
         try {
             return HashAlgorithm.getById(getDecodedLong().intValue());
-        } catch (UnknownHashAlgorithmException e) {
+        } catch (IllegalArgumentException e) {
             throw new TLVParserException("Unknown hash algorithm", e);
         }
     }

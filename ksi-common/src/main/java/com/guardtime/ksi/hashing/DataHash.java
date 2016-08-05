@@ -18,7 +18,6 @@
  */
 package com.guardtime.ksi.hashing;
 
-
 import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
 
@@ -41,20 +40,15 @@ public class DataHash {
      *         HashAlgorithm used to compute this hash.
      * @param value
      *         hash value computed for the input data.
-     * @throws InvalidHashFormatException
+     * @throws NullPointerException when one of input parameters is null
+     * @throws IllegalArgumentException
      *         when hash size does not match algorithm size,
      */
-    public DataHash(HashAlgorithm algorithm, byte[] value) throws InvalidHashFormatException {
-        if (algorithm == null) {
-            throw new InvalidHashFormatException("Algorithm missing");
-        }
-
-        if (value == null) {
-            throw new InvalidHashFormatException("Hash value missing");
-        }
-
+    public DataHash(HashAlgorithm algorithm, byte[] value) {
+        Util.notNull(algorithm, "Hash algorithm");
+        Util.notNull(value, "Hash value");
         if (value.length != algorithm.getLength()) {
-            throw new InvalidHashFormatException(
+            throw new IllegalArgumentException(
                     "Hash size(" + value.length + ") does not match "
                             + algorithm.getName() + " size(" + algorithm.getLength() + ")"
             );
@@ -69,22 +63,20 @@ public class DataHash {
      *
      * @param hashImprint
      *         Hash imprint
-     * @throws InvalidHashFormatException
+     * @throws NullPointerException when input parameter is null
+     * @throws IllegalArgumentException
      *         when hash imprint is not in correct format
      */
-    public DataHash(byte[] hashImprint) throws HashException {
-        if (hashImprint == null) {
-            throw new InvalidHashFormatException("Hash imprint null");
-        }
-
+    public DataHash(byte[] hashImprint) {
+        Util.notNull(hashImprint, "Hash imprint");
         if (hashImprint.length < 1) {
-            throw new InvalidHashFormatException("Hash imprint too short");
+            throw new IllegalArgumentException("Hash imprint too short");
         }
 
         this.algorithm = HashAlgorithm.getById(hashImprint[0]);
 
         if (this.algorithm.getLength() + 1 != hashImprint.length) {
-            throw new InvalidHashFormatException(
+            throw new IllegalArgumentException(
                     "Hash size(" + (hashImprint.length - 1) + ") does not match "
                             + algorithm.getName() + " size(" + algorithm.getLength() + ")"
             );

@@ -1,3 +1,8 @@
+Version 4.4
+
+* IMPROVEMENT: Replaced checked exceptions with runtime exception in DataHasher/DataHash/HashAlgorithm classes. 
+* IMPROVEMENT: Method HashAlgorithm.getNamesList() was removed. Added a method with name HashAlgorithm.getImplementedHashAlgorithms()
+
 Version 4.3
 
 2016-06-17 4.3.54

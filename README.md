@@ -55,7 +55,10 @@ The API full reference is available here [http://guardtime.github.io/ksi-java-sd
 
 ## Dependencies ##
 
-See Maven pom.xml files.
+See Maven pom.xml files or use the following Maven command
+```
+mvn dependency:tree
+```
 
 ## Compatibility ##
 

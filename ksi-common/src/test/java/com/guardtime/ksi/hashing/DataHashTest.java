@@ -18,10 +18,15 @@
  */
 package com.guardtime.ksi.hashing;
 
+import com.guardtime.ksi.util.Util;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class DataHashTest {
+
+    private static final byte[] VALID_SHA256_CONTENT = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32};
+    private static final byte[] VALID_SHA256_IMPRINT = Util.join(new byte[] {1}, VALID_SHA256_CONTENT);
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp="Hash algorithm can not be null")
     public void testAlgorithmMissing() throws Exception {
@@ -40,14 +45,34 @@ public class DataHashTest {
 
     @Test
     public void testHashValue() throws Exception {
-        DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32});
+        DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, VALID_SHA256_CONTENT);
         Assert.assertEquals(dataHash.getAlgorithm(), HashAlgorithm.SHA2_256);
-        Assert.assertEquals(dataHash.getImprint(), new byte[]{1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32});
-        Assert.assertEquals(dataHash.getValue(), new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32});
+        Assert.assertEquals(dataHash.getImprint(), VALID_SHA256_IMPRINT);
+        Assert.assertEquals(dataHash.getValue(), VALID_SHA256_CONTENT);
 
-        DataHash newDataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32});
+        DataHash newDataHash = new DataHash(HashAlgorithm.SHA2_256, VALID_SHA256_CONTENT);
         Assert.assertFalse(dataHash.equals(1));
         Assert.assertTrue(dataHash.equals(newDataHash));
         Assert.assertEquals(dataHash.hashCode(), newDataHash.hashCode());
+    }
+
+    @Test
+    public void testIsDataHash() throws Exception {
+        Assert.assertTrue(DataHash.isDataHash(VALID_SHA256_IMPRINT));
+    }
+
+    @Test
+    public void testDataHashWithInvalidLength() throws Exception {
+        Assert.assertFalse(DataHash.isDataHash(new byte[]{1,2}));
+    }
+
+    @Test
+    public void testDataHashWithInvalidAlgorithmId() throws Exception {
+        Assert.assertFalse(DataHash.isDataHash(new byte[]{-1,0,0}));
+    }
+
+    @Test
+    public void testDataHashWithEmptyArray() throws Exception {
+        Assert.assertFalse(DataHash.isDataHash(new byte[]{}));
     }
 }

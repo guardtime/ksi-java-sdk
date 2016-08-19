@@ -233,7 +233,7 @@ public class TLVElementTest {
         Assert.assertEquals(out.toByteArray(), new byte[]{0x2, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
     }
 
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid DataHash")
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid DataHash content")
     public void testDecodeTlvElementContainingUnknownHashAlgorithm_ThrowsTLVParserException() throws Exception {
         TLVElement element = load(new ByteArrayInputStream(new byte[]{0x2, 21, 112, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}));
         element.getDecodedDataHash();
@@ -279,7 +279,7 @@ public class TLVElementTest {
         Assert.assertEquals(element.getDecodedHashAlgorithm(), HashAlgorithm.SHA3_512);
     }
 
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown hash algorithm")
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown hash algorithm with id 255")
     public void testGetDecodedHashAlgorithm_UnknownHashAlgorithm() throws Exception {
         TLVElement element = TLVElement.create(new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
         element.setLongContent(0xFF);

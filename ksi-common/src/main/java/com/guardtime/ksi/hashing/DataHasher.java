@@ -67,7 +67,9 @@ public class DataHasher {
      * Create new data hasher for specified algorithm.
      *
      * @param algorithm HashAlgorithm describing the algorithm to be used in hashing.
-     * @throws HashException when hash algorithm is unknown or input algorithm is null
+     * @throws HashAlgorithmNotImplementedException when input algorithm isn't implemented
+     * @throws HashException                        when hash algorithm is unknown
+     * @throws NullPointerException                 when input algorithm is null
      */
     public DataHasher(HashAlgorithm algorithm) {
         Util.notNull(algorithm, "Hash algorithm");
@@ -98,6 +100,9 @@ public class DataHasher {
 
     /**
      * Create new data hasher for the default algorithm(SHA-256).
+     *
+     * @throws HashAlgorithmNotImplementedException when input algorithm isn't implemented
+     * @throws HashException                        when hash algorithm is unknown
      */
     public DataHasher() {
         this(HashAlgorithm.getByName("DEFAULT"));
@@ -116,7 +121,6 @@ public class DataHasher {
         if (outputHash != null) {
             throw new IllegalStateException("Output hash has already been calculated");
         }
-
         messageDigest.update(data, offset, length);
         return this;
     }
@@ -175,6 +179,7 @@ public class DataHasher {
      * @param bufferSize maximum allowed buffer size for reading data
      * @return the same DataHasher object for chaining calls
      * @throws HashException when hash calculation fails.
+     * @throws NullPointerException when input stream is null
      */
     public final DataHasher addData(InputStream inStream, int bufferSize) {
         Util.notNull(inStream, "Input stream");
@@ -200,6 +205,7 @@ public class DataHasher {
      * @param bufferSize size of buffer for reading data
      * @return the same DataHasher object for chaining calls
      * @throws HashException when hash calculation fails.
+     * @throws NullPointerException when input file is null.
      */
     public final DataHasher addData(File file, int bufferSize) {
         Util.notNull(file, "File");
@@ -208,7 +214,7 @@ public class DataHasher {
             inStream = new FileInputStream(file);
             return addData(inStream, bufferSize);
         } catch (FileNotFoundException e) {
-            throw new HashException("File not found, when calculating data hash", e);
+            throw new IllegalArgumentException("File not found, when calculating data hash", e);
         } finally {
             Util.closeQuietly(inStream);
         }
@@ -225,9 +231,7 @@ public class DataHasher {
         if (outputHash == null) {
             byte[] hash = messageDigest.digest();
             outputHash = new DataHash(algorithm, hash);
-
         }
-
         return outputHash;
     }
 

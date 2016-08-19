@@ -87,6 +87,25 @@ public class DataHash {
     }
 
     /**
+     * Returns true if the input byte array can be converted to the {@link DataHash} object
+     * @throws NullPointerException when input is null
+     */
+    public static boolean isDataHash(byte[] imprint) {
+        Util.notNull(imprint, "Hash imprint");
+        if (imprint.length < 1) {
+            return false;
+        }
+        if (!HashAlgorithm.isHashAlgorithmId(imprint[0])) {
+            return false;
+        }
+        HashAlgorithm algorithm = HashAlgorithm.getById(imprint[0]);
+        if (algorithm.getLength() + 1 != imprint.length) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Get the HashAlgorithm used to compute this DataHash.
      *
      * @return HashAlgorithm used

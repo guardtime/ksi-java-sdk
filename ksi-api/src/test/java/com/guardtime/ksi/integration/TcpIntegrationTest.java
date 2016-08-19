@@ -95,7 +95,7 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         ksi.sign(getFileHash(INPUT_FILE, HashAlgorithm.RIPEMD_160));
     }
 
-    @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidHashFormatException.class)
+    @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash size.* does not match .* size.*")
     public void testTcpWithShortHash(HashAlgorithm hashAlgorithm) throws Exception {
         int hashLength = hashAlgorithm.getLength();
         ksi.sign(new DataHash(hashAlgorithm, new byte[hashLength - 1]));

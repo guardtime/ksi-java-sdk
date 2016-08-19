@@ -28,8 +28,6 @@ import java.util.List;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.hashing.HashException;
-import com.guardtime.ksi.hashing.UnknownHashAlgorithmException;
 import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
 
@@ -207,11 +205,11 @@ public final class TLVElement {
      *         - content can not be decoded to data hash
      */
     public final DataHash getDecodedDataHash() throws TLVParserException {
-        try {
-            return new DataHash(getContent());
-        } catch (IllegalArgumentException e) {
-            throw new TLVParserException("Invalid DataHash", e);
+        byte[] content = getContent();
+        if (DataHash.isDataHash(content)) {
+            return new DataHash(content);
         }
+        throw new TLVParserException("Invalid DataHash content");
     }
 
     /**
@@ -231,11 +229,11 @@ public final class TLVElement {
      * @return instance of {@link HashAlgorithm}
      */
     public HashAlgorithm getDecodedHashAlgorithm() throws TLVParserException {
-        try {
-            return HashAlgorithm.getById(getDecodedLong().intValue());
-        } catch (IllegalArgumentException e) {
-            throw new TLVParserException("Unknown hash algorithm", e);
+        int algorithmId = getDecodedLong().intValue();
+        if (HashAlgorithm.isHashAlgorithmId(algorithmId)) {
+            return HashAlgorithm.getById(algorithmId);
         }
+        throw new TLVParserException("Unknown hash algorithm with id " + algorithmId);
     }
 
     /**

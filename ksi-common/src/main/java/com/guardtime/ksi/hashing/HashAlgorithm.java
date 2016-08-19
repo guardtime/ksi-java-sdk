@@ -72,7 +72,7 @@ public enum HashAlgorithm {
     private final String[] alternatives;
 
     /**
-     * Constructor which initiates HashAlorithm.
+     * Constructor which initiates HashAlgorithm.
      *
      * @param name   algorithm name
      * @param id     algorithm id
@@ -84,7 +84,7 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Constructor which initiates HashAlorithm with alternative names.
+     * Constructor which initiates HashAlgorithm with alternative names.
      *
      * @param name         algorithm name
      * @param id           algorithm id
@@ -114,6 +114,19 @@ public enum HashAlgorithm {
             }
         }
         throw new IllegalArgumentException("Hash algorithm id '" + id + "' is unknown");
+    }
+
+    /**
+     * Returns true if the input id is one of the hash algorithm id.
+     * @param id one-byte hash function identifier
+     */
+    public static boolean isHashAlgorithmId(int id) {
+        for (HashAlgorithm algorithm : values()) {
+            if (algorithm.id == id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

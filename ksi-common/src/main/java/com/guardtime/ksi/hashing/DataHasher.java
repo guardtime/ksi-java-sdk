@@ -67,9 +67,8 @@ public class DataHasher {
      * Create new data hasher for specified algorithm.
      *
      * @param algorithm HashAlgorithm describing the algorithm to be used in hashing.
-     * @throws HashAlgorithmNotImplementedException when input algorithm isn't implemented
-     * @throws HashException                        when hash algorithm is unknown
-     * @throws NullPointerException                 when input algorithm is null
+     * @throws IllegalArgumentException when hash algorithm is unknown or the algorithm isn't implemented
+     * @throws NullPointerException     when input algorithm is null
      */
     public DataHasher(HashAlgorithm algorithm) {
         Util.notNull(algorithm, "Hash algorithm");
@@ -79,7 +78,7 @@ public class DataHasher {
             The developer must ensure that only implemented algorithms are used.
          */
         if (HashAlgorithm.Status.NOT_IMPLEMENTED.equals(algorithm.getStatus())) {
-            throw new HashAlgorithmNotImplementedException("Hash algorithm " + algorithm.name() + " is not implemented");
+            throw new IllegalArgumentException("Hash algorithm " + algorithm.name() + " is not implemented");
         }
 
         this.algorithm = algorithm;
@@ -92,17 +91,16 @@ public class DataHasher {
         try {
             messageDigest = MessageDigest.getInstance(algorithm.getName(), provider);
         } catch (NoSuchAlgorithmException e) {
-            throw new HashException("Hash algorithm not supported: " + algorithm.getName());
+            throw new IllegalArgumentException("Hash algorithm not supported: " + algorithm.getName());
         } catch (NoSuchProviderException e) {
-            throw new HashException("Cryptographic provider not found: " + provider, e);
+            throw new IllegalArgumentException("Cryptographic provider not found: " + provider, e);
         }
     }
 
     /**
      * Create new data hasher for the default algorithm(SHA-256).
      *
-     * @throws HashAlgorithmNotImplementedException when input algorithm isn't implemented
-     * @throws HashException                        when hash algorithm is unknown
+     * @throws IllegalArgumentException when hash algorithm is unknown or the algorithm isn't implemented
      */
     public DataHasher() {
         this(HashAlgorithm.getByName("DEFAULT"));
@@ -178,7 +176,7 @@ public class DataHasher {
      * @param inStream   input stream of bytes.
      * @param bufferSize maximum allowed buffer size for reading data
      * @return the same DataHasher object for chaining calls
-     * @throws HashException when hash calculation fails.
+     * @throws HashException        when hash calculation fails.
      * @throws NullPointerException when input stream is null
      */
     public final DataHasher addData(InputStream inStream, int bufferSize) {
@@ -204,7 +202,7 @@ public class DataHasher {
      * @param file       input file.
      * @param bufferSize size of buffer for reading data
      * @return the same DataHasher object for chaining calls
-     * @throws HashException when hash calculation fails.
+     * @throws HashException        when hash calculation fails.
      * @throws NullPointerException when input file is null.
      */
     public final DataHasher addData(File file, int bufferSize) {

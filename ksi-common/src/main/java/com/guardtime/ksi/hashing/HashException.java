@@ -22,9 +22,6 @@ package com.guardtime.ksi.hashing;
 /**
  * This exception is common exception for exception thrown by {@link DataHasher}, {@link DataHash} or {@link
  * HashAlgorithm} classes.
- *
- * @see HashAlgorithmNotImplementedException
- * @see InvalidHashFormatException
  */
 public class HashException extends RuntimeException {
 

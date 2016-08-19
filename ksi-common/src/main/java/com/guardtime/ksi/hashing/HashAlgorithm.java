@@ -135,11 +135,11 @@ public enum HashAlgorithm {
      * @param name name of the algorithm to look for
      * @return HashAlgorithm when match is found, otherwise null
      */
-    public static HashAlgorithm getByName(String name) throws UnknownHashAlgorithmException {
+    public static HashAlgorithm getByName(String name) {
         String normalizedName = nameNormalize(name);
         HashAlgorithm algorithm = lookup.get(normalizedName);
         if (algorithm == null) {
-            throw new UnknownHashAlgorithmException(normalizedName);
+            throw new IllegalArgumentException("Hash algorithm id '" + normalizedName + "' is unknown");
         }
         return algorithm;
     }
@@ -207,6 +207,12 @@ public enum HashAlgorithm {
         return status;
     }
 
+    /**
+     * Returns true if hash algorithm is implemented.
+     */
+    public boolean isImplemented() {
+        return !Status.NOT_IMPLEMENTED.equals(this.status);
+    }
 
     /**
      * Support status of a hash algorithm.

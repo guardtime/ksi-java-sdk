@@ -42,7 +42,7 @@ public class DataHasherTest {
         testData = new String("LongString1ReallyLongString2EvenLongerString3").getBytes("UTF-8");
     }
 
-    @Test(dataProvider = "notImplementedAlgorithms", expectedExceptions = HashAlgorithmNotImplementedException.class)
+    @Test(dataProvider = "notImplementedAlgorithms", expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm .* is not implemented")
     public void testNotImplementedAlgorithms_throwsHashAlgorithmNotImplementedException(HashAlgorithm algorithm) throws Exception {
         new DataHasher(algorithm);
     }
@@ -172,7 +172,7 @@ public class DataHasherTest {
         new DataHasher(null);
     }
 
-    @Test(expectedExceptions = HashAlgorithmNotImplementedException.class, expectedExceptionsMessageRegExp = "Hash algorithm SHA3_256 is not implemented")
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm SHA3_256 is not implemented")
     public void testSha3AlgorithmIsNotImplemented_ThrowsHashAlgorithmNotImplementedException() throws Exception {
         new DataHasher(HashAlgorithm.SHA3_256);
     }

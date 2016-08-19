@@ -22,8 +22,6 @@ import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.hashing.InvalidHashFormatException;
-import com.guardtime.ksi.hashing.UnknownHashAlgorithmException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
@@ -113,7 +111,7 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @DataProvider(name = VALID_HASH_ALGORITHMS_DATA_PROVIDER)
-    private static Object[][] hashAlgorithmProvider() throws UnknownHashAlgorithmException {
+    private static Object[][] hashAlgorithmProvider() {
         List<HashAlgorithm> hashAlgorithms = new ArrayList<HashAlgorithm>();
         HashAlgorithm[] allAlgorithms = HashAlgorithm.values();
         for (HashAlgorithm algorithm : allAlgorithms) {

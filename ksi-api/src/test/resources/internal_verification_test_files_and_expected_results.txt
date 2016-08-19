@@ -30,7 +30,7 @@ internal-verification-aggr-chain/NewSignature-AggrHashGW-MissingReqTime.ksig;tru
 internal-verification-aggr-chain/NewSignature-AggrHashGW-NoInputHash.ksig;false;false;;TLVParserException;
 internal-verification-aggr-chain/NewSignature-AggrHashGW-NoLeftLinkClientId.ksig;false;false;;TLVParserException;
 internal-verification-aggr-chain/NewSignature-AggrHashGW-NoReqTime.ksig;true;false;INT_01;;
-internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongAggrAlgo2.ksig;false;false;;HashAlgorithmNotImplementedException;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongAggrAlgo2.ksig;false;false;;InvalidAggregationHashChainException;
 internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongAggrTime.ksig;true;false;INT_02;;
 internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongChainID2.ksig;false;false;;InvalidSignatureException;
 internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongInputHash.ksig;true;false;INT_01;;

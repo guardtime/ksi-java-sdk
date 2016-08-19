@@ -41,8 +41,8 @@ public class CalendarHashChainTest {
         Assert.assertEquals(calendarHashChain.getAggregationTime().getTime(), 1398153270000L);
     }
 
-    @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Invalid calendar hash chain. Hash algorithm SHA3_256 is not implemented")
-    public void testDecodeCalendarHashChainContainingInvalidHashAlgorithm_ThrowsHashAlgorithmNotImplementedException() throws Exception {
+    @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Invalid calendar hash chain. Hash algorithm SHA3-256 is not implemented")
+    public void testDecodeCalendarHashChainContainingInvalidHashAlgorithm_ThrowsInvalidAggregationHashChainException() throws Exception {
         load(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM);
     }
 

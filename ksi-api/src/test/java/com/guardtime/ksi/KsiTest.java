@@ -146,9 +146,6 @@ public class KsiTest {
         ksi.sign((File) null);
     }
 
-
-    // sign
-
     @Test
     public void testCreateSignature_Ok() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-response.tlv"));
@@ -158,47 +155,7 @@ public class KsiTest {
         Assert.assertNotNull(response);
     }
 
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
-    public void testResponseContainsInvalidMac_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-response-invalid-mac.tlv"));
-        Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        ksi.sign(defaultDataHash);
-    }
-
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*request IDs do not match, sent .* received .*")
-    public void testResponseContainsInvalidRequestId_ThrowsKSIProtocolException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-response.tlv"));
-        Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(42275443333883167L);
-        ksi.sign(defaultDataHash);
-    }
-
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Response message does not contain response payload element")
-    public void testResponseDoesNotContainResponseTlvTag_ThrowsKSIProtocolException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-response-missing-response-tag.tlv"));
-        Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        ksi.sign(defaultDataHash);
-    }
-
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(5\\):Response error 5: Invalid request format")
-    public void testResponseContains203ErrorMessage_ThrowsKSIProtocolException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-203-error.tlv"));
-        Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        ksi.sign(defaultDataHash);
-    }
-
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(769\\):Server error")
-    public void testResponseContainsErrorMessageInside202TLVMessage_ThrowsKSIProtocolException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-202-error.tlv"));
-        Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        ksi.sign(defaultDataHash);
-    }
-
+    //TODO rename
     @Test
     public void testNormalOperations_Ok() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension-response-sig-2014-04-30.1.ksig"));
@@ -208,66 +165,6 @@ public class KsiTest {
         KSISignature result = ksi.extend(loadSignature("ok-sig-2014-04-30.1.ksig"));
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isExtended());
-    }
-
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Can't parse response message")
-    public void testResponseFormatException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-response-invalid.tlv"));
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(5546551786909961666L);
-
-        ksi.extend(loadSignature("ok-sig-2014-04-30.1.ksig"));
-    }
-
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
-    public void testResponseInvalidHMAC_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-response-invalid-hmac.tlv"));
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(5546551786909961666L);
-
-        ksi.extend(loadSignature("ok-sig-2014-04-30.1.ksig"));
-    }
-
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*request IDs do not match, sent \\'[0-9]+\\' received \\'4321\\'")
-    public void testRequestIdsMismatch() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-response-ok-request-id-4321.tlv"));
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(5546551786909961666L);
-
-        ksi.extend(loadSignature("ok-sig-2014-04-30.1.ksig"));
-    }
-
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Response message does not contain response payload element")
-    public void testRequestResponseEmpty() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-response-missing-response-payload.tlv"));
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(5546551786909961666L);
-
-        ksi.extend(loadSignature("ok-sig-2014-04-30.1.ksig"));
-    }
-
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(404\\):Not found")
-    public void testRequest404ErrorWithResponse() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-response-with-error-payload.tlv"));
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(4321L);
-
-        ksi.extend(loadSignature("ok-sig-2014-04-30.1.ksig"));
-    }
-
-    // TODO move to Legacy tests?
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(404\\):Response error 404: Not found")
-    public void testResponseWithError() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension/extension-error-response-with-header.tlv"));
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(5546551786909961666L);
-
-        ksi.extend(loadSignature("ok-sig-2014-04-30.1.ksig"));
     }
 
     @Test

@@ -21,7 +21,7 @@ public class LegacyKsiPduFactory implements PduFactory {
 
     public AggregationRequest createAggregationRequest(KSIRequestContext context, DataHash imprint, Long level) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
-        Util.notNull(context, "DataHash");
+        Util.notNull(imprint, "DataHash");
         PduMessageHeader header = new PduMessageHeader(context.getLoginId(), context.getInstanceId(), context.getMessageId());
         LegacyAggregationRequestPayload request = new LegacyAggregationRequestPayload(imprint, context.getRequestId(), level);
         return new LegacyAggregationRequest(header, request, context);
@@ -29,13 +29,13 @@ public class LegacyKsiPduFactory implements PduFactory {
 
     public AggregationResponse readAggregationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
-        Util.notNull(context, "Input TLV");
+        Util.notNull(input, "Input TLV");
         return new LegacyAggregationResponse(input, context).getResponsePayload();
     }
 
     public ExtensionRequest createExtensionRequest(KSIRequestContext context, Date aggregationTime, Date publicationTime) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
-        Util.notNull(context, "AggregationTime");
+        Util.notNull(aggregationTime, "AggregationTime");
         PduMessageHeader header = new PduMessageHeader(context.getLoginId(), context.getInstanceId(), context.getMessageId());
         LegacyExtensionRequestPayload extensionRequest = new LegacyExtensionRequestPayload(aggregationTime, publicationTime, context.getRequestId());
         return new LegacyExtensionRequest(header, extensionRequest, context.getLoginKey());
@@ -43,7 +43,7 @@ public class LegacyKsiPduFactory implements PduFactory {
 
     public ExtensionResponse readExtensionResponse(KSIRequestContext context, TLVElement input) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
-        Util.notNull(context, "Input TLV");
+        Util.notNull(input, "Input TLV");
         return new LegacyExtensionResponse(input, context).getResponsePayload();
     }
 

@@ -1,5 +1,9 @@
 Version 4.3
 
+2016-09-12 4.3.55
+
+* BUGFIX: Fixed a TCP client open file descriptors leak
+
 2016-06-17 4.3.54
 
 * IMPROVEMENT: Added stronger check for aggregation hash chain index consistency

@@ -25,6 +25,7 @@ import com.guardtime.ksi.tlv.TLVElement;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,30 +41,31 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class TCPClient implements KSISigningClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TCPClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(TCPClient.class);
 
     private IoSession tcpSession;
     private ExecutorService executorService;
     private TCPClientSettings tcpClientSettings;
+    private NioSocketConnector connector;
 
     public TCPClient(TCPClientSettings tcpClientSettings) {
         this.tcpClientSettings = tcpClientSettings;
+        this.connector = createConnector();
         executorService = Executors.newCachedThreadPool();
-        ((ThreadPoolExecutor)executorService).setMaximumPoolSize(tcpClientSettings.getTcpTransactionThreadPoolSize());
+        ((ThreadPoolExecutor) executorService).setMaximumPoolSize(tcpClientSettings.getTcpTransactionThreadPoolSize());
     }
-
 
     public Future<TLVElement> sign(InputStream request) throws KSITCPTransactionException {
         synchronized (this) {
             if (tcpSession == null || tcpSession.isClosing()) {
-                this.tcpSession = createTCPSession();
+                this.tcpSession = createTcpSession();
             }
         }
 
         try {
             return new KSITCPRequestFuture(executorService.submit(new TCPTransactionHolder(request, tcpSession,
                     tcpClientSettings.getTcpTransactionTimeoutSec())));
-        }  catch (Throwable e) {
+        } catch (Throwable e) {
             throw new KSITCPTransactionException("There was a problem with initiating a TCP signing transaction with endpoint " +
                     tcpClientSettings.getEndpoint() + ".", e);
         }
@@ -73,27 +75,33 @@ public class TCPClient implements KSISigningClient {
         if (tcpSession != null) {
             tcpSession.closeOnFlush();
         }
+        if (connector != null) {
+            connector.dispose();
+        }
     }
 
     public ServiceCredentials getServiceCredentials() {
         return tcpClientSettings.getServiceCredentials();
     }
 
-    private IoSession createTCPSession() throws KSITCPTransactionException {
+    private IoSession createTcpSession() throws KSITCPTransactionException {
         InetSocketAddress endpoint = tcpClientSettings.getEndpoint();
-        LOGGER.debug("Creating a new TCP session with host '" + endpoint.getHostName() + "'...");
-        NioSocketConnector connector = new NioSocketConnector();
-        connector.setConnectTimeoutMillis(tcpClientSettings.getTcpTransactionTimeoutSec() * 1000);
-        connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TransactionCodecFactory()));
-        connector.setHandler(new TCPSessionHandler());
+        logger.debug("Creating a new TCP session with host '{}'...", endpoint.getHostName());
         ConnectFuture connectFuture = connector.connect(endpoint);
-
         try {
             return connectFuture.await().getSession();
         } catch (Exception e) {
             connectFuture.cancel();
             throw new KSITCPTransactionException("Failed to initiate the TCP session with signer. Signer endpoint: " + endpoint, e);
         }
+    }
+
+    private NioSocketConnector createConnector() {
+        NioSocketConnector connector = new NioSocketConnector();
+        connector.setConnectTimeoutMillis(tcpClientSettings.getTcpTransactionTimeoutSec() * 1000);
+        connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TransactionCodecFactory()));
+        connector.setHandler(new TCPSessionHandler());
+        return connector;
     }
 
 }

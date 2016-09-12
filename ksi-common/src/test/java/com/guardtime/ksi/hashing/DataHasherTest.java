@@ -68,7 +68,7 @@ public class DataHasherTest {
     @Test
     public void testSha1AlgorithmStateTag() throws Exception {
         HashAlgorithm alg = HashAlgorithm.getByName("SHA1");
-        Assert.assertEquals(alg.getStatus(), HashAlgorithm.Status.NOT_TRUSTED);
+        Assert.assertEquals(alg.getStatus(), Status.NORMAL);
     }
 
     @Test

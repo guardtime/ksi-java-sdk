@@ -1,5 +1,6 @@
 Version 4.4
 
+* IMPROVEMENT: Improved user provided publication based verification policy
 * BUGFIX: Fixed a typo in CAL-04 verification error text
 
 Version 4.3

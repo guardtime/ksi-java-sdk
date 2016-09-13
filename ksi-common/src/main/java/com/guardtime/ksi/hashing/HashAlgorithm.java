@@ -26,7 +26,7 @@ import java.util.Map;
  * List of supported hash functions and also some convenience functions.
  */
 public enum HashAlgorithm {
-    SHA1("SHA1", 0x00, 20, Status.NOT_TRUSTED),
+    SHA1("SHA1", 0x00, 20, Status.NORMAL),
     SHA2_256("SHA-256", 0x01, 32, Status.NORMAL, new String[]{"SHA2-256", "SHA2", "DEFAULT"}),
     RIPEMD_160("RIPEMD160", 0x02, 20, Status.NORMAL),
     SHA2_384("SHA-384", 0x04, 48, Status.NORMAL, new String[]{"SHA2-384"}),

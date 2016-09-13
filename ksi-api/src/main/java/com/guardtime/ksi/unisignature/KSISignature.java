@@ -103,6 +103,7 @@ public interface KSISignature {
      * @throws KSIException
      *         when extending fails
      */
+    @Deprecated
     KSISignature extend(CalendarHashChain calendarHashChain, PublicationRecord publicationRecord) throws KSIException;
 
     /**

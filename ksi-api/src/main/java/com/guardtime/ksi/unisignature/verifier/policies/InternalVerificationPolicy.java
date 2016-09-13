@@ -29,7 +29,9 @@ import java.util.List;
  * assumes, the signature being verified is syntactically correct - it parses correctly and contains all the mandatory
  * elements. Parsing of the signature must be completed before the verification process.
  */
-public abstract class InternalVerificationPolicy implements Policy {
+public class InternalVerificationPolicy implements Policy {
+
+    private static final String TYPE_INTERNAL_VERIFICATION_POLICY = "INTERNAL_VERIFICATION_POLICY";
 
     private final List<Rule> rules = new LinkedList<Rule>();
     private Policy fallbackPolicy;
@@ -77,6 +79,14 @@ public abstract class InternalVerificationPolicy implements Policy {
      */
     public List<Rule> getRules() {
         return rules;
+    }
+
+    public String getName() {
+        return "Internal verification policy";
+    }
+
+    public String getType() {
+        return TYPE_INTERNAL_VERIFICATION_POLICY;
     }
 
     public void setFallbackPolicy(Policy policy) {

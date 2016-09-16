@@ -198,14 +198,14 @@ public abstract class AbstractCommonIntegrationTest {
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
         Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(serviceCredentials);
-        final TLVElement responseTLV = TLVElement.createFromBytes(TestUtil.loadBytes("extension/extension-response-ok-request-id-4321.tlv"));
+        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes("extension/extension-response-ok-request-id-4321.tlv"));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
-        final TLVElement calendarChain = TLVElement.createFromBytes(TestUtil.loadBytes(responseCalendarChainFile));
+        final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
 
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
                 InputStream input = (InputStream) invocationOnMock.getArguments()[0];
-                TLVElement tlvElement = TLVElement.createFromBytes(Util.toByteArray(input));
+                TLVElement tlvElement = TLVElement.create(Util.toByteArray(input));
                 TLVElement payload = responseTLV.getFirstChildElement(0x302);
                 payload.getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x301).getFirstChildElement(0x01).getDecodedLong());
 

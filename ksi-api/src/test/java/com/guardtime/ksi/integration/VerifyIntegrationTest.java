@@ -36,6 +36,8 @@ import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
+    private static final String PUIBLICATION_STRING_2014_05_15 = "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
+
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingKeyBasedPolicy_Ok() throws Exception {
         KSISignature sig = loadSignature("ok-sig-2014-06-2.ksig");
@@ -60,8 +62,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingUserPublicationBasedPolicy_VerificationFailsWrongPublication() throws Exception {
         KSISignature sig = loadSignature("ok-sig-2014-06-2.ksig");
-        String publicationString = "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, new PublicationData(publicationString)), new UserProvidedPublicationBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, new PublicationData(PUIBLICATION_STRING_2014_05_15)), new UserProvidedPublicationBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
     }
@@ -69,8 +70,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void verifyExtendedSignatureWithUserProvidedPublicationString_OK() throws Exception {
         KSISignature sig = loadSignature("ok-sig-2014-04-30.1-extended.ksig");
-        String publicationString = "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, new PublicationData(publicationString)), new UserProvidedPublicationBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, new PublicationData(PUIBLICATION_STRING_2014_05_15)), new UserProvidedPublicationBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
@@ -101,8 +101,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureUsingUserProvidedPublicationsBasedPolicy_FailInconclusive() throws Exception {
         KSISignature sig = loadSignature("ok-sig-2014-06-2-extended.ksig");
-        String publicationString = "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, new PublicationData(publicationString)), new UserProvidedPublicationBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, new PublicationData(PUIBLICATION_STRING_2014_05_15)), new UserProvidedPublicationBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
     }

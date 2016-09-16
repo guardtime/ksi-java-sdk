@@ -1,5 +1,4 @@
 #signature file location with full path;pass signature internal verification;pass signature verification with OK results;verification error code (" " if none);expected exception class (" " if none);expected excpetion message (" " if none)
-internal-verification-calendar-chain/NewSignature-CalHash-MissingCalHashAndAuthReq.ksig;true;true;;;
 internal-verification-aggr-chain/wrongTimes.ksig;true;false;INT_05;;
 internal-verification-aggr-chain/ExtendedSignature-WrongAllTimes.ksig;true;false;INT_05;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingAggrAlg.ksig;false;false;;InvalidAggregationHashChainException;

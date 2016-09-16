@@ -88,13 +88,17 @@ public class PublicationsFilePublicationRecord extends TLVStructure implements P
 
     public PublicationsFilePublicationRecord(PublicationData publicationData, List<String> references, List<String> uris) throws TLVParserException {
         this(publicationData);
-        for (String reference : references) {
-            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TAG_PUBLICATION_REFERENCE, reference));
-            publicationReferences.add(reference);
+        if (references != null) {
+            for (String reference : references) {
+                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TAG_PUBLICATION_REFERENCE, reference));
+                publicationReferences.add(reference);
+            }
         }
-        for (String uri : uris) {
-            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TAG_PUBLICATION_REFERENCE, uri));
-            publicationRepositoryURIs.add(uri);
+        if (uris != null) {
+            for (String uri : uris) {
+                this.rootElement.addChildElement(TLVElement.create(ELEMENT_TAG_PUBLICATION_REPOSITORY_URI, uri));
+                publicationRepositoryURIs.add(uri);
+            }
         }
     }
 

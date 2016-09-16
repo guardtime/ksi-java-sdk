@@ -1,5 +1,6 @@
 #signature file location with full path;pass signature internal verification;pass signature verification with OK results;verification error code (" " if none);expected exception class (" " if none);expected excpetion message (" " if none)
-internal-verification-aggr-chain/wrongTimes.ksig;true;false;INT_05;; 
+internal-verification-calendar-chain/NewSignature-CalHash-MissingCalHashAndAuthReq.ksig;true;true;;;
+internal-verification-aggr-chain/wrongTimes.ksig;true;false;INT_05;;
 internal-verification-aggr-chain/ExtendedSignature-WrongAllTimes.ksig;true;false;INT_05;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingAggrAlg.ksig;false;false;;InvalidAggregationHashChainException;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingAggrTime.ksig;false;false;;InvalidAggregationHashChainException;
@@ -39,7 +40,6 @@ internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongReqTimeFuture.ksig
 internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongReqTimePast.ksig;true;false;INT_01;;
 internal-verification-aggr-chain/NewSignature-AggrHash-WrongLeftLinkLevelCorrector.ksig;true;false;INT_01;;
 internal-verification-calendar-chain/NewSignature-CalHash-MissingAggrTime.ksig;true;false;INT_04;;
-internal-verification-calendar-chain/NewSignature-CalHash-MissingCalHashAndAuthReq.ksig;true;false;GEN_2;;
 internal-verification-calendar-chain/NewSignature-CalHash-MissingInputHash.ksig;false;false;;InvalidCalendarHashChainException;
 internal-verification-calendar-chain/NewSignature-CalHash-MissingLeftLinkLast.ksig;false;false;;InvalidCalendarHashChainException;
 internal-verification-calendar-chain/NewSignature-CalHash-MissingPubTime.ksig;false;false;;InvalidCalendarHashChainException;
@@ -105,3 +105,4 @@ aggregation-hash-chain-metadata/metadata-missing-padding-element.ksig;true;false
 aggregation-hash-chain-metadata/metadata-wrong-order.ksig;true;false;INT_11;;
 aggregation-hash-chain-metadata/TestAggregationHashChainMetadataPaddingNotTlv8Fail.ksig;true;false;INT_11;;
 internal-verification-aggr-chain/invalid-chain-index.ksig;true;false;INT_10;;
+signature/signature-with-testbed-publication-record.ksi;true;false;INT_09;;

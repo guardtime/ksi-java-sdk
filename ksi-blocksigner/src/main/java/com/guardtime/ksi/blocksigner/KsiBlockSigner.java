@@ -117,9 +117,8 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      */
     public KsiBlockSigner(KSISigningClient signingClient, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
         this(signingClient, algorithm);
-        if (signatureFactory != null) {
-            this.signatureFactory = signatureFactory;
-        }
+        notNull(signatureFactory, "KSI signature factory");
+        this.signatureFactory = signatureFactory;
     }
 
     /**

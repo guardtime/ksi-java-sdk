@@ -27,14 +27,11 @@ import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.CertificateNotFoundException;
 import com.guardtime.ksi.service.*;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.extension.ExtensionRequest;
 import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
 import com.guardtime.ksi.unisignature.*;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
-import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
-import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.util.Util;
 
 import java.io.ByteArrayInputStream;

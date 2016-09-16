@@ -20,8 +20,6 @@
 package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.service.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -38,8 +36,6 @@ import com.guardtime.ksi.util.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -115,7 +111,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
                     .setPublicationsFile(publicationsFileClientAdapter.getPublicationsFile()).setExtendingAllowed(extendingAllowed).createVerificationContext();
             VerificationResult result = verifier.verify(context, policy);
             if (!result.isOk()) {
-                throw new KsiSignatureNotValidException(signature, result);
+                throw new InvalidSignatureContentException(signature, result);
             }
         }
         return signature;

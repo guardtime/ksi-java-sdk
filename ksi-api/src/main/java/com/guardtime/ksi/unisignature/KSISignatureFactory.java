@@ -20,14 +20,10 @@
 package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
 
 import java.io.InputStream;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

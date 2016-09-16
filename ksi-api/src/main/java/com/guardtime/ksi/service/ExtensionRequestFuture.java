@@ -23,7 +23,6 @@ import com.guardtime.ksi.service.extension.ExtensionResponse;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
-import com.guardtime.ksi.unisignature.KSISignatureFactory;
 
 /**
  * Extension service request response future.

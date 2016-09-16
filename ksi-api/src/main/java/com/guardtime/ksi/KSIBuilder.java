@@ -36,9 +36,7 @@ import com.guardtime.ksi.trust.JKSTrustStore;
 import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
-import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
@@ -221,8 +219,7 @@ public final class KSIBuilder {
         PublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(jksTrustStore);
         PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
         this.uniSignatureFactory = new InMemoryKsiSignatureFactory(new InternalVerificationPolicy(), publicationsFileAdapter, extenderClient, true);
-        KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
-        KSIService ksiService = new KSIServiceImpl(signingClient, extenderClient, publicationsFileAdapter, uniSignatureFactory, signatureComponentFactory);
+        KSIService ksiService = new KSIServiceImpl(signingClient, extenderClient, publicationsFileAdapter, uniSignatureFactory);
         return new KSIImpl(ksiService, uniSignatureFactory, defaultHashAlgorithm);
     }
 

@@ -23,6 +23,7 @@ import com.guardtime.ksi.service.extension.ExtensionResponse;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 
 /**
  * Extension service request response future.
@@ -31,16 +32,14 @@ import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
  */
 public class ExtensionRequestFuture implements Future<CalendarHashChain> {
 
-    private final KSISignatureComponentFactory signatureComponentFactory;
+    private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
     private final Future<TLVElement> future;
     private final KSIRequestContext context;
     private CalendarHashChain response;
 
-    public ExtensionRequestFuture(Future<TLVElement> future, KSIRequestContext requestContext,
-            KSISignatureComponentFactory signatureComponentFactory) {
+    public ExtensionRequestFuture(Future<TLVElement> future, KSIRequestContext requestContext) {
         this.future = future;
         this.context = requestContext;
-        this.signatureComponentFactory = signatureComponentFactory;
     }
 
     public CalendarHashChain getResult() throws KSIException {
@@ -48,7 +47,7 @@ public class ExtensionRequestFuture implements Future<CalendarHashChain> {
             try {
                 TLVElement tlvElement = future.getResult();
                 ExtensionResponse extensionResponse = new ExtensionResponse(tlvElement, context);
-                response = signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChainTlvElement());
+                response = SIGNATURE_COMPONENT_FACTORY.createCalendarHashChain(extensionResponse.getCalendarHashChainTlvElement());
             } catch (com.guardtime.ksi.tlv.TLVParserException e) {
                 throw new KSIProtocolException("Can't parse response message", e);
             }

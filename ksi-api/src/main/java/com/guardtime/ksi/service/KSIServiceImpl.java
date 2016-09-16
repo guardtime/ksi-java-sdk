@@ -35,7 +35,6 @@ import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
-import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.util.Util;
 
@@ -49,7 +48,6 @@ public class KSIServiceImpl implements KSIService {
     private KSIExtenderClient extenderClient;
     private PublicationsFileClientAdapter publicationsFileAdapter;
     private KSISignatureFactory signatureFactory;
-    private KSISignatureComponentFactory signatureComponentFactory;
 
     /**
      * Creates new instance of {@link KSIServiceImpl}.
@@ -62,8 +60,7 @@ public class KSIServiceImpl implements KSIService {
      *         - KSI HTTP client to be used for fetching the publications file. May not be null.
      */
     public KSIServiceImpl(KSISigningClient signerClient, KSIExtenderClient extenderClient,
-                          PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory,
-                          KSISignatureComponentFactory signatureComponentFactory) throws KSIException {
+                          PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory) throws KSIException {
         if (signerClient == null) {
             throw new KSIException("Invalid input parameter. Singer client can not be null");
         }
@@ -76,14 +73,10 @@ public class KSIServiceImpl implements KSIService {
         if (signatureFactory == null) {
             throw new KSIException("Invalid input parameter. KSI signature factory can not be null");
         }
-        if (signatureComponentFactory == null) {
-            throw new KSIException("Invalid input parameter. KSI signature component factory can not be null");
-        }
         this.signerClient = signerClient;
         this.extenderClient = extenderClient;
         this.publicationsFileAdapter = publicationsFileAdapter;
         this.signatureFactory = signatureFactory;
-        this.signatureComponentFactory = signatureComponentFactory;
     }
 
     public CreateSignatureFuture sign(DataHash dataHash) throws KSIException {
@@ -118,7 +111,7 @@ public class KSIServiceImpl implements KSIService {
         ExtensionRequest requestMessage = new ExtensionRequest(header, extensionRequest, credentials.getLoginKey());
         ByteArrayInputStream inputStream = convert(requestMessage);
         Future<TLVElement> future = extenderClient.extend(inputStream);
-        return new ExtensionRequestFuture(future, requestContext, signatureComponentFactory);
+        return new ExtensionRequestFuture(future, requestContext);
     }
 
     private ByteArrayInputStream convert(TLVStructure request) throws KSIProtocolException {

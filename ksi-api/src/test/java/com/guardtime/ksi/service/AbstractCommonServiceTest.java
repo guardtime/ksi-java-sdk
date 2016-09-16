@@ -25,6 +25,7 @@ import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.trust.PKITrustStore;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import org.bouncycastle.util.Store;
 import org.mockito.Mockito;
@@ -56,7 +57,9 @@ public class AbstractCommonServiceTest {
         Mockito.when(mockedTrustStore.isTrusted(Mockito.any(X509Certificate.class), Mockito.any(Store.class))).thenReturn(true);
 
         InMemoryPublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(mockedTrustStore);
-        ksiService = Mockito.spy(new KSIServiceImpl(mockedSigningClient, mockedExtenderClient, new NonCachingPublicationsFileClientAdapter(mockedPublicationsFileClient, publicationsFileFactory), new InMemoryKsiSignatureFactory()));
+        ksiService = Mockito.spy(new KSIServiceImpl(mockedSigningClient, mockedExtenderClient,
+                new NonCachingPublicationsFileClientAdapter(mockedPublicationsFileClient, publicationsFileFactory),
+                new InMemoryKsiSignatureFactory(), new InMemoryKsiSignatureComponentFactory()));
         mockedResponse = Mockito.mock(Future.class);
         mockedPublicationsFileResponse = Mockito.mock(Future.class);
         Mockito.when(ksiService.generateRequestId()).thenReturn(42275443333883166L);

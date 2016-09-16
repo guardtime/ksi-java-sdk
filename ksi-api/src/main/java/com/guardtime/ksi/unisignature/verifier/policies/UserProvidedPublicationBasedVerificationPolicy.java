@@ -33,15 +33,26 @@ public class UserProvidedPublicationBasedVerificationPolicy extends InternalVeri
 
         Rule verifyUserPublicationRule = new CompositeRule(false,
                 new SignaturePublicationRecordExistenceRule(),
-                new UserProvidedPublicationVerificationRule());
+                new UserProvidedPublicationTimeEqualsToSignaturePublicationTimeRule(),
+                new UserProvidedPublicationHashEqualsToSignaturePublicationHashRule()
+        );
+
+
+        Rule publicationTimeRule = new CompositeRule(true,
+                new SignatureDoesNotContainPublicationRule(),
+                new UserProvidedPublicationTimeNotEqualToSignaturePublicationTimeRule()
+        );
+
 
         Rule verifyUsingExtenderRule = new CompositeRule(false,
+                publicationTimeRule,
                 new UserProvidedPublicationCreationTimeVerificationRule(),
                 new ExtendingPermittedVerificationRule(),
                 new UserProvidedPublicationHashMatchesExtendedResponseRule(),
                 new UserProvidedPublicationTimeMatchesExtendedResponseRule(),
                 new UserProvidedPublicationExtendedSignatureInputHashRule()
         );
+
 
         addRule(new CompositeRule(true, verifyUserPublicationRule, verifyUsingExtenderRule));
     }

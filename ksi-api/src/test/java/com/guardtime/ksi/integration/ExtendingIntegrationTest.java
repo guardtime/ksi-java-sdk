@@ -18,7 +18,6 @@
  */
 package com.guardtime.ksi.integration;
 
-import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.publication.PublicationData;
@@ -31,7 +30,6 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
-import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

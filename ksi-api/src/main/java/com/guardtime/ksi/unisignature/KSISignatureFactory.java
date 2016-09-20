@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
 
@@ -49,11 +50,12 @@ public interface KSISignatureFactory {
      *
      * @param element
      *         instance of {@link TLVElement}. not null
+     * @param originalInputHash - original input hash. It is used to verify signature if it is present.
      * @return instance of {@link KSISignature}
      * @throws KSIException
      *         when error occurs (e.g input data is invalid)
      */
-    KSISignature createSignature(TLVElement element) throws KSIException;
+    KSISignature createSignature(TLVElement element, DataHash originalInputHash) throws KSIException;
 
     /**
      * Creates keyless uni-signature from given elements.

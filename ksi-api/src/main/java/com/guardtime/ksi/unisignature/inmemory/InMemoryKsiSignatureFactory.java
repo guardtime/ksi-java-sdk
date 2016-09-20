@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.service.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -79,8 +80,8 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         }
     }
 
-    public KSISignature createSignature(TLVElement element) throws KSIException {
-        return createSignature(element, extendingAllowed);
+    public KSISignature createSignature(TLVElement element, DataHash inputHash) throws KSIException {
+        return createSignature(element, extendingAllowed, inputHash);
     }
 
     public KSISignature createSignature(List<AggregationHashChain> aggregationHashChains,
@@ -104,12 +105,20 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     }
 
     private KSISignature createSignature(TLVElement element, boolean extendingAllowed) throws KSIException {
+        return createSignature(element, extendingAllowed, null);
+    }
+
+    private KSISignature createSignature(TLVElement element, boolean extendingAllowed, DataHash inputHash) throws KSIException {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(element);
         if (verifySignatures) {
             VerificationContextBuilder builder = new VerificationContextBuilder();
-            VerificationContext context = builder.setSignature(signature).setExtenderClient(extenderClient)
-                    .setPublicationsFile(publicationsFileClientAdapter.getPublicationsFile()).setExtendingAllowed(extendingAllowed).createVerificationContext();
-            VerificationResult result = verifier.verify(context, policy);
+            builder.setSignature(signature).setExtenderClient(extenderClient)
+                    .setPublicationsFile(publicationsFileClientAdapter.getPublicationsFile())
+                    .setExtendingAllowed(extendingAllowed);
+            if (inputHash != null) {
+                builder.setDocumentHash(inputHash);
+            }
+            VerificationResult result = verifier.verify(builder.createVerificationContext(), policy);
             if (!result.isOk()) {
                 throw new InvalidSignatureContentException(signature, result);
             }

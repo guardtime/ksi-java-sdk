@@ -19,6 +19,7 @@
 package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.service.aggregation.AggregationResponse;
 import com.guardtime.ksi.service.aggregation.AggregationResponsePayload;
@@ -40,6 +41,7 @@ public final class CreateSignatureFuture implements Future<KSISignature> {
     private KSIRequestContext requestContext;
     private KSISignature response;
     private KSISignatureFactory signatureFactory;
+    private DataHash inputHash;
 
     public CreateSignatureFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, KSISignatureFactory signatureFactory) {
         this.requestFuture = requestFuture;
@@ -52,7 +54,7 @@ public final class CreateSignatureFuture implements Future<KSISignature> {
             if (response == null) {
                 TLVElement response = requestFuture.getResult();
                 AggregationResponse aggregationResponse = new AggregationResponse(response, requestContext);
-                this.response = signatureFactory.createSignature(convert(aggregationResponse.getResponsePayload()));
+                this.response = signatureFactory.createSignature(convert(aggregationResponse.getResponsePayload()), inputHash);
             }
             return response;
         } catch (com.guardtime.ksi.tlv.TLVParserException e) {

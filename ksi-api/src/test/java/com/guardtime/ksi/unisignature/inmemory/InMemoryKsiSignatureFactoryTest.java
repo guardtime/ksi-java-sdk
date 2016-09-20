@@ -1,6 +1,8 @@
 package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.service.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -32,8 +34,13 @@ public class InMemoryKsiSignatureFactoryTest {
 
     @Test
     public void testCreateValidKsiSignature_Ok() throws Exception {
-        KSISignature signature = signatureFactory.createSignature(TestUtil.loadTlv(TEST_SIGNATURE));
+        KSISignature signature = signatureFactory.createSignature(TestUtil.loadTlv(TEST_SIGNATURE), null);
         Assert.assertNotNull(signature);
+    }
+
+    @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: GEN_1.*Wrong document.*")
+    public void testCreateSignatureWithInvalidInputHash_ThrowsInvalidSignatureContentException() throws Exception {
+        signatureFactory.createSignature(TestUtil.loadTlv(TEST_SIGNATURE), new DataHash(HashAlgorithm.SHA1, new byte[20]));
     }
 
     @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: INT_09.*")

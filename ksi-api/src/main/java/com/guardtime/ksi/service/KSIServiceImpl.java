@@ -87,7 +87,7 @@ public class KSIServiceImpl implements KSIService {
         KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
         AggregationRequest requestMessage = new AggregationRequest(header, request, credentials.getLoginKey());
         Future<TLVElement> future = signerClient.sign(convert(requestMessage));
-        return new CreateSignatureFuture(future, requestContext, signatureFactory);
+        return new CreateSignatureFuture(future, requestContext, signatureFactory, dataHash);
     }
 
     public ExtensionRequestFuture extend(Date aggregationTime, Date publicationTime) throws KSIException {

@@ -190,7 +190,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
         AggregationRequest requestMessage = new AggregationRequest(header, request, credentials.getLoginKey());
         Future<TLVElement> future = signingClient.sign(convert(requestMessage));
-        CreateSignatureFuture signatureFuture = new CreateSignatureFuture(future, requestContext, signatureFactory);
+        CreateSignatureFuture signatureFuture = new CreateSignatureFuture(future, requestContext, signatureFactory, dataHash);
         return signatureFuture.getResult();
     }
 

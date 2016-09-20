@@ -43,10 +43,11 @@ public final class CreateSignatureFuture implements Future<KSISignature> {
     private KSISignatureFactory signatureFactory;
     private DataHash inputHash;
 
-    public CreateSignatureFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, KSISignatureFactory signatureFactory) {
+    public CreateSignatureFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, KSISignatureFactory signatureFactory, DataHash inputHash) {
         this.requestFuture = requestFuture;
         this.requestContext = requestContext;
         this.signatureFactory = signatureFactory;
+        this.inputHash = inputHash;
     }
 
     public final KSISignature getResult() throws KSIException {

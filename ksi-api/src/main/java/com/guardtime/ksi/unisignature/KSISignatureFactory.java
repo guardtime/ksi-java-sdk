@@ -21,13 +21,10 @@ package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
 
 import java.io.InputStream;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -53,11 +50,12 @@ public interface KSISignatureFactory {
      *
      * @param element
      *         instance of {@link TLVElement}. not null
+     * @param originalInputHash - original input hash. It is used to verify signature if it is present.
      * @return instance of {@link KSISignature}
      * @throws KSIException
      *         when error occurs (e.g input data is invalid)
      */
-    KSISignature createSignature(TLVElement element) throws KSIException;
+    KSISignature createSignature(TLVElement element, DataHash originalInputHash) throws KSIException;
 
     /**
      * Creates keyless uni-signature from given elements.
@@ -77,79 +75,5 @@ public interface KSISignatureFactory {
      *         when error occurs (e.g input data is invalid)
      */
     KSISignature createSignature(List<AggregationHashChain> aggregationHashChains, CalendarHashChain calendarHashChain, CalendarAuthenticationRecord authenticationRecord, PublicationRecord publicationRecord, RFC3161Record rfc3161Record) throws KSIException;
-
-    /**
-     * Creates aggregation hash chain from input TLV element.
-     *
-     * @param element
-     *         instance of {@link TLVElement}. not null
-     * @return instance of {@link AggregationHashChain}
-     * @throws KSIException
-     */
-    AggregationHashChain createAggregationHashChain(TLVElement element) throws KSIException;
-
-    /**
-     * Creates a new aggregation hash chain
-     */
-    AggregationHashChain createAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> indexes, LinkedList<AggregationChainLink> links, HashAlgorithm aggregationAlgorithm) throws KSIException;
-
-    /**
-     * Creates a new left aggregation hash chain link with given sibling hash and level.
-     */
-    AggregationChainLink createLeftAggregationChainLink(DataHash siblingHash, long level) throws KSIException;
-
-    /**
-     * Creates a new right aggregation hash chain link with given sibling hash and level.
-     */
-    AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long level) throws KSIException;
-
-    /**
-     * Creates a new left aggregation hash chain link with given clientId and level.
-     */
-    AggregationChainLink createLeftAggregationChainLink(IdentityMetadata metadata, long level) throws KSIException;
-
-    /**
-     * Creates calendar authentication record from input TLV element.
-     *
-     * @param element
-     *         instance of {@link TLVElement}. not null
-     * @return instance of {@link CalendarAuthenticationRecord}
-     * @throws KSIException
-     *         when error occurs (e.g input data is invalid)
-     */
-    CalendarAuthenticationRecord createCalendarAuthenticationRecord(TLVElement element) throws KSIException;
-
-    /**
-     * Creates calendar hash chain from input TLV element.
-     *
-     * @param element
-     *         instance of {@link TLVElement}. not null
-     * @return instance of {@link CalendarHashChain}
-     * @throws KSIException
-     *         when error occurs (e.g input data is invalid)
-     */
-    CalendarHashChain createCalendarHashChain(TLVElement element) throws KSIException;
-
-    /**
-     * Creates RFC3161 record element from input TLV element.
-     *
-     * @param element
-     *         instance of {@link TLVElement}. not null
-     * @return instance of {@link RFC3161Record}
-     * @throws KSIException
-     *         when error occurs (e.g input data is invalid)
-     */
-    RFC3161Record createRFC3161Record(TLVElement element) throws KSIException;
-
-    /**
-     * Creates signature publication record element from input TLV element.
-     *
-     * @param element
-     *         instance of {@link TLVElement}. not null
-     * @return instance of {@link SignaturePublicationRecord}
-     * @throws KSIException
-     *         when error occurs (e.g input data is invalid)
-     */
-    SignaturePublicationRecord createPublicationRecord(TLVElement element) throws KSIException;
 
 }

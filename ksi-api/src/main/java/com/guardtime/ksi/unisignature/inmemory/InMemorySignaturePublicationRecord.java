@@ -20,9 +20,13 @@
 package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.unisignature.SignaturePublicationRecord;
+
+import java.util.List;
 
 /**
  * @see com.guardtime.ksi.unisignature.SignaturePublicationRecord
@@ -33,6 +37,10 @@ public class InMemorySignaturePublicationRecord extends PublicationsFilePublicat
 
     public InMemorySignaturePublicationRecord(TLVElement rootElement) throws KSIException {
         super(rootElement);
+    }
+
+    public InMemorySignaturePublicationRecord(PublicationData publicationData, List<String> references, List<String> uris) throws TLVParserException {
+        super(publicationData, references, uris);
     }
 
     public int getElementType() {

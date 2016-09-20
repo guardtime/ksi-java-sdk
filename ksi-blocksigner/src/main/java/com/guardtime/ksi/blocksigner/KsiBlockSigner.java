@@ -32,10 +32,8 @@ import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
-import com.guardtime.ksi.unisignature.AggregationChainLink;
-import com.guardtime.ksi.unisignature.AggregationHashChain;
-import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.IdentityMetadata;
+import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
@@ -79,11 +77,12 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KsiBlockSigner.class);
 
-    private static final InMemoryKsiSignatureFactory SIGNATURE_ELEMENT_FACTORY = new InMemoryKsiSignatureFactory();
+    private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
     private static final String DEFAULT_CLIENT_ID_LOCAL_AGGREGATION = "local-aggregation";
     private static final int MAXIMUM_LEVEL = 255;
 
     private final KSISigningClient signingClient;
+    private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private final Map<TreeNode, LocalAggregationHashChain> chains = new HashMap<TreeNode, LocalAggregationHashChain>();
     private final HashTreeBuilder treeBuilder;
 
@@ -113,6 +112,16 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     }
 
     /**
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}, {@link KSISignatureFactory}
+     * and {@link HashAlgorithm}.
+     */
+    public KsiBlockSigner(KSISigningClient signingClient, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
+        this(signingClient, algorithm);
+        notNull(signatureFactory, "KSI signature factory");
+        this.signatureFactory = signatureFactory;
+    }
+
+    /**
      * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
      */
     public KsiBlockSigner add(DataHash dataHash, IdentityMetadata metadata) throws KSIException {
@@ -138,7 +147,8 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
             metadata = new IdentityMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION);
         }
         LOGGER.debug("New input hash '{}' with level '{}' added to block signer.", dataHash, level);
-        LocalAggregationHashChain chain = new LocalAggregationHashChain(dataHash, level, metadata, algorithm);
+        AggregationChainLink metadataLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(metadata, level);
+        LocalAggregationHashChain chain = new LocalAggregationHashChain(dataHash, metadataLink, algorithm);
         DataHash output = chain.getLatestOutputHash();
         ImprintNode leaf = new ImprintNode(output, chain.getCurrentLevel());
         chains.put(leaf, chain);
@@ -163,8 +173,8 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         for (LocalAggregationHashChain chain : aggregatedChains) {
             LinkedList<Long> chainIndex = new LinkedList<Long>(firstChain.getChainIndex());
             chainIndex.add(calculateIndex(chain.getLinks()));
-            AggregationHashChain aggregationHashChain = SIGNATURE_ELEMENT_FACTORY.createAggregationHashChain(chain.getInputHash(), firstChain.getAggregationTime(), chainIndex, chain.getLinks(), algorithm);
-            KSISignature signature = SIGNATURE_ELEMENT_FACTORY.createSignature(new ByteArrayInputStream(bytes));
+            AggregationHashChain aggregationHashChain = SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(chain.getInputHash(), firstChain.getAggregationTime(), chainIndex, chain.getLinks(), algorithm);
+            KSISignature signature = signatureFactory.createSignature(new ByteArrayInputStream(bytes));
             signature.addAggregationHashChain(aggregationHashChain);
             signatures.add(signature);
         }
@@ -180,7 +190,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
         AggregationRequest requestMessage = new AggregationRequest(header, request, credentials.getLoginKey());
         Future<TLVElement> future = signingClient.sign(convert(requestMessage));
-        CreateSignatureFuture signatureFuture = new CreateSignatureFuture(future, requestContext, SIGNATURE_ELEMENT_FACTORY);
+        CreateSignatureFuture signatureFuture = new CreateSignatureFuture(future, requestContext, signatureFactory, dataHash);
         return signatureFuture.getResult();
     }
 
@@ -208,10 +218,10 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         long parentLevel = parent.getLevel();
         if (node.isLeft()) {
             long levelCorrection = calculateLevelCorrection(parentLevel, parent.getLeftChildNode());
-            link = SIGNATURE_ELEMENT_FACTORY.createLeftAggregationChainLink(new DataHash(parent.getRightChildNode().getValue()), levelCorrection);
+            link = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(new DataHash(parent.getRightChildNode().getValue()), levelCorrection);
         } else {
             long levelCorrection = calculateLevelCorrection(parentLevel, parent.getRightChildNode());
-            link = SIGNATURE_ELEMENT_FACTORY.createRightAggregationChainLink(new DataHash(parent.getLeftChildNode().getValue()), levelCorrection);
+            link = SIGNATURE_COMPONENT_FACTORY.createRightAggregationChainLink(new DataHash(parent.getLeftChildNode().getValue()), levelCorrection);
         }
         return link;
     }

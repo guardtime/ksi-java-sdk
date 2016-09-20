@@ -23,9 +23,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.service.KSIMessageHeader;
-import com.guardtime.ksi.service.KSIRequestContext;
-import com.guardtime.ksi.service.PduIdentifiers;
-import com.guardtime.ksi.tlv.TLVInputStream;
 
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;

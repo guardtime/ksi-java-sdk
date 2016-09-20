@@ -32,6 +32,7 @@ import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +66,7 @@ final class FileBasedMultiSignature implements KSIMultiSignature {
     private final FileBasedMultiSignatureFactory.FileBasedMultiSignatureWriter writer;
 
     private final KSISignatureFactory uniSignatureFactory;
+    private final KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
     private final KSIService ksiService;
 
     FileBasedMultiSignature(FileBasedMultiSignatureFactory.FileBasedMultiSignatureWriter writer, KSIService ksiService, KSISignatureFactory uniSignatureFactory) {
@@ -359,19 +361,19 @@ final class FileBasedMultiSignature implements KSIMultiSignature {
             TLVElement element = tlvInputStream.readElement();
             switch (element.getType()) {
                 case AggregationHashChain.ELEMENT_TYPE:
-                    aggregationHashChains.add(uniSignatureFactory.createAggregationHashChain(element));
+                    aggregationHashChains.add(signatureComponentFactory.createAggregationHashChain(element));
                     break;
                 case CalendarHashChain.ELEMENT_TYPE:
-                    calendarHashChains.add(uniSignatureFactory.createCalendarHashChain(element));
+                    calendarHashChains.add(signatureComponentFactory.createCalendarHashChain(element));
                     break;
                 case CalendarAuthenticationRecord.ELEMENT_TYPE:
-                    calendarAuthenticationRecords.add(uniSignatureFactory.createCalendarAuthenticationRecord(element));
+                    calendarAuthenticationRecords.add(signatureComponentFactory.createCalendarAuthenticationRecord(element));
                     break;
                 case SignaturePublicationRecord.ELEMENT_TYPE:
-                    signaturePublicationRecords.add(uniSignatureFactory.createPublicationRecord(element));
+                    signaturePublicationRecords.add(signatureComponentFactory.createPublicationRecord(element));
                     break;
                 case RFC3161Record.ELEMENT_TYPE:
-                    rfc3161Records.add(uniSignatureFactory.createRFC3161Record(element));
+                    rfc3161Records.add(signatureComponentFactory.createRFC3161Record(element));
                     break;
                 default:
                     LOGGER.info("Multi signature container contains unknown element: {} ", element);

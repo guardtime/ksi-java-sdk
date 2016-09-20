@@ -1,5 +1,6 @@
 Version 4.4
 
+* IMPROVEMENT: Now internal verification of the signature is performed in the following cases: new signature is created, existing signature is extended, signature is read from input stream.
 * IMPROVEMENT: SHA1 hash algorithm status was changed from NOT_TRUSTED to NORMAL
 * IMPROVEMENT: Improved user provided publication based verification policy
 * BUGFIX: Fixed a typo in CAL-04 verification error text

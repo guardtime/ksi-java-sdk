@@ -25,16 +25,12 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.CertificateNotFoundException;
-import com.guardtime.ksi.service.ExtensionRequestFuture;
-import com.guardtime.ksi.service.KSIMessageHeader;
-import com.guardtime.ksi.service.KSIRequestContext;
-import com.guardtime.ksi.service.PduIdentifiers;
+import com.guardtime.ksi.service.*;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.extension.ExtensionRequest;
 import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
 import com.guardtime.ksi.unisignature.*;
-import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Util;
 
 import java.io.ByteArrayInputStream;
@@ -58,7 +54,6 @@ final class KSIVerificationContext implements VerificationContext {
     private DataHash documentHash;
     private Map<Date, CalendarHashChain> extendedSignatures = new HashMap<Date, CalendarHashChain>();
     private CalendarHashChain calendarExtendedToHead;
-    private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
 
     KSIVerificationContext(PublicationsFile publicationsFile, KSISignature signature, PublicationData userPublication, boolean extendingAllowed, KSIExtenderClient extenderClient, DataHash documentHash) {
         this.publicationsFile = publicationsFile;
@@ -147,7 +142,7 @@ final class KSIVerificationContext implements VerificationContext {
         ServiceCredentials credentials = extenderClient.getServiceCredentials();
         KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
         ExtensionRequest request = new ExtensionRequest(header, requestPayload, credentials.getLoginKey());
-        return new ExtensionRequestFuture(extenderClient.extend(new ByteArrayInputStream(request.getRootElement().getEncoded())), context, signatureFactory);
+        return new ExtensionRequestFuture(extenderClient.extend(new ByteArrayInputStream(request.getRootElement().getEncoded())), context);
     }
 
 }

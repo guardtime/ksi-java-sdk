@@ -21,8 +21,10 @@ package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.publication.PublicationRecord;
-import com.guardtime.ksi.unisignature.CalendarHashChain;
-import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
+
+import static java.util.Arrays.asList;
 
 /**
  * The future of the signature extension process.
@@ -31,21 +33,25 @@ import com.guardtime.ksi.unisignature.KSISignature;
  */
 public class SignatureExtensionRequestFuture implements Future<KSISignature> {
 
+    private static final KSISignatureComponentFactory COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
     private ExtensionRequestFuture future;
     private PublicationRecord publicationRecord;
     private KSISignature signature;
     private KSISignature extendedSignature;
+    private KSISignatureFactory signatureFactory;
 
-    public SignatureExtensionRequestFuture(ExtensionRequestFuture future, PublicationRecord publicationRecord, KSISignature signature) {
+    public SignatureExtensionRequestFuture(ExtensionRequestFuture future, PublicationRecord publicationRecord, KSISignature signature, KSISignatureFactory signatureFactory) {
         this.future = future;
         this.publicationRecord = publicationRecord;
         this.signature = signature;
+        this.signatureFactory = signatureFactory;
     }
 
     public KSISignature getResult() throws KSIException {
         if (extendedSignature == null) {
             CalendarHashChain result = future.getResult();
-            extendedSignature = signature.extend(result, publicationRecord);
+            SignaturePublicationRecord signaturePublicationRecord = COMPONENT_FACTORY.createPublicationRecord(publicationRecord.getPublicationData(), publicationRecord.getPublicationReferences(), publicationRecord.getPublicationRepositoryURIs());
+            extendedSignature = signatureFactory.createSignature(asList(signature.getAggregationHashChains()), result, null, signaturePublicationRecord, signature.getRfc3161Record());
         }
         return extendedSignature;
     }

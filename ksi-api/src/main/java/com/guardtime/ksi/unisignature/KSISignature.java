@@ -102,7 +102,10 @@ public interface KSISignature {
      * @return extended signature. NB! signature isn't verified
      * @throws KSIException
      *         when extending fails
+     * @deprecated  use {@link com.guardtime.ksi.KSI#extend(KSISignature)} or
+     * {@link com.guardtime.ksi.KSI#asyncExtend(KSISignature)} instead
      */
+    @Deprecated
     KSISignature extend(CalendarHashChain calendarHashChain, PublicationRecord publicationRecord) throws KSIException;
 
     /**

@@ -42,6 +42,7 @@ import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.util.Util;
 
@@ -64,7 +65,7 @@ public final class KSIBuilder {
     private KSIExtenderClient extenderClient;
     private KSIPublicationsFileClient publicationsFileClient;
 
-    private KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory();
+    private KSISignatureFactory uniSignatureFactory;
 
     private KeyStore trustStore;
     private long publicationsFileCacheExpirationTime = 0L;
@@ -217,6 +218,7 @@ public final class KSIBuilder {
         PKITrustStore jksTrustStore = new JKSTrustStore(trustStore, certSelector);
         PublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(jksTrustStore);
         PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
+        this.uniSignatureFactory = new InMemoryKsiSignatureFactory(new InternalVerificationPolicy(), publicationsFileAdapter, extenderClient, true);
         KSIService ksiService = new KSIServiceImpl(signingClient, extenderClient, publicationsFileAdapter, uniSignatureFactory);
         return new KSIImpl(ksiService, uniSignatureFactory, defaultHashAlgorithm);
     }
@@ -245,7 +247,6 @@ public final class KSIBuilder {
         private KSIImpl(KSIService ksiService, KSISignatureFactory uniSignatureFactory, HashAlgorithm defaultHashAlgorithm) {
             this.ksiService = ksiService;
             this.uniSignatureFactory = uniSignatureFactory;
-
             this.defaultHashAlgorithm = defaultHashAlgorithm;
         }
 
@@ -352,7 +353,7 @@ public final class KSIBuilder {
             }
             Date publicationDate = publicationRecord.getPublicationTime();
             ExtensionRequestFuture serviceFuture = ksiService.extend(signature.getAggregationTime(), publicationDate);
-            return new SignatureExtensionRequestFuture(serviceFuture, publicationRecord, signature);
+            return new SignatureExtensionRequestFuture(serviceFuture, publicationRecord, signature, uniSignatureFactory);
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {

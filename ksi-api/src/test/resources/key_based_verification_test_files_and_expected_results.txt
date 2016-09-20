@@ -1,6 +1,7 @@
-#signature file location with full path;pass signature internal verification;pass signature verification with OK results;verification error code (" " if none);expected exception class (" " if none);expected excpetion message (" " if none)
+#signature file location with full path;pass signature internal verification;pass signature verification with OK results;verification error code (" " if none);expected exception class (" " if none);expected exception message (" " if none)
 signature/signature-without-calendar-elements.ksig;true;false;GEN_2;;
 signature/signature-without-calendar-authentication-record.ksig;true;false;GEN_2;;
+internal-verification-calendar-chain/NewSignature-CalHash-MissingCalHashAndAuthReq.ksig;true;false;GEN_2;;
 signature/signature-with-invalid-calendar-authentication-record-hash.ksig;true;false;INT_08;;
 signature/signature-with-invalid-certificate-id.ksig;true;false;KEY_01;;
 signature/signature-with-invalid-pki-signature.ksig;true;false;KEY_02;;

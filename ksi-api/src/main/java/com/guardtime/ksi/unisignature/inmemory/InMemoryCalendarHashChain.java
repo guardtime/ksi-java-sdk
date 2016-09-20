@@ -97,14 +97,10 @@ class InMemoryCalendarHashChain extends TLVStructure implements CalendarHashChai
 
     public final DataHash calculateCalendarHashChainHash() throws InvalidCalendarHashChainException {
         DataHash input = inputHash;
-        try {
-            for (CalendarHashChainLink link : chain) {
-                input = link.calculateChainStep(input);
-            }
-            return input;
-        } catch (HashException e) {
-            throw new InvalidCalendarHashChainException("Invalid calendar hash chain. " + e.getMessage(), e);
+        for (CalendarHashChainLink link : chain) {
+            input = link.calculateChainStep(input);
         }
+        return input;
     }
 
     /**

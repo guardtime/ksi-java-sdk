@@ -20,6 +20,7 @@ package com.guardtime.ksi.hashing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,7 +36,7 @@ public enum HashAlgorithm {
     SHA3_256("SHA3-256", 0x08, 32, Status.NOT_IMPLEMENTED),
     SHA3_384("SHA3-384", 0x09, 48, Status.NOT_IMPLEMENTED),
     SHA3_512("SHA3-512", 0x0A, 64, Status.NOT_IMPLEMENTED),
-    SM3("SM3", 0x0B, 32, Status.NOT_IMPLEMENTED), ;
+    SM3("SM3", 0x0B, 32, Status.NOT_IMPLEMENTED),;
 
     // lookup table for algorithms
     private static Map<String, HashAlgorithm> lookup = new HashMap<String, HashAlgorithm>();
@@ -71,28 +72,7 @@ public enum HashAlgorithm {
     private final String[] alternatives;
 
     /**
-     * Support status of a hash algorithm.
-     */
-    public enum Status {
-        /**
-         * Normal fully supported algorithm.
-         */
-        NORMAL,
-        /**
-         * Algorithm no longer considered secure and only kept for backwards
-         * compatibility. Should not be used in new signatures. Should trigger
-         * verification warnings when encountered in existing signatures.
-         */
-        NOT_TRUSTED,
-        /**
-         * Algorithm defined in the specification, but not yet available in the
-         * implementation.
-         */
-        NOT_IMPLEMENTED
-    }
-
-    /**
-     * Constructor which initiates HashAlorithm.
+     * Constructor which initiates HashAlgorithm.
      *
      * @param name   algorithm name
      * @param id     algorithm id
@@ -104,7 +84,7 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Constructor which initiates HashAlorithm with alternative names.
+     * Constructor which initiates HashAlgorithm with alternative names.
      *
      * @param name         algorithm name
      * @param id           algorithm id
@@ -120,22 +100,34 @@ public enum HashAlgorithm {
         this.alternatives = alternatives;
     }
 
-
     /**
      * Get hash algorithm by id/code.
      *
      * @param id one-byte hash function identifier
-     * @return HashAlgorithm when a match is found, otherwise null
+     * @return HashAlgorithm when a match is found
+     * @throws IllegalArgumentException if algorithm is unknown
      */
-    public static HashAlgorithm getById(int id) throws UnknownHashAlgorithmException {
+    public static HashAlgorithm getById(int id) {
         for (HashAlgorithm algorithm : values()) {
             if (algorithm.id == id) {
                 return algorithm;
             }
         }
-        throw new UnknownHashAlgorithmException(id);
+        throw new IllegalArgumentException("Hash algorithm id '" + id + "' is unknown");
     }
 
+    /**
+     * Returns true if the input id is one of the hash algorithm id.
+     * @param id one-byte hash function identifier
+     */
+    public static boolean isHashAlgorithmId(int id) {
+        for (HashAlgorithm algorithm : values()) {
+            if (algorithm.id == id) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Get hash algorithm by name.
@@ -143,29 +135,38 @@ public enum HashAlgorithm {
      * @param name name of the algorithm to look for
      * @return HashAlgorithm when match is found, otherwise null
      */
-    public static HashAlgorithm getByName(String name) throws UnknownHashAlgorithmException {
+    public static HashAlgorithm getByName(String name) {
         String normalizedName = nameNormalize(name);
         HashAlgorithm algorithm = lookup.get(normalizedName);
-        if(algorithm == null) {
-            throw new UnknownHashAlgorithmException(normalizedName);
+        if (algorithm == null) {
+            throw new IllegalArgumentException("Hash algorithm id '" + normalizedName + "' is unknown");
         }
         return algorithm;
     }
 
-
     /**
-     * Get list of supported the algorithms.
-     *
-     * @return List of supported hash algorithm names
+     * Returns a list of implemented algorithms. Returns all algorithms with status {@link
+     * com.guardtime.ksi.hashing.HashAlgorithm.Status#NORMAL} or {@link com.guardtime.ksi.hashing.HashAlgorithm.Status#NOT_TRUSTED}
      */
-    public static ArrayList<String> getNamesList() {
-        ArrayList<String> names = new ArrayList<String>();
+    public static List<HashAlgorithm> getImplementedHashAlgorithms() {
+        List<HashAlgorithm> algorithms = new ArrayList<HashAlgorithm>();
         for (HashAlgorithm algorithm : values()) {
-            names.add(algorithm.name);
+            if (!Status.NOT_IMPLEMENTED.equals(algorithm.getStatus())) {
+                algorithms.add(algorithm);
+            }
         }
-        return names;
+        return algorithms;
     }
 
+    /**
+     * Helper method to normalize the algorithm names for name search.
+     *
+     * @param name algorithm name to normalize
+     * @return name stripped of all non-alphanumeric characters
+     */
+    static String nameNormalize(String name) {
+        return name.toLowerCase().replaceAll("[^\\p{Alnum}]", "");
+    }
 
     /**
      * Get id/code for the DataHash.
@@ -206,14 +207,29 @@ public enum HashAlgorithm {
         return status;
     }
 
+    /**
+     * Returns true if hash algorithm is implemented.
+     */
+    public boolean isImplemented() {
+        return !Status.NOT_IMPLEMENTED.equals(this.status);
+    }
 
     /**
-     * Helper method to normalize the algorithm names for name search.
-     *
-     * @param name algorithm name to normalize
-     * @return name stripped of all non-alphanumeric characters
+     * Support status of a hash algorithm.
      */
-    static String nameNormalize(String name) {
-        return name.toLowerCase().replaceAll("[^\\p{Alnum}]", "");
+    public enum Status {
+        /**
+         * Normal fully supported algorithm.
+         */
+        NORMAL,
+        /**
+         * Algorithm no longer considered secure and only kept for backwards compatibility. Should not be used in new
+         * signatures. Should trigger verification warnings when encountered in existing signatures.
+         */
+        NOT_TRUSTED,
+        /**
+         * Algorithm defined in the specification, but not yet available in the implementation.
+         */
+        NOT_IMPLEMENTED
     }
 }

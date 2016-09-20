@@ -22,8 +22,6 @@ import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.hashing.InvalidHashFormatException;
-import com.guardtime.ksi.hashing.UnknownHashAlgorithmException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
@@ -95,13 +93,13 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         ksi.sign(getFileHash(INPUT_FILE, HashAlgorithm.RIPEMD_160));
     }
 
-    @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidHashFormatException.class)
+    @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash size.* does not match .* size.*")
     public void testTcpWithShortHash(HashAlgorithm hashAlgorithm) throws Exception {
         int hashLength = hashAlgorithm.getLength();
         ksi.sign(new DataHash(hashAlgorithm, new byte[hashLength - 1]));
     }
 
-    @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidHashFormatException.class)
+    @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash size.* does not match .* size.*")
     public void testTcpWithLongHash(HashAlgorithm hashAlgorithm) throws Exception {
         int hashLength = hashAlgorithm.getLength();
         ksi.sign(new DataHash(hashAlgorithm, new byte[hashLength + 1]));
@@ -113,7 +111,7 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @DataProvider(name = VALID_HASH_ALGORITHMS_DATA_PROVIDER)
-    private static Object[][] hashAlgorithmProvider() throws UnknownHashAlgorithmException {
+    private static Object[][] hashAlgorithmProvider() {
         List<HashAlgorithm> hashAlgorithms = new ArrayList<HashAlgorithm>();
         HashAlgorithm[] allAlgorithms = HashAlgorithm.values();
         for (HashAlgorithm algorithm : allAlgorithms) {

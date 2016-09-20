@@ -19,16 +19,11 @@
 
 package com.guardtime.ksi.hashing;
 
-import com.guardtime.ksi.exceptions.KSIException;
-
 /**
  * This exception is common exception for exception thrown by {@link DataHasher}, {@link DataHash} or {@link
  * HashAlgorithm} classes.
- *
- * @see HashAlgorithmNotImplementedException
- * @see InvalidHashFormatException
  */
-public class HashException extends KSIException {
+public class HashException extends RuntimeException {
 
     private static final long serialVersionUID = 1;
 

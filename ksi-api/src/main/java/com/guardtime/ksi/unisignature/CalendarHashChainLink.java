@@ -21,6 +21,7 @@ package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashException;
+import com.guardtime.ksi.unisignature.inmemory.InvalidCalendarHashChainException;
 
 /**
  * Interface for calendar hash chain links.  A calendar chain defines a computation performed starting from the first
@@ -29,7 +30,7 @@ import com.guardtime.ksi.hashing.HashException;
  */
 public interface CalendarHashChainLink {
 
-    DataHash calculateChainStep(DataHash previous) throws HashException;
+    DataHash calculateChainStep(DataHash previous) throws InvalidCalendarHashChainException;
 
     boolean isRightLink();
 }

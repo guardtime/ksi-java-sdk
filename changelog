@@ -4,6 +4,8 @@ Version 4.4
 * IMPROVEMENT: SHA1 hash algorithm status was changed from NOT_TRUSTED to NORMAL
 * IMPROVEMENT: Improved user provided publication based verification policy
 * BUGFIX: Fixed a typo in CAL-04 verification error text
+* IMPROVEMENT: Replaced checked exceptions with runtime exception in DataHasher/DataHash/HashAlgorithm classes. 
+* IMPROVEMENT: Method HashAlgorithm.getNamesList() was removed. Added a method with name HashAlgorithm.getImplementedHashAlgorithms()
 
 Version 4.3
 

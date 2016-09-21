@@ -206,7 +206,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
      */
     protected final DataHash hash(byte[] hash1, byte[] hash2, long level, HashAlgorithm algorithm) throws InvalidAggregationHashChainException {
         if (!algorithm.isImplemented()) {
-            throw new InvalidAggregationHashChainException("Invalid calendar hash chain. Hash algorithm " +algorithm.getName() + " is not implemented");
+            throw new InvalidAggregationHashChainException("Invalid aggregation hash chain. Hash algorithm " +algorithm.getName() + " is not implemented");
         }
         DataHasher hasher = new DataHasher(algorithm);
         hasher.addData(hash1);

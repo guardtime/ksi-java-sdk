@@ -42,7 +42,7 @@ public class CalendarHashChainTest {
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Invalid calendar hash chain. Hash algorithm SHA3-256 is not implemented")
-    public void testDecodeCalendarHashChainContainingInvalidHashAlgorithm_ThrowsInvalidAggregationHashChainException() throws Exception {
+    public void testDecodeCalendarHashChainContainingInvalidHashAlgorithm_ThrowsInvalidCalendarHashChainException() throws Exception {
         load(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM);
     }
 

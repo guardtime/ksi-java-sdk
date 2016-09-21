@@ -28,7 +28,6 @@ import com.guardtime.ksi.unisignature.*;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
-import com.guardtime.ksi.util.Base16;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -40,18 +39,29 @@ import static com.guardtime.ksi.TestUtil.loadSignature;
 public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommonIntegrationTest {
 
     private final UserProvidedPublicationBasedVerificationPolicy policy = new UserProvidedPublicationBasedVerificationPolicy();
+    private static final String EXTENDED_SIGNATURE_2014_06_02 = "ok-sig-2014-06-2-extended.ksig";
+    private static final String PUBLICATION_STRING_2014_09_15 = "AAAAAA-CUCYWA-AAOBM6-PNYLRK-EPI3VG-2PJGCF-Y5QHV3-XURLI2-GRFBK4-VHBED2-Q37QIB-UE3ENA";
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithCorrectData_VerificationReturnsOk() throws Exception {
-        KSISignature signature = TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig");
+        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
         PublicationData publicationData = signature.getPublicationRecord().getPublicationData();
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureWithSamePublicationTimeButDifferentHash_VerificationReturnsInt09() throws Exception {
+        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
+        PublicationData publicationData = new PublicationData(signature.getPublicationTime(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
+        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, false);
+        Assert.assertFalse(result.isOk());
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_09);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingPublicationCreatedBeforeSignature_VerificationReturnsGen2() throws Exception {
-        KSISignature signature = TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig");
+        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
         PublicationData publicationData = new PublicationData(new Date(10000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
         Assert.assertFalse(result.isOk());
@@ -59,8 +69,8 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testVerifySignatureUsingPublicationCreatedAfterSignature_VerificationReturnsGen2() throws Exception {
-        KSISignature signature = TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig");
+    public void testVerifySignatureUsingPublicationCreatedAfterSignatureExtendingNotAllowed_VerificationReturnsGen2() throws Exception {
+        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
         PublicationData publicationData = new PublicationData(new Date(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, false);
         Assert.assertFalse(result.isOk());
@@ -69,7 +79,7 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingPublicationCreatedAfterSignatureAllowExtending_VerificationReturnsPub1() throws Exception {
-        KSISignature signature = TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig");
+        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
         PublicationData publicationData = new PublicationData(new Date(1431648000000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
         Assert.assertFalse(result.isOk());
@@ -107,8 +117,8 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingDifferentPublication_VerificationReturnsOk() throws Exception {
-        KSISignature signature = TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig");
-        PublicationData publicationData = new PublicationData(new Date(1401698888000L), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("123FE0561095161BBBD8B676F607DD7C78F8A96F1D2E352C39688AB2A3CB5D45")));
+        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
+        PublicationData publicationData = new PublicationData("AAAAAA-CTRQ5E-QAISH7-QFMEEV-CYN3XW-FWO33A-PXL4PD-4KS3Y5-FY2SYO-LIRKZK-HS25IW-5FIBTP");
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
         Assert.assertTrue(result.isOk());
     }
@@ -116,7 +126,7 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithWrongPublicationReferenceInPublicationRecord() throws Exception {
         KSISignature signature = loadSignature("publication-based-verification/ok-sig-2014-06-2-extended-wrong-publication-reference.ksig");
-        PublicationData publicationData = new PublicationData(new Date(1410739200000L), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("C1679EDC2E2A23D1BA9B4F49845C7607AEEF48AD1A344A1572A70907A86FF040")));
+        PublicationData publicationData = new PublicationData(PUBLICATION_STRING_2014_09_15);
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
         Assert.assertTrue(result.isOk());
     }
@@ -124,7 +134,7 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithNoPublicationReferenceInPublicationRecord() throws Exception {
         KSISignature signature = loadSignature("publication-based-verification/ok-sig-2014-06-2-extended-no-publication-reference.ksig");
-        PublicationData publicationData = new PublicationData(new Date(1410739200000L), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("C1679EDC2E2A23D1BA9B4F49845C7607AEEF48AD1A344A1572A70907A86FF040")));
+        PublicationData publicationData = new PublicationData(PUBLICATION_STRING_2014_09_15);
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
         Assert.assertTrue(result.isOk());
     }

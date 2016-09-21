@@ -105,6 +105,14 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         ksi.sign(new DataHash(hashAlgorithm, new byte[hashLength + 1]));
     }
 
+    @Test (groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "The connector is being disposed.")
+    public void tcpClientSettingsConnector() throws Exception {
+        TCPClient tcpClient = new TCPClient(loadTCPSettings());
+        KSI tcpKsi = createKsi(httpClient, tcpClient, httpClient);
+        tcpClient.close();
+        tcpKsi.sign(new byte[0]);
+    }
+
     private VerificationResult signAndVerify(HashAlgorithm algorithm) throws Exception {
         KSISignature sig = ksi.sign(getFileHash(INPUT_FILE, algorithm));
         return ksi.verify(TestUtil.buildContext(sig, ksi, httpClient, getFileHash(INPUT_FILE, algorithm)), new KeyBasedVerificationPolicy());

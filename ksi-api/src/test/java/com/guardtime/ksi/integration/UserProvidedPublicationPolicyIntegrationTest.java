@@ -39,7 +39,6 @@ import static com.guardtime.ksi.TestUtil.loadSignature;
 public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommonIntegrationTest {
 
     private final UserProvidedPublicationBasedVerificationPolicy policy = new UserProvidedPublicationBasedVerificationPolicy();
-    private static final String EXTENDED_SIGNATURE_2014_06_02 = "ok-sig-2014-06-2-extended.ksig";
     private static final String PUBLICATION_STRING_2014_09_15 = "AAAAAA-CUCYWA-AAOBM6-PNYLRK-EPI3VG-2PJGCF-Y5QHV3-XURLI2-GRFBK4-VHBED2-Q37QIB-UE3ENA";
 
     @Test(groups = TEST_GROUP_INTEGRATION)

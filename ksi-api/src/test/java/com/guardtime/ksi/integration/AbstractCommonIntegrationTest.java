@@ -77,6 +77,11 @@ public abstract class AbstractCommonIntegrationTest {
     private static final String DEFAULT_PUBFILE_URL = "http://verify.guardtime.com/gt-controlpublications.bin";
     protected static String javaKeyStorePath = null;
 
+    public static final String SIGNATURE_2014_06_02 = "ok-sig-2014-06-2.ksig";
+    public static final String EXTENDED_SIGNATURE_2014_06_02 = "ok-sig-2014-06-2-extended.ksig";
+    public static final String EXTENDED_SIGNATURE_2014_04_30 = "ok-sig-2014-04-30.1-extended.ksig";
+    public static final String PUIBLICATION_STRING_2014_05_15 = "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
+
     protected KSI ksi;
     protected SimpleHttpClient simpleHttpClient;
     protected ServiceCredentials serviceCredentials;

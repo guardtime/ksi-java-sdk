@@ -220,7 +220,7 @@ public final class KSIBuilder {
      *     <li>{@link VerificationContextBuilder#setSignature(KSISignature)} - the signature to be returned to the user</li>
      * </ul>
      * </p>
-     * {@link com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy} can not
+     * Policies that are using {@link com.guardtime.ksi.publication.PublicationData} can not
      * be used as default verification policy by API users because user publication is always null.
      * <p/>
      * By default {@link InternalVerificationPolicy} is used.

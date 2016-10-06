@@ -101,7 +101,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
             }
         }
         addTlvStructure(root, (TLVStructure) rfc3161Record);
-        return createSignature(root, false);
+        return createSignature(root, extendingAllowed);
     }
 
     private KSISignature createSignature(TLVElement element, boolean extendingAllowed) throws KSIException {

@@ -194,7 +194,7 @@ public final class KSIBuilder {
 
     /**
      * This method can be used to set a default verification policy. Default verification policy is used to perform
-     * verification in the following cases:
+     * signature verification in the following cases:
      * <ul>
      *     <li>new signature is created</li>
      *     <li>existing signature is extended</li>
@@ -205,8 +205,25 @@ public final class KSIBuilder {
      * {@link com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException} exception is thrown.
      * If needed, user can access the invalid signature and verification result using the methods
      * {@link InvalidSignatureContentException#getSignature()} and
-     * {@link InvalidSignatureContentException#getVerificationResult()}. By default {@link InternalVerificationPolicy}
-     * is used.
+     * {@link InvalidSignatureContentException#getVerificationResult()}.
+     * </p>
+     * The following values are used to build a verification context that will be used by default verification policy:
+     * <ul>
+     *     <li>{@link VerificationContextBuilder#setExtendingAllowed(boolean)} is set to true</li>
+     *     <li>{@link VerificationContextBuilder#setExtenderClient(KSIExtenderClient)} - an extender client configure by
+     *     {@link KSIBuilder} class is used</li>
+     *     <li>{@link VerificationContextBuilder#setPublicationsFile(PublicationsFile)} - a publication file configured
+     *     by {@link KSIBuilder} class is used</li>
+     *     <li>{@link VerificationContextBuilder#setDocumentHash(DataHash)} - in case of signature creation input hash
+     *     is used, otherwise null value is used.</li>
+     *     <li>{@link VerificationContextBuilder#setUserPublication(PublicationData)} - null value is always used</li>
+     *     <li>{@link VerificationContextBuilder#setSignature(KSISignature)} - the signature to be returned to the user</li>
+     * </ul>
+     * </p>
+     * {@link com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy} can not
+     * be used as default verification policy by API users because user publication is always null.
+     * <p/>
+     * By default {@link InternalVerificationPolicy} is used.
      */
     public KSIBuilder setDefaultVerificationPolicy(Policy defaultVerificationPolicy) {
         this.defaultVerificationPolicy = defaultVerificationPolicy;

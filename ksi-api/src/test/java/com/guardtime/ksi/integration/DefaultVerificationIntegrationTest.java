@@ -19,31 +19,24 @@
 
 package com.guardtime.ksi.integration;
 
-import com.guardtime.ksi.CommonTestUtil;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.KSIBuilder;
-import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.policies.*;
-import com.guardtime.ksi.util.Util;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.InputStream;
 
 import static com.guardtime.ksi.TestUtil.loadFile;
 
 public class DefaultVerificationIntegrationTest extends AbstractCommonIntegrationTest {
     private static KSIBuilder ksiBuilder;
-    private static InputStream signatureInputStream;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -52,24 +45,23 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
                 setKsiProtocolPublicationsFileClient(httpClient).
                 setKsiProtocolSignerClient(httpClient).
                 setPublicationsFileTrustedCertSelector(createCertSelector());
-        signatureInputStream = CommonTestUtil.load(SIGNATURE_2014_06_02);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testSigning_InvalidSignatureContentException() throws Exception {
+    public void testSigningWithPublicationFileBasedVerification_InvalidSignatureContentException_GEN2() throws Exception {
         Policy policy = new PublicationsFileBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
 
         try{
             ksiTest.sign(new byte[32]);
         } catch (InvalidSignatureContentException e) {
-            Assert.assertNotNull(e.getSignature(), "Signature in exception is NULL.");
+            Assert.assertNotNull(e.getSignature(), "Signature is not provided with exception.");
             Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.GEN_2);
         }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testExtendSignature_InvalidSignatureContentException() throws Exception {
+    public void testExtendInvalidSignature_InvalidSignatureContentException_INT3() throws Exception {
         KSI ksiTest = ksiBuilder.build();
         KSISignature signature = ksiTest.read(loadFile("calendar-based-verification/all-wrong-hash-chains-in-signature.ksig"));
 
@@ -83,21 +75,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testInternalVerificationAsDefaultVerificationPolicy_OK() throws Exception {
-        InternalVerificationPolicy policy = new InternalVerificationPolicy();
-        KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        try{
-            ksiTest.read(signatureInputStream);
-        } catch (InvalidSignatureContentException e) {
-            System.out.println("Verification failed with policy " + policy.getName());
-            System.out.println(e.getVerificationResult().isOk());
-            throw e;
-        }
-
-    }
-
-    @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testInternalVerificationAsDefaultPolicy_InvalidSignatureContentException() throws Exception {
+    public void testInternalVerificationAsDefaultPolicy_InvalidSignatureContentException_INT11() throws Exception {
         Policy policy = new InternalVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
         try{
@@ -108,7 +86,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testKeyBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException() throws Exception {
+    public void testKeyBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_KEY1() throws Exception {
         Policy policy = new KeyBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
         try {
@@ -116,11 +94,10 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         } catch (InvalidSignatureContentException e) {
             Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.KEY_01);
         }
-
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testCalendarBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException() throws Exception {
+    public void testCalendarBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_CAL2() throws Exception {
         Policy policy = new CalendarBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
         try {
@@ -132,7 +109,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testPublicationFileBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException() throws Exception {
+    public void testPublicationFileBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_PUB3() throws Exception {
         Policy policy = new PublicationsFileBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
         try {

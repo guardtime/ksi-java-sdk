@@ -38,10 +38,12 @@ import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
+import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.util.Util;
 
@@ -64,10 +66,12 @@ public final class KSIBuilder {
     private KSIExtenderClient extenderClient;
     private KSIPublicationsFileClient publicationsFileClient;
 
-    private KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory();
+    private KSISignatureFactory uniSignatureFactory;
 
     private KeyStore trustStore;
     private long publicationsFileCacheExpirationTime = 0L;
+
+    private Policy defaultVerificationPolicy;
 
     /**
      * Sets the default signing algorithm to be used to create new KSI signatures. When using {@link KSI#sign(DataHash)}
@@ -189,6 +193,44 @@ public final class KSIBuilder {
     }
 
     /**
+     * This method can be used to set a default verification policy. Default verification policy is used to perform
+     * signature verification in the following cases:
+     * <ul>
+     *     <li>new signature is created</li>
+     *     <li>existing signature is extended</li>
+     *     <li>existing signature is read from stream, byte array or file</li>
+     * </ul>
+     *
+     * Verification will be ran before signature is returned to the user. If signature verification fails,
+     * {@link com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException} exception is thrown.
+     * If needed, user can access the invalid signature and verification result using the methods
+     * {@link InvalidSignatureContentException#getSignature()} and
+     * {@link InvalidSignatureContentException#getVerificationResult()}.
+     * </p>
+     * The following values are used to build a verification context that will be used by default verification policy:
+     * <ul>
+     *     <li>{@link VerificationContextBuilder#setExtendingAllowed(boolean)} is set to true</li>
+     *     <li>{@link VerificationContextBuilder#setExtenderClient(KSIExtenderClient)} - an extender client configure by
+     *     {@link KSIBuilder} class is used</li>
+     *     <li>{@link VerificationContextBuilder#setPublicationsFile(PublicationsFile)} - a publication file configured
+     *     by {@link KSIBuilder} class is used</li>
+     *     <li>{@link VerificationContextBuilder#setDocumentHash(DataHash)} - in case of signature creation input hash
+     *     is used, otherwise null value is used.</li>
+     *     <li>{@link VerificationContextBuilder#setUserPublication(PublicationData)} - null value is always used</li>
+     *     <li>{@link VerificationContextBuilder#setSignature(KSISignature)} - the signature to be returned to the user</li>
+     * </ul>
+     * </p>
+     * Policies that are using {@link com.guardtime.ksi.publication.PublicationData} can not
+     * be used as default verification policy by API users because user publication is always null.
+     * <p/>
+     * By default {@link InternalVerificationPolicy} is used.
+     */
+    public KSIBuilder setDefaultVerificationPolicy(Policy defaultVerificationPolicy) {
+        this.defaultVerificationPolicy = defaultVerificationPolicy;
+        return this;
+    }
+
+    /**
      * Builds the {@link KSI} instance. Checks that the signing, extender and publications file clients are set.
      *
      * @return instance of {@link KSI} class
@@ -214,9 +256,13 @@ public final class KSIBuilder {
         if (trustStore == null) {
             this.setPublicationsFilePkiTrustStore(new File(getDefaultTrustStore()), null);
         }
+        if (defaultVerificationPolicy == null) {
+            this.defaultVerificationPolicy = new InternalVerificationPolicy();
+        }
         PKITrustStore jksTrustStore = new JKSTrustStore(trustStore, certSelector);
         PublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(jksTrustStore);
         PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
+        this.uniSignatureFactory = new InMemoryKsiSignatureFactory(defaultVerificationPolicy, publicationsFileAdapter, extenderClient, true);
         KSIService ksiService = new KSIServiceImpl(signingClient, extenderClient, publicationsFileAdapter, uniSignatureFactory);
         return new KSIImpl(ksiService, uniSignatureFactory, defaultHashAlgorithm);
     }
@@ -245,7 +291,6 @@ public final class KSIBuilder {
         private KSIImpl(KSIService ksiService, KSISignatureFactory uniSignatureFactory, HashAlgorithm defaultHashAlgorithm) {
             this.ksiService = ksiService;
             this.uniSignatureFactory = uniSignatureFactory;
-
             this.defaultHashAlgorithm = defaultHashAlgorithm;
         }
 
@@ -352,7 +397,7 @@ public final class KSIBuilder {
             }
             Date publicationDate = publicationRecord.getPublicationTime();
             ExtensionRequestFuture serviceFuture = ksiService.extend(signature.getAggregationTime(), publicationDate);
-            return new SignatureExtensionRequestFuture(serviceFuture, publicationRecord, signature);
+            return new SignatureExtensionRequestFuture(serviceFuture, publicationRecord, signature, uniSignatureFactory);
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {

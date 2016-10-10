@@ -19,13 +19,11 @@
 package com.guardtime.ksi.service;
 
 import java.io.ByteArrayInputStream;
-import java.nio.ByteBuffer;
 import java.util.Date;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationsFile;
-import com.guardtime.ksi.publication.PublicationsFileFactory;
 import com.guardtime.ksi.service.aggregation.AggregationRequest;
 import com.guardtime.ksi.service.aggregation.AggregationRequestPayload;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -61,7 +59,8 @@ public class KSIServiceImpl implements KSIService {
      * @param publicationsFileAdapter
      *         - KSI HTTP client to be used for fetching the publications file. May not be null.
      */
-    public KSIServiceImpl(KSISigningClient signerClient, KSIExtenderClient extenderClient, PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory) throws KSIException {
+    public KSIServiceImpl(KSISigningClient signerClient, KSIExtenderClient extenderClient,
+                          PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory) throws KSIException {
         if (signerClient == null) {
             throw new KSIException("Invalid input parameter. Singer client can not be null");
         }
@@ -88,7 +87,7 @@ public class KSIServiceImpl implements KSIService {
         KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.nextMessageId());
         AggregationRequest requestMessage = new AggregationRequest(header, request, credentials.getLoginKey());
         Future<TLVElement> future = signerClient.sign(convert(requestMessage));
-        return new CreateSignatureFuture(future, requestContext, signatureFactory);
+        return new CreateSignatureFuture(future, requestContext, signatureFactory, dataHash);
     }
 
     public ExtensionRequestFuture extend(Date aggregationTime, Date publicationTime) throws KSIException {
@@ -112,7 +111,7 @@ public class KSIServiceImpl implements KSIService {
         ExtensionRequest requestMessage = new ExtensionRequest(header, extensionRequest, credentials.getLoginKey());
         ByteArrayInputStream inputStream = convert(requestMessage);
         Future<TLVElement> future = extenderClient.extend(inputStream);
-        return new ExtensionRequestFuture(future, requestContext, signatureFactory);
+        return new ExtensionRequestFuture(future, requestContext);
     }
 
     private ByteArrayInputStream convert(TLVStructure request) throws KSIProtocolException {

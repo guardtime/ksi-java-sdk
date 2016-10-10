@@ -56,7 +56,9 @@ public class AbstractCommonServiceTest {
         Mockito.when(mockedTrustStore.isTrusted(Mockito.any(X509Certificate.class), Mockito.any(Store.class))).thenReturn(true);
 
         InMemoryPublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(mockedTrustStore);
-        ksiService = Mockito.spy(new KSIServiceImpl(mockedSigningClient, mockedExtenderClient, new NonCachingPublicationsFileClientAdapter(mockedPublicationsFileClient, publicationsFileFactory), new InMemoryKsiSignatureFactory()));
+        ksiService = Mockito.spy(new KSIServiceImpl(mockedSigningClient, mockedExtenderClient,
+                new NonCachingPublicationsFileClientAdapter(mockedPublicationsFileClient, publicationsFileFactory),
+                new InMemoryKsiSignatureFactory()));
         mockedResponse = Mockito.mock(Future.class);
         mockedPublicationsFileResponse = Mockito.mock(Future.class);
         Mockito.when(ksiService.generateRequestId()).thenReturn(42275443333883166L);

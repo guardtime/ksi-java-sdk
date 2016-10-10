@@ -47,6 +47,7 @@ import java.util.Date;
 
 public class UserProvidedPublicationBasedVerificationPolicyTest {
 
+    private static final Policy VERIFICATION_POLICY = new UserProvidedPublicationBasedVerificationPolicy();
     private KSIPublicationsFileClient mockedPublicationsFileClient;
     private KSI ksi;
     private KSIExtenderClient mockedExtenderClient;
@@ -65,6 +66,11 @@ public class UserProvidedPublicationBasedVerificationPolicyTest {
                 setPublicationsFileTrustedCertSelector(mockedCertificateSelector).
                 setPublicationsFilePkiTrustStore(TestUtil.loadFile("truststore.jks"), "changeit").
                 build();
+        PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
+        Mockito.when(mockedTrustProvider.getName()).thenReturn("MockProvider");
+        Future<ByteBuffer> future = Mockito.mock(Future.class);
+        Mockito.when(future.getResult()).thenReturn(ByteBuffer.wrap(TestUtil.loadBytes("publications.tlv")));
+        Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(future);
     }
 
     @Test
@@ -78,34 +84,30 @@ public class UserProvidedPublicationBasedVerificationPolicyTest {
 
     @Test
     public void testVerifySignatureThatDoesNotContainPublication() throws Exception {
-        PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
-        Mockito.when(mockedTrustProvider.getName()).thenReturn("MockProvider");
-        Future<ByteBuffer> future = Mockito.mock(Future.class);
-        Mockito.when(future.getResult()).thenReturn(ByteBuffer.wrap(TestUtil.loadBytes("publications.tlv")));
-        Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(future);
-
         KSISignature signature = TestUtil.loadSignature("ok-sig-2014-04-30.1.ksig");
         DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
         VerificationContext context = TestUtil.buildContext(signature, ksi, mockedExtenderClient, new PublicationData(new Date(53610150000L), dataHash), false);
-        VerificationResult result = ksi.verify(context, new UserProvidedPublicationBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(context, VERIFICATION_POLICY);
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
     }
 
     @Test
-    public void testVerifySignatureWithDifferentPublicationData_ThrowsVerificationException() throws Exception {
-        PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
-        Mockito.when(mockedTrustProvider.getName()).thenReturn("MockProvider");
-        Future<ByteBuffer> future = Mockito.mock(Future.class);
-        Mockito.when(future.getResult()).thenReturn(ByteBuffer.wrap(TestUtil.loadBytes("publications.tlv")));
-        Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(future);
-
+    public void testVerifySignatureWithDifferentPublicationTime_ThrowsVerificationException() throws Exception {
         KSISignature signature = TestUtil.loadSignature("ok-sig-2014-04-30.1-extended.ksig");
         DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D"));
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, new PublicationData(new Date(53610150000L), dataHash), false), new UserProvidedPublicationBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, new PublicationData(new Date(53610150000L), dataHash), false), VERIFICATION_POLICY);
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
     }
 
+    @Test
+    public void testVerifySignatureWithDifferentPublicationHashes_ThrowsVerificationException() throws Exception {
+        KSISignature signature = TestUtil.loadSignature("ok-sig-2014-04-30.1-extended.ksig");
+        DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D"));
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, new PublicationData(new Date(1400112000000L), dataHash), false), VERIFICATION_POLICY);
+        Assert.assertFalse(result.isOk());
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_09);
+    }
 
 }

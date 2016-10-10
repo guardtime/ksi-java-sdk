@@ -22,6 +22,8 @@ package com.guardtime.ksi.publication.inmemory;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.publication.PublicationData;
+import com.guardtime.ksi.tlv.TLVElement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,11 +31,15 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static java.util.Arrays.asList;
 
 public class PublicationsFilePublicationRecordTest {
 
     private static final String TEST_FILE_PUBLICATION_RECORD_PUBFILE_OK = "publication-record/publication-record-pubfile-ok.tlv";
     private static final String TEST_FILE_PUBLICATION_RECORD_PUBFILE2_OK = "publication-record/publication-record-pubfile2-ok.tlv";
+    private static final String PUBLICATION_STRING = "AAAAAA-CTJR3I-AANBWU-RY76YF-7TH2M5-KGEZVA-WLLRGD-3GKYBG-AM5WWV-4MCLSP-XPRDDI-UFMHBA";
+    private static final int ELEMENT_TAG_PUBLICATION_REFERENCE = 0x09;
+    private static final int ELEMENT_TAG_PUBLICATION_REPOSITORY_URI = 0x0A;
 
     @Test
     public void testDecodePublicationFileRecord_Ok() throws Exception {
@@ -55,6 +61,20 @@ public class PublicationsFilePublicationRecordTest {
         Assert.assertEquals(publicationRecord.getPublicationReferences().size(), 2);
         Assert.assertFalse(publicationRecord.getPublicationRepositoryURIs().isEmpty());
         Assert.assertEquals(publicationRecord.getPublicationRepositoryURIs().size(), 2);
+    }
+
+    @Test
+    public void testCreateNewPublicationFileRecord_Ok() throws Exception {
+        PublicationsFilePublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(PUBLICATION_STRING), asList("ref1", "ref2"), asList("uri1"));
+        Assert.assertNotNull(publicationRecord.getPublicationData());
+        Assert.assertNotNull(publicationRecord.getPublicationReferences());
+        Assert.assertNotNull(publicationRecord.getRootElement());
+        Assert.assertEquals(publicationRecord.getPublicationReferences().size(), 2);
+        Assert.assertEquals(publicationRecord.getPublicationRepositoryURIs().size(), 1);
+        TLVElement rootElement = publicationRecord.getRootElement();
+
+        Assert.assertEquals(rootElement.getChildElements(ELEMENT_TAG_PUBLICATION_REFERENCE).size(), 2);
+        Assert.assertEquals(rootElement.getChildElements(ELEMENT_TAG_PUBLICATION_REPOSITORY_URI).size(), 1);
     }
 
     @Test(expectedExceptions = InvalidPublicationRecordException.class, expectedExceptionsMessageRegExp = "Required field publicationData\\(TLV\\[0x10\\]\\) missing in # PublicationRecord TLV\\[0x703\\]")

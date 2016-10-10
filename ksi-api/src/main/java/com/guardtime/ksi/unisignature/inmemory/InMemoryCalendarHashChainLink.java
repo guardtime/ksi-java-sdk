@@ -42,11 +42,14 @@ abstract class InMemoryCalendarHashChainLink extends TLVStructure implements Cal
         this.dataHash = rootElement.getDecodedDataHash();
     }
 
-    public abstract DataHash calculateChainStep(DataHash previous) throws HashException;
+    public abstract DataHash calculateChainStep(DataHash previous) throws InvalidCalendarHashChainException;
 
     public abstract boolean isRightLink();
 
-    protected DataHash calculateStep(byte[] imprintA, byte[] imprintB, HashAlgorithm algorithm) throws HashException {
+    protected DataHash calculateStep(byte[] imprintA, byte[] imprintB, HashAlgorithm algorithm) throws InvalidCalendarHashChainException {
+        if (!algorithm.isImplemented()) {
+            throw new InvalidCalendarHashChainException("Invalid calendar hash chain. Hash algorithm " +algorithm.getName() + " is not implemented");
+        }
         DataHasher hasher = new DataHasher(algorithm);
         hasher.addData(imprintA);
         hasher.addData(imprintB);

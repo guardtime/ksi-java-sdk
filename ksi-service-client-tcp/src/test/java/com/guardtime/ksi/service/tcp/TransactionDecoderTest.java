@@ -20,8 +20,6 @@
 package com.guardtime.ksi.service.tcp;
 
 import com.guardtime.ksi.CommonTestUtil;
-import com.guardtime.ksi.util.Base16;
-import com.guardtime.ksi.util.Util;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.mockito.Mock;
@@ -30,11 +28,6 @@ import org.mockito.MockitoAnnotations;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 import static org.mockito.Mockito.times;
 

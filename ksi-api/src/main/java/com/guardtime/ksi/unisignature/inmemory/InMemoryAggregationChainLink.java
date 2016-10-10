@@ -200,12 +200,15 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
      *         second hash
      * @param level
      *         level
-     * @param hashAlgorithm
+     * @param algorithm
      *         hash algorithm to use
      * @return instance of {@link DataHash}
      */
-    protected final DataHash hash(byte[] hash1, byte[] hash2, long level, HashAlgorithm hashAlgorithm) throws HashException {
-        DataHasher hasher = new DataHasher(hashAlgorithm);
+    protected final DataHash hash(byte[] hash1, byte[] hash2, long level, HashAlgorithm algorithm) throws InvalidAggregationHashChainException {
+        if (!algorithm.isImplemented()) {
+            throw new InvalidAggregationHashChainException("Invalid aggregation hash chain. Hash algorithm " +algorithm.getName() + " is not implemented");
+        }
+        DataHasher hasher = new DataHasher(algorithm);
         hasher.addData(hash1);
         hasher.addData(hash2);
         hasher.addData(Util.encodeUnsignedLong(level));

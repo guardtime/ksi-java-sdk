@@ -77,6 +77,11 @@ public abstract class AbstractCommonIntegrationTest {
     private static final String DEFAULT_PUBFILE_URL = "http://verify.guardtime.com/gt-controlpublications.bin";
     protected static String javaKeyStorePath = null;
 
+    public static final String SIGNATURE_2014_06_02 = "ok-sig-2014-06-2.ksig";
+    public static final String EXTENDED_SIGNATURE_2014_06_02 = "ok-sig-2014-06-2-extended.ksig";
+    public static final String EXTENDED_SIGNATURE_2014_04_30 = "ok-sig-2014-04-30.1-extended.ksig";
+    public static final String PUIBLICATION_STRING_2014_05_15 = "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
+
     protected KSI ksi;
     protected SimpleHttpClient simpleHttpClient;
     protected ServiceCredentials serviceCredentials;
@@ -198,14 +203,14 @@ public abstract class AbstractCommonIntegrationTest {
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
         Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(serviceCredentials);
-        final TLVElement responseTLV = TLVElement.createFromBytes(TestUtil.loadBytes("extension/extension-response-ok-request-id-4321.tlv"));
+        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes("extension/extension-response-ok-request-id-4321.tlv"));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
-        final TLVElement calendarChain = TLVElement.createFromBytes(TestUtil.loadBytes(responseCalendarChainFile));
+        final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
 
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
                 InputStream input = (InputStream) invocationOnMock.getArguments()[0];
-                TLVElement tlvElement = TLVElement.createFromBytes(Util.toByteArray(input));
+                TLVElement tlvElement = TLVElement.create(Util.toByteArray(input));
                 TLVElement payload = responseTLV.getFirstChildElement(0x302);
                 payload.getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x301).getFirstChildElement(0x01).getDecodedLong());
 

@@ -120,7 +120,7 @@ public class InMemoryPublicationsFileTest {
         new InMemoryPublicationsFile(TestUtil.load(PUBLICATION_FILE_RECORD_TWO_HEADERS));
     }
 
-    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid DataHash")
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid DataHash content")
     public void testDecodePublicationsFileWithInvalidHashLength_ThrowsTLVParserException() throws Exception {
         new InMemoryPublicationsFile(TestUtil.load(PUBLICATION_FILE_RECORD_INVALID_PUBLICATION_HASH_LENGTH));
     }

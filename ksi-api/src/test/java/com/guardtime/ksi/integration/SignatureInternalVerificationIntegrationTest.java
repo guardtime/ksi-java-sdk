@@ -18,12 +18,12 @@
  */
 
 package com.guardtime.ksi.integration;
-import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import org.testng.annotations.Test;
 
 public class SignatureInternalVerificationIntegrationTest extends AbstractCommonIntegrationTest{
-    private final Policy policy = new KeyBasedVerificationPolicy();
+    private final Policy policy = new InternalVerificationPolicy();
 
     @Test(dataProvider = INTERNAL_VERIFICATION_DATA_PROVIDER)
     public void testSignatureInternalVerificationTest(DataHolderForIntegrationTests testData) throws Exception {

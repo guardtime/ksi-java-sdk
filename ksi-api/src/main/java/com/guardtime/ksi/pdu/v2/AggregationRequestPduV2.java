@@ -9,21 +9,20 @@ import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.List;
 
-class AggregationRequestPduV2 extends Pdu implements AggregationRequest {
+class AggregationRequestPduV2 extends PduV2 implements AggregationRequest {
 
     private static final int PDU_TYPE_AGGREGATION_REQUEST = 0x0220;
 
     private final KSIRequestContext context;
 
     public AggregationRequestPduV2(List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context) throws KSIException {
-        super(new PduHeader(context), payloads, macAlgorithm, context.getLoginKey());
+        super(new PduV2Header(context), payloads, macAlgorithm, context.getLoginKey());
         this.context = context;
     }
 
-    //TODO element types
     @Override
     public int[] getSupportedPayloadTypes() {
-        return new int[] {0x02};
+        return new int[] {AggregationRequestPayloadV2.ELEMENT_TYPE};
     }
 
     @Override
@@ -31,7 +30,6 @@ class AggregationRequestPduV2 extends Pdu implements AggregationRequest {
         return 0x0203;
     }
 
-    //TODO move to constant
     @Override
     public int getElementType() {
         return PDU_TYPE_AGGREGATION_REQUEST;

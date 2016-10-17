@@ -4,7 +4,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.tlv.TLVElement;
 
-class AggregationResponsePduV2 extends Pdu {
+class AggregationResponsePduV2 extends PduV2 {
 
     public AggregationResponsePduV2(TLVElement rootElement, KSIRequestContext context) throws KSIException {
         super(rootElement, context.getLoginKey());

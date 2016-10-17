@@ -2,12 +2,11 @@ package com.guardtime.ksi.pdu.v1;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
-import com.guardtime.ksi.pdu.AggregationRequest;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -17,6 +16,7 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 public class PduV1FactoryTest {
 
     private static final long DEFAULT_LEVEL = 0L;
+    private KSIRequestContext extensionContext;
     private PduV1Factory pduFactory = new PduV1Factory();
     private DataHash dataHash;
     private KSIRequestContext requestContext;
@@ -25,6 +25,7 @@ public class PduV1FactoryTest {
     public void setUp() throws Exception {
         this.dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
         this.requestContext = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 42275443333883166L, 42L, 42L);
+        this.extensionContext = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 5546551786909961666L, 42L, 42L);
     }
 
     @Test
@@ -73,30 +74,19 @@ public class PduV1FactoryTest {
         pduFactory.readAggregationResponse(requestContext, loadTlv("aggregation-202-error.tlv"));
     }
 
-    // TODO move the message
-//    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Can't parse response message")
-//    public void testExtensionResponseFormatException() throws Exception {
-////        Mockito.when(mockedResponse.getResult()).thenReturn();
-////        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-////        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(5546551786909961666L);
-////
-////        ksi.extend(loadSignature("ok-sig-2014-04-30.1.ksig"));
-//        pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 5546551786909961666L, 42L, 42L), loadTlv("extension/extension-response-invalid.tlv"));
-//    }
-    //TODO refactor context
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testExtensionResponseInvalidHMAC_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 5546551786909961666L, 42L, 42L), loadTlv("extension/extension-response-invalid-hmac.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("extension/extension-response-invalid-hmac.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*request IDs do not match, sent \\'[0-9]+\\' received \\'4321\\'")
     public void testExtensionRequestIdsMismatch() throws Exception {
-        pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 5546551786909961666L, 42L, 42L), loadTlv("extension/extension-response-ok-request-id-4321.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("extension/extension-response-ok-request-id-4321.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Response message does not contain response payload element")
     public void testExtensionResponseEmpty() throws Exception {
-        pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 5546551786909961666L, 42L, 42L), loadTlv("extension/extension-response-missing-response-payload.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("extension/extension-response-missing-response-payload.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(404\\):Not found")
@@ -106,7 +96,7 @@ public class PduV1FactoryTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(404\\):Response error 404: Not found")
     public void testExtensionResponseWithError() throws Exception {
-        pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 5546551786909961666L, 42L, 42L), loadTlv("extension/extension-error-response-with-header.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("extension/extension-error-response-with-header.tlv"));
     }
 
 }

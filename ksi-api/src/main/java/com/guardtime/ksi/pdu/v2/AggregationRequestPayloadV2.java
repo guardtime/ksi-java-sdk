@@ -5,9 +5,9 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 
-class AggregationRequestPayloadV2 extends TLVStructure{
+class AggregationRequestPayloadV2 extends TLVStructure {
 
-    public static final int ELEMENT_TYPE = 0x02;
+    static final int ELEMENT_TYPE = 0x02;
 
     private static final int ELEMENT_TYPE_REQUEST_ID = 0x01;
     private static final int ELEMENT_TYPE_REQUEST_HASH = 0x02;

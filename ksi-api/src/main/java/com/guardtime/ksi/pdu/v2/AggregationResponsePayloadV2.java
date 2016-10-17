@@ -2,6 +2,7 @@ package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
@@ -24,7 +25,7 @@ class AggregationResponsePayloadV2 extends TLVStructure implements AggregationRe
     private Long error;
     private String errorMessage;
 
-    public AggregationResponsePayloadV2(TLVElement element) throws KSIException {
+    public AggregationResponsePayloadV2(TLVElement element, KSIRequestContext context) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {
@@ -47,8 +48,14 @@ class AggregationResponsePayloadV2 extends TLVStructure implements AggregationRe
                     verifyCriticalFlag(child);
             }
         }
+        if (error != 0) {
+            throw new KSIProtocolException("Invalid aggregation response. Error code: 0x" + Long.toHexString(error) + ", message: '"+errorMessage+"'");
+        }
         if (requestId == null) {
             throw new KSIProtocolException("Invalid KSI response. Aggregation response payload does not contain request id.");
+        }
+        if (!requestId.equals(context.getRequestId())) {
+            throw new KSIProtocolException("Aggregation response request ID do not match. Sent '" + context.getRequestId() + "'" + " received '" + requestId + "'");
         }
     }
 

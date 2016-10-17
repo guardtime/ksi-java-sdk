@@ -9,10 +9,10 @@ import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.List;
 
-class ExtensionRequestPduV2 extends Pdu implements ExtensionRequest {
+class ExtensionRequestPduV2 extends PduV2 implements ExtensionRequest {
 
     public ExtensionRequestPduV2(List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context) throws KSIException {
-        super(new PduHeader(context), payloads, macAlgorithm, context.getLoginKey());
+        super(new PduV2Header(context), payloads, macAlgorithm, context.getLoginKey());
     }
 
     @Override

@@ -24,7 +24,7 @@ public class AggregationPduTest {
 
     @Test
     public void testCreateAggregationPdu_Ok() throws Exception {
-//        PduHeader header = new PduHeader(CREDENTIALS.getLoginId(), 1L, 1L);
+//        PduV2Header header = new PduV2Header(CREDENTIALS.getLoginId(), 1L, 1L);
 //        TLVElement payload = new TLVElement(false, false, 0x0201);
 //        payload.addChildElement(TLVElement.create(0x01, 42L));
 //        payload.addChildElement(TLVElement.create(0x02, new DataHash(HashAlgorithm.SHA2_256, new byte[32])));

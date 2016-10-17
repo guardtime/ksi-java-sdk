@@ -17,7 +17,6 @@
  * reserves and retains all trademark rights.
  */
 /**
- * TODO comment
- * Contains classes related to KSI PDU implementation
+ * PDU v1 implementation
  */
 package com.guardtime.ksi.pdu.v1;

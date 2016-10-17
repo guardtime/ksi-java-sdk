@@ -20,6 +20,8 @@ package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
@@ -42,7 +44,7 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
     private Date lastTime;
     private TLVElement hashChain;
 
-    public ExtensionResponsePayloadV2(TLVElement element) throws KSIException {
+    public ExtensionResponsePayloadV2(TLVElement element, KSIRequestContext context) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {
@@ -66,8 +68,18 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
                     verifyCriticalFlag(child);
             }
         }
+        if (status != 0) {
+            throw new KSIProtocolException("Invalid extension response. Error code: 0x" + Long.toHexString(status) + ", message: '"+errorMessage+"'");
+        }
+        if (requestId == null) {
+            throw new KSIProtocolException("Invalid KSI response. Extension response payload does not contain request id.");
+        }
+        if (!requestId.equals(context.getRequestId())) {
+            throw new KSIProtocolException("Extension response request ID do not match. Sent '" + context.getRequestId() + "'" + " received '" + requestId + "'");
+        }
     }
 
+    //TODO not used?
     public TLVElement getCalendarHashChainTlvElement() {
         return hashChain;
     }

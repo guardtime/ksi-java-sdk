@@ -17,6 +17,6 @@
  * reserves and retains all trademark rights.
  */
 /**
- * TODO comment
+ * PDU v2 implementation
  */
 package com.guardtime.ksi.pdu.v2;

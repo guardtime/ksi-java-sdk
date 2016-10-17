@@ -23,20 +23,20 @@ import java.util.List;
 /**
  * Common PDU implementation for aggregation and extension request/response classes
  */
-abstract class Pdu extends TLVStructure {
+abstract class PduV2 extends TLVStructure {
 
     public static final int PDU_TYPE_AGGREGATION = 0x02FF;
 
-    private static final Logger logger = LoggerFactory.getLogger(Pdu.class);
+    private static final Logger logger = LoggerFactory.getLogger(PduV2.class);
 
     protected List<TLVElement> payloads = new LinkedList<TLVElement>();
-    private PduHeader header;
+    private PduV2Header header;
     private MessageMac mac;
 
     /**
      * Constructor for creating a request PDU message
      */
-    public Pdu(PduHeader header, List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, byte[] loginKey) throws KSIException {
+    public PduV2(PduV2Header header, List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, byte[] loginKey) throws KSIException {
         // root element
         this.rootElement = new TLVElement(false, false, getElementType());
 
@@ -64,7 +64,7 @@ abstract class Pdu extends TLVStructure {
     /**
      * Constructor for reading a response PDU message
      */
-    public Pdu(TLVElement rootElement, byte[] loginKey) throws KSIException {
+    public PduV2(TLVElement rootElement, byte[] loginKey) throws KSIException {
         super(rootElement);
         readMac(rootElement, loginKey);
         readHeader(rootElement);
@@ -78,7 +78,7 @@ abstract class Pdu extends TLVStructure {
     /**
      * Returns the header of the PDU
      */
-    public PduHeader getHeader() {
+    public PduV2Header getHeader() {
         return header;
     }
 
@@ -93,17 +93,13 @@ abstract class Pdu extends TLVStructure {
      */
     public abstract int getErrorPayloadType();
 
-    public TLVElement getPayload(int tlvType, long requestId) throws TLVParserException {
+    public TLVElement getPayload(int tlvType) throws TLVParserException {
         for (TLVElement payload : payloads) {
             if (payload.getType() == tlvType) {
                 return payload;
             }
         }
-// TODO
-//        if (response.getStatus() != null && response.getStatus() > 0) {
-//            throw new KSIProtocolException(response.getStatus(), response.getErrorMessage());
-//        }
-        throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(tlvType) + " and requestId=" + requestId + " not found");
+        throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(tlvType) + " not found");
     }
 
     private void checkErrorPayload() throws KSIException {
@@ -117,12 +113,12 @@ abstract class Pdu extends TLVStructure {
     private void readHeader(TLVElement rootElement) throws KSIException {
         TLVElement firstChild = rootElement.getFirstChildElement();
         if (isHeader(firstChild)) {
-            this.header = new PduHeader(firstChild);
+            this.header = new PduV2Header(firstChild);
         }
     }
 
     private boolean isHeader(TLVElement element) {
-        return element.getType() == PduHeader.ELEMENT_TYPE;
+        return element.getType() == PduV2Header.ELEMENT_TYPE;
     }
 
     private void readPayloads(TLVElement rootElement) throws TLVParserException {
@@ -155,9 +151,9 @@ abstract class Pdu extends TLVStructure {
             logger.warn("Gateway sent a KSI response without MAC");
             TLVElement errorElement = rootElement.getFirstChildElement(getErrorPayloadType());
             if (errorElement != null) {
-                throw new KSIException("Invalid KSI response. Error payload element is " + Base16.encode(errorElement.getEncoded()) + ". Error message from server: '"+errorElement.getFirstChildElement(0x05).getDecodedString()+"'");
+                throw new KSIProtocolException("Invalid KSI response. Error payload element is " + Base16.encode(errorElement.getEncoded()) + ". Error message from server: '"+errorElement.getFirstChildElement(0x05).getDecodedString()+"'");
             }
-            throw new KSIException("Invalid KSI response. Missing MAC and error payload.");
+            throw new KSIProtocolException("Invalid KSI response. Missing MAC and error payload.");
         }
     }
 

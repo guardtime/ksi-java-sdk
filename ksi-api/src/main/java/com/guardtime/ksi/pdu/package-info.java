@@ -17,6 +17,6 @@
  * reserves and retains all trademark rights.
  */
 /**
- * Public KSI PDU (Protocol Data Unit) interfaces
+ * Public PDU (Protocol Data Unit) interfaces
  */
 package com.guardtime.ksi.pdu;

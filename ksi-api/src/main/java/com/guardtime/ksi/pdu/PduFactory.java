@@ -11,12 +11,16 @@ import java.util.Date;
  */
 public interface PduFactory {
 
+    //TODO javadoc
     AggregationRequest createAggregationRequest(KSIRequestContext context, DataHash imprint, Long level) throws KSIException;
 
+    //TODO javadoc
     AggregationResponse readAggregationResponse(KSIRequestContext context, TLVElement input) throws KSIException;
 
+    //TODO javadoc
     ExtensionRequest createExtensionRequest(KSIRequestContext context, Date aggregationTime, Date publicationTime) throws KSIException;
 
+    //TODO javadoc
     ExtensionResponse readExtensionResponse(KSIRequestContext context, TLVElement input) throws KSIException;
 
 }

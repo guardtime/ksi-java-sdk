@@ -5,10 +5,13 @@ package com.guardtime.ksi.pdu;
  */
 public interface PduIdentifierProvider {
 
+    // TODO javadoc
     long getInstanceId();
 
+    // TODO javadoc
     long nextRequestId();
 
+    // TODO javadoc
     long nextMessageId();
 
 }

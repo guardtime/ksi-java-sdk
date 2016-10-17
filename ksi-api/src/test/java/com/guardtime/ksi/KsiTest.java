@@ -4,16 +4,20 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
-import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.verifier.RuleResult;
+import com.guardtime.ksi.unisignature.verifier.VerificationContext;
+import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
+import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
+import com.guardtime.ksi.unisignature.verifier.policies.Policy;
+import com.guardtime.ksi.unisignature.verifier.rules.Rule;
 import com.guardtime.ksi.util.Util;
 import org.bouncycastle.util.Store;
 import org.mockito.Mockito;
@@ -26,11 +30,13 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 import static com.guardtime.ksi.TestUtil.PUBLICATIONS_FILE_27_07_2016;
+import static java.util.Arrays.asList;
 
 public class KsiTest {
 
@@ -81,6 +87,50 @@ public class KsiTest {
                 setPublicationsFileTrustedCertSelector(certSelector).
                 setKsiProtocolSignerClient(mockedSigningClient).
                 setPublicationsFilePkiTrustStore(keyStore).
+                //TODO
+                setDefaultVerificationPolicy(new Policy() {
+                    public List<Rule> getRules() {
+                        Rule r = new Rule() {
+
+
+                            public RuleResult verify(VerificationContext context) throws KSIException {
+                                return new RuleResult() {
+                                    public VerificationResultCode getResultCode() {
+                                        return VerificationResultCode.OK;
+                                    }
+
+                                    public VerificationErrorCode getErrorCode() {
+                                        return null;
+                                    }
+
+                                    public String getRuleName() {
+                                        return "";
+                                    }
+                                };
+                            }
+                        };
+
+
+
+                        return asList(r);
+                    }
+
+                    public String getName() {
+                        return "EMPTY";
+                    }
+
+                    public String getType() {
+                        return "EMPTY";
+                    }
+
+                    public void setFallbackPolicy(Policy policy) {
+
+                    }
+
+                    public Policy getFallbackPolicy() {
+                        return null;
+                    }
+                }).
                 setPduIdentifierProvider(mockedIdentifierProvider).build();
     }
 

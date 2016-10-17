@@ -22,7 +22,7 @@ package com.guardtime.ksi.unisignature.verifier;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.*;
-import com.guardtime.ksi.pdu.legacy.LegacyKsiPduFactory;
+import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -33,7 +33,6 @@ import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.*;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
-import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Util;
 
 import java.io.ByteArrayInputStream;
@@ -58,7 +57,7 @@ final class KSIVerificationContext implements VerificationContext {
     private Map<Date, CalendarHashChain> extendedSignatures = new HashMap<Date, CalendarHashChain>();
     private CalendarHashChain calendarExtendedToHead;
     //TODO
-    private PduFactory pduFactory = new LegacyKsiPduFactory();
+    private PduFactory pduFactory = new PduV1Factory();
     private KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
 
     KSIVerificationContext(PublicationsFile publicationsFile, KSISignature signature, PublicationData userPublication, boolean extendingAllowed, KSIExtenderClient extenderClient, DataHash documentHash) {

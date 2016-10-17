@@ -16,7 +16,20 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-/**
- * Public KSI PDU (Protocol Data Unit) interfaces
- */
-package com.guardtime.ksi.pdu;
+package com.guardtime.ksi.pdu.v1;
+
+import java.util.Date;
+
+import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.service.KSIProtocolException;
+import org.testng.annotations.Test;
+
+import com.guardtime.ksi.util.Util;
+
+public class ExtensionRequestV1PayloadTest {
+
+    @Test(expectedExceptions = KSIProtocolException.class)
+    public void testCreateExtensionRequestTimeFail() throws KSIException {
+        new ExtensionRequestPayloadV1(new Date(423654196), new Date(421280000), Util.nextLong());
+    }
+}

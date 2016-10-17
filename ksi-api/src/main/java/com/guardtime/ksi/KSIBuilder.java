@@ -24,8 +24,8 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.*;
-import com.guardtime.ksi.pdu.legacy.LegacyKsiPduFactory;
-import com.guardtime.ksi.pdu.tlv.TlvKsiPduFactory;
+import com.guardtime.ksi.pdu.v1.PduV1Factory;
+import com.guardtime.ksi.pdu.v2.PduV2Factory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -206,7 +206,7 @@ public final class KSIBuilder {
 
     // TODO javadoc
     // TODO we should implement some kind of fallback to legacy format. Hard to implement in case of TCP client.
-    public KSIBuilder setPduFactory(TlvKsiPduFactory pduFactory) {
+    public KSIBuilder setPduFactory(PduV2Factory pduFactory) {
         this.pduFactory = pduFactory;
         return this;
     }
@@ -282,7 +282,7 @@ public final class KSIBuilder {
             this.setPublicationsFilePkiTrustStore(new File(getDefaultTrustStore()), null);
         }
         if (pduFactory == null) {
-            this.pduFactory = new LegacyKsiPduFactory();
+            this.pduFactory = new PduV1Factory();
         }
         if (pduIdentifierProvider == null) {
             this.pduIdentifierProvider = new DefaultPduIdentifierProvider();
@@ -464,7 +464,8 @@ public final class KSIBuilder {
 
             ByteArrayInputStream inputStream = new ByteArrayInputStream(requestMessage.toByteArray());
             Future<TLVElement> future = extenderClient.extend(inputStream);
-            return new ExtensionFuture(future, publicationRecord, signature, requestContext, new InMemoryKsiSignatureComponentFactory(), pduFactory);
+            //TODO InMemoryKsiSignatureComponentFactory is created every time
+            return new ExtensionFuture(future, publicationRecord, signature, requestContext, new InMemoryKsiSignatureComponentFactory(), pduFactory, uniSignatureFactory);
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {

@@ -17,6 +17,7 @@
  * reserves and retains all trademark rights.
  */
 /**
- * Public KSI PDU (Protocol Data Unit) interfaces
+ * TODO comment
+ * Contains classes related to KSI PDU implementation
  */
-package com.guardtime.ksi.pdu;
+package com.guardtime.ksi.pdu.v1;

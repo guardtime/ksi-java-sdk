@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * PDU request identifiers.
  */
+//TODO remove?
 public final class PduIdentifiers {
 
     private static final long INSTANCE_ID = Util.nextLong();

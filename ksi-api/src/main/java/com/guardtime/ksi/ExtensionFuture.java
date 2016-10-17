@@ -27,10 +27,9 @@ import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.unisignature.CalendarHashChain;
-import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
-import com.guardtime.ksi.unisignature.KSISignatureFactory;
+import com.guardtime.ksi.unisignature.*;
+
+import static java.util.Arrays.asList;
 
 /**
  * The future of the signature extension process.
@@ -43,19 +42,20 @@ final class ExtensionFuture implements Future<KSISignature> {
     private final PublicationRecord publicationRecord;
     private final KSISignature signature;
     private final KSIRequestContext context;
-
+    private final KSISignatureFactory signatureFactory;
     private final KSISignatureComponentFactory signatureComponentFactory;
     private final PduFactory pduFactory;
 
     private KSISignature extendedSignature;
 
-    public ExtensionFuture(Future<TLVElement> future, PublicationRecord publicationRecord, KSISignature signature, KSIRequestContext context, KSISignatureComponentFactory signatureComponentFactory, PduFactory pduFactory) {
+    public ExtensionFuture(Future<TLVElement> future, PublicationRecord publicationRecord, KSISignature signature, KSIRequestContext context, KSISignatureComponentFactory signatureComponentFactory, PduFactory pduFactory, KSISignatureFactory signatureFactory) {
         this.future = future;
         this.publicationRecord = publicationRecord;
         this.signature = signature;
         this.context = context;
         this.signatureComponentFactory = signatureComponentFactory;
         this.pduFactory = pduFactory;
+        this.signatureFactory = signatureFactory;
     }
 
     public KSISignature getResult() throws KSIException {
@@ -63,9 +63,10 @@ final class ExtensionFuture implements Future<KSISignature> {
             try {
                 TLVElement tlvElement = future.getResult();
                 ExtensionResponse extensionResponse = pduFactory.readExtensionResponse(context, tlvElement);
-                //TODO copy from old branch
                 CalendarHashChain calendarHashChain = signatureComponentFactory.createCalendarHashChain(extensionResponse.getPayload());
-                extendedSignature = signature.extend(calendarHashChain, publicationRecord);
+                SignaturePublicationRecord publication = signatureComponentFactory.createPublicationRecord(publicationRecord.getPublicationData(), publicationRecord.getPublicationReferences(), publicationRecord.getPublicationRepositoryURIs());
+                extendedSignature = signatureFactory.createSignature(asList(signature.getAggregationHashChains()), calendarHashChain, null, publication, signature.getRfc3161Record());
+
             } catch (com.guardtime.ksi.tlv.TLVParserException e) {
                 throw new KSIProtocolException("Can't parse response message", e);
             }

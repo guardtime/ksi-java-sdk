@@ -19,19 +19,16 @@
 
 package com.guardtime.ksi.blocksigner;
 
-import java.util.LinkedList;
-
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
-import com.guardtime.ksi.unisignature.IdentityMetadata;
-import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
+
+import java.util.LinkedList;
 
 class LocalAggregationHashChain {
 
-    private static final InMemoryKsiSignatureFactory SIGNATURE_ELEMENT_FACTORY = new InMemoryKsiSignatureFactory();
     private final HashAlgorithm hashAlgorithm;
     private ChainResult latestChainResult;
     private LinkedList<AggregationChainLink> links = new LinkedList<AggregationChainLink>();
@@ -40,12 +37,11 @@ class LocalAggregationHashChain {
     private DataHash currentOutputHash;
     private long currentLevel;
 
-    public LocalAggregationHashChain(DataHash inputHash, long level, IdentityMetadata metadata, HashAlgorithm hashAlgorithm) throws KSIException {
+    public LocalAggregationHashChain(DataHash inputHash, AggregationChainLink metadataLink, HashAlgorithm hashAlgorithm) throws KSIException {
         this.inputHash = inputHash;
         this.hashAlgorithm = hashAlgorithm;
         this.currentOutputHash = inputHash;
-        AggregationChainLink link = SIGNATURE_ELEMENT_FACTORY.createLeftAggregationChainLink(metadata, level);
-        links.addLast(link);
+        links.addLast(metadataLink);
         this.latestChainResult = calculateOutputHash(0L);
     }
 

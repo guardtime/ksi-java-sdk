@@ -24,7 +24,6 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
-
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
 import org.testng.Assert;

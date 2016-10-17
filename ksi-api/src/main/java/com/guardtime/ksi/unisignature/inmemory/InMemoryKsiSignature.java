@@ -199,6 +199,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
         return calendarChain;
     }
 
+    @Deprecated
     public InMemoryKsiSignature extend(CalendarHashChain calendar, PublicationRecord publicationsRecord) throws KSIException {
         InMemoryKsiSignature extendedSignature = new InMemoryKsiSignature(rootElement);
         InMemoryCalendarHashChain calendarHashChain = (InMemoryCalendarHashChain) calendar;

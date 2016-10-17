@@ -32,6 +32,7 @@ import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Util;
 
@@ -56,8 +57,9 @@ final class KSIVerificationContext implements VerificationContext {
     private DataHash documentHash;
     private Map<Date, CalendarHashChain> extendedSignatures = new HashMap<Date, CalendarHashChain>();
     private CalendarHashChain calendarExtendedToHead;
-    private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
+    //TODO
     private PduFactory pduFactory = new LegacyKsiPduFactory();
+    private KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
 
     KSIVerificationContext(PublicationsFile publicationsFile, KSISignature signature, PublicationData userPublication, boolean extendingAllowed, KSIExtenderClient extenderClient, DataHash documentHash) {
         this.publicationsFile = publicationsFile;
@@ -145,7 +147,7 @@ final class KSIVerificationContext implements VerificationContext {
         try {
             TLVElement tlvElement = future.getResult();
             ExtensionResponse extensionResponse = pduFactory.readExtensionResponse(context, tlvElement);
-            return signatureFactory.createCalendarHashChain(extensionResponse.getPayload());
+            return signatureComponentFactory.createCalendarHashChain(extensionResponse.getPayload());
             //TODO probably we don't need to catch this
         } catch (com.guardtime.ksi.tlv.TLVParserException e) {
             throw new KSIProtocolException("Can't parse response message", e);

@@ -69,7 +69,7 @@ public final class TestUtil extends CommonTestUtil {
     }
 
     public static KSISignature loadSignature(String file) throws Exception {
-        return signatureFactory.createSignature(loadTlv(file));
+        return signatureFactory.createSignature(loadTlv(file), null);
     }
 
     public static PublicationsFile loadPublicationsFile(String file) throws Exception {

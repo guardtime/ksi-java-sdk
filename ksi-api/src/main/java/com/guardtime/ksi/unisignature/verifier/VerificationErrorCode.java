@@ -45,7 +45,7 @@ public enum VerificationErrorCode {
     CAL_01("CAL-01", "Calendar root hash mismatch"),
     CAL_02("CAL-02", "Aggregation hash chain root hash and calendar hash chain input hash mismatch"),
     CAL_03("CAL-03", "Aggregation time mismatch"),
-    CAL_04("CAL-04", "Aggregation hash chain right links are inconsistent");
+    CAL_04("CAL-04", "Calendar hash chain right links are inconsistent");
 
     private final String code;
     private final String message;

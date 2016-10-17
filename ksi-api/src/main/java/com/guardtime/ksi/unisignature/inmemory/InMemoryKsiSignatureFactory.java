@@ -21,18 +21,21 @@ package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationRecord;
+import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
+import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
+import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.util.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -42,10 +45,33 @@ import java.util.List;
  */
 public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
 
+    private Policy policy;
+    private KSIExtenderClient extenderClient;
+    private PublicationsFileClientAdapter publicationsFileClientAdapter;
+    private boolean extendingAllowed;
+
+    private boolean verifySignatures = false;
+
+    private KSISignatureVerifier verifier = new KSISignatureVerifier();
+
+    public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter, KSIExtenderClient extenderClient, boolean extendingAllowed) {
+        Util.notNull(policy, "Signature verification policy");
+        Util.notNull(publicationsFileClientAdapter, "Publications file client adapter");
+        Util.notNull(extenderClient, "KSI extender client");
+        this.policy = policy;
+        this.publicationsFileClientAdapter = publicationsFileClientAdapter;
+        this.extenderClient = extenderClient;
+        this.extendingAllowed = extendingAllowed;
+        this.verifySignatures = true;
+    }
+
+    public InMemoryKsiSignatureFactory() {
+    }
+
     public KSISignature createSignature(InputStream input) throws KSIException {
         TLVInputStream tlvInput = new TLVInputStream(input);
         try {
-            return createSignature(tlvInput.readElement());
+            return createSignature(tlvInput.readElement(), extendingAllowed);
         } catch (IOException e) {
             throw new KSIException("Reading signature data from input stream failed", e);
         } finally {
@@ -53,11 +79,14 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         }
     }
 
-    public KSISignature createSignature(TLVElement element) throws KSIException {
-        return new InMemoryKsiSignature(element);
+    public KSISignature createSignature(TLVElement element, DataHash inputHash) throws KSIException {
+        return createSignature(element, extendingAllowed, inputHash);
     }
 
-    public KSISignature createSignature(List<AggregationHashChain> aggregationHashChains, CalendarHashChain calendarChain, CalendarAuthenticationRecord calendarAuthenticationRecord, PublicationRecord signaturePublicationRecord, RFC3161Record rfc3161Record) throws KSIException {
+    public KSISignature createSignature(List<AggregationHashChain> aggregationHashChains,
+                                        CalendarHashChain calendarChain, CalendarAuthenticationRecord calendarAuthenticationRecord,
+                                        PublicationRecord signaturePublicationRecord, RFC3161Record rfc3161Record) throws KSIException {
+
         TLVElement root = new TLVElement(false, false, InMemoryKsiSignature.ELEMENT_TYPE);
         for (AggregationHashChain chain : aggregationHashChains) {
             addTlvStructure(root, (TLVStructure) chain);
@@ -71,43 +100,29 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
             }
         }
         addTlvStructure(root, (TLVStructure) rfc3161Record);
-        return createSignature(root);
+        return createSignature(root, extendingAllowed);
     }
 
-    public AggregationHashChain createAggregationHashChain(TLVElement element) throws KSIException {
-        return new InMemoryAggregationHashChain(element);
+    private KSISignature createSignature(TLVElement element, boolean extendingAllowed) throws KSIException {
+        return createSignature(element, extendingAllowed, null);
     }
 
-    public AggregationHashChain createAggregationHashChain(DataHash inputHash, Date aggregationTime, LinkedList<Long> indexes, LinkedList<AggregationChainLink> links, HashAlgorithm aggregationAlgorithm) throws KSIException {
-        return new InMemoryAggregationHashChain(inputHash, aggregationTime, indexes, links, aggregationAlgorithm);
-    }
-
-    public CalendarAuthenticationRecord createCalendarAuthenticationRecord(TLVElement element) throws KSIException {
-        return new InMemoryCalendarAuthenticationRecord(element);
-    }
-
-    public CalendarHashChain createCalendarHashChain(TLVElement element) throws KSIException {
-        return new InMemoryCalendarHashChain(element);
-    }
-
-    public RFC3161Record createRFC3161Record(TLVElement element) throws KSIException {
-        return new InMemoryRFC3161Record(element);
-    }
-
-    public SignaturePublicationRecord createPublicationRecord(TLVElement element) throws KSIException {
-        return new InMemorySignaturePublicationRecord(element);
-    }
-
-    public AggregationChainLink createLeftAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
-        return new LeftAggregationChainLink(siblingHash, levelCorrection);
-    }
-
-    public AggregationChainLink createLeftAggregationChainLink(IdentityMetadata metadata, long levelCorrection) throws KSIException {
-        return new LeftAggregationChainLink(metadata, levelCorrection);
-    }
-
-    public AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
-        return new RightAggregationChainLink(siblingHash, levelCorrection);
+    private KSISignature createSignature(TLVElement element, boolean extendingAllowed, DataHash inputHash) throws KSIException {
+        InMemoryKsiSignature signature = new InMemoryKsiSignature(element);
+        if (verifySignatures) {
+            VerificationContextBuilder builder = new VerificationContextBuilder();
+            builder.setSignature(signature).setExtenderClient(extenderClient)
+                    .setPublicationsFile(publicationsFileClientAdapter.getPublicationsFile())
+                    .setExtendingAllowed(extendingAllowed);
+            if (inputHash != null) {
+                builder.setDocumentHash(inputHash);
+            }
+            VerificationResult result = verifier.verify(builder.createVerificationContext(), policy);
+            if (!result.isOk()) {
+                throw new InvalidSignatureContentException(signature, result);
+            }
+        }
+        return signature;
     }
 
     private void addTlvStructure(TLVElement root, TLVStructure structure) throws KSIException {

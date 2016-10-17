@@ -1,4 +1,19 @@
+Version 4.4
+
+2016-10-10 4.4.67
+
+* IMPROVEMENT: Now internal verification of the signature is performed in the following cases: new signature is created, existing signature is extended, signature is read from input stream.
+* IMPROVEMENT: SHA1 hash algorithm status was changed from NOT_TRUSTED to NORMAL
+* IMPROVEMENT: Improved user provided publication based verification policy
+* BUGFIX: Fixed a typo in CAL-04 verification error text
+* IMPROVEMENT: Replaced checked exceptions with runtime exception in DataHasher/DataHash/HashAlgorithm classes. 
+* IMPROVEMENT: Method HashAlgorithm.getNamesList() was removed. Added a method with name HashAlgorithm.getImplementedHashAlgorithms()
+
 Version 4.3
+
+2016-09-12 4.3.55
+
+* BUGFIX: Fixed a TCP client open file descriptors leak
 
 2016-06-17 4.3.54
 

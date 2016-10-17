@@ -38,7 +38,7 @@ class LeftInMemoryCalendarHashChainLink extends InMemoryCalendarHashChainLink {
     }
 
     @Override
-    public final DataHash calculateChainStep(DataHash previous) throws HashException {
+    public final DataHash calculateChainStep(DataHash previous) throws InvalidCalendarHashChainException {
         return calculateStep(previous.getImprint(), dataHash.getImprint(), dataHash.getAlgorithm());
     }
 

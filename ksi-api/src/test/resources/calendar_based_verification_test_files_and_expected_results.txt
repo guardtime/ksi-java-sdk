@@ -1,4 +1,4 @@
-#signature file location with full path;pass signature internal verification;pass signature verification with OK results;verification error code (" " if none);expected exception class (" " if none);expected excpetion message (" " if none)
+#signature file location with full path;pass signature internal verification;pass signature verification with OK results;verification error code (" " if none);expected exception class (" " if none);expected exception message (" " if none)
 ok-sig-2014-06-2.ksig;true;true;;;
 ok-sig-2014-06-2-extended.ksig;true;true;;;
 calendar-based-verification/ExtendedSignature-MissingCalChainAndPubRec.ksig;true;true;;;

@@ -19,6 +19,7 @@
 package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
@@ -41,15 +42,17 @@ final class AggregationFuture implements Future<KSISignature> {
 
     private final Future<TLVElement> requestFuture;
     private final KSIRequestContext requestContext;
-    private final KSISignatureFactory signatureFactory;
     private final PduFactory pduFactory;
+    private KSISignatureFactory signatureFactory;
+    private DataHash inputHash;
 
     private KSISignature response;
 
-    public AggregationFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, KSISignatureFactory signatureFactory, PduFactory pduFactory) {
+    public AggregationFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, KSISignatureFactory signatureFactory, DataHash inputHash, PduFactory pduFactory) {
         this.requestFuture = requestFuture;
         this.requestContext = requestContext;
         this.signatureFactory = signatureFactory;
+        this.inputHash = inputHash;
         this.pduFactory = pduFactory;
     }
 
@@ -58,7 +61,7 @@ final class AggregationFuture implements Future<KSISignature> {
             if (response == null) {
                 TLVElement response = requestFuture.getResult();
                 AggregationResponse aggregationResponse = pduFactory.readAggregationResponse(requestContext, response);
-                this.response = signatureFactory.createSignature(convert(aggregationResponse.getPayload()));
+                this.response = signatureFactory.createSignature(convert(aggregationResponse.getPayload()), inputHash);
             }
             return response;
         } catch (com.guardtime.ksi.tlv.TLVParserException e) {

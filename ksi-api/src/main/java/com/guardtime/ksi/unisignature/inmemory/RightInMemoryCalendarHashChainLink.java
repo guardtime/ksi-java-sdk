@@ -21,7 +21,6 @@ package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.tlv.TLVElement;
 
 /**

@@ -28,6 +28,7 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
+import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 
@@ -38,7 +39,7 @@ import java.util.List;
  *
  * @see Future
  */
-final class AggregationFuture implements Future<KSISignature> {
+public final class AggregationFuture implements Future<KSISignature> {
 
     private final Future<TLVElement> requestFuture;
     private final KSIRequestContext requestContext;
@@ -76,7 +77,6 @@ final class AggregationFuture implements Future<KSISignature> {
     }
 
     private TLVElement convert(TLVElement response) throws TLVParserException {
-        //TODO use signature factory?
         TLVElement element = new TLVElement(false, false, 0x0800);
         List<TLVElement> children = response.getChildElements();
         for (TLVElement child : children) {

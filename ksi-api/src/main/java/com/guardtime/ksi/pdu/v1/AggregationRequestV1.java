@@ -31,16 +31,13 @@ import com.guardtime.ksi.tlv.TLVParserException;
 class AggregationRequestV1 extends AbstractKSIRequest<AggregationRequestPayloadV1> implements AggregationRequest {
 
     private static final int ELEMENT_TYPE = 0x200;
-    private final KSIRequestContext requestContext;
 
     public AggregationRequestV1(PduMessageHeader header, AggregationRequestPayloadV1 payload, KSIRequestContext requestContext) throws KSIException {
         super(header, payload, requestContext.getLoginKey());
-        this.requestContext = requestContext;
     }
 
     public AggregationRequestV1(TLVElement element, KSIRequestContext requestContext) throws KSIException {
         super(element, requestContext.getLoginKey());
-        this.requestContext = requestContext;
     }
 
     @Override
@@ -61,7 +58,4 @@ class AggregationRequestV1 extends AbstractKSIRequest<AggregationRequestPayloadV
         }
     }
 
-    public KSIRequestContext getRequestContext() {
-        return requestContext;
-    }
 }

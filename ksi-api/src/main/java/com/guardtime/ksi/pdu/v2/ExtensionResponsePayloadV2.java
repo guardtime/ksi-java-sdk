@@ -79,10 +79,7 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
         }
     }
 
-    //TODO not used?
-    public TLVElement getCalendarHashChainTlvElement() {
-        return hashChain;
-    }
+
 
     public Long getError() {
         return status;
@@ -106,7 +103,7 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
     }
 
     //TODO rename
-    public TLVElement getPayload() {
+    public TLVElement getCalendarHashChain() {
         return hashChain;
     }
 }

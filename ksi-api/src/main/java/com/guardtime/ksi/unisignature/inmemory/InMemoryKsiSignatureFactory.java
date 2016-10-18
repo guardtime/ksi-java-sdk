@@ -21,6 +21,7 @@ package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -29,6 +30,7 @@ import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.*;
 import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
+import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
@@ -53,8 +55,12 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     private boolean verifySignatures = false;
 
     private KSISignatureVerifier verifier = new KSISignatureVerifier();
+    private PduFactory pduFactory;
+    private KSISignatureComponentFactory signatureComponentFactory;
 
-    public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter, KSIExtenderClient extenderClient, boolean extendingAllowed) {
+    public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter,
+                                       KSIExtenderClient extenderClient, boolean extendingAllowed, PduFactory pduFactory,
+                                       KSISignatureComponentFactory signatureComponentFactory) {
         Util.notNull(policy, "Signature verification policy");
         Util.notNull(publicationsFileClientAdapter, "Publications file client adapter");
         Util.notNull(extenderClient, "KSI extender client");
@@ -63,10 +69,13 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         this.extenderClient = extenderClient;
         this.extendingAllowed = extendingAllowed;
         this.verifySignatures = true;
+        this.pduFactory = pduFactory;
+        this.signatureComponentFactory = signatureComponentFactory;
     }
 
     public InMemoryKsiSignatureFactory() {
     }
+
 
     public KSISignature createSignature(InputStream input) throws KSIException {
         TLVInputStream tlvInput = new TLVInputStream(input);
@@ -117,7 +126,10 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
             if (inputHash != null) {
                 builder.setDocumentHash(inputHash);
             }
-            VerificationResult result = verifier.verify(builder.createVerificationContext(), policy);
+            VerificationContext context = builder.createVerificationContext();
+            context.setKsiSignatureComponentFactory(signatureComponentFactory);
+            context.setPduFactory(pduFactory);
+            VerificationResult result = verifier.verify(context, policy);
             if (!result.isOk()) {
                 throw new InvalidSignatureContentException(signature, result);
             }

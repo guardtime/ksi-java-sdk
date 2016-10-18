@@ -1,5 +1,24 @@
+/*
+ * Copyright 2013-2016 Guardtime, Inc.
+ *
+ * This file is part of the Guardtime client SDK.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ * "Guardtime" and "KSI" are trademarks or registered trademarks of
+ * Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ * reserves and retains all trademark rights.
+ */
 package com.guardtime.ksi.pdu.v2;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
@@ -74,6 +93,11 @@ public class PduV2FactoryTest {
         pduFactory.readAggregationResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 8530358545345979581L, 42L, 42L), loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
     }
 
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator")
+    public void testReadV2AggregationResponse() throws Exception {
+        pduFactory.readAggregationResponse(extensionContext, loadTlv("aggregation-203-error.tlv"));
+    }
+
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testExtensionResponseInvalidHMAC_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-invalid-mac.tlv"));
@@ -97,6 +121,11 @@ public class PduV2FactoryTest {
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid KSI response. Missing MAC and error payload.")
     public void testExtensionResponseWithoutMac_ThrowsKSIProtocolException() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-missing-mac.tlv"));
+    }
+
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender")
+    public void testReadV2ExtensionResponse() throws Exception {
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("extension/extension-response-ok-request-id-4321.tlv"));
     }
 
 }

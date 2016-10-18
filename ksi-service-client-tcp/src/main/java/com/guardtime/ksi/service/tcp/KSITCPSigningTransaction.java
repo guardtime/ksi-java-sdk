@@ -81,6 +81,11 @@ class KSITCPSigningTransaction {
 
     private static long extractTransactionIdFromRequestTLV(TLVElement tlvData) throws KSITCPTransactionException {
         try {
+            if (tlvData.getType() == 0x0220) {
+                return tlvData.getFirstChildElement(0x02).getFirstChildElement(REQ_ID_TAG).getDecodedLong();
+            }
+
+
             return getRequestId(tlvData, REQUEST_WRAPPER_TAG);
         } catch (Exception e) {
             throw new KSITCPTransactionException("Request TLV was corrupt. Could not parse request ID.", e);
@@ -89,6 +94,9 @@ class KSITCPSigningTransaction {
 
     private static long extractTransactionIdFromResponseTLV(TLVElement tlvData) throws KSITCPTransactionException {
         try {
+            if (tlvData.getType() == 0x0221) {
+                return tlvData.getFirstChildElement(0x02).getFirstChildElement(REQ_ID_TAG).getDecodedLong();
+            }
             return getRequestId(tlvData, RESPONSE_WRAPPER_TAG);
         } catch (Exception e) {
             throw new KSITCPTransactionException("Response TLV was corrupt. Could not parse request ID.", e);

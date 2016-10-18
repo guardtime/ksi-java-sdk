@@ -22,7 +22,6 @@ package com.guardtime.ksi.tlv;
 import com.guardtime.ksi.CommonTestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.hashing.HashException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.reporters.Files;

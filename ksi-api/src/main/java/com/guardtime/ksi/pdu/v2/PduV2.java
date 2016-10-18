@@ -1,8 +1,27 @@
+/*
+ * Copyright 2013-2016 Guardtime, Inc.
+ *
+ * This file is part of the Guardtime client SDK.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ * "Guardtime" and "KSI" are trademarks or registered trademarks of
+ * Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ * reserves and retains all trademark rights.
+ */
 package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -25,18 +44,16 @@ import java.util.List;
  */
 abstract class PduV2 extends TLVStructure {
 
-    public static final int PDU_TYPE_AGGREGATION = 0x02FF;
-
     private static final Logger logger = LoggerFactory.getLogger(PduV2.class);
 
     protected List<TLVElement> payloads = new LinkedList<TLVElement>();
-    private PduV2Header header;
+    private PduMessageHeader header;
     private MessageMac mac;
 
     /**
      * Constructor for creating a request PDU message
      */
-    public PduV2(PduV2Header header, List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, byte[] loginKey) throws KSIException {
+    public PduV2(PduMessageHeader header, List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, byte[] loginKey) throws KSIException {
         // root element
         this.rootElement = new TLVElement(false, false, getElementType());
 
@@ -78,7 +95,7 @@ abstract class PduV2 extends TLVStructure {
     /**
      * Returns the header of the PDU
      */
-    public PduV2Header getHeader() {
+    public PduMessageHeader getHeader() {
         return header;
     }
 
@@ -91,7 +108,9 @@ abstract class PduV2 extends TLVStructure {
      * In some cases where server lacks the information needed to populate header, request identifier, etc components
      * the special error payload is returned. This method returns the error payload type.
      */
-    public abstract int getErrorPayloadType();
+    public int getErrorPayloadType() {
+        return 0x03;
+    }
 
     public TLVElement getPayload(int tlvType) throws TLVParserException {
         for (TLVElement payload : payloads) {
@@ -113,12 +132,12 @@ abstract class PduV2 extends TLVStructure {
     private void readHeader(TLVElement rootElement) throws KSIException {
         TLVElement firstChild = rootElement.getFirstChildElement();
         if (isHeader(firstChild)) {
-            this.header = new PduV2Header(firstChild);
+            this.header = new PduMessageHeader(firstChild);
         }
     }
 
     private boolean isHeader(TLVElement element) {
-        return element.getType() == PduV2Header.ELEMENT_TYPE;
+        return element.getType() == PduMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER;
     }
 
     private void readPayloads(TLVElement rootElement) throws TLVParserException {

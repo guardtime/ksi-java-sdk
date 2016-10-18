@@ -19,18 +19,19 @@
 
 package com.guardtime.ksi.blocksigner;
 
-import com.guardtime.ksi.KSI;
+import com.guardtime.ksi.AggregationFuture;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.v1.PduV1Factory;
+import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.client.ServiceCredentials;
+import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
-import com.guardtime.ksi.unisignature.AggregationChainLink;
-import com.guardtime.ksi.unisignature.AggregationHashChain;
-import com.guardtime.ksi.unisignature.IdentityMetadata;
-import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.*;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
@@ -79,44 +80,53 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     private static final String DEFAULT_CLIENT_ID_LOCAL_AGGREGATION = "local-aggregation";
     private static final int MAXIMUM_LEVEL = 255;
 
-    private final KSI ksi;
-    private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
-
     private final Map<TreeNode, LocalAggregationHashChain> chains = new HashMap<TreeNode, LocalAggregationHashChain>();
     private final HashTreeBuilder treeBuilder;
 
+    private final KSISigningClient signingClient;
+    private PduFactory pduFactory = new PduV1Factory();
+    private PduIdentifierProvider pduIdentifierProvider = new DefaultPduIdentifierProvider();
+
+    private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
 
     /**
-     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSI}. Default hash algorithm is
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}. Default hash algorithm is
      * used to create signature.
      *
-     * @param ksi an instance of {@link KSI}
+     * @param signingClient an instance of {@link KSISigningClient}
      */
-    public KsiBlockSigner(KSI ksi) {
-        this(ksi, null);
+    public KsiBlockSigner(KSISigningClient signingClient) {
+        this(signingClient, null);
     }
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient} and {@link HashAlgorithm}.
      */
-    public KsiBlockSigner(KSI ksi, HashAlgorithm algorithm) {
-        notNull(ksi, "KSI");
+    public KsiBlockSigner(KSISigningClient signingClient, HashAlgorithm algorithm) {
+        notNull(signingClient, "KSI signing client");
         if (algorithm != null) {
             this.algorithm = algorithm;
         }
-        this.ksi = ksi;
+        this.signingClient = signingClient;
         this.treeBuilder = new HashTreeBuilder(this.algorithm);
     }
 
     /**
-     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSI}, {@link KSISignatureFactory}
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}, {@link KSISignatureFactory}
      * and {@link HashAlgorithm}.
      */
-    public KsiBlockSigner(KSI ksi, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
-        this(ksi, algorithm);
+    public KsiBlockSigner(KSISigningClient signingClient, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
+        this(signingClient, algorithm);
         notNull(signatureFactory, "KSI signature factory");
         this.signatureFactory = signatureFactory;
+    }
+
+    KsiBlockSigner(KSISigningClient signingClient, PduFactory pduFactory, PduIdentifierProvider pduIdentifierProvider,
+                   KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
+        this(signingClient, signatureFactory, algorithm);
+        this.pduFactory = pduFactory;
+        this.pduIdentifierProvider = pduIdentifierProvider;
     }
 
     /**
@@ -181,7 +191,13 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private KSISignature signRootNode(TreeNode rootNode) throws KSIException {
         DataHash dataHash = new DataHash(rootNode.getValue());
-        return ksi.sign(dataHash, rootNode.getLevel());
+        Long requestId = pduIdentifierProvider.nextRequestId();
+        ServiceCredentials credentials = signingClient.getServiceCredentials();
+        KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId, pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
+        AggregationRequest requestMessage = pduFactory.createAggregationRequest(requestContext, dataHash, rootNode.getLevel());
+        Future<TLVElement> future = signingClient.sign(new ByteArrayInputStream(requestMessage.toByteArray()));
+        AggregationFuture aggregationFuture = new AggregationFuture(future, requestContext, signatureFactory, dataHash, pduFactory);
+        return aggregationFuture.getResult();
     }
 
     private List<LocalAggregationHashChain> buildChains() throws KSIException {

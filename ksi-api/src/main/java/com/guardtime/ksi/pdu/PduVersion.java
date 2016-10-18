@@ -16,29 +16,13 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.pdu.v2;
+package com.guardtime.ksi.pdu;
 
-import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.tlv.TLVElement;
+/**
+ * Contains a list of supported PDU versions
+ */
+public enum PduVersion {
 
-class ExtensionResponsePduV2 extends PduV2 {
-
-    private static final int ELEMENT_TYPE_EXTENSION_RESPONSE = 0x0321;
-    private static final int[] SUPPORTED_PAYLOAD_TYPES = new int[]{0x02, 0x03};
-
-    public ExtensionResponsePduV2(TLVElement rootElement, KSIRequestContext context) throws KSIException {
-        super(rootElement, context.getLoginKey());
-    }
-
-    @Override
-    public int[] getSupportedPayloadTypes() {
-        return SUPPORTED_PAYLOAD_TYPES;
-    }
-
-    @Override
-    public int getElementType() {
-        return ELEMENT_TYPE_EXTENSION_RESPONSE;
-    }
+    V1, V2
 
 }

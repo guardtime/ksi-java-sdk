@@ -16,7 +16,6 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-
 package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
@@ -36,7 +35,7 @@ import static java.util.Arrays.asList;
  *
  * @see Future
  */
-final class ExtensionFuture implements Future<KSISignature> {
+public final class ExtensionFuture implements Future<KSISignature> {
 
     private final Future<TLVElement> future;
     private final PublicationRecord publicationRecord;
@@ -48,7 +47,9 @@ final class ExtensionFuture implements Future<KSISignature> {
 
     private KSISignature extendedSignature;
 
-    public ExtensionFuture(Future<TLVElement> future, PublicationRecord publicationRecord, KSISignature signature, KSIRequestContext context, KSISignatureComponentFactory signatureComponentFactory, PduFactory pduFactory, KSISignatureFactory signatureFactory) {
+    public ExtensionFuture(Future<TLVElement> future, PublicationRecord publicationRecord, KSISignature signature,
+                           KSIRequestContext context, KSISignatureComponentFactory signatureComponentFactory,
+                           PduFactory pduFactory, KSISignatureFactory signatureFactory) {
         this.future = future;
         this.publicationRecord = publicationRecord;
         this.signature = signature;
@@ -63,7 +64,7 @@ final class ExtensionFuture implements Future<KSISignature> {
             try {
                 TLVElement tlvElement = future.getResult();
                 ExtensionResponse extensionResponse = pduFactory.readExtensionResponse(context, tlvElement);
-                CalendarHashChain calendarHashChain = signatureComponentFactory.createCalendarHashChain(extensionResponse.getPayload());
+                CalendarHashChain calendarHashChain = signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());
                 SignaturePublicationRecord publication = signatureComponentFactory.createPublicationRecord(publicationRecord.getPublicationData(), publicationRecord.getPublicationReferences(), publicationRecord.getPublicationRepositoryURIs());
                 extendedSignature = signatureFactory.createSignature(asList(signature.getAggregationHashChains()), calendarHashChain, null, publication, signature.getRfc3161Record());
 

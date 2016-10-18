@@ -19,7 +19,6 @@
 package com.guardtime.ksi.service.http.simple;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.client.http.AbstractHttpClient;
 import com.guardtime.ksi.service.client.http.HttpPostRequestFuture;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.util.Util;
@@ -35,13 +34,11 @@ import java.net.HttpURLConnection;
 public class SimpleHttpPostRequestFuture extends HttpPostRequestFuture {
 
     private int responseCode;
-    private String responseContentType;
     private String responseMessage;
     private byte[] response;
 
     public SimpleHttpPostRequestFuture(HttpURLConnection connection) throws IOException {
         this.responseCode = connection.getResponseCode();
-        this.responseContentType = connection.getHeaderField(AbstractHttpClient.HEADER_NAME_CONTENT_TYPE);
         this.responseMessage = connection.getResponseMessage();
         InputStream input = null;
         try {
@@ -64,7 +61,7 @@ public class SimpleHttpPostRequestFuture extends HttpPostRequestFuture {
     }
 
     public TLVElement getResult() throws KSIException {
-        return parse(responseCode, responseMessage, new ByteArrayInputStream(response), responseContentType);
+        return parse(responseCode, responseMessage, new ByteArrayInputStream(response));
     }
 
 }

@@ -20,11 +20,9 @@ package com.guardtime.ksi.service.client.http.apache;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.client.KSIClientException;
-import com.guardtime.ksi.service.client.http.AbstractHttpClient;
 import com.guardtime.ksi.service.client.http.HttpPostRequestFuture;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.util.Util;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 
 import java.io.IOException;
@@ -54,9 +52,7 @@ public class ApacheHttpPostRequestFuture extends HttpPostRequestFuture {
             int statusCode = response.getStatusLine().getStatusCode();
             String responseMessage = response.getStatusLine().getReasonPhrase();
             input = response.getEntity().getContent();
-            Header contentType = response.getFirstHeader(AbstractHttpClient.HEADER_NAME_CONTENT_TYPE);
-            String responseHeader = contentType.getValue();
-            return parse(statusCode, responseMessage, input, responseHeader);
+            return parse(statusCode, responseMessage, input);
         } catch (InterruptedException e) {
             throw new KSIClientException("Getting KSI response failed", e);
         } catch (ExecutionException e) {

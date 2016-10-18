@@ -109,7 +109,7 @@ class ExtensionResponsePayloadV1 extends PduResponsePayloadV1 implements Extensi
         return ELEMENT_TYPE;
     }
 
-    public TLVElement getPayload() {
+    public TLVElement getCalendarHashChain() {
         return hashChain;
     }
 }

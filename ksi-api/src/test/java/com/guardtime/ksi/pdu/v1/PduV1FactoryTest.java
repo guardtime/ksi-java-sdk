@@ -1,5 +1,24 @@
+/*
+ * Copyright 2013-2016 Guardtime, Inc.
+ *
+ * This file is part of the Guardtime client SDK.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ * "Guardtime" and "KSI" are trademarks or registered trademarks of
+ * Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ * reserves and retains all trademark rights.
+ */
 package com.guardtime.ksi.pdu.v1;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
@@ -74,6 +93,11 @@ public class PduV1FactoryTest {
         pduFactory.readAggregationResponse(requestContext, loadTlv("aggregation-202-error.tlv"));
     }
 
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v2 response to PDU v1 request. Configure the SDK to use PDU v2 format for the given Aggregator")
+    public void testReadV2AggregationResponse() throws Exception {
+        pduFactory.readAggregationResponse(extensionContext, loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
+    }
+
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testExtensionResponseInvalidHMAC_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("extension/extension-response-invalid-hmac.tlv"));
@@ -97,6 +121,11 @@ public class PduV1FactoryTest {
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(404\\):Response error 404: Not found")
     public void testExtensionResponseWithError() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("extension/extension-error-response-with-header.tlv"));
+    }
+
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v2 response to PDU v1 request. Configure the SDK to use PDU v2 format for the given Extender")
+    public void testReadV2ExtensionResponse() throws Exception {
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-with-error.tlv"));
     }
 
 }

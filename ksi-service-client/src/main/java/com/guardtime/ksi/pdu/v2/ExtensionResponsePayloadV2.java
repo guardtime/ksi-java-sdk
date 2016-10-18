@@ -16,27 +16,27 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.pdu.v1;
+package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.unisignature.CalendarHashChain;
+import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.Date;
 import java.util.List;
 
-/**
- * Signature extension response TLV object.
- */
-class ExtensionResponsePayloadV1 extends PduResponsePayloadV1 implements ExtensionResponse {
+class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionResponse {
 
-    public static final int ELEMENT_TYPE = 0x0302;
+    public static final int ELEMENT_TYPE = 0x02;
 
     private static final int ELEMENT_TYPE_REQUEST_ID = 0x01;
     private static final int ELEMENT_TYPE_STATUS = 0x04;
     private static final int ELEMENT_TYPE_ERROR_MESSAGE = 0x05;
-    private static final int ELEMENT_TYPE_LAST_TIME = 0x10;
+    private static final int ELEMENT_TYPE_LAST_TIME =  0x12;
 
     private Long requestId;
     private Long status;
@@ -44,13 +44,7 @@ class ExtensionResponsePayloadV1 extends PduResponsePayloadV1 implements Extensi
     private Date lastTime;
     private TLVElement hashChain;
 
-    /**
-     * Create extension response.
-     *
-     * @param element
-     *         inmemory element
-     */
-    public ExtensionResponsePayloadV1(TLVElement element) throws KSIException {
+    public ExtensionResponsePayloadV2(TLVElement element, KSIRequestContext context) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {
@@ -67,39 +61,38 @@ class ExtensionResponsePayloadV1 extends PduResponsePayloadV1 implements Extensi
                 case ELEMENT_TYPE_LAST_TIME:
                     this.lastTime = readOnce(child).getDecodedDate();
                     continue;
-                case CalendarHashChain.ELEMENT_TYPE:
+                case GlobalTlvTypes.ELEMENT_TYPE_CALENDAR_HASH_CHAIN:
                     this.hashChain = readOnce(child);
                     continue;
                 default:
                     verifyCriticalFlag(child);
             }
         }
+        if (status != 0) {
+            throw new KSIProtocolException("Invalid extension response. Error code: 0x" + Long.toHexString(status) + ", message: '"+errorMessage+"'");
+        }
+        if (requestId == null) {
+            throw new KSIProtocolException("Invalid KSI response. Extension response payload does not contain request id.");
+        }
+        if (!requestId.equals(context.getRequestId())) {
+            throw new KSIProtocolException("Extension response request ID do not match. Sent '" + context.getRequestId() + "'" + " received '" + requestId + "'");
+        }
     }
 
-    /**
-     * @return error number
-     */
+
+
     public Long getError() {
         return status;
     }
 
-    /**
-     * @return error message
-     */
     public String getErrorMessage() {
         return errorMessage;
     }
 
-    /**
-     * @return request id
-     */
     public final Long getRequestId() {
         return requestId;
     }
 
-    /**
-     * @return returns last time
-     */
     public Date getLastTime() {
         return lastTime;
     }
@@ -109,6 +102,7 @@ class ExtensionResponsePayloadV1 extends PduResponsePayloadV1 implements Extensi
         return ELEMENT_TYPE;
     }
 
+    //TODO rename
     public TLVElement getCalendarHashChain() {
         return hashChain;
     }

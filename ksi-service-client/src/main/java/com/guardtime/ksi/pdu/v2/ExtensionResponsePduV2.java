@@ -20,11 +20,11 @@ package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 
 class ExtensionResponsePduV2 extends PduV2 {
 
-    private static final int ELEMENT_TYPE_EXTENSION_RESPONSE = 0x0321;
     private static final int[] SUPPORTED_PAYLOAD_TYPES = new int[]{0x02, 0x03};
 
     public ExtensionResponsePduV2(TLVElement rootElement, KSIRequestContext context) throws KSIException {
@@ -38,7 +38,7 @@ class ExtensionResponsePduV2 extends PduV2 {
 
     @Override
     public int getElementType() {
-        return ELEMENT_TYPE_EXTENSION_RESPONSE;
+        return GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_RESPONSE_PDU_V2;
     }
 
 }

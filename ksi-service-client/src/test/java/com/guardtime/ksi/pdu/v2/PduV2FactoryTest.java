@@ -18,7 +18,6 @@
  */
 package com.guardtime.ksi.pdu.v2;
 
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
@@ -35,6 +34,7 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 public class PduV2FactoryTest {
 
     private static final long DEFAULT_LEVEL = 0L;
+    public static final KSIServiceCredentials CREDENTIALS = new KSIServiceCredentials("anon", "anon");
     private PduV2Factory pduFactory = new PduV2Factory();
     private DataHash dataHash;
     private KSIRequestContext requestContext;
@@ -43,8 +43,8 @@ public class PduV2FactoryTest {
     @BeforeMethod
     public void setUp() throws Exception {
         this.dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
-        this.requestContext = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 42275443333883166L, 42L, 42L);
-        this.extensionContext = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 5546551786909961666L, 42L, 42L);
+        this.requestContext = new KSIRequestContext(CREDENTIALS, 42275443333883166L, 42L, 42L);
+        this.extensionContext = new KSIRequestContext(CREDENTIALS, 5546551786909961666L, 42L, 42L);
     }
 
     @Test
@@ -125,7 +125,7 @@ public class PduV2FactoryTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender")
     public void testReadV2ExtensionResponse() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("extension/extension-response-ok-request-id-4321.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
     }
 
 }

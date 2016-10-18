@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.tcp;
 
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 
 import java.net.InetSocketAddress;
@@ -31,6 +32,7 @@ public class TCPClientSettings {
     private int tcpTransactionTimeoutSec;
     private int tcpTransactionThreadPoolSize;
     private ServiceCredentials serviceCredentials;
+    private PduVersion pduVersion;
 
     /**
      * Settings for TCP client.
@@ -41,10 +43,15 @@ public class TCPClientSettings {
      * @param tcpTransactionThreadPoolSize Size of the thread pool for parallel TCP requests.
      */
     public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, int tcpTransactionThreadPoolSize, ServiceCredentials serviceCredentials) {
+        this(endpoint, tcpTransactionTimeoutSec, tcpTransactionThreadPoolSize, serviceCredentials, PduVersion.V1);
+    }
+
+    public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, int tcpTransactionThreadPoolSize, ServiceCredentials serviceCredentials, PduVersion pduVersion) {
         this.endpoint = endpoint;
         this.tcpTransactionTimeoutSec = tcpTransactionTimeoutSec;
         this.tcpTransactionThreadPoolSize = tcpTransactionThreadPoolSize;
         this.serviceCredentials = serviceCredentials;
+        this.pduVersion = pduVersion;
     }
 
     public InetSocketAddress getEndpoint() {
@@ -61,5 +68,9 @@ public class TCPClientSettings {
 
     public ServiceCredentials getServiceCredentials() {
         return serviceCredentials;
+    }
+
+    public PduVersion getPduVersion() {
+        return pduVersion;
     }
 }

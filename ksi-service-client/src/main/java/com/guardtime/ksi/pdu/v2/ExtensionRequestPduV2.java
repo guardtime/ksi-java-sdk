@@ -20,30 +20,31 @@ package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.List;
 
-class AggregationRequestPduV2 extends PduV2 implements AggregationRequest {
+class ExtensionRequestPduV2 extends PduV2 implements ExtensionRequest {
 
-    private static final int PDU_TYPE_AGGREGATION_REQUEST = 0x0220;
+    private static final int[] SUPPORTED_PAYLOAD_TYPES = new int[]{0x02};
 
-    public AggregationRequestPduV2(List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context) throws KSIException {
+    public ExtensionRequestPduV2(List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context) throws KSIException {
         super(new PduMessageHeader(context), payloads, macAlgorithm, context.getLoginKey());
     }
 
     @Override
     public int[] getSupportedPayloadTypes() {
-        return new int[] {AggregationRequestPayloadV2.ELEMENT_TYPE};
+        return SUPPORTED_PAYLOAD_TYPES;
     }
 
     @Override
     public int getElementType() {
-        return PDU_TYPE_AGGREGATION_REQUEST;
+        return GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_REQUEST_PDU_V2;
     }
 
     public byte[] toByteArray() {
@@ -53,5 +54,4 @@ class AggregationRequestPduV2 extends PduV2 implements AggregationRequest {
             throw new IllegalArgumentException("Invalid aggregation request state");
         }
     }
-
 }

@@ -16,38 +16,29 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.pdu.v1;
+package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 
-/**
- * This class is describes a legacy KSI aggregation response protocol data unit (PDU).
- */
-class AggregationResponseV1 extends AbstractKSIResponse<AggregationResponsePayloadV1> {
+class AggregationResponsePduV2 extends PduV2 {
 
-    public static final int ELEMENT_TYPE_AGGREGATION_RESPONSE = 0x0200;
+    private static final int[] SUPPORTED_PAYLOAD_TYPES = new int[]{0x02, 0x03};
 
-    /**
-     * Constructor used to parse response messages. Also does the basic validation.
-     *
-     * @param rootElement instance of{@link TLVElement}
-     * @param context     instance of {@link KSIRequestContext}. may not be null
-     * @throws KSIException will be thrown when TLV message parsing fails
-     */
-    public AggregationResponseV1(TLVElement rootElement, KSIRequestContext context) throws KSIException {
-        super(rootElement, context);
+    public AggregationResponsePduV2(TLVElement rootElement, KSIRequestContext context) throws KSIException {
+        super(rootElement, context.getLoginKey());
     }
 
     @Override
-    protected AggregationResponsePayloadV1 parse(TLVElement element) throws KSIException {
-        return new AggregationResponsePayloadV1(element);
+    public int[] getSupportedPayloadTypes() {
+        return SUPPORTED_PAYLOAD_TYPES;
     }
 
     @Override
     public int getElementType() {
-        return ELEMENT_TYPE_AGGREGATION_RESPONSE;
+        return GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2;
     }
 
 }

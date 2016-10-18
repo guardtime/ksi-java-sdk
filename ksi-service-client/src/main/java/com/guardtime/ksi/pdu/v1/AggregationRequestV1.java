@@ -22,6 +22,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 
@@ -29,8 +30,6 @@ import com.guardtime.ksi.tlv.TLVParserException;
  * Outgoing aggregation message TLV object.
  */
 class AggregationRequestV1 extends AbstractKSIRequest<AggregationRequestPayloadV1> implements AggregationRequest {
-
-    private static final int ELEMENT_TYPE = 0x200;
 
     public AggregationRequestV1(PduMessageHeader header, AggregationRequestPayloadV1 payload, KSIRequestContext requestContext) throws KSIException {
         super(header, payload, requestContext.getLoginKey());
@@ -47,7 +46,7 @@ class AggregationRequestV1 extends AbstractKSIRequest<AggregationRequestPayloadV
 
     @Override
     public int getElementType() {
-        return ELEMENT_TYPE;
+        return GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_PDU_V1;
     }
 
     public byte[] toByteArray() {

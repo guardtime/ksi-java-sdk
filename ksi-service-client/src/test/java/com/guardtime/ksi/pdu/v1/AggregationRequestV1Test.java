@@ -18,12 +18,12 @@
  */
 package com.guardtime.ksi.pdu.v1;
 
-import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
+import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
 import org.testng.Assert;
@@ -34,19 +34,19 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class AggregationRequestV1Test {
 
-    public static final KSIRequestContext REQUEST_CONTEXT = new KSIRequestContext(TestUtil.CREDENTIALS_ANONYMOUS, 42L, 42L, 42L);
+    public static final KSIRequestContext REQUEST_CONTEXT = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 42L, 42L, 42L);
     private PduMessageHeader header;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        this.header = new PduMessageHeader(TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
+        this.header = new PduMessageHeader("anon");
     }
 
     @Test
     public void testCreateAggregationRequestInstance_Ok() throws Exception {
         AggregationRequestV1 aggregationRequest = new AggregationRequestV1(header, null, REQUEST_CONTEXT);
         Assert.assertNotNull(aggregationRequest.getHeader());
-        Assert.assertEquals(aggregationRequest.getHeader().getLoginId(), TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
+        Assert.assertEquals(aggregationRequest.getHeader().getLoginId(), "anon");
         Assert.assertNull(aggregationRequest.getHeader().getInstanceId());
         Assert.assertNull(aggregationRequest.getHeader().getMessageId());
         Assert.assertNotNull(aggregationRequest.getMac());

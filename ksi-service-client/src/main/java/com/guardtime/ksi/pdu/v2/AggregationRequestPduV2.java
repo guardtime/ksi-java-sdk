@@ -16,50 +16,41 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.pdu.v1;
+package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
-import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.pdu.ExtensionRequest;
-import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVParserException;
+import com.guardtime.ksi.tlv.TLVStructure;
 
-/**
- * Outgoing extension message TLV object.
- */
-class ExtensionRequestV1 extends AbstractKSIRequest<ExtensionRequestPayloadV1> implements ExtensionRequest {
+import java.util.List;
 
-    public static final int ELEMENT_TYPE = 0x300;
+class AggregationRequestPduV2 extends PduV2 implements AggregationRequest {
 
-    public ExtensionRequestV1(PduMessageHeader header, ExtensionRequestPayloadV1 payload, byte[] loginKey) throws KSIException {
-        super(header, payload, loginKey);
-
-    }
-
-    public ExtensionRequestV1(TLVElement element, byte[] loginKey) throws KSIException {
-        super(element, loginKey);
-        if (getRequestPayload() == null) {
-            throw new KSIProtocolException("Invalid KSI request. Extension request payload is missing");
-        }
+    public AggregationRequestPduV2(List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context) throws KSIException {
+        super(new PduMessageHeader(context), payloads, macAlgorithm, context.getLoginKey());
     }
 
     @Override
-    protected ExtensionRequestPayloadV1 readPayload(TLVElement element) throws KSIException {
-        return new ExtensionRequestPayloadV1(element);
+    public int[] getSupportedPayloadTypes() {
+        return new int[] {AggregationRequestPayloadV2.ELEMENT_TYPE};
     }
 
     @Override
     public int getElementType() {
-        return ELEMENT_TYPE;
+        return GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2;
     }
-
 
     public byte[] toByteArray() {
         try {
             return getRootElement().getEncoded();
         } catch (TLVParserException e) {
-            throw new IllegalArgumentException("Invalid extension request state");
+            throw new IllegalArgumentException("Invalid aggregation request state");
         }
     }
+
 }

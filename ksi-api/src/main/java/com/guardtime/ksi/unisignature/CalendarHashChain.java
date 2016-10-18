@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,7 @@ import java.util.List;
  */
 public interface CalendarHashChain {
 
-    int ELEMENT_TYPE = 0x0802;
+    int ELEMENT_TYPE = GlobalTlvTypes.ELEMENT_TYPE_CALENDAR_HASH_CHAIN;
 
     /**
      * Returns the input hash of the calendar hash chain

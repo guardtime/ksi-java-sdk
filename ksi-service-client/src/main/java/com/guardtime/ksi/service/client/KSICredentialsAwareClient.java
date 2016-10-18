@@ -18,6 +18,8 @@
  */
 package com.guardtime.ksi.service.client;
 
+import com.guardtime.ksi.pdu.PduVersion;
+
 import java.io.Closeable;
 
 /**
@@ -29,5 +31,10 @@ interface KSICredentialsAwareClient extends Closeable {
      * Returns the service credentials used by this service
      */
     ServiceCredentials getServiceCredentials();
+
+    /**
+     * Returns the PDU format version of the client
+     */
+    PduVersion getPduVersion();
 
 }

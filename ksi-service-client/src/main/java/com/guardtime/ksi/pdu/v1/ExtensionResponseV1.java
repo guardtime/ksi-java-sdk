@@ -20,13 +20,12 @@
 package com.guardtime.ksi.pdu.v1;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 
 class ExtensionResponseV1 extends AbstractKSIResponse<ExtensionResponsePayloadV1>  {
-
-    public static final int ELEMENT_TYPE = 0x0300;
 
     /**
      * This constructor is used to parse response messages. Also does the basic validation.
@@ -49,7 +48,7 @@ class ExtensionResponseV1 extends AbstractKSIResponse<ExtensionResponsePayloadV1
 
     @Override
     public int getElementType() {
-        return ELEMENT_TYPE;
+        return GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_PDU_V1;
     }
 
 }

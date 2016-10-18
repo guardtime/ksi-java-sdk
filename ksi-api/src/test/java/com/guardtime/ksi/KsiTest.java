@@ -4,6 +4,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -61,6 +62,8 @@ public class KsiTest {
         Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(42275443333883166L);
         Mockito.when(mockedSigningClient.getServiceCredentials()).thenReturn(TestUtil.CREDENTIALS_ANONYMOUS);
         Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(TestUtil.CREDENTIALS_ANONYMOUS);
+        Mockito.when(mockedSigningClient.getPduVersion()).thenReturn(PduVersion.V1);
+        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V1);
 
         Mockito.when(mockedTrustStore.isTrusted(Mockito.any(X509Certificate.class), Mockito.any(Store.class))).thenReturn(true);
         mockedResponse = Mockito.mock(Future.class);
@@ -148,7 +151,7 @@ public class KsiTest {
 
     @Test
     public void testCreateSignature_Ok() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("aggregation-response.tlv"));
+        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("pdu/aggregation/aggregation-response-v1.tlv"));
         Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
 
         KSISignature response = ksi.sign(defaultDataHash);

@@ -25,6 +25,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.*;
@@ -42,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
 
-    public static final int ELEMENT_TYPE = 0x0800;
+    public static final int ELEMENT_TYPE = GlobalTlvTypes.ELEMENT_TYPE_SIGNATURE;
     private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryKsiSignature.class);
     private static final String IDENTITY_SEPARATOR = " :: ";
     private List<AggregationHashChain> aggregationChains;

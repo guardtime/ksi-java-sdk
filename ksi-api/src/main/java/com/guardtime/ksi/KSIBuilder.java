@@ -82,7 +82,6 @@ public final class KSIBuilder {
     private KeyStore trustStore;
 
     private long publicationsFileCacheExpirationTime = 0L;
-    private PduVersion defaultPduVersion = PduVersion.V1;
     private PduIdentifierProvider pduIdentifierProvider = new DefaultPduIdentifierProvider();
 
     private Policy defaultVerificationPolicy;
@@ -207,14 +206,6 @@ public final class KSIBuilder {
     }
 
     /**
-     * Sets the PDU format version. Default value is {@link PduVersion#V1}.
-     */
-    public KSIBuilder setPduVersion(PduVersion pduVersion) {
-        this.defaultPduVersion = pduVersion;
-        return this;
-    }
-
-    /**
      * Sets the PDU identifier provider used to generate different identifiers for PDU requests. Default value is
      * {@link DefaultPduIdentifierProvider}.
      */
@@ -293,12 +284,18 @@ public final class KSIBuilder {
         PKITrustStore jksTrustStore = new JKSTrustStore(trustStore, certSelector);
         PublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(jksTrustStore);
         PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
-        PduFactory pduFactory = createPduFactory(defaultPduVersion);
-        KSISignatureComponentFactory signatureComponentFactory= new InMemoryKsiSignatureComponentFactory();
-        KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory(defaultVerificationPolicy, publicationsFileAdapter, extenderClient, true, pduFactory, signatureComponentFactory);
 
-        logger.info("PDUVersion={}, implementation={}", defaultPduVersion, pduFactory.getClass());
-        return new KSIImpl(signingClient, extenderClient, publicationsFileAdapter, uniSignatureFactory, signatureComponentFactory, pduFactory, pduIdentifierProvider, defaultHashAlgorithm);
+        PduFactory extenderPduFactory = createPduFactory(extenderClient.getPduVersion());
+        PduFactory signerPduFactory = createPduFactory(signingClient.getPduVersion());
+
+        logger.info("Signing client PDU version={}, implementation={}", signingClient.getPduVersion(), signerPduFactory.getClass());
+        logger.info("Extender client PDU version={}, implementation={}", extenderClient.getPduVersion(), extenderPduFactory.getClass());
+
+        KSISignatureComponentFactory signatureComponentFactory= new InMemoryKsiSignatureComponentFactory();
+        KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory(defaultVerificationPolicy, publicationsFileAdapter, extenderClient, true, extenderPduFactory, signatureComponentFactory);
+
+
+        return new KSIImpl(signingClient, extenderClient, publicationsFileAdapter, uniSignatureFactory, signatureComponentFactory, extenderPduFactory, signerPduFactory, pduIdentifierProvider, defaultHashAlgorithm);
     }
 
     private PduFactory createPduFactory(PduVersion pduVersion) {
@@ -333,7 +330,7 @@ public final class KSIBuilder {
 
         private final KSISignatureFactory signatureFactory;
         private final KSISignatureComponentFactory signatureComponentFactory;
-        private final PduFactory pduFactory;
+        private final PduFactory extenderPduFactory, signerPduFactory;
         private final PduIdentifierProvider pduIdentifierProvider;
         private final HashAlgorithm defaultHashAlgorithm;
         private final KSISigningClient signingClient;
@@ -342,14 +339,17 @@ public final class KSIBuilder {
 
         public KSIImpl(KSISigningClient signingClient, KSIExtenderClient extenderClient,
                        PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory,
-                       KSISignatureComponentFactory signatureComponentFactory, PduFactory pduFactory, PduIdentifierProvider pduIdentifierProvider, HashAlgorithm defaultHashAlgorithm) {
+                       KSISignatureComponentFactory signatureComponentFactory, PduFactory extenderPduFactory,
+                       PduFactory signerPduFactory, PduIdentifierProvider pduIdentifierProvider,
+                       HashAlgorithm defaultHashAlgorithm) {
             this.signatureFactory = signatureFactory;
             this.signatureComponentFactory = signatureComponentFactory;
             this.defaultHashAlgorithm = defaultHashAlgorithm;
             this.signingClient = signingClient;
             this.extenderClient = extenderClient;
             this.publicationsFileAdapter = publicationsFileAdapter;
-            this.pduFactory = pduFactory;
+            this.extenderPduFactory = extenderPduFactory;
+            this.signerPduFactory = signerPduFactory;
             this.pduIdentifierProvider = pduIdentifierProvider;
         }
 
@@ -404,9 +404,9 @@ public final class KSIBuilder {
             Long requestId = pduIdentifierProvider.nextRequestId();
             ServiceCredentials credentials = signingClient.getServiceCredentials();
             KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId, pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
-            AggregationRequest requestMessage = pduFactory.createAggregationRequest(requestContext, dataHash, DEFAULT_LEVEL);
+            AggregationRequest requestMessage = signerPduFactory.createAggregationRequest(requestContext, dataHash, DEFAULT_LEVEL);
             Future<TLVElement> future = signingClient.sign(new ByteArrayInputStream(requestMessage.toByteArray()));
-            return new AggregationFuture(future, requestContext, signatureFactory, dataHash, pduFactory);
+            return new AggregationFuture(future, requestContext, signatureFactory, dataHash, signerPduFactory);
         }
 
         public Future<KSISignature> asyncSign(File file) throws KSIException {
@@ -462,11 +462,11 @@ public final class KSIBuilder {
             ServiceCredentials credentials = extenderClient.getServiceCredentials();
             KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId, pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
 
-            ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, signature.getAggregationTime(), publicationRecord.getPublicationTime());
+            ExtensionRequest requestMessage = extenderPduFactory.createExtensionRequest(requestContext, signature.getAggregationTime(), publicationRecord.getPublicationTime());
 
             ByteArrayInputStream inputStream = new ByteArrayInputStream(requestMessage.toByteArray());
             Future<TLVElement> future = extenderClient.extend(inputStream);
-            return new ExtensionFuture(future, publicationRecord, signature, requestContext, signatureComponentFactory, pduFactory, signatureFactory);
+            return new ExtensionFuture(future, publicationRecord, signature, requestContext, signatureComponentFactory, extenderPduFactory, signatureFactory);
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {
@@ -478,7 +478,7 @@ public final class KSIBuilder {
             }
             KSISignatureVerifier verifier = new KSISignatureVerifier();
             context.setKsiSignatureComponentFactory(signatureComponentFactory);
-            context.setPduFactory(pduFactory);
+            context.setPduFactory(extenderPduFactory);
             return verifier.verify(context, policy);
         }
 

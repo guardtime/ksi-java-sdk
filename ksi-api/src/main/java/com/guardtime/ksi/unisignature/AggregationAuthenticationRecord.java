@@ -19,11 +19,13 @@
 
 package com.guardtime.ksi.unisignature;
 
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
+
 /**
  * An aggregation authentication record is used to sign a hash value in an aggregation tree and corresponds to `left
  * link' structures in some aggregation hash chains.
  */
 public interface AggregationAuthenticationRecord {
 
-    int ELEMENT_TYPE = 0x0804;
+    int ELEMENT_TYPE = GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_AUTHENTICATION_RECORD;
 }

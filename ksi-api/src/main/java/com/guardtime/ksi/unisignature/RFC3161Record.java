@@ -22,6 +22,7 @@ package com.guardtime.ksi.unisignature;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 
 /**
  * An older implementation of the KSI service used the formats and protocols specified in the X.509 time-stamping
@@ -40,7 +41,7 @@ import com.guardtime.ksi.hashing.HashException;
  */
 public interface RFC3161Record {
 
-    int ELEMENT_TYPE = 0x806;
+    int ELEMENT_TYPE = GlobalTlvTypes.ELEMENT_TYPE_RFC_3161_RECORD;
 
     /**
      * Returns the RFC3161 record input data hash

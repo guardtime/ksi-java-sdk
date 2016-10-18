@@ -20,11 +20,12 @@
 package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.publication.PublicationRecord;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 
 /**
  * Marker interface for signature. See {@link PublicationRecord} for more information.
  */
 public interface SignaturePublicationRecord extends PublicationRecord {
 
-    int ELEMENT_TYPE = 0x0803;
+    int ELEMENT_TYPE = GlobalTlvTypes.ELEMENT_TYPE_SIGNATURE_PUBLICATION_RECORD;
 }

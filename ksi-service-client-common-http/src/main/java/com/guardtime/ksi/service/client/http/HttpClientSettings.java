@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.client.http;
 
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 
 import java.net.MalformedURLException;
@@ -37,6 +38,7 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
     private URL publicationsFileUrl;
     private HTTPConnectionParameters parameters = new HTTPConnectionParameters();
     private ServiceCredentials credentials;
+    private PduVersion pduVersion;
 
     /**
      * Create HTTP Service settings with provided parameters.
@@ -51,6 +53,23 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
      *         service credentials
      */
     public HttpClientSettings(String signingUrl, String extendingUrl, String publicationsFileUrl, ServiceCredentials credentials) {
+        this(signingUrl, extendingUrl, publicationsFileUrl, credentials, PduVersion.V1);
+    }
+    /**
+     * Create HTTP Service settings with provided parameters.
+     *
+     * @param signingUrl
+     *         URL of KSI gateway for signing requests
+     * @param extendingUrl
+     *         URL of KSI extender for extending requests
+     * @param publicationsFileUrl
+     *         URL of online publications file.
+     * @param credentials
+     *         service credentials
+     * @param pduVersion
+     *         version of pdu yo use
+     */
+    public HttpClientSettings(String signingUrl, String extendingUrl, String publicationsFileUrl, ServiceCredentials credentials, PduVersion pduVersion) {
         if (extendingUrl == null) {
             throw new IllegalArgumentException("extending URL is null");
         }
@@ -66,6 +85,8 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
         if (credentials == null) {
             throw new IllegalArgumentException("credentials is null");
         }
+
+        this.pduVersion = pduVersion != null ? pduVersion : PduVersion.V1;
 
         try {
             this.extendingUrl = new URL(extendingUrl);
@@ -148,6 +169,11 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
     @Override
     public int getReadTimeout() {
         return parameters.getReadTimeout();
+    }
+
+    @Override
+    public PduVersion getPduVersion() {
+        return pduVersion;
     }
 
     /**

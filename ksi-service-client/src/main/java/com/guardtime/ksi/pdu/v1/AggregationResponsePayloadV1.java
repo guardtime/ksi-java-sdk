@@ -21,11 +21,8 @@ package com.guardtime.ksi.pdu.v1;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.unisignature.AggregationAuthenticationRecord;
-import com.guardtime.ksi.unisignature.AggregationHashChain;
-import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
-import com.guardtime.ksi.unisignature.CalendarHashChain;
 
 import java.util.List;
 
@@ -63,10 +60,10 @@ class AggregationResponsePayloadV1 extends PduResponsePayloadV1 implements Aggre
                 case ELEMENT_TYPE_ERROR_MESSAGE:
                     this.errorMsg = readOnce(child).getDecodedString();
                     continue;
-                case AggregationHashChain.ELEMENT_TYPE:
-                case AggregationAuthenticationRecord.ELEMENT_TYPE:
-                case CalendarHashChain.ELEMENT_TYPE:
-                case CalendarAuthenticationRecord.ELEMENT_TYPE:
+                case GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_HASH_CHAIN:
+                case GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_AUTHENTICATION_RECORD:
+                case GlobalTlvTypes.ELEMENT_TYPE_CALENDAR_HASH_CHAIN:
+                case GlobalTlvTypes.ELEMENT_TYPE_CALENDAR_AUTHENTICATION_RECORD:
                     continue;
                 default:
                     verifyCriticalFlag(child);

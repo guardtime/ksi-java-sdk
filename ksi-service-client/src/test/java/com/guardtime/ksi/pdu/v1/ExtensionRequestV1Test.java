@@ -18,7 +18,6 @@
  */
 package com.guardtime.ksi.pdu.v1;
 
-import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.service.KSIProtocolException;
@@ -28,25 +27,26 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.nio.charset.Charset;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class ExtensionRequestV1Test {
 
-    public static final byte[] LOGIN_KEY = TestUtil.CREDENTIALS_ANONYMOUS.getLoginKey();
+    public static final byte[] LOGIN_KEY = "anon".getBytes(Charset.forName("UTF-8"));
     private PduMessageHeader header;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        this.header = new PduMessageHeader(TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
+        this.header = new PduMessageHeader("anon");
     }
 
     @Test
     public void testCreateExtensionRequestInstance_Ok() throws Exception {
         ExtensionRequestV1 extensionRequest = new ExtensionRequestV1(header, null, LOGIN_KEY);
         Assert.assertNotNull(extensionRequest.getHeader());
-        Assert.assertEquals(extensionRequest.getHeader().getLoginId(), TestUtil.CREDENTIALS_ANONYMOUS.getLoginId());
+        Assert.assertEquals(extensionRequest.getHeader().getLoginId(), "anon");
         Assert.assertNull(extensionRequest.getHeader().getInstanceId());
         Assert.assertNull(extensionRequest.getHeader().getMessageId());
         Assert.assertNotNull(extensionRequest.getMac());

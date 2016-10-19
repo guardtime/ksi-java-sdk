@@ -149,6 +149,10 @@ class InMemoryRFC3161Record extends TLVStructure implements RFC3161Record {
         return inputHash;
     }
 
+    public Date getAggregationTime() {
+        return aggregationTime;
+    }
+
     public DataHash getOutputHash(HashAlgorithm hashAlgorithm) throws HashException {
         DataHash hash = getInputHash();
 
@@ -169,6 +173,10 @@ class InMemoryRFC3161Record extends TLVStructure implements RFC3161Record {
         hasher.addData(hash.getImprint());
 
         return hasher.getHash();
+    }
+
+    public List<Long> getChainIndex() {
+        return chainIndex;
     }
 
     @Override

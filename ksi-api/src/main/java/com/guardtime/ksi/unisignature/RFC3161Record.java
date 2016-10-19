@@ -23,6 +23,9 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * An older implementation of the KSI service used the formats and protocols specified in the X.509 time-stamping
  * standard (RFC 3161). In that format, the hash value of the time-stamped datum was not signed directly, but via
@@ -51,4 +54,14 @@ public interface RFC3161Record {
      * Returns the RFC3161 record output data hash
      */
     DataHash getOutputHash(HashAlgorithm hashAlgorithm) throws HashException;
+
+    /**
+     * Returns the index of the RFC3161 record
+     */
+    List<Long> getChainIndex();
+
+    /**
+     * Returns the aggregation time of the RFC3161 record
+     */
+    Date getAggregationTime();
 }

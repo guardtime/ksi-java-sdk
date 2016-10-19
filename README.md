@@ -64,6 +64,10 @@ mvn dependency:tree
 
 Java 1.5 or newer.
 
+## Contributing ##
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
 ## License ##
 
 See LICENSE file.

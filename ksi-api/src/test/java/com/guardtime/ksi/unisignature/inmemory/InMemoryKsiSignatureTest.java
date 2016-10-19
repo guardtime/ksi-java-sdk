@@ -74,6 +74,19 @@ public class InMemoryKsiSignatureTest {
     }
 
     @Test
+    public void testGetInputHashWhenRfc3161RecordIsMissing() throws Exception {
+        KSISignature signature = TestUtil.loadSignature("signature/signature-ok.tlv");
+        Assert.assertEquals(signature.getInputHash(), signature.getAggregationHashChains()[0].getInputHash());
+    }
+
+    @Test
+    public void testGetInputHashWhenRfc3161RecordIsPresent() throws Exception {
+        KSISignature signature = TestUtil.loadSignature("signature/signature-with-rfc3161-record-ok.ksig");
+        Assert.assertNotEquals(signature.getInputHash(), signature.getAggregationHashChains()[0].getInputHash());
+        Assert.assertEquals(signature.getInputHash(), signature.getRfc3161Record().getInputHash());
+    }
+
+    @Test
     public void testSignatureExtend() throws Exception {
         InMemoryKsiSignature signature = load(TestUtil.load("signature/signature-ok.tlv"));
         Assert.assertFalse(signature.isExtended());

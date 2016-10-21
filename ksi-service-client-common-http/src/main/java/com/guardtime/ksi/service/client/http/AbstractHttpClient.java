@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.client.http;
 
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
@@ -29,7 +30,6 @@ import com.guardtime.ksi.service.client.ServiceCredentials;
 public abstract class AbstractHttpClient implements KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
 
     public static final String HEADER_APPLICATION_KSI_REQUEST = "application/ksi-request";
-    public static final String HEADER_APPLICATION_KSI_RESPONSE = "application/ksi-response";
     public static final String HEADER_NAME_CONTENT_TYPE = "Content-Type";
 
     protected AbstractHttpClientSettings settings;
@@ -43,6 +43,10 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
 
     public ServiceCredentials getServiceCredentials() {
         return settings.getCredentials();
+    }
+
+    public PduVersion getPduVersion() {
+        return settings.getPduVersion();
     }
 
 }

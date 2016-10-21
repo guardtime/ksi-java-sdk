@@ -19,9 +19,9 @@
 
 package com.guardtime.ksi.multisignature.file;
 
+import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.multisignature.KSIMultiSignatureFactory;
-import com.guardtime.ksi.service.KSIService;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.util.Util;
@@ -34,24 +34,24 @@ import java.util.Collection;
  */
 public final class FileBasedMultiSignatureFactory implements KSIMultiSignatureFactory<FileBasedMultiSignatureConfigurationParameters, FileBasedMultiSignature> {
 
-    private final KSIService ksiService;
+    private final KSI ksi;
 
     private final KSISignatureFactory uniSignatureFactory;
 
     /**
      * Creates new file based multi signature factory.
      *
-     * @param ksiService
-     *         - ksi service to be used for extending
+     * @param ksi
+     *         - ksi  to be used for extending
      */
-    public FileBasedMultiSignatureFactory(KSIService ksiService, KSISignatureFactory uniSignatureFactory) throws KSIException {
-        if (ksiService == null) {
-            throw new KSIException("Invalid input parameter. KSI service can not be null");
+    public FileBasedMultiSignatureFactory(KSI ksi, KSISignatureFactory uniSignatureFactory) throws KSIException {
+        if (ksi == null) {
+            throw new KSIException("Invalid input parameter. KSI can not be null");
         }
         if (uniSignatureFactory == null) {
             throw new KSIException("Invalid input parameter. KSI uni signature factory must be present");
         }
-        this.ksiService = ksiService;
+        this.ksi = ksi;
         this.uniSignatureFactory = uniSignatureFactory;
     }
 
@@ -63,10 +63,10 @@ public final class FileBasedMultiSignatureFactory implements KSIMultiSignatureFa
         try {
             File file = params.getFile();
             if (file.createNewFile() || file.length() == 0L) {
-                return new FileBasedMultiSignature(new FileBasedMultiSignatureWriter(file), ksiService, uniSignatureFactory);
+                return new FileBasedMultiSignature(new FileBasedMultiSignatureWriter(file), ksi, uniSignatureFactory);
             }
             input = new FileInputStream(file);
-            return new FileBasedMultiSignature(input, new FileBasedMultiSignatureWriter(file), ksiService, uniSignatureFactory);
+            return new FileBasedMultiSignature(input, new FileBasedMultiSignatureWriter(file), ksi, uniSignatureFactory);
         } catch (FileNotFoundException e) {
             throw new KSIException("File not found", e);
         } catch (IOException e) {

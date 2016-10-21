@@ -31,12 +31,7 @@ import java.io.InputStream;
  */
 public abstract class HttpPostRequestFuture implements Future<TLVElement> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpPostRequestFuture.class);
-
-    private static final int AGGREGATION_PDU_TYPE = 0x200;
-    private static final int EXTENSION_PDU_TYPE = 0x300;
-
-    private static final int[] SUPPORTED_TLV_TYPES = new int[]{AGGREGATION_PDU_TYPE, EXTENSION_PDU_TYPE};
+    private static final Logger logger = LoggerFactory.getLogger(HttpPostRequestFuture.class);
 
     /**
      * Validates HTTP response message.
@@ -47,28 +42,18 @@ public abstract class HttpPostRequestFuture implements Future<TLVElement> {
      *         - HTTP header response message
      * @param response
      *         - response input stream
-     * @param contentType
-     *         - response content type header
      * @throws HttpProtocolException
      *         will be thrown when KSI HTTP response is not valid
      */
-    protected TLVElement parse(int statusCode, String responseMessage, InputStream response, String contentType) throws HttpProtocolException {
+    protected TLVElement parse(int statusCode, String responseMessage, InputStream response) throws HttpProtocolException {
         try {
-            TLVElement tlv = TLVElement.createFromBytes(Util.toByteArray(response));
-            int tlvType = tlv.getType();
-            for (int type : SUPPORTED_TLV_TYPES) {
-                if (tlvType == type) {
-                    return tlv;
-                }
-            }
+            return TLVElement.create(Util.toByteArray(response));
         } catch (Exception e) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Invalid TLV response.", e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Invalid TLV response.", e);
             }
             throw new HttpProtocolException(statusCode, responseMessage);
         }
-        LOGGER.error("Invalid KSI Protocol response. HTTP status code is {}, HTTP response message is {} and content type is {}", statusCode, responseMessage, contentType);
-        throw new HttpProtocolException(statusCode, responseMessage);
     }
 
 }

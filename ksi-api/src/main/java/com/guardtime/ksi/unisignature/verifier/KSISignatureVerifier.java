@@ -50,7 +50,6 @@ public final class KSISignatureVerifier implements SignatureVerifier {
             } else {
                 runPolicy = null;
             }
-
         }
         return finalResult;
     }
@@ -93,12 +92,12 @@ public final class KSISignatureVerifier implements SignatureVerifier {
             }
         }
 
-        public void setPolicyStatus(VerificationResultCode policyStatus) {
-            this.policyStatus = policyStatus;
-        }
-
         public VerificationResultCode getPolicyStatus() {
             return policyStatus;
+        }
+
+        public void setPolicyStatus(VerificationResultCode policyStatus) {
+            this.policyStatus = policyStatus;
         }
 
         public Policy getPolicy() {

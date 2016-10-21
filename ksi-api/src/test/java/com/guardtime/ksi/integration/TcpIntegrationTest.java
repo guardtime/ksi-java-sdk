@@ -61,7 +61,6 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         KSISigningClient tcpClient = new TCPClient(loadTCPSettings());
         this.httpClient = new ApacheHttpClient(loadHTTPSettings());
         this.ksi = createKsi(httpClient, tcpClient, httpClient);
-
     }
 
     @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION)

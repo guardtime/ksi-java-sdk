@@ -135,7 +135,7 @@ public class JKSTrustStore implements PKITrustStore {
             if (certificateStore == null) {
                 certificateStore = new JcaCertStore(new ArrayList());
             }
-            checkEmail(certSelector, certificate);
+            checkConstraints(certSelector, certificate);
 
             X509CertSelector selector = new X509CertSelector();
             selector.setCertificate(certificate);
@@ -196,7 +196,7 @@ public class JKSTrustStore implements PKITrustStore {
         return input;
     }
 
-    private void checkEmail(CertSelector certSelector, X509Certificate certificate) throws CryptoException {
+    private void checkConstraints(CertSelector certSelector, X509Certificate certificate) throws CryptoException {
         if (certSelector == null) {
             return;
         }

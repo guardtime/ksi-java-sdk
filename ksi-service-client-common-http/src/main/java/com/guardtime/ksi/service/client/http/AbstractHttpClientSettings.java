@@ -19,6 +19,7 @@
 
 package com.guardtime.ksi.service.client.http;
 
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 
 import java.net.URL;
@@ -49,6 +50,11 @@ public abstract class AbstractHttpClientSettings {
      * Returns the service credentials.
      */
     public abstract ServiceCredentials getCredentials();
+
+    /**
+     * Returns the PDU version
+     */
+    public abstract PduVersion getPduVersion();
 
     /**
      * Returns the proxy URL. By default proxy isn't used and null is returned.

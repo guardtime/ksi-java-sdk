@@ -89,7 +89,7 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
     public void testVerifySignatureUsingWrongCalChainResponse_VerificationResultPub2() throws Exception {
         KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
 
-        String responseFile = "extension/extension-response-with-only-cal-chain-for-ExtendedSignature-NoPubRec.tlv";
+        String responseFile = "pdu/extension/extension-response-v1-with-only-cal-chain-for-ExtendedSignature-NoPubRec.tlv";
         mockExtenderResponseCalendarHashCain(responseFile, mockedExtenderClient);
 
         KSISignature signature = TestUtil.loadSignature("publication-based-verification/ExtendedSignature-NoPubRec.ksig");

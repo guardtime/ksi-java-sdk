@@ -19,11 +19,11 @@
 
 package com.guardtime.ksi.multisignature.file;
 
+import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.service.KSIService;
 import com.guardtime.ksi.multisignature.KSIMultiSignature;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Base16;
@@ -43,18 +43,18 @@ public class FileBasedMultiSignatureFactoryTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
-        KSIService mockedService = Mockito.mock(KSIService.class);
-        factory = new FileBasedMultiSignatureFactory(mockedService, new InMemoryKsiSignatureFactory());
+        KSI mockedKsi = Mockito.mock(KSI.class);
+        factory = new FileBasedMultiSignatureFactory(mockedKsi, new InMemoryKsiSignatureFactory());
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI service can not be null")
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI can not be null")
     public void testCreateFactoryUsingInvalidInputParameters_ThrowsKSIException() throws Exception {
         new FileBasedMultiSignatureFactory(null, new InMemoryKsiSignatureFactory());
     }
 
     @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI uni signature factory must be present")
     public void testCreateFactoryWithoutUniSignatureFactory_ThrowsKSIException() throws Exception {
-        new FileBasedMultiSignatureFactory(Mockito.mock(KSIService.class), null);
+        new FileBasedMultiSignatureFactory(Mockito.mock(KSI.class), null);
     }
 
     @Test

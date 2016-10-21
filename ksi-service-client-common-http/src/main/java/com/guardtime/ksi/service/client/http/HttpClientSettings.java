@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.client.http;
 
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 
 import java.net.MalformedURLException;
@@ -37,6 +38,7 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
     private URL publicationsFileUrl;
     private HTTPConnectionParameters parameters = new HTTPConnectionParameters();
     private ServiceCredentials credentials;
+    private PduVersion pduVersion;
 
     /**
      * Create HTTP Service settings with provided parameters.
@@ -51,22 +53,38 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
      *         service credentials
      */
     public HttpClientSettings(String signingUrl, String extendingUrl, String publicationsFileUrl, ServiceCredentials credentials) {
+        this(signingUrl, extendingUrl, publicationsFileUrl, credentials, PduVersion.V1);
+    }
+    /**
+     * Create HTTP Service settings with provided parameters.
+     *
+     * @param signingUrl
+     *         URL of KSI gateway for signing requests
+     * @param extendingUrl
+     *         URL of KSI extender for extending requests
+     * @param publicationsFileUrl
+     *         URL of online publications file.
+     * @param credentials
+     *         service credentials
+     * @param pduVersion
+     *         version of pdu to use
+     */
+    public HttpClientSettings(String signingUrl, String extendingUrl, String publicationsFileUrl, ServiceCredentials credentials, PduVersion pduVersion) {
         if (extendingUrl == null) {
             throw new IllegalArgumentException("extending URL is null");
         }
-
         if (signingUrl == null) {
             throw new IllegalArgumentException("signing URL is null");
         }
-
         if (publicationsFileUrl == null) {
             throw new IllegalArgumentException("publications file URL is null");
         }
-
         if (credentials == null) {
             throw new IllegalArgumentException("credentials is null");
         }
-
+        if (pduVersion == null) {
+            throw new IllegalArgumentException("PDU version is null");
+        }
         try {
             this.extendingUrl = new URL(extendingUrl);
             this.signingUrl = new URL(signingUrl);
@@ -74,8 +92,8 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("malformed Url", e);
         }
-
         this.credentials = credentials;
+        this.pduVersion = pduVersion;
     }
 
     /**
@@ -148,6 +166,11 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
     @Override
     public int getReadTimeout() {
         return parameters.getReadTimeout();
+    }
+
+    @Override
+    public PduVersion getPduVersion() {
+        return pduVersion;
     }
 
     /**

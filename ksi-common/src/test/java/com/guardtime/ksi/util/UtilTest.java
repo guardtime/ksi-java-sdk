@@ -97,7 +97,7 @@ public class UtilTest {
     @Test
     public void testToInt() {
         byte[] oneTwoThree = new byte[]{0, 0, 0, 123};
-        Assert.assertEquals(Util.toInt(oneTwoThree), (int) 123);
+        Assert.assertEquals(Util.toInt(oneTwoThree), 123);
     }
 
     @Test

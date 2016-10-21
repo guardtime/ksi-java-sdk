@@ -22,6 +22,7 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.KSIBuilder;
 import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.CertificateNotFoundException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -54,8 +55,10 @@ public class KeyBasedVerificationPolicyTest {
     @BeforeMethod
     public void setUp() throws Exception {
         mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
+        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V1);
         KSIPublicationsFileClient mockedPublicationFileClient = Mockito.mock(KSIPublicationsFileClient.class);
         KSISigningClient mockerSigningClient = Mockito.mock(KSISigningClient.class);
+        Mockito.when(mockerSigningClient.getPduVersion()).thenReturn(PduVersion.V1);
         CertSelector mockedCertificateSelector = Mockito.mock(CertSelector.class);
         Mockito.when(mockedCertificateSelector.match(Mockito.any(Certificate.class))).thenReturn(Boolean.TRUE);
         ksi = new KSIBuilder().setKsiProtocolExtenderClient(mockedExtenderClient).

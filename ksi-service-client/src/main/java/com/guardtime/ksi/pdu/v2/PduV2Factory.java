@@ -28,6 +28,7 @@ import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.util.Util;
 
@@ -46,7 +47,7 @@ public class PduV2Factory implements PduFactory {
     public AggregationResponse readAggregationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(input, "Input TLV");
-        if (input.getType() == 0x0200) {
+        if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_PDU_V1) {
             throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator");
         }
         AggregationResponsePduV2 aggregationResponsePdu = new AggregationResponsePduV2(input, context);
@@ -67,7 +68,7 @@ public class PduV2Factory implements PduFactory {
     public ExtensionResponse readExtensionResponse(KSIRequestContext context, TLVElement input) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(input, "Input TLV");
-        if (input.getType() == 0x0300) {
+        if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_PDU_V1) {
             throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender");
         }
         ExtensionResponsePduV2 responsePdu = new ExtensionResponsePduV2(input, context);

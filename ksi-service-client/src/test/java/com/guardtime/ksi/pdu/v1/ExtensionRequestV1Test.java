@@ -79,19 +79,13 @@ public class ExtensionRequestV1Test {
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. AggregationTime is null.")
     public void testEncodeExtensionRequestWithoutAggregationTime_ThrowsIllegalArgumentException() throws Exception {
-        ExtensionRequestPayloadV1 payload = new ExtensionRequestPayloadV1(null, Util.nextLong());
-        ExtensionRequestV1 extensionRequest = new ExtensionRequestV1(header, payload, LOGIN_KEY);
-        ExtensionRequestV1 request = load(encode(extensionRequest));
-        Assert.assertEquals(extensionRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
+        new ExtensionRequestPayloadV1(null, Util.nextLong());
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "There is no suitable publication yet")
     public void testEncodeExtensionRequestPublicationTimeAfterAggregationTime_Ok() throws Exception {
         Date currentDate = new Date();
-        ExtensionRequestPayloadV1 payload = new ExtensionRequestPayloadV1(currentDate, new Date(currentDate.getTime() - 1000), Util.nextLong());
-        ExtensionRequestV1 extensionRequest = new ExtensionRequestV1(header, payload, LOGIN_KEY);
-        ExtensionRequestV1 request = load(encode(extensionRequest));
-        Assert.assertEquals(extensionRequest.getRequestPayload().getRequestId(), request.getRequestPayload().getRequestId());
+        new ExtensionRequestPayloadV1(currentDate, new Date(currentDate.getTime() - 1000), Util.nextLong());
     }
 
     private byte[] encode(TLVStructure element) throws KSIException {

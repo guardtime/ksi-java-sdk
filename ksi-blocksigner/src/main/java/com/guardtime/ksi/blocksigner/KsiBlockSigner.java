@@ -58,7 +58,7 @@ import static com.guardtime.ksi.util.Util.notNull;
  * {@code
  *
  * // initialize ksi block signer
- * KSI ksi = initKsi()
+ * KSISigningClient signingClient = getSigningClient()
  * KsiBlockSigner signer = new KsiBlockSigner(signingClient);
  *
  * // add data hashes

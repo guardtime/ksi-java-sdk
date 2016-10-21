@@ -67,27 +67,24 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
      * @param credentials
      *         service credentials
      * @param pduVersion
-     *         version of pdu yo use
+     *         version of pdu to use
      */
     public HttpClientSettings(String signingUrl, String extendingUrl, String publicationsFileUrl, ServiceCredentials credentials, PduVersion pduVersion) {
         if (extendingUrl == null) {
             throw new IllegalArgumentException("extending URL is null");
         }
-
         if (signingUrl == null) {
             throw new IllegalArgumentException("signing URL is null");
         }
-
         if (publicationsFileUrl == null) {
             throw new IllegalArgumentException("publications file URL is null");
         }
-
         if (credentials == null) {
             throw new IllegalArgumentException("credentials is null");
         }
-
-        this.pduVersion = pduVersion != null ? pduVersion : PduVersion.V1;
-
+        if (pduVersion == null) {
+            throw new IllegalArgumentException("PDU version is null");
+        }
         try {
             this.extendingUrl = new URL(extendingUrl);
             this.signingUrl = new URL(signingUrl);
@@ -95,8 +92,8 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("malformed Url", e);
         }
-
         this.credentials = credentials;
+        this.pduVersion = pduVersion;
     }
 
     /**

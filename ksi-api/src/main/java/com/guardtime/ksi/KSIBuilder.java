@@ -259,7 +259,7 @@ public final class KSIBuilder {
      * @throws KSIException
      *         will be thrown when some client is null.
      */
-    public KSIImpl build() throws KSIException {
+    public KSI build() throws KSIException {
         if (defaultHashAlgorithm == null) {
             this.defaultHashAlgorithm = HashAlgorithm.SHA2_256;
         }
@@ -428,16 +428,16 @@ public final class KSIBuilder {
         }
 
         public KSISignature extend(KSISignature signature) throws KSIException {
-            ExtensionFuture future = asyncExtend(signature);
+            Future<KSISignature> future = asyncExtend(signature);
             return future.getResult();
         }
 
         public KSISignature extend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException {
-            ExtensionFuture future = asyncExtend(signature, publicationRecord);
+            Future<KSISignature> future = asyncExtend(signature, publicationRecord);
             return future.getResult();
         }
 
-        public ExtensionFuture asyncExtend(KSISignature signature) throws KSIException {
+        public Future<KSISignature> asyncExtend(KSISignature signature) throws KSIException {
             if (signature == null) {
                 throw new KSIException("Invalid input parameter. KSI signature must be present.");
             }
@@ -448,7 +448,7 @@ public final class KSIBuilder {
             return asyncExtend(signature, publicationRecord);
         }
 
-        public ExtensionFuture asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException {
+        public Future<KSISignature> asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException {
             if (signature == null) {
                 throw new KSIException("Invalid input parameter. KSI signature must be present.");
             }

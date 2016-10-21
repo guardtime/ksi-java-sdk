@@ -30,6 +30,7 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.unisignature.*;
 import com.guardtime.ksi.util.Util;
 
@@ -155,7 +156,7 @@ final class KSIVerificationContext implements VerificationContext {
             TLVElement tlvElement = future.getResult();
             ExtensionResponse extensionResponse = pduFactory.readExtensionResponse(context, tlvElement);
             return signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());
-        } catch (com.guardtime.ksi.tlv.TLVParserException e) {
+        } catch (TLVParserException e) {
             throw new KSIProtocolException("Can't parse response message", e);
         }
     }

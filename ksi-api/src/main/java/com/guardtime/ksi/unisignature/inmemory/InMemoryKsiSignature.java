@@ -129,6 +129,9 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
     }
 
     public final DataHash getInputHash() {
+        if(rfc3161Record != null) {
+            return rfc3161Record.getInputHash();
+        }
         return aggregationChains.get(0).getInputHash();
     }
 

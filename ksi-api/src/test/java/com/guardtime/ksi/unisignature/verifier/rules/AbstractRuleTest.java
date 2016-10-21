@@ -31,6 +31,10 @@ import org.mockito.Mockito;
 
 public abstract class AbstractRuleTest {
 
+    protected static final String SIGNATURE_WITH_RFC3161_RECORD_INVALID_AGGREGATION_TIME = "signature/signature-with-rfc3161-record-invalid-aggregation-time.ksig";
+    protected static final String SIGNATURE_WITH_RFC3161_RECORD_INVALID_CHAIN_INDEX = "signature/signature-with-rfc3161-record-invalid-chain-index.ksig";
+    protected static final String SIGNATURE_WITH_RFC3161_RECORD = "signature/signature-with-rfc3161-record-ok.ksig";
+
     protected VerificationContext build(KSISignature signature) throws Exception {
         return build(signature, null, TestUtil.loadPublicationsFile("publications.tlv"), null);
     }

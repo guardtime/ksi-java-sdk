@@ -36,7 +36,14 @@ In order to get trial access to the KSI platform, go to [https://guardtime.com/b
 
 A simple example how to obtain a signature:
 ```java
-SimpleHttpClient simpleHttpClient = ...
+HttpClientSettings clientSettings = new HttpClientSettings(
+                "signing-service-url",
+                "extending-service-url",
+                "publications-file-url",
+                KSIServiceCredentials,
+                PduVersion);
+
+SimpleHttpClient simpleHttpClient = new SimpleHttpClient(clientSettings);
 
 KSI ksi = new KSIBuilder()
     .setKsiProtocolSignerClient(simpleHttpClient)

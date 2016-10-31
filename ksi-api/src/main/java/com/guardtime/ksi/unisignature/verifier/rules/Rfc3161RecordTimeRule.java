@@ -21,7 +21,7 @@ public class Rfc3161RecordTimeRule extends BaseRule {
             Date rfc3161AggregationTime = context.getRfc3161Record().getAggregationTime();
             Date aggregationChainAggregationTime = context.getAggregationHashChains()[0].getAggregationTime();
             if (!rfc3161AggregationTime.equals(aggregationChainAggregationTime)) {
-                logger.info("Aggregation hash chain and RFC 3161 aggregation time mismatch.");
+                logger.info("Aggregation hash chain time and RFC 3161 aggregation time mismatch.");
                 return VerificationResultCode.FAIL;
             }
         }

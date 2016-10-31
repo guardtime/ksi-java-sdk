@@ -129,6 +129,11 @@ public class PduV2FactoryTest {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
     }
 
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is 0x101. Error message from server: 'this-error-should-be-thrown'")
+    public void testExtensionResponseWithErrorPayloadAndMac_ThrowsKSIProtocolException() throws Exception {
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-multi-payload-with-error-payload.tlv"));
+    }
+
     @Test
     public void testReadV2ExtensionResponseContainingUnknownNonCriticalElement() throws Exception {
         ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 8396215651691691389L, 42L, 42L), loadTlv("pdu/extension/extension-response-v2-unknown-non-critical-element.tlv"));

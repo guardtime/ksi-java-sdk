@@ -27,7 +27,6 @@ import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
-import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
 import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
@@ -125,9 +124,27 @@ abstract class PduV2 extends TLVStructure {
     private void checkErrorPayload() throws KSIException {
         for (TLVElement payload : payloads) {
             if (payload.getType() == getErrorPayloadType()) {
-                throw new KSIException("Invalid KSI response. Error payload element is " + Base16.encode(payload.getEncoded()));
+                String status = getStatusCodeInHexString(payload);
+                String errorMessage = getErrorMessage(payload);
+                throw new KSIProtocolException("Error was returned by server. Error status is 0x" + status+ ". Error message from server: '" + errorMessage + "'");
             }
         }
+    }
+
+    private String getStatusCodeInHexString(TLVElement payload) throws TLVParserException {
+        TLVElement statusTlv =  payload.getFirstChildElement(0x04);
+        if (statusTlv != null) {
+            return Long.toHexString(statusTlv.getDecodedLong());
+        }
+        return "";
+    }
+
+    private String getErrorMessage(TLVElement payload) throws TLVParserException {
+        TLVElement errorMessageTlv =  payload.getFirstChildElement(0x05);
+        if (errorMessageTlv != null) {
+            return errorMessageTlv.getDecodedString();
+        }
+        return "";
     }
 
     private void readHeader(TLVElement rootElement) throws KSIException {

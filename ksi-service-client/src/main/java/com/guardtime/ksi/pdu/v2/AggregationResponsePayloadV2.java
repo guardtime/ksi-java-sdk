@@ -37,10 +37,10 @@ class AggregationResponsePayloadV2 extends TLVStructure implements AggregationRe
     private static final int ELEMENT_TYPE_ERROR_MESSAGE = 0x05;
 
     private Long requestId;
-    private Long error;
+    private Long status;
     private String errorMessage;
 
-    public AggregationResponsePayloadV2(TLVElement element, KSIRequestContext context) throws KSIException {
+    public AggregationResponsePayloadV2(TLVElement element) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {
@@ -49,7 +49,7 @@ class AggregationResponsePayloadV2 extends TLVStructure implements AggregationRe
                     this.requestId = readOnce(child).getDecodedLong();
                     continue;
                 case ELEMENT_TYPE_ERROR:
-                    this.error = readOnce(child).getDecodedLong();
+                    this.status = readOnce(child).getDecodedLong();
                     continue;
                 case ELEMENT_TYPE_ERROR_MESSAGE:
                     this.errorMessage = readOnce(child).getDecodedString();
@@ -63,14 +63,8 @@ class AggregationResponsePayloadV2 extends TLVStructure implements AggregationRe
                     verifyCriticalFlag(child);
             }
         }
-        if (error != 0) {
-            throw new KSIProtocolException("Invalid aggregation response. Error code: 0x" + Long.toHexString(error) + ", message: '"+errorMessage+"'");
-        }
-        if (requestId == null) {
-            throw new KSIProtocolException("Invalid KSI response. Aggregation response payload does not contain request id.");
-        }
-        if (!requestId.equals(context.getRequestId())) {
-            throw new KSIProtocolException("Aggregation response request ID do not match. Sent '" + context.getRequestId() + "'" + " received '" + requestId + "'");
+        if (status != 0) {
+            throw new KSIProtocolException("Error was returned by server. Error status is 0x" + Long.toHexString(status)+ ". Error message from server: '" + errorMessage + "'");
         }
     }
 
@@ -78,7 +72,7 @@ class AggregationResponsePayloadV2 extends TLVStructure implements AggregationRe
      * @return error number
      */
     public Long getStatus() {
-        return error;
+        return status;
     }
 
     /**

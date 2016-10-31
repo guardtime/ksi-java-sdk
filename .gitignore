@@ -19,3 +19,4 @@ test-coverage/
 */target/
 /target/
 /tools
+integrationtest.properties

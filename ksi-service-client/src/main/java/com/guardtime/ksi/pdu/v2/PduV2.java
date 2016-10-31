@@ -29,13 +29,13 @@ import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
-
 import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -112,13 +112,14 @@ abstract class PduV2 extends TLVStructure {
         return 0x03;
     }
 
-    public TLVElement getPayload(int tlvType) throws TLVParserException {
+    public List<TLVElement> getPayloads(int tlvType) throws TLVParserException {
+        List<TLVElement> payloadElements = new ArrayList<TLVElement>();
         for (TLVElement payload : payloads) {
             if (payload.getType() == tlvType) {
-                return payload;
+                payloadElements.add(payload);
             }
         }
-        throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(tlvType) + " not found");
+        return payloadElements;
     }
 
     private void checkErrorPayload() throws KSIException {
@@ -133,6 +134,8 @@ abstract class PduV2 extends TLVStructure {
         TLVElement firstChild = rootElement.getFirstChildElement();
         if (isHeader(firstChild)) {
             this.header = new PduMessageHeader(firstChild);
+        } else {
+            throw new TLVParserException("Invalid PDU header element. Expected element 0x01, got 0x" + Long.toHexString(firstChild.getType()));
         }
     }
 
@@ -140,19 +143,16 @@ abstract class PduV2 extends TLVStructure {
         return element.getType() == PduMessageHeader.ELEMENT_TYPE_MESSAGE_HEADER;
     }
 
+
     private void readPayloads(TLVElement rootElement) throws TLVParserException {
         List<TLVElement> elements = rootElement.getChildElements();
         for (int i = header != null ? 1 : 0; i < elements.size() - 1; i++) {
-            readPayload(rootElement, elements, i);
-        }
-    }
-
-    private void readPayload(TLVElement rootElement, List<TLVElement> elements, int i) throws TLVParserException {
-        TLVElement element = elements.get(i);
-        if (isSupportedPayloadElement(element)) {
-            payloads.add(element);
-        } else {
-            throw new TLVParserException("PDU 0x" + Integer.toHexString(rootElement.getType()) + " contains unknown element with type 0x" + Integer.toHexString(element.getType()));
+            TLVElement element = elements.get(i);
+            if (isSupportedPayloadElement(element)) {
+                payloads.add(element);
+            } else {
+                verifyCriticalFlag(element);
+            }
         }
     }
 
@@ -167,12 +167,12 @@ abstract class PduV2 extends TLVStructure {
             this.mac = new MessageMac(lastChild);
             verifyMac(loginKey);
         } else {
-            logger.warn("Gateway sent a KSI response without MAC");
             TLVElement errorElement = rootElement.getFirstChildElement(getErrorPayloadType());
             if (errorElement != null) {
-                throw new KSIProtocolException("Invalid KSI response. Error payload element is " + Base16.encode(errorElement.getEncoded()) + ". Error message from server: '"+errorElement.getFirstChildElement(0x05).getDecodedString()+"'");
+                throw new KSIProtocolException("Error was returned by server. Error status is 0x" + Long.toHexString(errorElement.getFirstChildElement(0x04).getDecodedLong()) + ". Error message from server: '" + errorElement.getFirstChildElement(0x05).getDecodedString() + "'");
             }
-            throw new KSIProtocolException("Invalid KSI response. Missing MAC and error payload.");
+            logger.warn("Gateway sent a KSI response without MAC");
+            throw new KSIProtocolException("Invalid KSI response. Missing MAC.");
         }
     }
 

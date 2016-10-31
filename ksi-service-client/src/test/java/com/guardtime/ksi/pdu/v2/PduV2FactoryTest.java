@@ -21,6 +21,7 @@ package com.guardtime.ksi.pdu.v2;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.service.KSIProtocolException;
@@ -73,7 +74,7 @@ public class PduV2FactoryTest {
         pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-invalid-mac.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Aggregation response request ID do not match. Sent .* received .*")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Aggregation response payload with requestId 1 wasn't found")
     public void testAggregationResponseContainsInvalidRequestId_ThrowsKSIProtocolException() throws Exception {
         pduFactory.readAggregationResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L, 42L, 42L), loadTlv("pdu/aggregation/aggregation-response-v2.tlv"));
     }
@@ -83,12 +84,12 @@ public class PduV2FactoryTest {
         pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-missing-payload.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid KSI response. Error payload element is .* Error message from server: 'The request could not be authenticated'")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: 'The request could not be authenticated'")
     public void testAggregationResponseContains03ErrorMessage_ThrowsKSIProtocolException() throws Exception {
         pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-invalid-login-key.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid aggregation response. Error code:.*, message: .*")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: .*")
     public void testAggregationResponseContainsErrorMessageInside02Element_ThrowsKSIProtocolException() throws Exception {
         pduFactory.readAggregationResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 8530358545345979581L, 42L, 42L), loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
     }
@@ -103,22 +104,22 @@ public class PduV2FactoryTest {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-invalid-mac.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Extension response request ID do not match. Sent '5546551786909961666' received '4846851148188931472'")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Extension response payload with requestId 5546551786909961666 wasn't found")
     public void testExtensionRequestIdsMismatch() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid KSI response. Error payload element is .* Error message from server: 'The request could not be authenticated'")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: 'The request could not be authenticated'")
     public void testExtensionResponseContains03ErrorMessage_ThrowsKSIProtocolException() throws Exception {
         pduFactory.readExtensionResponse(requestContext, loadTlv("pdu/extension/extension-response-v2-invalid-login-key.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid extension response. Error code:.*, message: 'The request contained invalid payload'")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: 'The request contained invalid payload'")
     public void testExtensionResponseContains02ErrorMessage_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-with-error.tlv"));
+        pduFactory.readExtensionResponse(new KSIRequestContext(CREDENTIALS, 98765L, 42L, 42L), loadTlv("pdu/extension/extension-response-v2-with-error.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid KSI response. Missing MAC and error payload.")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid KSI response. Missing MAC.")
     public void testExtensionResponseWithoutMac_ThrowsKSIProtocolException() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-missing-mac.tlv"));
     }
@@ -126,6 +127,13 @@ public class PduV2FactoryTest {
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender")
     public void testReadV2ExtensionResponse() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
+    }
+
+    @Test
+    public void testReadV2ExtensionResponseContainingUnknownNonCriticalElement() throws Exception {
+        ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 8396215651691691389L, 42L, 42L), loadTlv("pdu/extension/extension-response-v2-unknown-non-critical-element.tlv"));
+        Assert.assertNotNull(response);
+        Assert.assertNotNull(response.getCalendarHashChain());
     }
 
 }

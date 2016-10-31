@@ -32,7 +32,7 @@ public class Rfc3161RecordIndexRule extends BaseRule {
             Long rfc3161index = rfc3161ChainIndex.get(i);
             Long aggregationIndex = aggregationChainIndex.get(i);
             if (!rfc3161index.equals(aggregationIndex)) {
-                logger.info("Aggregation hash chain and RFC3161 chain index mismatch. At position {} aggregation index value is {} and RFC3161 index value is {}", i, aggregationChainIndex.size(), rfc3161ChainIndex.size());
+                logger.info("Aggregation hash chain and RFC3161 chain index mismatch. At position {} aggregation index value is {} and RFC3161 index value is {}", i, aggregationIndex, rfc3161index);
                 return VerificationResultCode.FAIL;
             }
         }

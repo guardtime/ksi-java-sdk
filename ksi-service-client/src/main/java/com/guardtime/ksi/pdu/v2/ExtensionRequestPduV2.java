@@ -31,7 +31,7 @@ import java.util.List;
 
 class ExtensionRequestPduV2 extends PduV2 implements ExtensionRequest {
 
-    private static final int[] SUPPORTED_PAYLOAD_TYPES = new int[]{0x02, 0x03, 0x04};
+    private static final int[] SUPPORTED_PAYLOAD_TYPES = new int[]{0x02, 0x04};
 
     public ExtensionRequestPduV2(List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context) throws KSIException {
         super(new PduMessageHeader(context), payloads, macAlgorithm, context.getLoginKey());

@@ -86,7 +86,7 @@ public class PduV2Factory implements PduFactory {
 
         List<TLVElement> payloads = responsePdu.getPayloads(ExtensionResponsePayloadV2.ELEMENT_TYPE);
         if (payloads.isEmpty()) {
-            throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(AggregationResponsePayloadV2.ELEMENT_TYPE) + " not found");
+            throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(ExtensionResponsePayloadV2.ELEMENT_TYPE) + " not found");
         }
 
         TLVElement responsePayload = getPayload(payloads, context.getRequestId());

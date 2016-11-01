@@ -26,6 +26,7 @@ import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
+import com.guardtime.ksi.tlv.TLVParserException;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -96,7 +97,27 @@ public class PduV2FactoryTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator")
     public void testReadV2AggregationResponse() throws Exception {
-        pduFactory.readAggregationResponse(extensionContext, loadTlv("aggregation-203-error.tlv"));
+        pduFactory.readAggregationResponse(requestContext, loadTlv("aggregation-203-error.tlv"));
+    }
+
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is 0x101. Error message from server: 'this-error-should-be-thrown'")
+    public void testReadV2AggregationResponseWithErrorPayloadAndMac_ThrowsKSIProtocolException() throws Exception {
+        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-multi-payload-with-error-payload.tlv"));
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=.* encountered")
+    public void testReadV2AggregationResponseWithUnknownCriticalElement_ThrowsTLVParserException() throws Exception {
+        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-multi-payload-with-critical-unknown-element.tlv"));
+    }
+
+    @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
+    public void testReadV2AggregationResponseWithEditedFlagAndUnchangedMac_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
+        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-changed-flag-but-unchanged-hmac.tlv"));
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid PDU header element. Expected element 0x01, got 0x.*")
+    public void testReadV2AggregationResponseHeaderNotFirst_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
+        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-header-not-first.tlv"));
     }
 
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
@@ -132,6 +153,21 @@ public class PduV2FactoryTest {
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is 0x101. Error message from server: 'this-error-should-be-thrown'")
     public void testExtensionResponseWithErrorPayloadAndMac_ThrowsKSIProtocolException() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-multi-payload-with-error-payload.tlv"));
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=.* encountered")
+    public void testReadV2ExtensionResponseWithUnknownCriticalElement_ThrowsTLVParserException() throws Exception {
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-with-unknown-critical-element.tlv"));
+    }
+
+    @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
+    public void testReadV2ExtensionResponseWithEditedFlagAndUnchangedMac_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-with-changed-flag-but-unchanged-mac.tlv"));
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid PDU header element. Expected element 0x01, got 0x.*")
+    public void testReadV2ExtensionResponseHeaderNotFirst_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-header-not-first.tlv"));
     }
 
     @Test

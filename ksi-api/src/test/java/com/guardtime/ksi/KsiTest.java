@@ -14,6 +14,7 @@ import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.*;
+import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.util.Util;
 import org.bouncycastle.util.Store;
 import org.mockito.Mockito;
@@ -159,7 +160,7 @@ public class KsiTest {
     }
 
     @Test
-    public void testExgtendSignature_Ok() throws Exception {
+    public void testExtendSignature_Ok() throws Exception {
         Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension-response-sig-2014-04-30.1.ksig"));
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
         Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(5546551786909961666L);
@@ -174,6 +175,48 @@ public class KsiTest {
         PublicationsFile response = ksi.getPublicationsFile();
         Assert.assertNotNull(response);
         Assert.assertEquals(response, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_27_07_2016));
+    }
+
+    @Test
+    public void testSigningWithPduV2() throws Exception {
+        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(1L);
+        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("pdu/aggregation/aggregation-response-v2-multiple-elements-mixed-up.tlv"));
+
+        KSI ksi = getKsiWithPduV2AndInternalVerification();
+
+        Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
+        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
+        Assert.assertNotNull(signature);
+    }
+
+    @Test
+    public void testExtendingWithPduV2() throws Exception {
+        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(1L);
+        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("pdu/extension/extension-response-v2-multiple-payloads-mixed-up.tlv"));
+
+        KSI ksi = getKsiWithPduV2AndInternalVerification();
+
+        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
+        KSISignature extenderSignature = ksi.extend(loadSignature("ok-sig-2014-06-2.ksig"));
+        Assert.assertNotNull(extenderSignature);
+        Assert.assertTrue(extenderSignature.isExtended());
+    }
+
+    private KSI getKsiWithPduV2AndInternalVerification() throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(TestUtil.load("ksi-truststore.jks"), "changeit".toCharArray());
+
+        Mockito.when(mockedSigningClient.getPduVersion()).thenReturn(PduVersion.V2);
+        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V2);
+
+        return new KSIBuilder().
+                setKsiProtocolExtenderClient(mockedExtenderClient).
+                setKsiProtocolPublicationsFileClient(mockedPublicationsFileClient).
+                setPublicationsFileTrustedCertSelector(certSelector).
+                setKsiProtocolSignerClient(mockedSigningClient).
+                setPublicationsFilePkiTrustStore(keyStore).
+                setDefaultVerificationPolicy(new InternalVerificationPolicy()).
+                setPduIdentifierProvider(mockedIdentifierProvider).build();
     }
 
 }

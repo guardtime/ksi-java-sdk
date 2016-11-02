@@ -44,7 +44,7 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
     private Date lastTime;
     private TLVElement hashChain;
 
-    public ExtensionResponsePayloadV2(TLVElement element, KSIRequestContext context) throws KSIException {
+    public ExtensionResponsePayloadV2(TLVElement element) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
         for (TLVElement child : children) {
@@ -69,17 +69,9 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
             }
         }
         if (status != 0) {
-            throw new KSIProtocolException("Invalid extension response. Error code: 0x" + Long.toHexString(status) + ", message: '"+errorMessage+"'");
-        }
-        if (requestId == null) {
-            throw new KSIProtocolException("Invalid KSI response. Extension response payload does not contain request id.");
-        }
-        if (!requestId.equals(context.getRequestId())) {
-            throw new KSIProtocolException("Extension response request ID do not match. Sent '" + context.getRequestId() + "'" + " received '" + requestId + "'");
+            throw new KSIProtocolException("Error was returned by server. Error status is 0x" + Long.toHexString(status)+ ". Error message from server: '" + errorMessage + "'");
         }
     }
-
-
 
     public Long getError() {
         return status;
@@ -102,7 +94,6 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
         return ELEMENT_TYPE;
     }
 
-    //TODO rename
     public TLVElement getCalendarHashChain() {
         return hashChain;
     }

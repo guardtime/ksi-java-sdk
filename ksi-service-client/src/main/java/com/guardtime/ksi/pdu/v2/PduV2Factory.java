@@ -30,10 +30,12 @@ import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.util.Util;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class PduV2Factory implements PduFactory {
 
@@ -51,8 +53,17 @@ public class PduV2Factory implements PduFactory {
             throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator");
         }
         AggregationResponsePduV2 aggregationResponsePdu = new AggregationResponsePduV2(input, context);
-        TLVElement payload = aggregationResponsePdu.getPayload(AggregationResponsePayloadV2.ELEMENT_TYPE);
-        return new AggregationResponsePayloadV2(payload, context);
+        List<TLVElement> payloads = aggregationResponsePdu.getPayloads(AggregationResponsePayloadV2.ELEMENT_TYPE);
+
+        if (payloads.isEmpty()) {
+            throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(AggregationResponsePayloadV2.ELEMENT_TYPE) + " not found");
+        }
+
+        TLVElement responsePayload = getPayload(payloads, context.getRequestId());
+        if(responsePayload == null) {
+            throw new KSIProtocolException("Aggregation response payload with requestId " + context.getRequestId() + " wasn't found");
+        }
+        return new AggregationResponsePayloadV2(responsePayload);
     }
 
     public ExtensionRequest createExtensionRequest(KSIRequestContext context, Date aggregationTime, Date publicationTime) throws KSIException {
@@ -72,7 +83,31 @@ public class PduV2Factory implements PduFactory {
             throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender");
         }
         ExtensionResponsePduV2 responsePdu = new ExtensionResponsePduV2(input, context);
-        return new ExtensionResponsePayloadV2(responsePdu.getPayload(ExtensionResponsePayloadV2.ELEMENT_TYPE), context);
+
+        List<TLVElement> payloads = responsePdu.getPayloads(ExtensionResponsePayloadV2.ELEMENT_TYPE);
+        if (payloads.isEmpty()) {
+            throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(ExtensionResponsePayloadV2.ELEMENT_TYPE) + " not found");
+        }
+
+        TLVElement responsePayload = getPayload(payloads, context.getRequestId());
+        if(responsePayload == null) {
+            throw new KSIProtocolException("Extension response payload with requestId " + context.getRequestId() + " wasn't found");
+        }
+
+        return new ExtensionResponsePayloadV2(responsePayload);
+    }
+
+    private TLVElement getPayload(List<TLVElement> payloads, Long requestId) throws TLVParserException {
+        TLVElement responsePayload = null;
+        for (TLVElement payload : payloads) {
+            TLVElement requestIdElement = payload.getFirstChildElement(0x01);
+
+            if (requestIdElement != null && requestId.equals(requestIdElement.getDecodedLong())) {
+                responsePayload = payload;
+                break;
+            }
+        }
+        return responsePayload;
     }
 
 }

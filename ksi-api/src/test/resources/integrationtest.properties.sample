@@ -16,9 +16,18 @@
 # Guardtime, Inc., and no license to trademarks is granted; Guardtime
 # reserves and retains all trademark rights.
 #
+pubfileUrl=publications.file.url
+gatewayUrl=signing.service.url:port
+extenderUrl=extending.service.url:port
+loginId=http-login-id
+loginKey=http-login-key
 
-signer.url=http://192.168.100.29:2345/gt-signingservice
-publications.file.url=http://verify.guardtime.com/ksi-publications.bin
-extender.url=http://ksigw.test.guardtime.com:8010/gt-extendingservice
-signer.login.id=anon
-signer.login.key=anon
+javaKeyStorePath=src/test/resources/truststore.jks
+
+tcp.signerIP=tcp.signing.service.ip
+tcp.signerPort=tcp-singing-service-port
+tcp.maxParallelTransactions=max-Parallel-Transactions
+tcp.transactionTimeoutSec=transaction-Timeout-Sec
+tcp.loginId=tcp-login-id
+tcp.loginKey=tcp-login-key
+

@@ -22,12 +22,18 @@ import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 
 import java.net.InetSocketAddress;
+import java.net.URI;
 
 /**
  * Class that holds all the properties needed to configure the TCPClient.
+ *
+ * <b>IMPORTANT!</b>
+ * <p>When constructing the instance with a {@link InetSocketAddress} the IP of the endpoint is cached in this object. This can result to connection problems.</p>
+ * <p>For use cases where this can be a problem we suggest using the constructor that takes the endpoint URI as a string.</p>
  */
 public class TCPClientSettings {
 
+    private URI uri;
     private InetSocketAddress endpoint;
     private int tcpTransactionTimeoutSec;
     private int tcpTransactionThreadPoolSize;
@@ -54,8 +60,37 @@ public class TCPClientSettings {
         this.pduVersion = pduVersion;
     }
 
+    /**
+     * Settings for TCP client.
+     * The created TCPClientSettings instance constructs a new {@link InetSocketAddress} for every {@link #getEndpoint()} call.
+     *
+     * @param uri                             String containing the URI of endpoint. Must be in format: <protocol>://<host>:<port>
+     * @param tcpTransactionTimeoutSec        Maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
+     * @param tcpTransactionThreadPoolSize    Size of the thread pool for parallel TCP requests.
+     * @param serviceCredentials              Credentials for authenticating the client to the TCP signer.
+     * @param pduVersion                      PDU version used for communication.
+     */
+    public TCPClientSettings(String uri, int tcpTransactionTimeoutSec, int tcpTransactionThreadPoolSize, ServiceCredentials serviceCredentials, PduVersion pduVersion) throws IllegalArgumentException {
+        this.uri = getVerifiedUri(uri);
+        this.tcpTransactionTimeoutSec = tcpTransactionTimeoutSec;
+        this.tcpTransactionThreadPoolSize = tcpTransactionThreadPoolSize;
+        this.serviceCredentials = serviceCredentials;
+        this.pduVersion = pduVersion;
+    }
+
+    private URI getVerifiedUri(String uri) {
+        URI parsedUri = URI.create(uri);
+        if (parsedUri.getHost() == null || parsedUri.getPort() == -1) {
+            throw new IllegalArgumentException("URI does not contain mandatory components");
+        }
+        return parsedUri;
+    }
+
+    /**
+     * Returns either the {@link InetSocketAddress} provided to the constructor or a new instance for every invocation based on the {@link String} provided to the constructor.
+     */
     public InetSocketAddress getEndpoint() {
-        return endpoint;
+        return endpoint == null ? new InetSocketAddress(uri.getHost(), uri.getPort()) : endpoint;
     }
 
     public int getTcpTransactionTimeoutSec() {

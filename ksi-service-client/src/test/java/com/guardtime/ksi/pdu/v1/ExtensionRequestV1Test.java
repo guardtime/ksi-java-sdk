@@ -34,7 +34,7 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class ExtensionRequestV1Test {
 
-    public static final byte[] LOGIN_KEY = "anon".getBytes(Charset.forName("UTF-8"));
+    public static final byte[] LOGIN_KEY = "anon".getBytes();
     private PduMessageHeader header;
 
     @BeforeMethod

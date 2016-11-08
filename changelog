@@ -1,7 +1,12 @@
 Version 4.5
 
+2016-11-10 4.5.70
+
+* FEATURE: Added a PDU v2 implementation.
+* IMPROVEMENT: Replaced com.guardtime.ksi.service package in module ksi-api with com.guardtime.ksi.pdu package in ksi-service-client module.
 * IMPROVEMENT: Added a KsiBlockSignerBuilder class. It is recommended to use this builder to create new instances of KsiBlockSigner.
-* IMPROVEMENT: Replaced com.guardtime.ksi.service package in module ksi-api with com.guardtime.ksi.pdu package in ksi-service-client module. Added a PDU v2 implementation.
+* IMPROVEMENT: Improved RFC3161Record verification.
+* IMPROVEMENT: Minor improvements.
 
 Version 4.4
 

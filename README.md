@@ -19,13 +19,13 @@ dependencies in your pom.xml:
 <dependency>
     <groupId>com.guardtime</groupId>
     <artifactId>ksi-api</artifactId>
-    <version>4.3.54</version>
+    <version>4.5.70</version>
 </dependency>
 
 <dependency>
     <groupId>com.guardtime</groupId>
     <artifactId>ksi-service-client-simple-http</artifactId>
-    <version>4.3.54</version>
+    <version>4.5.70</version>
 </dependency>
 ```
 If you need the latest version, download the source and build using Maven.

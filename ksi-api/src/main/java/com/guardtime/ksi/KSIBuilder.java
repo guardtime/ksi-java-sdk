@@ -23,20 +23,30 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.v1.PduV1Factory;
+import com.guardtime.ksi.pdu.v2.PduV2Factory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.PublicationsFileFactory;
+import com.guardtime.ksi.publication.adapter.CachingPublicationsFileClientAdapter;
+import com.guardtime.ksi.publication.adapter.NonCachingPublicationsFileClientAdapter;
+import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import com.guardtime.ksi.service.*;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.client.ServiceCredentials;
+import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.trust.JKSTrustStore;
 import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
@@ -46,18 +56,21 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.CertSelector;
-import java.util.Date;
 
 /**
  * <p>This class provides functionality to obtain {@link KSI} object(s). This cass offers multiple methods to configure
  * {@link KSI} object.</p> <p>It is mandatory to set signing, extender and publications file client.</p>
  */
 public final class KSIBuilder {
+
+    private static final Logger logger = LoggerFactory.getLogger(KSIBuilder.class);
 
     private HashAlgorithm defaultHashAlgorithm = HashAlgorithm.SHA2_256;
     private CertSelector certSelector;
@@ -66,10 +79,10 @@ public final class KSIBuilder {
     private KSIExtenderClient extenderClient;
     private KSIPublicationsFileClient publicationsFileClient;
 
-    private KSISignatureFactory uniSignatureFactory;
-
     private KeyStore trustStore;
+
     private long publicationsFileCacheExpirationTime = 0L;
+    private PduIdentifierProvider pduIdentifierProvider = new DefaultPduIdentifierProvider();
 
     private Policy defaultVerificationPolicy;
 
@@ -193,6 +206,15 @@ public final class KSIBuilder {
     }
 
     /**
+     * Sets the PDU identifier provider used to generate different identifiers for PDU requests. Default value is
+     * {@link DefaultPduIdentifierProvider}.
+     */
+    public KSIBuilder setPduIdentifierProvider(PduIdentifierProvider pduIdentifierProvider) {
+        this.pduIdentifierProvider = pduIdentifierProvider;
+        return this;
+    }
+
+    /**
      * This method can be used to set a default verification policy. Default verification policy is used to perform
      * signature verification in the following cases:
      * <ul>
@@ -262,9 +284,29 @@ public final class KSIBuilder {
         PKITrustStore jksTrustStore = new JKSTrustStore(trustStore, certSelector);
         PublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(jksTrustStore);
         PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
-        this.uniSignatureFactory = new InMemoryKsiSignatureFactory(defaultVerificationPolicy, publicationsFileAdapter, extenderClient, true);
-        KSIService ksiService = new KSIServiceImpl(signingClient, extenderClient, publicationsFileAdapter, uniSignatureFactory);
-        return new KSIImpl(ksiService, uniSignatureFactory, defaultHashAlgorithm);
+
+        PduFactory extenderPduFactory = createPduFactory(extenderClient.getPduVersion());
+        PduFactory signerPduFactory = createPduFactory(signingClient.getPduVersion());
+
+        logger.info("Signing client PDU version={}, implementation={}", signingClient.getPduVersion(), signerPduFactory.getClass());
+        logger.info("Extender client PDU version={}, implementation={}", extenderClient.getPduVersion(), extenderPduFactory.getClass());
+
+        KSISignatureComponentFactory signatureComponentFactory= new InMemoryKsiSignatureComponentFactory();
+        KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory(defaultVerificationPolicy, publicationsFileAdapter, extenderClient, true, extenderPduFactory, signatureComponentFactory);
+
+
+        return new KSIImpl(signingClient, extenderClient, publicationsFileAdapter, uniSignatureFactory, signatureComponentFactory, extenderPduFactory, signerPduFactory, pduIdentifierProvider, defaultHashAlgorithm);
+    }
+
+    private PduFactory createPduFactory(PduVersion pduVersion) {
+        switch (pduVersion) {
+            case V1:
+                return new PduV1Factory();
+            case V2:
+                return new PduV2Factory();
+            default:
+                throw new IllegalArgumentException("Invalid PDU version. Allowed values are V1 and V2");
+        }
     }
 
     private PublicationsFileClientAdapter createPublicationsFileAdapter(KSIPublicationsFileClient publicationsFileClient, PublicationsFileFactory publicationsFileFactory, long expirationTime) {
@@ -284,21 +326,38 @@ public final class KSIBuilder {
      */
     private class KSIImpl implements KSI {
 
-        private final KSISignatureFactory uniSignatureFactory;
-        private final HashAlgorithm defaultHashAlgorithm;
-        private KSIService ksiService;
+        private final Long DEFAULT_LEVEL = 0L;
 
-        private KSIImpl(KSIService ksiService, KSISignatureFactory uniSignatureFactory, HashAlgorithm defaultHashAlgorithm) {
-            this.ksiService = ksiService;
-            this.uniSignatureFactory = uniSignatureFactory;
+        private final KSISignatureFactory signatureFactory;
+        private final KSISignatureComponentFactory signatureComponentFactory;
+        private final PduFactory extenderPduFactory, signerPduFactory;
+        private final PduIdentifierProvider pduIdentifierProvider;
+        private final HashAlgorithm defaultHashAlgorithm;
+        private final KSISigningClient signingClient;
+        private final KSIExtenderClient extenderClient;
+        private final PublicationsFileClientAdapter publicationsFileAdapter;
+
+        public KSIImpl(KSISigningClient signingClient, KSIExtenderClient extenderClient,
+                       PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory,
+                       KSISignatureComponentFactory signatureComponentFactory, PduFactory extenderPduFactory,
+                       PduFactory signerPduFactory, PduIdentifierProvider pduIdentifierProvider,
+                       HashAlgorithm defaultHashAlgorithm) {
+            this.signatureFactory = signatureFactory;
+            this.signatureComponentFactory = signatureComponentFactory;
             this.defaultHashAlgorithm = defaultHashAlgorithm;
+            this.signingClient = signingClient;
+            this.extenderClient = extenderClient;
+            this.publicationsFileAdapter = publicationsFileAdapter;
+            this.extenderPduFactory = extenderPduFactory;
+            this.signerPduFactory = signerPduFactory;
+            this.pduIdentifierProvider = pduIdentifierProvider;
         }
 
         public KSISignature read(InputStream input) throws KSIException {
             if (input == null) {
                 throw new KSIException("Invalid input parameter. Input stream can not be null");
             }
-            return uniSignatureFactory.createSignature(input);
+            return signatureFactory.createSignature(input);
         }
 
         public KSISignature read(byte[] bytes) throws KSIException {
@@ -321,32 +380,36 @@ public final class KSIBuilder {
             } finally {
                 Util.closeQuietly(input);
             }
-
         }
 
         public KSISignature sign(DataHash dataHash) throws KSIException {
-            CreateSignatureFuture future = asyncSign(dataHash);
+            Future<KSISignature> future = asyncSign(dataHash);
             return future.getResult();
         }
 
         public KSISignature sign(File file) throws KSIException {
-            CreateSignatureFuture future = asyncSign(file);
+            Future<KSISignature> future = asyncSign(file);
             return future.getResult();
         }
 
         public KSISignature sign(byte[] bytes) throws KSIException {
-            CreateSignatureFuture future = asyncSign(bytes);
+            Future<KSISignature> future = asyncSign(bytes);
             return future.getResult();
         }
 
-        public CreateSignatureFuture asyncSign(DataHash dataHash) throws KSIException {
+        public Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException {
             if (dataHash == null) {
                 throw new KSIException("Invalid input parameter. Data hash must not be null");
             }
-            return ksiService.sign(dataHash);
+            Long requestId = pduIdentifierProvider.nextRequestId();
+            ServiceCredentials credentials = signingClient.getServiceCredentials();
+            KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId, pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
+            AggregationRequest requestMessage = signerPduFactory.createAggregationRequest(requestContext, dataHash, DEFAULT_LEVEL);
+            Future<TLVElement> future = signingClient.sign(new ByteArrayInputStream(requestMessage.toByteArray()));
+            return new AggregationFuture(future, requestContext, signatureFactory, dataHash, signerPduFactory);
         }
 
-        public CreateSignatureFuture asyncSign(File file) throws KSIException {
+        public Future<KSISignature> asyncSign(File file) throws KSIException {
             if (file == null) {
                 throw new KSIException("Invalid input parameter. File must not be null");
             }
@@ -355,7 +418,7 @@ public final class KSIBuilder {
             return asyncSign(hasher.getHash());
         }
 
-        public CreateSignatureFuture asyncSign(byte[] bytes) throws KSIException {
+        public Future<KSISignature> asyncSign(byte[] bytes) throws KSIException {
             if (bytes == null) {
                 throw new KSIException("Invalid input parameter. Byte array must not be null");
             }
@@ -365,27 +428,27 @@ public final class KSIBuilder {
         }
 
         public KSISignature extend(KSISignature signature) throws KSIException {
-            SignatureExtensionRequestFuture future = asyncExtend(signature);
+            Future<KSISignature> future = asyncExtend(signature);
             return future.getResult();
         }
 
         public KSISignature extend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException {
-            SignatureExtensionRequestFuture future = asyncExtend(signature, publicationRecord);
+            Future<KSISignature> future = asyncExtend(signature, publicationRecord);
             return future.getResult();
         }
 
-        public SignatureExtensionRequestFuture asyncExtend(KSISignature signature) throws KSIException {
+        public Future<KSISignature> asyncExtend(KSISignature signature) throws KSIException {
             if (signature == null) {
                 throw new KSIException("Invalid input parameter. KSI signature must be present.");
             }
             PublicationRecord publicationRecord = getPublicationsFile().getPublicationRecord(signature.getAggregationTime());
-            if(publicationRecord == null) {
+            if (publicationRecord == null) {
                 throw new KSIException("No suitable publication yet");
             }
             return asyncExtend(signature, publicationRecord);
         }
 
-        public SignatureExtensionRequestFuture asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException {
+        public Future<KSISignature> asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException {
             if (signature == null) {
                 throw new KSIException("Invalid input parameter. KSI signature must be present.");
             }
@@ -395,9 +458,15 @@ public final class KSIBuilder {
             if (signature.getAggregationTime().after(publicationRecord.getPublicationTime())) {
                 throw new KSIException("Publication is before signature");
             }
-            Date publicationDate = publicationRecord.getPublicationTime();
-            ExtensionRequestFuture serviceFuture = ksiService.extend(signature.getAggregationTime(), publicationDate);
-            return new SignatureExtensionRequestFuture(serviceFuture, publicationRecord, signature, uniSignatureFactory);
+            Long requestId = pduIdentifierProvider.nextRequestId();
+            ServiceCredentials credentials = extenderClient.getServiceCredentials();
+            KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId, pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
+
+            ExtensionRequest requestMessage = extenderPduFactory.createExtensionRequest(requestContext, signature.getAggregationTime(), publicationRecord.getPublicationTime());
+
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(requestMessage.toByteArray());
+            Future<TLVElement> future = extenderClient.extend(inputStream);
+            return new ExtensionFuture(future, publicationRecord, signature, requestContext, signatureComponentFactory, extenderPduFactory, signatureFactory);
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {
@@ -408,6 +477,8 @@ public final class KSIBuilder {
                 throw new KSIException("Invalid input parameter. Policy is null.");
             }
             KSISignatureVerifier verifier = new KSISignatureVerifier();
+            context.setKsiSignatureComponentFactory(signatureComponentFactory);
+            context.setPduFactory(extenderPduFactory);
             return verifier.verify(context, policy);
         }
 
@@ -432,7 +503,7 @@ public final class KSIBuilder {
         }
 
         public PublicationsFile getPublicationsFile() throws KSIException {
-            return ksiService.getPublicationsFile();
+            return publicationsFileAdapter.getPublicationsFile();
         }
 
         public void close() throws IOException {

@@ -64,14 +64,14 @@ public class KsiBlockSignerIntegrationTest extends AbstractBlockSignatureTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client")
     public void testCreateSignatureLargeAggregationTree() throws Exception {
-        KsiBlockSigner builder = new KsiBlockSigner(simpleHttpClient);
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
         builder.add(dataHash, 255L, metadata);
         builder.sign();
     }
 
     @Test
     public void testBlockSignerUsingDefaultHashingAlgorithm() throws Exception {
-        KsiBlockSigner builder = new KsiBlockSigner(simpleHttpClient);
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
         builder.add(dataHash, metadata);
         builder.add(dataHash2, metadata2);
         builder.add(dataHashSha386, metadata3);
@@ -88,7 +88,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractBlockSignatureTest {
 
     @Test(dataProvider = WORKING_HASH_ALGORITHMS)
     public void testBlockSignerWithAllWorkingHashAlgorithms(HashAlgorithm algorithm) throws Exception {
-        KsiBlockSigner builder = new KsiBlockSigner(simpleHttpClient, algorithm);
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setDefaultHashAlgorithm(algorithm).build();
         builder.add(dataHashSha512, metadata4);
         builder.add(dataHashSha1, metadata);
         builder.add(dataHashRipemd160, metadata2);

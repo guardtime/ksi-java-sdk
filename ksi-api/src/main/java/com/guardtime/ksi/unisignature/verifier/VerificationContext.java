@@ -21,6 +21,7 @@ package com.guardtime.ksi.unisignature.verifier;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -120,5 +121,14 @@ public interface VerificationContext {
      */
     PublicationRecord getPublicationRecord();
 
+    /**
+     * Sets the pdu factory used in verification process
+     */
+    void setPduFactory(PduFactory pduFactory);
+
+    /**
+     * Sets the KSISignatureComponentFactory used in verification process
+     */
+    void setKsiSignatureComponentFactory(KSISignatureComponentFactory signatureComponentFactory);
 
 }

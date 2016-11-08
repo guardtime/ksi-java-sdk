@@ -24,6 +24,7 @@ import com.guardtime.ksi.KSIBuilder;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.Future;
@@ -55,10 +56,12 @@ public class UserProvidedPublicationBasedVerificationPolicyTest {
     @BeforeMethod
     public void setUp() throws Exception {
         mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
+        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V1);
         mockedPublicationsFileClient = Mockito.mock(KSIPublicationsFileClient.class);
         CertSelector mockedCertificateSelector = Mockito.mock(CertSelector.class);
         Mockito.when(mockedCertificateSelector.match(Mockito.any(Certificate.class))).thenReturn(Boolean.TRUE);
         KSISigningClient mockerSigningClient = Mockito.mock(KSISigningClient.class);
+        Mockito.when(mockerSigningClient.getPduVersion()).thenReturn(PduVersion.V1);
         ksi = new KSIBuilder().
                 setKsiProtocolExtenderClient(mockedExtenderClient).
                 setKsiProtocolPublicationsFileClient(mockedPublicationsFileClient).

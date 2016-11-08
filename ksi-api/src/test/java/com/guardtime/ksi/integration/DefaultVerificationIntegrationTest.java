@@ -30,7 +30,6 @@ import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.policies.*;
 import com.guardtime.ksi.util.Util;
-import org.omg.CORBA.DynAnyPackage.Invalid;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

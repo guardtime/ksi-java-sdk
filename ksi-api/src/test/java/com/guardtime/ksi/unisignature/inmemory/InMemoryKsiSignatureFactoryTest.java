@@ -3,8 +3,9 @@ package com.guardtime.ksi.unisignature.inmemory;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.service.PublicationsFileClientAdapter;
+import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.SignaturePublicationRecord;
@@ -29,7 +30,9 @@ public class InMemoryKsiSignatureFactoryTest {
     public void setUp() throws Exception {
         this.mockedPublicationsFileAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
         Mockito.when(mockedPublicationsFileAdapter.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_15042014));
-        this.signatureFactory = new InMemoryKsiSignatureFactory(new InternalVerificationPolicy(), mockedPublicationsFileAdapter, Mockito.mock(KSIExtenderClient.class), false);
+        this.signatureFactory = new InMemoryKsiSignatureFactory(new InternalVerificationPolicy(),
+                mockedPublicationsFileAdapter, Mockito.mock(KSIExtenderClient.class), false, new PduV1Factory(),
+                new InMemoryKsiSignatureComponentFactory());
     }
 
     @Test

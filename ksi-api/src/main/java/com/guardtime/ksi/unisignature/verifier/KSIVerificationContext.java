@@ -21,15 +21,16 @@ package com.guardtime.ksi.unisignature.verifier;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.*;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.CertificateNotFoundException;
-import com.guardtime.ksi.service.*;
+import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.service.extension.ExtensionRequest;
-import com.guardtime.ksi.service.extension.ExtensionRequestPayload;
+import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.unisignature.*;
 import com.guardtime.ksi.util.Util;
 
@@ -55,13 +56,25 @@ final class KSIVerificationContext implements VerificationContext {
     private Map<Date, CalendarHashChain> extendedSignatures = new HashMap<Date, CalendarHashChain>();
     private CalendarHashChain calendarExtendedToHead;
 
-    KSIVerificationContext(PublicationsFile publicationsFile, KSISignature signature, PublicationData userPublication, boolean extendingAllowed, KSIExtenderClient extenderClient, DataHash documentHash) {
+    private PduFactory pduFactory;
+    private KSISignatureComponentFactory signatureComponentFactory;
+
+    KSIVerificationContext(PublicationsFile publicationsFile, KSISignature signature, PublicationData userPublication,
+                           boolean extendingAllowed, KSIExtenderClient extenderClient, DataHash documentHash) {
         this.publicationsFile = publicationsFile;
         this.signature = signature;
         this.userPublication = userPublication;
         this.extendingAllowed = extendingAllowed;
         this.extenderClient = extenderClient;
         this.documentHash = documentHash;
+    }
+
+    public void setPduFactory(PduFactory pduFactory) {
+        this.pduFactory = pduFactory;
+    }
+
+    public void setKsiSignatureComponentFactory(KSISignatureComponentFactory signatureComponentFactory) {
+        this.signatureComponentFactory = signatureComponentFactory;
     }
 
     public KSISignature getSignature() {
@@ -73,16 +86,14 @@ final class KSIVerificationContext implements VerificationContext {
             return getExtendedCalendarHashChain();
         }
         if (!extendedSignatures.containsKey(publicationTime)) {
-            ExtensionRequestFuture future = extend(publicationTime);
-            extendedSignatures.put(publicationTime, future.getResult());
+            extendedSignatures.put(publicationTime, extend(publicationTime));
         }
         return extendedSignatures.get(publicationTime);
     }
 
     public CalendarHashChain getExtendedCalendarHashChain() throws KSIException {
         if (calendarExtendedToHead == null) {
-            ExtensionRequestFuture future = extend(null);
-            calendarExtendedToHead = future.getResult();
+            calendarExtendedToHead = extend(null);
         }
         return calendarExtendedToHead;
     }
@@ -136,13 +147,18 @@ final class KSIVerificationContext implements VerificationContext {
         return publicationsFile;
     }
 
-    private ExtensionRequestFuture extend(Date publicationTime) throws KSIException {
-        KSIRequestContext context = new KSIRequestContext(extenderClient.getServiceCredentials(), Util.nextLong());
-        ExtensionRequestPayload requestPayload = new ExtensionRequestPayload(getSignature().getAggregationTime(), publicationTime, context.getRequestId());
-        ServiceCredentials credentials = extenderClient.getServiceCredentials();
-        KSIMessageHeader header = new KSIMessageHeader(credentials.getLoginId(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
-        ExtensionRequest request = new ExtensionRequest(header, requestPayload, credentials.getLoginKey());
-        return new ExtensionRequestFuture(extenderClient.extend(new ByteArrayInputStream(request.getRootElement().getEncoded())), context);
+    private CalendarHashChain extend(Date publicationTime) throws KSIException {
+        KSIRequestContext context = new KSIRequestContext(extenderClient.getServiceCredentials(), Util.nextLong(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
+        ExtensionRequest extensionRequest = pduFactory.createExtensionRequest(context, getSignature().getAggregationTime(), publicationTime);
+
+        Future<TLVElement> future = extenderClient.extend(new ByteArrayInputStream(extensionRequest.toByteArray()));
+        try {
+            TLVElement tlvElement = future.getResult();
+            ExtensionResponse extensionResponse = pduFactory.readExtensionResponse(context, tlvElement);
+            return signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());
+        } catch (TLVParserException e) {
+            throw new KSIProtocolException("Can't parse response message", e);
+        }
     }
 
 }

@@ -203,7 +203,7 @@ public abstract class AbstractCommonIntegrationTest {
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
         Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(serviceCredentials);
-        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes("extension/extension-response-ok-request-id-4321.tlv"));
+        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
         final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
 

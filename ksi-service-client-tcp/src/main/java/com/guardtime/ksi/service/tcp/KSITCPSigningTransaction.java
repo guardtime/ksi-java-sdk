@@ -20,6 +20,7 @@ package com.guardtime.ksi.service.tcp;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.MultipleTLVElementException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
@@ -42,6 +43,7 @@ class KSITCPSigningTransaction {
     private static final int REQUEST_WRAPPER_TAG = 0x201;
     private static final int RESPONSE_WRAPPER_TAG = 0x202;
     private static final int REQ_ID_TAG = 0x1;
+    private static final int PDU_V2_PAYLOAD_ELEMENT_TAG = 0x02;
 
     private final BlockingQueue<TLVElement> availableResponse = new ArrayBlockingQueue<TLVElement>(1);
     private long correlationId;
@@ -53,7 +55,7 @@ class KSITCPSigningTransaction {
 
     static KSITCPSigningTransaction fromRequest(InputStream request) throws IOException, KSIException {
         KSITCPSigningTransaction transaction = new KSITCPSigningTransaction();
-        TLVElement tlv = TLVElement.createFromBytes(Util.toByteArray(request));
+        TLVElement tlv = TLVElement.create(Util.toByteArray(request));
         transaction.correlationId = extractTransactionIdFromRequestTLV(tlv);
         transaction.request = tlv;
         return transaction;
@@ -71,7 +73,7 @@ class KSITCPSigningTransaction {
 
     static TLVElement parse(byte[] data) throws KSIProtocolException {
         try {
-            return TLVElement.createFromBytes(data);
+            return TLVElement.create(data);
         } catch (MultipleTLVElementException e) {
             throw new KSIProtocolException("Invalid KSI response. Response message contains multiple TLV elements", e);
         } catch (TLVParserException e) {
@@ -81,6 +83,11 @@ class KSITCPSigningTransaction {
 
     private static long extractTransactionIdFromRequestTLV(TLVElement tlvData) throws KSITCPTransactionException {
         try {
+            if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2) {
+                return tlvData.getFirstChildElement(PDU_V2_PAYLOAD_ELEMENT_TAG).getFirstChildElement(REQ_ID_TAG).getDecodedLong();
+            }
+
+
             return getRequestId(tlvData, REQUEST_WRAPPER_TAG);
         } catch (Exception e) {
             throw new KSITCPTransactionException("Request TLV was corrupt. Could not parse request ID.", e);
@@ -89,6 +96,9 @@ class KSITCPSigningTransaction {
 
     private static long extractTransactionIdFromResponseTLV(TLVElement tlvData) throws KSITCPTransactionException {
         try {
+            if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2) {
+                return tlvData.getFirstChildElement(PDU_V2_PAYLOAD_ELEMENT_TAG).getFirstChildElement(REQ_ID_TAG).getDecodedLong();
+            }
             return getRequestId(tlvData, RESPONSE_WRAPPER_TAG);
         } catch (Exception e) {
             throw new KSITCPTransactionException("Response TLV was corrupt. Could not parse request ID.", e);

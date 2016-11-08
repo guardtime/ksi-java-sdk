@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.publication.PublicationData;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 
 /**
  * <p> A calendar authentication record is used to sign the output hash value of a calendar hash chain and corresponds
@@ -40,7 +41,7 @@ import com.guardtime.ksi.publication.PublicationData;
  */
 public interface CalendarAuthenticationRecord {
 
-    int ELEMENT_TYPE = 0x0805;
+    int ELEMENT_TYPE = GlobalTlvTypes.ELEMENT_TYPE_CALENDAR_AUTHENTICATION_RECORD;
 
     /**
      * Returns the signature data of the calendar authentication record. always present.

@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
@@ -71,6 +72,25 @@ public class InMemoryKsiSignatureTest {
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
         signature.writeTo(outBytes);
         Assert.assertEquals(bytes, outBytes.toByteArray());
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Output stream can not be null")
+    public void testWriteUniSignatureToNullStream_ThrowsKSIException() throws Exception {
+        KSISignature signature = load(TestUtil.load("signature/signature-ok.tlv"));
+        signature.writeTo(null);
+    }
+
+    @Test
+    public void testGetInputHashWhenRfc3161RecordIsMissing() throws Exception {
+        KSISignature signature = TestUtil.loadSignature("signature/signature-ok.tlv");
+        Assert.assertEquals(signature.getInputHash(), signature.getAggregationHashChains()[0].getInputHash());
+    }
+
+    @Test
+    public void testGetInputHashWhenRfc3161RecordIsPresent() throws Exception {
+        KSISignature signature = TestUtil.loadSignature("signature/signature-with-rfc3161-record-ok.ksig");
+        Assert.assertNotEquals(signature.getInputHash(), signature.getAggregationHashChains()[0].getInputHash());
+        Assert.assertEquals(signature.getInputHash(), signature.getRfc3161Record().getInputHash());
     }
 
     @Test

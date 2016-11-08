@@ -22,6 +22,7 @@ package com.guardtime.ksi.unisignature;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.tlv.GlobalTlvTypes;
 
 import java.util.Date;
 import java.util.List;
@@ -36,7 +37,7 @@ import java.util.List;
  */
 public interface AggregationHashChain {
 
-    int ELEMENT_TYPE = 0x0801;
+    int ELEMENT_TYPE = GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_HASH_CHAIN;
 
     /**
      * Returns the aggregation time.

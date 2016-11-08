@@ -18,65 +18,87 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>ksi-service-client</artifactId>
-	<packaging>jar</packaging>
+    <artifactId>ksi-service-client</artifactId>
+    <packaging>jar</packaging>
 
-	<parent>
-		<groupId>com.guardtime</groupId>
-		<artifactId>ksi</artifactId>
-		<version>4.4.67</version>
-	</parent>
+    <parent>
+        <groupId>com.guardtime</groupId>
+        <artifactId>ksi</artifactId>
+        <version>4.5.70</version>
+    </parent>
 
-	<name>KSI Service Client</name>
-	<description>Common module for all KSI service clients</description>
-	<licenses>
-		<license>
-			<name>The Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
-		</license>
-	</licenses>
+    <name>KSI Service Client</name>
+    <description>Common module for all KSI service clients</description>
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
 
-	<developers>
-		<developer>
-			<name>Guardtime</name>
-			<email>support@guardtime.com</email>
-			<organization>Guardtime</organization>
-			<organizationUrl>https://guardtime.com/</organizationUrl>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <name>Guardtime</name>
+            <email>support@guardtime.com</email>
+            <organization>Guardtime</organization>
+            <organizationUrl>https://guardtime.com/</organizationUrl>
+        </developer>
+    </developers>
 
-	<scm>
-		<connection>scm:git:git@github.com:GuardTime/ksi-java-sdk</connection>
-		<developerConnection>scm:git:git@github.com:GuardTime/ksi-java-sdk</developerConnection>
-		<url>git@github.com:GuardTime/ksi-java-sdk</url>
-	</scm>
+    <scm>
+        <connection>scm:git:git@github.com:GuardTime/ksi-java-sdk</connection>
+        <developerConnection>scm:git:git@github.com:GuardTime/ksi-java-sdk</developerConnection>
+        <url>git@github.com:GuardTime/ksi-java-sdk</url>
+    </scm>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.guardtime</groupId>
-			<artifactId>ksi-common</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>6.8.21</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.10.19</version>
-			<scope>test</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>com.guardtime</groupId>
+            <artifactId>ksi-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.8.21</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.guardtime</groupId>
+            <artifactId>ksi-common</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
 
-	</dependencies>
-
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -99,10 +99,7 @@ public class DataHash {
             return false;
         }
         HashAlgorithm algorithm = HashAlgorithm.getById(imprint[0]);
-        if (algorithm.getLength() + 1 != imprint.length) {
-            return false;
-        }
-        return true;
+        return algorithm.getLength() + 1 == imprint.length;
     }
 
     /**

@@ -19,13 +19,13 @@ dependencies in your pom.xml:
 <dependency>
     <groupId>com.guardtime</groupId>
     <artifactId>ksi-api</artifactId>
-    <version>4.3.54</version>
+    <version>4.5.70</version>
 </dependency>
 
 <dependency>
     <groupId>com.guardtime</groupId>
     <artifactId>ksi-service-client-simple-http</artifactId>
-    <version>4.3.54</version>
+    <version>4.5.70</version>
 </dependency>
 ```
 If you need the latest version, download the source and build using Maven.
@@ -36,7 +36,14 @@ In order to get trial access to the KSI platform, go to [https://guardtime.com/b
 
 A simple example how to obtain a signature:
 ```java
-SimpleHttpClient simpleHttpClient = ...
+HttpClientSettings clientSettings = new HttpClientSettings(
+                "signing-service-url",
+                "extending-service-url",
+                "publications-file-url",
+                KSIServiceCredentials,
+                PduVersion);
+
+SimpleHttpClient simpleHttpClient = new SimpleHttpClient(clientSettings);
 
 KSI ksi = new KSIBuilder()
     .setKsiProtocolSignerClient(simpleHttpClient)
@@ -63,6 +70,10 @@ mvn dependency:tree
 ## Compatibility ##
 
 Java 1.5 or newer.
+
+## Contributing ##
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ## License ##
 

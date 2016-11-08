@@ -304,6 +304,26 @@ public final class TLVElement {
     }
 
     /**
+     * Returns the first child element. If current element doesn't contain child elements then null is returned.
+     */
+    public TLVElement getFirstChildElement() {
+        if (children.isEmpty()) {
+            return null;
+        }
+        return children.get(0);
+    }
+
+    /**
+     * Returns the last child element. If current element doesn't contain child elements then null is returned.
+     */
+    public TLVElement getLastChildElement() {
+        if (children.isEmpty()) {
+            return null;
+        }
+        return children.get(children.size()-1);
+    }
+
+    /**
      * Returns all the tags with the specified tag.
      *
      * @param tag

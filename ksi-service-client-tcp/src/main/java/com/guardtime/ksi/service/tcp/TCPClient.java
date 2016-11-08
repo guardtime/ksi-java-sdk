@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.tcp;
 
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
@@ -81,6 +82,10 @@ public class TCPClient implements KSISigningClient {
 
     public ServiceCredentials getServiceCredentials() {
         return tcpClientSettings.getServiceCredentials();
+    }
+
+    public PduVersion getPduVersion() {
+        return tcpClientSettings.getPduVersion();
     }
 
     private IoSession createTcpSession() throws KSITCPTransactionException {

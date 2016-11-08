@@ -38,6 +38,8 @@ public class InternalVerificationPolicy implements Policy {
 
     public InternalVerificationPolicy() {
         rules.add(new AggregationChainInputHashVerificationRule());
+        rules.add(new Rfc3161RecordTimeRule());
+        rules.add(new Rfc3161RecordIndexRule());
 
         // verify aggregation hash chains
         rules.add(new AggregationHashChainLinkMetadataRule());

@@ -1,6 +1,6 @@
 Version 4.5
 
-2016-11-10 4.5.70
+2016-11-10 4.5.71
 
 * FEATURE: Added a PDU v2 implementation.
 * IMPROVEMENT: Replaced com.guardtime.ksi.service package in module ksi-api with com.guardtime.ksi.pdu package in ksi-service-client module.

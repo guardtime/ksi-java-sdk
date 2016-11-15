@@ -109,9 +109,9 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
         if (heads.isEmpty()) {
             throw new IllegalStateException("Add leaf nodes before building a tree");
         }
-        ImprintNode previous = heads.getFirst();
+        ImprintNode previous = heads.getLast();
         if (heads.size() > 1) {
-            for (int i = 1; i < heads.size(); i++) {
+            for (int i = heads.size()-2; i > -1; i--) {
                 ImprintNode current = heads.get(i);
                 previous = aggregate(previous, current);
             }

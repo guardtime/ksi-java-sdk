@@ -68,7 +68,7 @@ public class HashTreeBuilderTest extends AbstractBlockSignatureTest {
         builder.add(node, node2, node2, node, node, node2, node2);
         ImprintNode root = builder.build();
         assertNotNull(root);
-        assertEquals(root.getLevel(), 4);
+        assertEquals(root.getLevel(), 3);
     }
 
     @Test

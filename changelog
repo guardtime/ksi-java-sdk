@@ -1,5 +1,9 @@
 Version 4.5
 
+2016-11-17 4.5.72
+
+* IMPROVEMENT: HashTreeBuilder optimizations
+
 2016-11-10 4.5.71
 
 * FEATURE: Added a PDU v2 implementation.

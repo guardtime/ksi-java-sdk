@@ -27,7 +27,7 @@
 	<parent>
 		<groupId>com.guardtime</groupId>
 		<artifactId>ksi</artifactId>
-		<version>4.6.73-SNAPSHOT</version>
+		<version>4.6.74-SNAPSHOT</version>
 	</parent>
 
 	<name>KSI Apache Service Client</name>

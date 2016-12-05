@@ -1,5 +1,7 @@
 Version 4.5
 
+* FEATURE: Removed multi-signature support
+
 2016-11-17 4.5.72
 
 * IMPROVEMENT: HashTreeBuilder optimizations

@@ -42,4 +42,6 @@ public interface AggregationChainLink {
     boolean isLeft();
 
     LinkMetadata getMetadata();
+
+    byte[] getSiblingData() throws KSIException;
 }

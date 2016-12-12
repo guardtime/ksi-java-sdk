@@ -27,7 +27,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.nio.charset.Charset;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;

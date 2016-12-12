@@ -23,7 +23,6 @@ import com.guardtime.ksi.AbstractBlockSignatureTest;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.unisignature.IdentityMetadata;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.testng.annotations.BeforeMethod;

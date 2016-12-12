@@ -40,6 +40,7 @@ public interface AggregationChainLink {
     /**
      * @deprecated use {@link AggregationChainLink#getLinkIdentity()} instead
      */
+    @Deprecated
     String getIdentity() throws InvalidSignatureException;
 
     Identity getLinkIdentity();

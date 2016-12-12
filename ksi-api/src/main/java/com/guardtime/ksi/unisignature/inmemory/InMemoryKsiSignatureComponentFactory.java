@@ -53,4 +53,8 @@ public class InMemoryKsiSignatureComponentFactory implements KSISignatureCompone
         return new RightAggregationChainLink(siblingHash, levelCorrection);
     }
 
+    public LinkMetadata createLinkMetadata(String clientId, String machineId, Long sequenceNumber, Long requestTime) throws KSIException {
+        return new InMemoryLinkMetadata(clientId, machineId, sequenceNumber, requestTime);
+    }
+
 }

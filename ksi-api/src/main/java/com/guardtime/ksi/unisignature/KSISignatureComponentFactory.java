@@ -85,4 +85,8 @@ public interface KSISignatureComponentFactory {
      */
     SignaturePublicationRecord createPublicationRecord(PublicationData publicationData, List<String> publicationReferences, List<String> publicationRepositoryURIs) throws KSIException;
 
+    /**
+     * Creates a link metadata structure.
+     */
+    LinkMetadata createLinkMetadata(String clientId, String machineId, Long sequenceNumber, Long requestTime) throws KSIException;
 }

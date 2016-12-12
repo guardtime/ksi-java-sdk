@@ -22,13 +22,13 @@ package com.guardtime.ksi.unisignature;
 import com.guardtime.ksi.tlv.TLVStructure;
 
 /**
- * Wrapper interface that provides access to {@link IdentityMetadata} and its raw {@link TLVStructure} that is contained
+ * Wrapper interface that provides access to {@link Identity} and its raw {@link TLVStructure} that is contained
  * in the {@link AggregationChainLink}.
  */
 public interface LinkMetadata extends Identity {
 
     /**
-     * Provides access to {@link TLVStructure} which contains raw data for {@link IdentityMetadata} as well as any extra
+     * Provides access to {@link TLVStructure} which contains raw data for {@link Identity} as well as any extra
      * components specified by RFC.
      *
      * @return {@link TLVStructure} as described by RFC.

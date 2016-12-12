@@ -34,7 +34,6 @@ import com.guardtime.ksi.util.Util;
 
 import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
-import java.util.IllegalFormatException;
 import java.util.List;
 
 import static com.guardtime.ksi.unisignature.inmemory.LeftAggregationChainLink.ELEMENT_TYPE_LEFT_LINK;

@@ -24,8 +24,6 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.ChainResult;
-import com.guardtime.ksi.unisignature.Identity;
-import com.guardtime.ksi.unisignature.IdentityMetadata;
 import com.guardtime.ksi.unisignature.LinkMetadata;
 
 /**

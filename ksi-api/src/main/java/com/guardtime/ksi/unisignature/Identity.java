@@ -1,7 +1,6 @@
 package com.guardtime.ksi.unisignature;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.CharacterCodingException;
 
 /**
  * A structure that contains client identity and other information about the aggregation hash chain.

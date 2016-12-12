@@ -161,7 +161,10 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
             metadata = new IdentityMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION);
         }
         logger.debug("New input hash '{}' with level '{}' added to block signer.", dataHash, level);
-        AggregationChainLink metadataLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(metadata, level);
+        LinkMetadata linkMetadata = SIGNATURE_COMPONENT_FACTORY.createLinkMetadata(metadata.getClientId(),
+                metadata.getMachineId(), metadata.getSequenceNumber(), metadata.getRequestTime());
+
+        AggregationChainLink metadataLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(linkMetadata, level);
         ImprintNode leaf = calculateChainStepLeft(dataHash.getImprint(), metadataLink.getSiblingData(), level );
         chains.put(new LeafKey(leaf, dataHash), metadataLink);
         treeBuilder.add(leaf);
@@ -181,7 +184,6 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         linkDataHasher.addData(Util.encodeUnsignedLong(level));
         return linkDataHasher.getHash();
     }
-
 
     /**
      * Creates a block signature

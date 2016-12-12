@@ -33,7 +33,7 @@ public class CommonTestUtil {
     public static InputStream load(String file) throws FileNotFoundException {
         InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
         if (stream == null) {
-            throw new FileNotFoundException(file + "(You need to add integrationtest.properties file to folder 'ksi-api/src/test/resources' to run integration tests)");
+            throw new FileNotFoundException(file + "(integrationtest.properties file must be added to folder 'ksi-api/src/test/resources' for running the integration tests)");
         }
         return stream;
     }

@@ -138,7 +138,9 @@ public class AggregationChainLinkTest {
     public void testCreateNewLeftLink() throws Exception {
         InMemoryLinkMetadata metadata = new InMemoryLinkMetadata(TEST_CLIENT_ID);
         LeftAggregationChainLink link = new LeftAggregationChainLink(metadata, 20L);
-        Assert.assertEquals(link, new LeftAggregationChainLink(link.getRootElement()));
+        LeftAggregationChainLink decodedChanLink = new LeftAggregationChainLink(link.getRootElement());
+        Assert.assertEquals(link, decodedChanLink);
+        Assert.assertEquals(link.getLinkIdentity().getType(), decodedChanLink.getLinkIdentity().getType());
     }
 
 }

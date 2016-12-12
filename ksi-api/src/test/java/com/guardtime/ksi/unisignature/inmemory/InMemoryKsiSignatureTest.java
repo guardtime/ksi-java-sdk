@@ -27,6 +27,7 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.Identity;
+import com.guardtime.ksi.unisignature.IdentityType;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
@@ -55,7 +56,9 @@ public class InMemoryKsiSignatureTest {
         Identity[] chainIdentity = signature.getAggregationHashChainIdentity();
         Assert.assertNotNull(chainIdentity);
         Assert.assertEquals(chainIdentity[0].getDecodedClientId(), "GT");
+        Assert.assertEquals(chainIdentity[0].getType(), IdentityType.LEGACY);
         Assert.assertEquals(chainIdentity[chainIdentity.length-1].getDecodedClientId(), "anon");
+        Assert.assertEquals(chainIdentity[chainIdentity.length-1].getType(),IdentityType.METADATA);
     }
 
     @Test

@@ -194,7 +194,7 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
         return identity.toString();
     }
 
-    public Identity[] getLinksIdentity() {
+    public Identity[] getIdentity() {
         List<Identity> identities = new LinkedList<Identity>();
         for (int i = chain.size()-1; i >=0 ; i--) {
             AggregationChainLink aggregationChainLink = chain.get(i);

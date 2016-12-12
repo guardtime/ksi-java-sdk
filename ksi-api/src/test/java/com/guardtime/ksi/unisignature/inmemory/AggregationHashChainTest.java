@@ -35,7 +35,7 @@ public class AggregationHashChainTest {
         Assert.assertEquals(chain.getElementType(), InMemoryAggregationHashChain.ELEMENT_TYPE);
         Assert.assertNotNull(chain.getAggregationTime());
         Assert.assertEquals(chain.getAggregationTime().getTime(), 1395317319000L);
-        Identity[] identities = chain.getLinksIdentity();
+        Identity[] identities = chain.getIdentity();
         Assert.assertEquals(identities.length, 4);
         Assert.assertEquals(identities[0].getDecodedClientId(), "GT");
     }

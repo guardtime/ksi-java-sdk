@@ -48,6 +48,7 @@ class InMemoryLinkMetadata extends TLVStructure implements LinkMetadata, Identit
         if (requestTime != null) {
             this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_REQUEST_TIME, requestTime));
         }
+        this.identityType = IdentityType.PADDED_METADATA;
         this.rootElement.addFirstChildElement(createPaddingTlvElement());
     }
 

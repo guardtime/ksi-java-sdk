@@ -68,7 +68,7 @@ public interface AggregationHashChain {
      * Returns the chain identity.
      *
      * @throws KSIException when identity calculation fails
-     * @deprecated use {@link AggregationHashChain#getLinksIdentity()} instead
+     * @deprecated use {@link AggregationHashChain#getIdentity()} instead
      */
     @Deprecated
     String getChainIdentity(String separator) throws KSIException;
@@ -76,7 +76,7 @@ public interface AggregationHashChain {
     /**
      * Returns the array of the identities in the aggregation hash chain.
      */
-    Identity[] getLinksIdentity();
+    Identity[] getIdentity();
 
     /**
      * Calculates the aggregation hash chain ouput hash.

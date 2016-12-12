@@ -25,14 +25,7 @@ import com.guardtime.ksi.tlv.TLVStructure;
  * Wrapper interface that provides access to {@link IdentityMetadata} and its raw {@link TLVStructure} that is contained
  * in the {@link AggregationChainLink}.
  */
-public interface LinkMetadata {
-
-    /**
-     * Provides access to {@link IdentityMetadata} contained in {@link AggregationChainLink}.
-     *
-     * @return Instance of {@link IdentityMetadata}.
-     */
-    IdentityMetadata getIdentityMetadata();
+public interface LinkMetadata extends Identity {
 
     /**
      * Provides access to {@link TLVStructure} which contains raw data for {@link IdentityMetadata} as well as any extra
@@ -41,4 +34,5 @@ public interface LinkMetadata {
      * @return {@link TLVStructure} as described by RFC.
      */
     TLVStructure getMetadataStructure();
+
 }

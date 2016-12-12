@@ -45,7 +45,7 @@ public class InMemoryKsiSignatureComponentFactory implements KSISignatureCompone
         return new LeftAggregationChainLink(siblingHash, levelCorrection);
     }
 
-    public AggregationChainLink createLeftAggregationChainLink(IdentityMetadata metadata, long levelCorrection) throws KSIException {
+    public AggregationChainLink createLeftAggregationChainLink(LinkMetadata metadata, long levelCorrection) throws KSIException {
         return new LeftAggregationChainLink(metadata, levelCorrection);
     }
 

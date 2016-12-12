@@ -110,8 +110,15 @@ public interface KSISignature {
 
     /**
      * Returns the identity of the signature.
+     * @deprecated  use {@link KSISignature#getAggregationHashChainIdentity()} instead
      */
+    @Deprecated
     String getIdentity();
+
+    /**
+     * Returns an array of the identities present in all aggregation hash chains.
+     */
+    Identity[] getAggregationHashChainIdentity();
 
     /**
      * Returns true if signature contains signature publication record element.

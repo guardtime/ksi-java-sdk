@@ -22,7 +22,6 @@ package com.guardtime.ksi.unisignature.inmemory;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.unisignature.IdentityMetadata;
 import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -33,6 +32,7 @@ import java.util.Date;
 public class AggregationChainLinkTest {
 
     private static final byte[] LEGACY_ID_CONTENT = Base16.decode("03:00034142430000000000000000000000000000000000000000000000");
+    public static final String TEST_CLIENT_ID = "abc";
     private TLVElement siblingHash;
     private TLVElement legacyId;
     private TLVElement metadata;
@@ -44,7 +44,7 @@ public class AggregationChainLinkTest {
 
         metadata = new TLVElement(false, false, 0x04);
         TLVElement clientIdElement = new TLVElement(false, false, 0x01);
-        clientIdElement.setStringContent("abc");
+        clientIdElement.setStringContent(TEST_CLIENT_ID);
         metadata.addChildElement(clientIdElement);
 
         legacyId = new TLVElement(false, false, 0x03);
@@ -104,7 +104,7 @@ public class AggregationChainLinkTest {
     public void testDecodeLinkWithMetadata_Ok() throws Exception {
         TLVElement metadata = new TLVElement(false, false, 0x04);
         TLVElement clientId = new TLVElement(false, false, 0x01);
-        clientId.setStringContent("abc");
+        clientId.setStringContent(TEST_CLIENT_ID);
         TLVElement machineId = new TLVElement(false, false, 0x02);
         machineId.setStringContent("123");
         TLVElement sequenceNumber = new TLVElement(false, false, 0x03);
@@ -121,7 +121,7 @@ public class AggregationChainLinkTest {
 
         LeftAggregationChainLink link = new LeftAggregationChainLink(element);
         Assert.assertNotNull(link);
-        Assert.assertEquals(link.getIdentity(), "abc");
+        Assert.assertEquals(link.getIdentity(), TEST_CLIENT_ID);
     }
 
     @Test
@@ -131,12 +131,12 @@ public class AggregationChainLinkTest {
 
         RightAggregationChainLink link = new RightAggregationChainLink(element);
         Assert.assertNotNull(link);
-        Assert.assertEquals(link.getIdentity().toLowerCase(), "abc");
+        Assert.assertEquals(link.getIdentity().toLowerCase(), TEST_CLIENT_ID);
     }
 
     @Test
     public void testCreateNewLeftLink() throws Exception {
-        IdentityMetadata metadata = new IdentityMetadata("kala");
+        InMemoryLinkMetadata metadata = new InMemoryLinkMetadata(TEST_CLIENT_ID);
         LeftAggregationChainLink link = new LeftAggregationChainLink(metadata, 20L);
         Assert.assertEquals(link, new LeftAggregationChainLink(link.getRootElement()));
     }

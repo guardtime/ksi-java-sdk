@@ -23,6 +23,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
+import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureException;
 
 import java.util.Date;
 import java.util.List;
@@ -69,8 +70,15 @@ public interface AggregationHashChain {
      *
      * @throws KSIException
      *         when identity calculation fails
+     * @deprecated use {@link AggregationHashChain#getLinksIdentity()} instead
      */
+    @Deprecated
     String getChainIdentity(String separator) throws KSIException;
+
+    /**
+     * Returns the array of the identities in the aggregation hash chain.
+     */
+    Identity[] getLinksIdentity();
 
     /**
      * Calculates the aggregation hash chain ouput hash.

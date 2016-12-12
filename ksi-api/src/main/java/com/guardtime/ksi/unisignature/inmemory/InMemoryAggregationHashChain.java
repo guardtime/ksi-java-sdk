@@ -29,6 +29,7 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
+import com.guardtime.ksi.unisignature.Identity;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.ChainResult;
@@ -191,6 +192,18 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
             identity.append(id);
         }
         return identity.toString();
+    }
+
+    public Identity[] getLinksIdentity() {
+        List<Identity> identities = new LinkedList<Identity>();
+        for (int i = chain.size()-1; i >=0 ; i--) {
+            AggregationChainLink aggregationChainLink = chain.get(i);
+            Identity linkIdentity = aggregationChainLink.getLinkIdentity();
+            if (linkIdentity != null) {
+                identities.add(linkIdentity);
+            }
+        }
+        return identities.toArray(new Identity[identities.size()]);
     }
 
     public Date getAggregationTime() {

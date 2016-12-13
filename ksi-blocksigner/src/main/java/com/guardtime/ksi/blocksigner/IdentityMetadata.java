@@ -17,7 +17,7 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.unisignature;
+package com.guardtime.ksi.blocksigner;
 
 import com.guardtime.ksi.util.Util;
 

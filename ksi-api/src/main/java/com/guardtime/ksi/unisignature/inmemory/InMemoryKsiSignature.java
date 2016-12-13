@@ -147,6 +147,16 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
         return identity;
     }
 
+    public Identity[] getAggregationHashChainIdentity() {
+        List<Identity> identities = new LinkedList<Identity>();
+
+        for (int i = aggregationChains.size()-1; i>=0 ; i--) {
+            AggregationHashChain chain = aggregationChains.get(i);
+            identities.addAll(Arrays.asList(chain.getIdentity()));
+        }
+        return identities.toArray(new Identity[identities.size()]);
+    }
+
     public boolean isExtended() {
         return getPublicationRecord() != null;
     }

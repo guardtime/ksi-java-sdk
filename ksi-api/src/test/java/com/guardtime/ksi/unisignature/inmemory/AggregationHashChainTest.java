@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.unisignature.ChainResult;
+import com.guardtime.ksi.unisignature.Identity;
 import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -34,6 +35,9 @@ public class AggregationHashChainTest {
         Assert.assertEquals(chain.getElementType(), InMemoryAggregationHashChain.ELEMENT_TYPE);
         Assert.assertNotNull(chain.getAggregationTime());
         Assert.assertEquals(chain.getAggregationTime().getTime(), 1395317319000L);
+        Identity[] identities = chain.getIdentity();
+        Assert.assertEquals(identities.length, 4);
+        Assert.assertEquals(identities[0].getDecodedClientId(), "GT");
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation time can not be null")

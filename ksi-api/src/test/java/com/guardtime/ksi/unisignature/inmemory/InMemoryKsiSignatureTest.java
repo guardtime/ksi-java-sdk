@@ -52,7 +52,7 @@ public class InMemoryKsiSignatureTest {
     @Test
     public void testSignatureContainsIdentity_Ok() throws Exception {
         KSISignature signature = load(TestUtil.load("signature/signature-with-mixed-aggregation-chains.ksig"));
-        Assert.assertNotNull(signature.getIdentity());
+        Assert.assertNotNull(signature.getAggregationHashChainIdentity());
         Identity[] chainIdentity = signature.getAggregationHashChainIdentity();
         Assert.assertNotNull(chainIdentity);
         Assert.assertEquals(chainIdentity[0].getDecodedClientId(), "GT");

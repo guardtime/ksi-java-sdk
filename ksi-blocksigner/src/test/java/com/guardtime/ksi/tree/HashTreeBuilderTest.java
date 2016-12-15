@@ -19,21 +19,27 @@
 
 package com.guardtime.ksi.tree;
 
-import static org.testng.Assert.*;
-
-import com.guardtime.ksi.AbstractBlockSignatureTest;
 import com.guardtime.ksi.hashing.DataHash;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class HashTreeBuilderTest extends AbstractBlockSignatureTest {
+import static com.guardtime.ksi.AbstractBlockSignatureTest.*;
+import static org.testng.Assert.*;
+
+public class HashTreeBuilderTest {
 
     private HashTreeBuilder builder;
+    private ImprintNode node;
+    private ImprintNode node2;
+    private ImprintNode node3;
+
 
     @BeforeMethod
     public void setUp() throws Exception {
-        super.setUp();
         this.builder = new HashTreeBuilder();
+        this.node = new ImprintNode(DATA_HASH);
+        this.node2 = new ImprintNode(DATA_HASH_2);
+        this.node3 = new ImprintNode(DATA_HASH_3, 1);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Node can not be null")
@@ -56,7 +62,7 @@ public class HashTreeBuilderTest extends AbstractBlockSignatureTest {
         builder.add(node);
         ImprintNode root = builder.build();
         assertNotNull(root);
-        assertEquals(new DataHash(root.getValue()), dataHash);
+        assertEquals(new DataHash(root.getValue()), DATA_HASH);
         assertEquals(root.getLevel(), 0);
         assertNull(root.getLeftChildNode());
         assertNull(root.getRightChildNode());

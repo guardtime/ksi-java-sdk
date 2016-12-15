@@ -1,4 +1,10 @@
-Version 4.5
+Version 4.6
+
+2016-12-15 4.6.79
+
+* IMPROVEMENT: Now the Identity information is provided as an array in SDK. Old methods are deprecated. Moved class com.guardtime.ksi.unsiganture.IdentityMetadata to package com.guardtime.ksi.blocksigner.
+* IMPROVEMENT: KsiBlockSigner performance improvements
+* FEATURE: Removed multi-signature support
 
 2016-11-17 4.5.72
 

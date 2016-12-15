@@ -37,9 +37,17 @@ public interface AggregationChainLink {
 
     ChainResult calculateChainStep(byte[] lastStepImprint, long length, HashAlgorithm algorithm) throws KSIException;
 
+    /**
+     * @deprecated use {@link AggregationChainLink#getLinkIdentity()} instead
+     */
+    @Deprecated
     String getIdentity() throws InvalidSignatureException;
+
+    Identity getLinkIdentity();
 
     boolean isLeft();
 
     LinkMetadata getMetadata();
+
+    byte[] getSiblingData() throws KSIException;
 }

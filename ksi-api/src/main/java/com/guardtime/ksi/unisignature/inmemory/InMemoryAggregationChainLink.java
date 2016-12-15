@@ -28,7 +28,7 @@ import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
-import com.guardtime.ksi.unisignature.IdentityMetadata;
+import com.guardtime.ksi.unisignature.Identity;
 import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.util.Util;
 
@@ -73,11 +73,11 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash));
     }
 
-    InMemoryAggregationChainLink(IdentityMetadata identityMetadata, long levelCorrection) throws KSIException {
+    InMemoryAggregationChainLink(LinkMetadata linkMetadata, long levelCorrection) throws KSIException {
         this.levelCorrection = levelCorrection;
         this.rootElement = new TLVElement(false, false, getElementType());
         addLevelCorrectionTlvElement();
-        this.metadata = new InMemoryLinkMetadata(identityMetadata);
+        this.metadata = new InMemoryLinkMetadata(linkMetadata.getDecodedClientId(), linkMetadata.getDecodedMachineId(), linkMetadata.getSequenceNumber(), linkMetadata.getRequestTime());
         this.rootElement.addChildElement(metadata.getRootElement());
     }
 
@@ -150,42 +150,55 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
      *
      * @return if metadata is present then the clientId will be returned. If 'legacyId' is present then identity will be
      * decoded from 'legacyId'. Empty string otherwise.
+     *  @deprecated use {@link InMemoryAggregationChainLink#getLinkIdentity()} instead
      */
+    @Deprecated
     public String getIdentity() throws InvalidSignatureException {
         if (legacyId != null) {
-            return getIdentityFromLegacyId();
+            try {
+                return getIdentityFromLegacyId();
+            } catch (CharacterCodingException e) {
+                throw new InvalidSignatureException("Decoding link identity from legacy id failed", e);
+            }
         }
         if (metadata != null) {
-            return metadata.getIdentityMetadata().getClientId();
+            return metadata.getDecodedClientId();
         }
         return "";
     }
 
+    public Identity getLinkIdentity() {
+        Identity identity = null;
+        if (legacyId != null) {
+            try {
+                identity = new LegacyIdentity(getIdentityFromLegacyId());
+            } catch (CharacterCodingException e) {
+                throw new IllegalArgumentException(e);
+            }
+        } else if (metadata != null) {
+            identity = metadata;
+        }
+        return identity;
+    }
+
     /**
-     * Decodes link identity from legacy id. Throws NullPointerException when legacy id isn't present.
+     * Decodes link identity from legacy id.
      *
      * @return decoded link identity decoded from legacy id.
      */
-    private String getIdentityFromLegacyId() throws InvalidSignatureException {
+    private String getIdentityFromLegacyId() throws CharacterCodingException {
         byte[] data = legacyId;
         int len = Util.toShort(data, 1);
-        try {
-            return Util.decodeString(data, 3, len);
-        } catch (CharacterCodingException e) {
-            throw new InvalidSignatureException("Decoding link identity from legacy id failed", e);
-        }
+        return Util.decodeString(data, 3, len);
     }
 
     /**
      * Calculates the aggregation chain step result based on last strep imprint, length value and hash algorithm. The
      * specific algorithm depends on which type of {@link AggregationChainLink} implementation is used.
      *
-     * @param lastStepImprint
-     *         imprint computed in the last step of the previous hash chain component
-     * @param length
-     *         length computed at the previous step
-     * @param algorithm
-     *         hash algorithm to be used.
+     * @param lastStepImprint imprint computed in the last step of the previous hash chain component
+     * @param length          length computed at the previous step
+     * @param algorithm       hash algorithm to be used.
      * @return pair of calculated hash and length.
      */
     public abstract ChainResult calculateChainStep(byte[] lastStepImprint, long length, HashAlgorithm algorithm) throws KSIException;
@@ -193,19 +206,15 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     /**
      * Hash two hashes together.
      *
-     * @param hash1
-     *         first hash
-     * @param hash2
-     *         second hash
-     * @param level
-     *         level
-     * @param algorithm
-     *         hash algorithm to use
+     * @param hash1     first hash
+     * @param hash2     second hash
+     * @param level     level
+     * @param algorithm hash algorithm to use
      * @return instance of {@link DataHash}
      */
     protected final DataHash hash(byte[] hash1, byte[] hash2, long level, HashAlgorithm algorithm) throws InvalidAggregationHashChainException {
         if (!algorithm.isImplemented()) {
-            throw new InvalidAggregationHashChainException("Invalid aggregation hash chain. Hash algorithm " +algorithm.getName() + " is not implemented");
+            throw new InvalidAggregationHashChainException("Invalid aggregation hash chain. Hash algorithm " + algorithm.getName() + " is not implemented");
         }
         DataHasher hasher = new DataHasher(algorithm);
         hasher.addData(hash1);

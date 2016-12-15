@@ -20,7 +20,6 @@
 package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.unisignature.IdentityMetadata;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -34,9 +33,8 @@ public class InMemoryLinkMetadataTest {
 
     @Test
     public void testCreateNewLeftLink() throws Exception {
-        IdentityMetadata identityMetadata = new IdentityMetadata(TEST_CLIENT_ID, TEST_MACHINE_ID, TEST_SEQUENCE_NUMBER, CURRENT_TIME);
-        InMemoryLinkMetadata metadata = new InMemoryLinkMetadata(identityMetadata);
-        assertEquals(metadata.getIdentityMetadata().getClientId(), TEST_CLIENT_ID);
+        InMemoryLinkMetadata metadata = new InMemoryLinkMetadata(TEST_CLIENT_ID, TEST_MACHINE_ID, TEST_SEQUENCE_NUMBER, CURRENT_TIME);
+        assertEquals(metadata.getDecodedClientId(), TEST_CLIENT_ID);
         TLVElement rootElement = metadata.getRootElement();
         assertEquals(5, rootElement.getChildElements().size());
         int paddingLength = 2;
@@ -49,9 +47,8 @@ public class InMemoryLinkMetadataTest {
 
     @Test
     public void testCreateNewLeftLinkWithClientId() throws Exception {
-        IdentityMetadata identityMetadata = new IdentityMetadata(TEST_CLIENT_ID);
-        InMemoryLinkMetadata metadata = new InMemoryLinkMetadata(identityMetadata);
-        assertEquals(metadata.getIdentityMetadata().getClientId(), TEST_CLIENT_ID);
+        InMemoryLinkMetadata metadata = new InMemoryLinkMetadata(TEST_CLIENT_ID);
+        assertEquals(metadata.getDecodedClientId(), TEST_CLIENT_ID);
         TLVElement rootElement = metadata.getRootElement();
         assertEquals(2, rootElement.getChildElements().size());
         int paddingLength = 1;

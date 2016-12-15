@@ -20,30 +20,12 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
 import com.guardtime.ksi.tree.ImprintNode;
-import org.testng.annotations.BeforeMethod;
 
-public abstract class AbstractBlockSignatureTest extends AbstractCommonIntegrationTest {
+public abstract class AbstractBlockSignatureTest {
 
-    protected DataHash dataHash;
-    protected DataHash dataHash2;
-    protected DataHash dataHash3;
-
-    protected ImprintNode node;
-    protected ImprintNode node2;
-    protected ImprintNode node3;
-
-    @BeforeMethod
-    public void setUp() throws Exception {
-        super.setUp();
-        dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
-        dataHash2 = new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1});
-        dataHash3 = new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2});
-
-        node = new ImprintNode(dataHash);
-        node2 = new ImprintNode(dataHash2);
-        node3 = new ImprintNode(dataHash3, 1);
-    }
+    public static final DataHash DATA_HASH = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
+    public static final DataHash DATA_HASH_2 = new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1});
+    public static final DataHash DATA_HASH_3 = new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2});
 
 }

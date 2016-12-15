@@ -20,7 +20,6 @@ package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregationResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -64,7 +63,7 @@ class AggregationResponsePayloadV2 extends TLVStructure implements AggregationRe
             }
         }
         if (status != 0) {
-            throw new KSIProtocolException("Error was returned by server. Error status is 0x" + Long.toHexString(status)+ ". Error message from server: '" + errorMessage + "'");
+            throw new KSIProtocolException("Error was returned by server. Error status is 0x" + Long.toHexString(status) + ". Error message from server: '" + errorMessage + "'");
         }
     }
 

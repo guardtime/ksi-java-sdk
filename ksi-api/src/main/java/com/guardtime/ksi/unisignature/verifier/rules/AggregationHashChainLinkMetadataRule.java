@@ -47,7 +47,9 @@ public final class AggregationHashChainLinkMetadataRule extends BaseRule {
         for (AggregationHashChain chain : aggregationChains) {
             for (AggregationChainLink link : chain.getChainLinks()) {
                 LinkMetadata metadata = link.getMetadata();
-                if (metadata == null) continue; // No metadata, nothing to verify.
+                if (metadata == null) {
+                    continue; // No metadata, nothing to verify.
+                }
                 TLVElement linkMetadataRootElement = metadata.getMetadataStructure().getRootElement();
 
                 if (paddingElementMissing(linkMetadataRootElement)) {

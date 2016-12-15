@@ -19,13 +19,13 @@ dependencies in your pom.xml:
 <dependency>
     <groupId>com.guardtime</groupId>
     <artifactId>ksi-api</artifactId>
-    <version>4.5.72</version>
+    <version>4.x.x</version>
 </dependency>
 
 <dependency>
     <groupId>com.guardtime</groupId>
     <artifactId>ksi-service-client-simple-http</artifactId>
-    <version>4.5.72</version>
+    <version>4.x.x</version>
 </dependency>
 ```     
 If you need the latest version, download the source and build using Maven.
@@ -59,6 +59,28 @@ Future<KSISignature> future = ksi.asyncSign(new File("asyncFile.txt"));
 KSISignature sig2 = future.getResult();
 ```
 The API full reference is available here [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
+
+## Compiling the Code ##
+To compile the code you need JDK 1.5 (or later) and [Maven](https://maven.apache.org/). 
+The project can be built via the command line by executing the following maven command: 
+```
+mvn clean install
+``` 
+This command tells Maven to build all the modules, and to install it in the local repository. This command also runs all
+integration and unit tests. In order to run the integration tests successfully you need to have access to KSI 
+service, the simplest is to request a trial account here [https://guardtime.com/blockchain-developers](https://guardtime.com/blockchain-developers).
+Add the KSI configuration to the file "ksi-api/src/test/resources/integrationtest.properties" (see file 
+"ksi-api/src/test/resources/integrationtest.properties.sample" for more information).
+
+You can also skip the integration tests by executing the following command:
+```
+mvn clean install -DskipITs
+```
+
+You can skip unit and integration tests by executing the following command:
+```
+mvn clean install -DskipTests -DskipITs
+```
 
 ## Dependencies ##
 

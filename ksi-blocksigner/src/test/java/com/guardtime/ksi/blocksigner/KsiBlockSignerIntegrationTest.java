@@ -19,11 +19,10 @@
 
 package com.guardtime.ksi.blocksigner;
 
-import com.guardtime.ksi.AbstractBlockSignatureTest;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
 import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.unisignature.IdentityMetadata;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.testng.annotations.BeforeMethod;
@@ -33,9 +32,11 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_2;
 import static org.testng.Assert.*;
 
-public class KsiBlockSignerIntegrationTest extends AbstractBlockSignatureTest {
+public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest {
 
     private static final String WORKING_HASH_ALGORITHMS = "workingHashAlgorithms";
 
@@ -65,15 +66,15 @@ public class KsiBlockSignerIntegrationTest extends AbstractBlockSignatureTest {
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client")
     public void testCreateSignatureLargeAggregationTree() throws Exception {
         KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
-        builder.add(dataHash, 255L, metadata);
+        builder.add(DATA_HASH, 255L, metadata);
         builder.sign();
     }
 
     @Test
     public void testBlockSignerUsingDefaultHashingAlgorithm() throws Exception {
         KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
-        builder.add(dataHash, metadata);
-        builder.add(dataHash2, metadata2);
+        builder.add(DATA_HASH, metadata);
+        builder.add(DATA_HASH_2, metadata2);
         builder.add(dataHashSha386, metadata3);
 
         List<KSISignature> signatures = builder.sign();

@@ -20,7 +20,6 @@ package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -36,7 +35,7 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
     private static final int ELEMENT_TYPE_REQUEST_ID = 0x01;
     private static final int ELEMENT_TYPE_STATUS = 0x04;
     private static final int ELEMENT_TYPE_ERROR_MESSAGE = 0x05;
-    private static final int ELEMENT_TYPE_LAST_TIME =  0x12;
+    private static final int ELEMENT_TYPE_LAST_TIME = 0x12;
 
     private Long requestId;
     private Long status;
@@ -69,7 +68,7 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
             }
         }
         if (status != 0) {
-            throw new KSIProtocolException("Error was returned by server. Error status is 0x" + Long.toHexString(status)+ ". Error message from server: '" + errorMessage + "'");
+            throw new KSIProtocolException("Error was returned by server. Error status is 0x" + Long.toHexString(status) + ". Error message from server: '" + errorMessage + "'");
         }
     }
 

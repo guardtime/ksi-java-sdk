@@ -121,7 +121,7 @@ public class AggregationChainLinkTest {
 
         LeftAggregationChainLink link = new LeftAggregationChainLink(element);
         Assert.assertNotNull(link);
-        Assert.assertEquals(link.getIdentity(), TEST_CLIENT_ID);
+        Assert.assertEquals(link.getLinkIdentity().getDecodedClientId(), TEST_CLIENT_ID);
     }
 
     @Test
@@ -131,7 +131,7 @@ public class AggregationChainLinkTest {
 
         RightAggregationChainLink link = new RightAggregationChainLink(element);
         Assert.assertNotNull(link);
-        Assert.assertEquals(link.getIdentity().toLowerCase(), TEST_CLIENT_ID);
+        Assert.assertEquals(link.getLinkIdentity().getDecodedClientId().toLowerCase(), TEST_CLIENT_ID);
     }
 
     @Test

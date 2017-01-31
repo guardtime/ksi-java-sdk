@@ -20,9 +20,11 @@
 package com.guardtime.ksi.trust;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import org.bouncycastle.asn1.x500.AttributeTypeAndValue;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 
 import java.security.cert.CertSelector;
@@ -50,6 +52,7 @@ public class X509CertificateSubjectRdnSelector implements CertSelector {
             throw new KSIException("Invalid input parameter. RDN string must be present");
         }
         this.rdnArray = BCStyle.INSTANCE.fromString(rdnString);
+        ensureSingleRdnValues(rdnArray);
     }
 
     /**
@@ -64,6 +67,7 @@ public class X509CertificateSubjectRdnSelector implements CertSelector {
             throw new KSIException("Invalid input parameter.At least one RDN must be present");
         }
         this.rdnArray = rdnArray;
+        ensureSingleRdnValues(rdnArray);
     }
 
     public boolean match(Certificate cert) {
@@ -74,10 +78,12 @@ public class X509CertificateSubjectRdnSelector implements CertSelector {
             return true;
         }
         try {
-            X500Name x500name = new JcaX509CertificateHolder((X509Certificate) cert).getSubject();
+            X500Name x500name = getX500SubjectName((X509Certificate) cert);
             boolean ok = true;
             for (RDN rdn : rdnArray) {
-                ok = ok && contains(x500name, rdn);
+                AttributeTypeAndValue expectedTypeAndValue = rdn.getFirst();
+
+                ok = ok && contains(x500name, expectedTypeAndValue);
             }
             return ok;
         } catch (CertificateEncodingException e) {
@@ -85,14 +91,43 @@ public class X509CertificateSubjectRdnSelector implements CertSelector {
         }
     }
 
-    private boolean contains(X500Name name, RDN rdn) {
-        RDN[] certificateRdnValues = name.getRDNs(rdn.getFirst().getType());
+    X500Name getX500SubjectName(X509Certificate cert) throws CertificateEncodingException {
+        return new JcaX509CertificateHolder(cert).getSubject();
+    }
+
+    private boolean contains(X500Name name, AttributeTypeAndValue expectedTypeAndValue) {
+        RDN[] certificateRdnValues = name.getRDNs(expectedTypeAndValue.getType());
+        return checkArrayOfRdn(certificateRdnValues, expectedTypeAndValue);
+    }
+
+    private boolean checkArrayOfRdn(RDN[] certificateRdnValues, AttributeTypeAndValue expectedTypeAndValue) {
+        boolean containsCorrectValues = true;
         for (RDN certRDN : certificateRdnValues) {
-            if (certRDN.getFirst().getValue().equals(rdn.getFirst().getValue())) {
-                return true;
+            if(!checkRdn(certRDN, expectedTypeAndValue)) {
+                containsCorrectValues = false;
+                break;
             }
         }
-        return false;
+        return containsCorrectValues;
+    }
+
+    private boolean checkRdn(RDN certRDN, AttributeTypeAndValue expectedTypeAndValue) {
+        String expectedValue = IETFUtils.valueToString(expectedTypeAndValue.getValue());
+        boolean constraintFound = false;
+        AttributeTypeAndValue[] typesAndValues = certRDN.getTypesAndValues();
+        for (AttributeTypeAndValue typesAndValue : typesAndValues) {
+            if (typesAndValue.getType().equals(expectedTypeAndValue.getType())) {
+                String actualValue = IETFUtils.valueToString(typesAndValue.getValue());
+                if (actualValue.equals(expectedValue)) {
+                    constraintFound = true;
+                } else {
+                    constraintFound = false;
+                    break;
+                }
+            }
+        }
+
+        return constraintFound;
     }
 
     public Object clone() {
@@ -101,6 +136,15 @@ public class X509CertificateSubjectRdnSelector implements CertSelector {
         } catch (KSIException e) {
             throw new Error("X509CertificateSubjectRdnSelector cloning failed", e);
         }
+    }
+
+    private void ensureSingleRdnValues(RDN[] rdnArray) throws KSIException {
+        for (RDN rdn : rdnArray) {
+            if (rdn.isMultiValued()) {
+                throw new KSIException("Multi-valued certificate constraints aren't supported");
+            }
+        }
+
     }
 
 }

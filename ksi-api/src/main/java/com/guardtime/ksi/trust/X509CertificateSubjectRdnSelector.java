@@ -51,8 +51,8 @@ public class X509CertificateSubjectRdnSelector implements CertSelector {
         if (rdnString == null || rdnString.length() == 0) {
             throw new KSIException("Invalid input parameter. RDN string must be present");
         }
-        this.rdnArray = BCStyle.INSTANCE.fromString(rdnString);
         ensureSingleRdnValues(rdnArray);
+        this.rdnArray = BCStyle.INSTANCE.fromString(rdnString);
     }
 
     /**
@@ -66,8 +66,8 @@ public class X509CertificateSubjectRdnSelector implements CertSelector {
         if (rdnArray == null || rdnArray.length == 0) {
             throw new KSIException("Invalid input parameter.At least one RDN must be present");
         }
-        this.rdnArray = rdnArray;
         ensureSingleRdnValues(rdnArray);
+        this.rdnArray = rdnArray;
     }
 
     public boolean match(Certificate cert) {

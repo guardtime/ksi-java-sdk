@@ -23,8 +23,12 @@ import com.guardtime.ksi.hashing.DataHash;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.AbstractBlockSignatureTest.*;
-import static org.testng.Assert.*;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_2;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_3;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 
 public class HashTreeBuilderTest {
 
@@ -83,6 +87,23 @@ public class HashTreeBuilderTest {
         ImprintNode root = builder.build();
         assertNotNull(root);
         assertEquals(root.getLevel(), 3);
+    }
+
+    @Test
+    public void testCalculateTreeHeightWithOneLeaf() throws Exception {
+        assertEquals(builder.calculateHeight(node), 0);
+    }
+
+    @Test
+    public void testCalculateTreeHeightWithMultipleLeafs() throws Exception {
+        builder.add(node, node2, node2, node, node, node2);
+        assertEquals(builder.calculateHeight(node2), 3);
+    }
+
+    @Test
+    public void testCalculateTreeHeightWithMultipleDifferentSubtrees() throws Exception {
+        builder.add(node, node, node3, node3);
+        assertEquals(builder.calculateHeight(node3), 3);
     }
 
 }

@@ -24,7 +24,11 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSISigningClient;
@@ -33,7 +37,12 @@ import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
-import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.AggregationChainLink;
+import com.guardtime.ksi.unisignature.AggregationHashChain;
+import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
+import com.guardtime.ksi.unisignature.KSISignatureFactory;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Util;
@@ -169,6 +178,21 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         chains.put(new LeafKey(leaf, dataHash), metadataLink);
         treeBuilder.add(leaf);
         return this;
+    }
+
+    public boolean checkAdd(DataHash dataHash, long level, IdentityMetadata metadata, long maxTreeHeight) throws KSIException {
+        notNull(dataHash, "DataHash");
+        if (level < 0 || level > MAXIMUM_LEVEL) {
+            throw new IllegalStateException("Level must be between 0 and 255");
+        }
+        logger.debug("New input hash '{}' with level '{}' checked against block signer.", dataHash, level);
+        LinkMetadata linkMetadata = SIGNATURE_COMPONENT_FACTORY.createLinkMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION,
+                null, null, null);
+
+        AggregationChainLink metadataLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(linkMetadata, level);
+        ImprintNode leaf = calculateChainStepLeft(dataHash.getImprint(), metadataLink.getSiblingData(), level);
+
+        return treeBuilder.calculateHeight(leaf) <= maxTreeHeight;
     }
 
     public ImprintNode calculateChainStepLeft(byte[] left, byte[] right, long length) throws KSIException {

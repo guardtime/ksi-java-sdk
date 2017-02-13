@@ -48,6 +48,13 @@ public interface BlockSigner<T> {
     KsiBlockSigner add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException;
 
     /**
+     * Check, if given hash could be added to the signer without exceeding given tree height
+     *
+     * @return if adding given hash does/does not exceed given tree height
+     */
+    boolean checkAdd(DataHash dataHash, long level, IdentityMetadata metadata, long maxTreeHeight) throws KSIException;
+
+    /**
      * Creates a block signature
      */
     T sign() throws KSIException;

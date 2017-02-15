@@ -116,4 +116,15 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         return hashAlgorithms.toArray(objects);
     }
 
+    @Test
+    public void testBlockSignerWithMaxTreeHeight() throws Exception {
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setMaxTreeHeight(3).build();
+        // Up to 4 hashes with meta data could be added without exceeding max tree height 3.
+        assertTrue(builder.add(DATA_HASH, metadata));
+        assertTrue(builder.add(DATA_HASH, metadata));
+        assertTrue(builder.add(DATA_HASH, metadata));
+        assertTrue(builder.add(DATA_HASH, metadata));
+        assertFalse(builder.add(DATA_HASH, metadata));
+    }
+
 }

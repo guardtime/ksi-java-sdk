@@ -24,6 +24,7 @@ public class KsiBlockSignerBuilder {
     private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private PduFactory pduFactory = new PduV1Factory();
     private PduIdentifierProvider pduIdentifierProvider = new DefaultPduIdentifierProvider();
+    private int maxTreeHeight = KsiBlockSigner.MAXIMUM_LEVEL;
 
     public KsiBlockSignerBuilder setKsiSigningClient(KSISigningClient signingClient) {
         notNull(signingClient, "Signing client");
@@ -57,7 +58,13 @@ public class KsiBlockSignerBuilder {
         return this;
     }
 
+    public KsiBlockSignerBuilder setMaxTreeHeight(Integer maxTreeHeight) {
+        notNull(maxTreeHeight, "Maximum aggregation tree height");
+        this.maxTreeHeight = maxTreeHeight;
+        return this;
+    }
+
     public KsiBlockSigner build() {
-        return new KsiBlockSigner(signingClient, pduFactory, pduIdentifierProvider, signatureFactory, algorithm);
+        return new KsiBlockSigner(signingClient, pduFactory, pduIdentifierProvider, signatureFactory, algorithm, maxTreeHeight);
     }
 }

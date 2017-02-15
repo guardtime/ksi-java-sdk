@@ -106,4 +106,17 @@ public class HashTreeBuilderTest {
         assertEquals(builder.calculateHeight(node3), 3);
     }
 
+    @Test
+    public void testCalculateTreeHeightInLoop() throws Exception {
+        long level = 0;
+        //check first 14 levels
+        for(int i = 0; i <= 16384; i++){
+            if( level != builder.calculateHeight(node)){
+                assertEquals((int)Math.pow(2, level), i);
+                level = builder.calculateHeight(node);
+            }
+            builder.add(node);
+        }
+    }
+
 }

@@ -19,6 +19,10 @@
 
 package com.guardtime.ksi.tree;
 
+import static com.guardtime.ksi.util.Util.notNull;
+
+import java.util.LinkedList;
+
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
@@ -26,10 +30,6 @@ import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.LinkedList;
-
-import static com.guardtime.ksi.util.Util.notNull;
 
 /**
  * This class is a hash tree (aka Merkle tree) builder implementation. Hash tree is a tree in which every non-leaf node

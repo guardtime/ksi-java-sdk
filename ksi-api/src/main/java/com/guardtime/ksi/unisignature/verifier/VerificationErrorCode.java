@@ -37,13 +37,16 @@ public enum VerificationErrorCode {
     INT_09("INT-09", "Calendar hash chain root hash is inconsistent with published hash value"),
     INT_10("INT-10", "Aggregation hash chain chain index mismatch"),
     INT_11("INT-11", "The metadata record in the aggregation hash chain may not be trusted"),
+    INT_12("INT-12", "Inconsistent chain indexes"),
     PUB_01("PUB-01", "Extender response calendar root hash mismatch"),
     PUB_02("PUB-02", "Extender response inconsistent"),
     PUB_03("PUB-03", "Extender response input hash mismatch"),
+    PUB_04("PUB-04", "Publication record hash and user provided publication hash mismatch"),
+    PUB_05("PUB-05", "Publication record hash and publications file publication hash mismatch"),
     KEY_01("KEY-01", "Certificate not found"),
     KEY_02("KEY-02", "PKI signature not verified with certificate"),
-    CAL_01("CAL-01", "Calendar root hash mismatch"),
-    CAL_02("CAL-02", "Aggregation hash chain root hash and calendar hash chain input hash mismatch"),
+    CAL_01("CAL-01", "Calendar root hash mismatch between signature and calendar database chain"),
+    CAL_02("CAL-02", "Aggregation hash chain root hash and calendar database hash chain input hash mismatch"),
     CAL_03("CAL-03", "Aggregation time mismatch"),
     CAL_04("CAL-04", "Calendar hash chain right links are inconsistent");
 

@@ -64,6 +64,6 @@ public final class AggregationHashChainIndexConsistencyRule extends BaseRule {
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.INT_10;
+        return VerificationErrorCode.INT_12;
     }
 }

@@ -23,6 +23,6 @@ public class UserProvidedPublicationHashEqualsToSignaturePublicationHashRule ext
 
     @Override
     VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.INT_09;
+        return VerificationErrorCode.PUB_04;
     }
 }

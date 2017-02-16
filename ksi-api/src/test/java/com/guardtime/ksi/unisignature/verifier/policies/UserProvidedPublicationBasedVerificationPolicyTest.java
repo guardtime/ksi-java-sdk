@@ -110,7 +110,7 @@ public class UserProvidedPublicationBasedVerificationPolicyTest {
         DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D"));
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, new PublicationData(new Date(1400112000000L), dataHash), false), VERIFICATION_POLICY);
         Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_09);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_04);
     }
 
 }

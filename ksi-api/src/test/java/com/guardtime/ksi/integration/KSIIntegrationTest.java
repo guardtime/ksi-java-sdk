@@ -17,23 +17,20 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi;
+package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
-import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
-import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -41,24 +38,7 @@ import java.util.Date;
 
 import static org.testng.Assert.assertNotNull;
 
-public class KSIIntegrationTest {
-
-    private KSI ksi;
-    private SimpleHttpClient client;
-    private X509CertificateSubjectRdnSelector certSelector;
-
-    @BeforeMethod
-    public void setUp() throws Exception {
-        this.client = new SimpleHttpClient(AbstractCommonIntegrationTest.loadHTTPSettings());
-        this.certSelector = new X509CertificateSubjectRdnSelector("E=publications@guardtime.com");
-        this.ksi = new KSIBuilder().
-                setKsiProtocolSignerClient(client).
-                setKsiProtocolExtenderClient(client).
-                setKsiProtocolPublicationsFileClient(client).
-                setDefaultSigningHashAlgorithm(HashAlgorithm.SHA2_256).
-                setPublicationsFileTrustedCertSelector(certSelector).
-                build();
-    }
+public class KSIIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test
     public void testReadUniSignatureFromFile_OK() throws Exception {

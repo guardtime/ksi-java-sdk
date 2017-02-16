@@ -51,8 +51,8 @@ public class X509CertificateSubjectRdnSelector implements CertSelector {
         if (rdnString == null || rdnString.length() == 0) {
             throw new KSIException("Invalid input parameter. RDN string must be present");
         }
-        ensureSingleRdnValues(rdnArray);
         this.rdnArray = BCStyle.INSTANCE.fromString(rdnString);
+        ensureSingleRdnValues(rdnArray);
     }
 
     /**

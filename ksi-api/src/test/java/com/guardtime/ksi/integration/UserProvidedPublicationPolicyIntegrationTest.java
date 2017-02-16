@@ -55,7 +55,7 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
         PublicationData publicationData = new PublicationData(signature.getPublicationTime(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, false);
         Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_09);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_04);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)

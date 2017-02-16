@@ -24,7 +24,6 @@ public class AggregationHashChainIndexSuccessorRule extends BaseRule {
             List<Long> currentIndex = chain.getChainIndex();
 
             if (previousIndex != null) {
-                logger.info("Current: {}; Previous index: {}", currentIndex, previousIndex);
                 if (!isSuccessorIndex(previousIndex, currentIndex)) {
                     logger.info("Chain index is not the successor to the parent aggregation hash chain index. Invalid chain length. Chain index: {}; Parent chain index: {}", currentIndex, previousIndex);
                     return VerificationResultCode.FAIL;

@@ -42,10 +42,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     @BeforeMethod
     public void setUp() throws Exception {
         SimpleHttpClient httpClient = new SimpleHttpClient(loadHTTPSettings());
-        ksiBuilder = new KSIBuilder().setKsiProtocolExtenderClient(httpClient).
-                setKsiProtocolPublicationsFileClient(httpClient).
-                setKsiProtocolSignerClient(httpClient).
-                setPublicationsFileTrustedCertSelector(createCertSelector());
+        ksiBuilder = initKsiBuilder(httpClient, httpClient, httpClient);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Verification inconclusive.*")

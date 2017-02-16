@@ -54,6 +54,7 @@ import org.testng.annotations.DataProvider;
 
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -81,6 +82,8 @@ public abstract class AbstractCommonIntegrationTest {
     public static final String EXTENDED_SIGNATURE_2014_06_02 = "ok-sig-2014-06-2-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2014_04_30 = "ok-sig-2014-04-30.1-extended.ksig";
     public static final String PUIBLICATION_STRING_2014_05_15 = "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
+    public static final String KIS_TRUSTSTORE_LOCATION = "ksi-truststore.jks";
+    public static final String KSI_TRUSTSTORE_PASSWORD = "changeit";
 
     protected KSI ksi;
     protected SimpleHttpClient simpleHttpClient;
@@ -90,11 +93,7 @@ public abstract class AbstractCommonIntegrationTest {
     public void setUp() throws Exception {
         this.simpleHttpClient = new SimpleHttpClient(loadHTTPSettings());
         this.serviceCredentials = simpleHttpClient.getServiceCredentials();
-        this.ksi = new KSIBuilder().setKsiProtocolExtenderClient(simpleHttpClient).
-                setKsiProtocolPublicationsFileClient(simpleHttpClient).
-                setKsiProtocolSignerClient(simpleHttpClient).
-                setPublicationsFileTrustedCertSelector(createCertSelector()).
-                build();
+        this.ksi = createKsi(simpleHttpClient,simpleHttpClient, simpleHttpClient);
     }
 
     public static DataHash getFileHash(String fileName, String name) throws Exception {
@@ -163,15 +162,22 @@ public abstract class AbstractCommonIntegrationTest {
         return serviceSettings;
     }
 
-    protected static Object[] createKsiObject(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws KSIException {
+    protected static Object[] createKsiObject(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
         return new Object[]{createKsi(extenderClient, signingClient, publicationsFileClient)};
     }
 
-    protected static KSI createKsi(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws KSIException {
+    protected static KSI createKsi(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
+        return initKsiBuilder(extenderClient, signingClient, publicationsFileClient).build();
+    }
+
+    protected static KSIBuilder initKsiBuilder(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
+        URL trustStoreUrl = Thread.currentThread().getContextClassLoader().getResource(KIS_TRUSTSTORE_LOCATION);
+        File trustStore = new File(trustStoreUrl.toURI());
         return new KSIBuilder().setKsiProtocolExtenderClient(extenderClient).
                 setKsiProtocolPublicationsFileClient(publicationsFileClient).
                 setKsiProtocolSignerClient(signingClient).
-                setPublicationsFileTrustedCertSelector(createCertSelector()).build();
+                setPublicationsFilePkiTrustStore(trustStore, KSI_TRUSTSTORE_PASSWORD).
+                setPublicationsFileTrustedCertSelector(createCertSelector());
     }
 
     protected static X509CertificateSubjectRdnSelector createCertSelector() throws KSIException {

@@ -136,16 +136,6 @@ public class InMemoryKsiSignatureTest {
         Assert.assertNotNull(signature);
     }
 
-    @Test(expectedExceptions = InvalidSignatureException.class, expectedExceptionsMessageRegExp = "Aggregation chain indexes are invalid. Invalid length")
-    public void testParseSignatureWithMissingAggregationChainIndex_ThrowsInvalidSignatureException() throws Exception {
-        TestUtil.loadSignature("signature/signature-with-missing-one-aggregation-chain.ksig");
-    }
-
-    @Test(expectedExceptions = InvalidSignatureException.class, expectedExceptionsMessageRegExp = "Aggregation chain indexes are invalid. Invalid value. Expected .*, got .*")
-    public void testParseSignatureWithInvalidAggregationChainIndexValue_ThrowsInvalidSignatureException() throws Exception {
-        TestUtil.loadSignature("signature/signature-with-invalid-aggregation-chain-index-value.ksig");
-    }
-
     @Test(expectedExceptions = InvalidSignatureException.class, expectedExceptionsMessageRegExp = "Found calendar authentication record and publication record. Given elements can not coexist")
     public void testParseSignatureWithPublicationRecordAndCalendarAuthenticationRecord_ThrowsInvalidSignatureException() throws Exception {
         TestUtil.loadSignature("signature/signature-with-signature-authentication-and-publication-record.ksig");

@@ -42,6 +42,24 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
     private static final String PUBLICATION_STRING_2014_09_15 = "AAAAAA-CUCYWA-AAOBM6-PNYLRK-EPI3VG-2PJGCF-Y5QHV3-XURLI2-GRFBK4-VHBED2-Q37QIB-UE3ENA";
 
     @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureWithNoPublicationRecordinExtendingAllowed_VerificationReturnsOk() throws Exception {
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_06_02);
+        PublicationData publicationData = new PublicationData(PUBLICATION_STRING_2014_09_15);
+        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
+        Assert.assertTrue(result.isOk());
+    }
+
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureWithNoPublicationRecordinExtendingNotAllowed_VerificationReturnsGen2() throws Exception {
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_06_02);
+        PublicationData publicationData = new PublicationData(PUBLICATION_STRING_2014_09_15);
+        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, false);
+        Assert.assertFalse(result.isOk());
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithCorrectData_VerificationReturnsOk() throws Exception {
         KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
         PublicationData publicationData = signature.getPublicationRecord().getPublicationData();
@@ -55,7 +73,7 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
         PublicationData publicationData = new PublicationData(signature.getPublicationTime(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, false);
         Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_09);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_04);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)

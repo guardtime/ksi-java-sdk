@@ -66,11 +66,10 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyExtendedSignatureWithCorrectDataExtendingAllowed_VerificationReturnsGen2() throws Exception {
+    public void testVerifyExtendedSignatureWithCorrectDataExtendingAllowed_OK() throws Exception {
         KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_04_30);
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, true);
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
+        Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)

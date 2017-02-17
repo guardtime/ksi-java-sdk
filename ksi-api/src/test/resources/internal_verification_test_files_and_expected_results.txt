@@ -6,8 +6,8 @@ internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingAggrTime.ksig;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingChainIndex.ksig;false;false;;InvalidAggregationHashChainException;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingCoreAggr.ksig;true;false;INT_03;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingInputHash.ksig;false;false;;InvalidAggregationHashChainException;
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingLeftLink.ksig;true;false;INT_12;;
-internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingRightLink.ksig;true;false;INT_12;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingLeftLink.ksig;true;false;INT_10;;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingRightLink.ksig;true;false;INT_10;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoAggrAlg.ksig;true;false;INT_03;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoAggrTime.ksig;true;false;INT_02;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoChainIndex.ksig;true;false;INT_12;;
@@ -103,5 +103,5 @@ aggregation-hash-chain-metadata/metadata-multiple-padding-elements.ksig;true;fal
 aggregation-hash-chain-metadata/metadata-missing-padding-element.ksig;true;false;INT_01;;
 aggregation-hash-chain-metadata/metadata-wrong-order.ksig;true;false;INT_11;;
 aggregation-hash-chain-metadata/TestAggregationHashChainMetadataPaddingNotTlv8Fail.ksig;true;false;INT_11;;
-internal-verification-aggr-chain/invalid-chain-index.ksig;true;false;INT_12;;
+internal-verification-aggr-chain/invalid-chain-index.ksig;true;false;INT_10;;
 signature/signature-with-testbed-publication-record.ksi;true;false;INT_09;;

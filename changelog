@@ -2,6 +2,7 @@ Version 4.7
 
 * IMPROVEMENT: Check, if given hash could be added to the BlockSigner without exceeding given tree height. BlockSigner interface changed, add method returns boolean instead of KsiBlockSigner.
 * BUGFIX: Fixed KsiBlockSigner initialization without default hash algorithm.
+* IMPROVEMENT: Updated signature verification procedure. Added new error codes.
 
 Version 4.6
 

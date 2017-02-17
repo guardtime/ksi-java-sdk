@@ -5,20 +5,16 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
-import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.verifier.*;
-import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.AlwaysSuccessfulPolicy;
 import com.guardtime.ksi.util.Util;
 import org.bouncycastle.util.Store;
 import org.mockito.Mockito;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -29,8 +25,6 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
-import static com.guardtime.ksi.CommonTestUtil.loadTlv;
-import static com.guardtime.ksi.TestUtil.loadSignature;
 import static com.guardtime.ksi.TestUtil.PUBLICATIONS_FILE_27_07_2016;
 
 public class KsiTest {

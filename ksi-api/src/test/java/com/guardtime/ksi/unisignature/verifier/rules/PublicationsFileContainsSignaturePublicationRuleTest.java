@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
@@ -54,14 +55,32 @@ public class PublicationsFileContainsSignaturePublicationRuleTest extends Abstra
     }
 
     @Test
-    public void testPublicationFileDoesNotContainSignaturePublication_Ok() throws Exception {
-        InMemorySignaturePublicationRecord mockedPublicationRecord = Mockito.mock(InMemorySignaturePublicationRecord.class);
-        Mockito.when(mockedPublicationRecord.getPublicationData()).thenReturn(new PublicationData(new Date(1000), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
-        Mockito.when(context.getPublicationRecord()).thenReturn(mockedPublicationRecord);
-        Mockito.when(mockedPublicationRecord.getPublicationTime()).thenReturn(new Date(1000));
+    public void testPublicationFileDoesNotContainPublication() throws Exception {
+        mockPublication(new Date(999999999999999999L));
         RuleResult result = rule.verify(context);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
+    }
+
+    @Test
+    public void testPublicationFileContainsPublicationWithDifferentPublicationTime() throws Exception {
+        mockPublication(new Date(1000L));
+        RuleResult result = rule.verify(context);
+        Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
+    }
+
+    @Test
+    public void testPublicationFileContainPublicationWithDifferentHash() throws Exception {
+        mockPublication(new Date(1208217600000L));
+        RuleResult result = rule.verify(context);
+        Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_05);
+    }
+
+    private void mockPublication(Date publicationTime) throws KSIException {
+        InMemorySignaturePublicationRecord mockedPublicationRecord = Mockito.mock(InMemorySignaturePublicationRecord.class);
+        Mockito.when(mockedPublicationRecord.getPublicationData()).thenReturn(new PublicationData(publicationTime, new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        Mockito.when(context.getPublicationRecord()).thenReturn(mockedPublicationRecord);
+        Mockito.when(mockedPublicationRecord.getPublicationTime()).thenReturn(publicationTime);
     }
 
 }

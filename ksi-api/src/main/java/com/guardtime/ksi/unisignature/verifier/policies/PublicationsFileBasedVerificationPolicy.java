@@ -35,7 +35,6 @@ public class PublicationsFileBasedVerificationPolicy extends InternalVerificatio
                 new PublicationsFileContainsSignaturePublicationRule());
 
         Rule useExtendingRule = new CompositeRule(false,
-                new SignatureDoesNotContainPublicationRule(),
                 new PublicationsFileContainsPublicationRule(),
                 new ExtendingPermittedVerificationRule(),
                 new PublicationsFilePublicationHashMatchesExtenderResponseRule(),

@@ -22,7 +22,7 @@ public class UserProvidedPublicationHashEqualsToSignaturePublicationHashRuleTest
         PublicationData publication = new PublicationData(new Date(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
         RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig"), publication));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_09);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_04);
     }
 
     @Test

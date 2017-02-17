@@ -54,7 +54,7 @@ import org.testng.annotations.DataProvider;
 
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.net.URL;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -82,7 +82,7 @@ public abstract class AbstractCommonIntegrationTest {
     public static final String EXTENDED_SIGNATURE_2014_06_02 = "ok-sig-2014-06-2-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2014_04_30 = "ok-sig-2014-04-30.1-extended.ksig";
     public static final String PUIBLICATION_STRING_2014_05_15 = "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
-    public static final String KIS_TRUSTSTORE_LOCATION = "ksi-truststore.jks";
+    public static final String KSI_TRUSTSTORE_LOCATION = "ksi-truststore.jks";
     public static final String KSI_TRUSTSTORE_PASSWORD = "changeit";
 
     protected KSI ksi;
@@ -171,12 +171,12 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     protected static KSIBuilder initKsiBuilder(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
-        URL trustStoreUrl = Thread.currentThread().getContextClassLoader().getResource(KIS_TRUSTSTORE_LOCATION);
-        File trustStore = new File(trustStoreUrl.toURI());
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        trustStore.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(KSI_TRUSTSTORE_LOCATION), KSI_TRUSTSTORE_PASSWORD.toCharArray());
         return new KSIBuilder().setKsiProtocolExtenderClient(extenderClient).
                 setKsiProtocolPublicationsFileClient(publicationsFileClient).
                 setKsiProtocolSignerClient(signingClient).
-                setPublicationsFilePkiTrustStore(trustStore, KSI_TRUSTSTORE_PASSWORD).
+                setPublicationsFilePkiTrustStore(trustStore).
                 setPublicationsFileTrustedCertSelector(createCertSelector());
     }
 

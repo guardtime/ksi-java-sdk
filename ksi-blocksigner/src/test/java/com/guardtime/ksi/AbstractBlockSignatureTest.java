@@ -20,7 +20,6 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.tree.ImprintNode;
 
 public abstract class AbstractBlockSignatureTest {
 

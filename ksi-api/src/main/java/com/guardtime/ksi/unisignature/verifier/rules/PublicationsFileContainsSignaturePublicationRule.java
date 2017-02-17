@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
@@ -35,13 +36,25 @@ public class PublicationsFileContainsSignaturePublicationRule extends BaseRule {
         PublicationsFile file = context.getPublicationsFile();
         PublicationRecord publicationRecord = context.getPublicationRecord();
         PublicationRecord publicationFileRecord = file.getPublicationRecord(publicationRecord.getPublicationTime());
-        if (publicationFileRecord != null && publicationFileRecord.getPublicationData().equals(publicationRecord.getPublicationData())) {
-            return VerificationResultCode.OK;
+
+        if (publicationFileRecord == null) {
+            return VerificationResultCode.NA;
         }
-        return VerificationResultCode.NA;
+
+        if (!publicationFileRecord.getPublicationTime().equals(publicationRecord.getPublicationTime())) {
+            return VerificationResultCode.NA;
+        }
+
+        DataHash publicationDataHash = publicationRecord.getPublicationData().getPublicationDataHash();
+        DataHash publicationFileDataHash = publicationFileRecord.getPublicationData().getPublicationDataHash();
+        if (!publicationFileDataHash.equals(publicationDataHash)) {
+            return VerificationResultCode.FAIL;
+        }
+
+        return VerificationResultCode.OK;
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.GEN_2;
+        return VerificationErrorCode.PUB_05;
     }
 }

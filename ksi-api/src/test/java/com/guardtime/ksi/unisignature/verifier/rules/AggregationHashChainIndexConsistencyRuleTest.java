@@ -35,7 +35,7 @@ public class AggregationHashChainIndexConsistencyRuleTest extends AbstractRuleTe
         RuleResult result = rule.verify(build(TestUtil.loadSignature("internal-verification-aggr-chain/invalid-chain-index.ksig")));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_12);
+        Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_10);
     }
 
     @Test

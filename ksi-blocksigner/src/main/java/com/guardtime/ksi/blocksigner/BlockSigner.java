@@ -34,18 +34,27 @@ public interface BlockSigner<T> {
 
     /**
      * Adds a new hash to the signer
+     *
+     * @return true if this hash was added as a result of the call.
+     * If adding given hash exceeds given tree height, no hash is added to signer.
      */
-    KsiBlockSigner add(DataHash dataHash) throws KSIException;
+    boolean add(DataHash dataHash) throws KSIException;
 
     /**
      * Adds a new hash to the signer
+     *
+     * @return true if this hash was added as a result of the call.
+     * If adding given hash exceeds given tree height, no hash is added to signer.
      */
-    KsiBlockSigner add(DataHash dataHash, IdentityMetadata metadata) throws KSIException;
+    boolean add(DataHash dataHash, IdentityMetadata metadata) throws KSIException;
 
     /**
      * Adds a new hash to the signer
+     *
+     * @return true if this hash was added as a result of the call.
+     * If adding given hash exceeds given tree height, no hash is added to signer.
      */
-    KsiBlockSigner add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException;
+    boolean add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException;
 
     /**
      * Creates a block signature

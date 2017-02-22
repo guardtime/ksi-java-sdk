@@ -1,8 +1,11 @@
 Version 4.7
 
+2017-02-22 4.7.85
+
 * IMPROVEMENT: Check, if given hash could be added to the BlockSigner without exceeding given tree height. BlockSigner interface changed, add method returns boolean instead of KsiBlockSigner.
 * BUGFIX: Fixed KsiBlockSigner initialization without default hash algorithm.
 * IMPROVEMENT: Updated signature verification procedure. Added new error codes.
+* IMPROVEMENT: X509CertificateSubjectRdnSelector supports certificates with multi-valued RDN-s
 
 Version 4.6
 
@@ -11,6 +14,8 @@ Version 4.6
 * IMPROVEMENT: Now the Identity information is provided as an array in SDK. Old methods are deprecated. Moved class com.guardtime.ksi.unsiganture.IdentityMetadata to package com.guardtime.ksi.blocksigner.
 * IMPROVEMENT: KsiBlockSigner performance improvements
 * FEATURE: Removed multi-signature support
+
+Version 4.5
 
 2016-11-17 4.5.72
 

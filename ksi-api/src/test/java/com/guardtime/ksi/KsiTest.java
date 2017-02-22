@@ -5,20 +5,16 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
-import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.verifier.*;
-import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.AlwaysSuccessfulPolicy;
 import com.guardtime.ksi.util.Util;
 import org.bouncycastle.util.Store;
 import org.mockito.Mockito;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -29,8 +25,6 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
-import static com.guardtime.ksi.CommonTestUtil.loadTlv;
-import static com.guardtime.ksi.TestUtil.loadSignature;
 import static com.guardtime.ksi.TestUtil.PUBLICATIONS_FILE_27_07_2016;
 
 public class KsiTest {
@@ -148,75 +142,6 @@ public class KsiTest {
     @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. File must not be null")
     public void testSignMissingFile_ThrowsKSIException() throws Exception {
         ksi.sign((File) null);
-    }
-
-    @Test
-    public void testCreateSignature_Ok() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("pdu/aggregation/aggregation-response-v1.tlv"));
-        Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-
-        KSISignature response = ksi.sign(defaultDataHash);
-        Assert.assertNotNull(response);
-    }
-
-    @Test
-    public void testExtendSignature_Ok() throws Exception {
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("extension-response-sig-2014-04-30.1.ksig"));
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(5546551786909961666L);
-
-        KSISignature result = ksi.extend(loadSignature("ok-sig-2014-04-30.1.ksig"));
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.isExtended());
-    }
-
-    @Test
-    public void testGetPublicationsFile_Ok() throws Exception {
-        PublicationsFile response = ksi.getPublicationsFile();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(response, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_27_07_2016));
-    }
-
-    @Test
-    public void testSigningWithPduV2() throws Exception {
-        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(1L);
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("pdu/aggregation/aggregation-response-v2-multiple-elements-mixed-up.tlv"));
-
-        KSI ksi = getKsiWithPduV2AndInternalVerification();
-
-        Mockito.when(mockedSigningClient.sign(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
-        Assert.assertNotNull(signature);
-    }
-
-    @Test
-    public void testExtendingWithPduV2() throws Exception {
-        Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(1L);
-        Mockito.when(mockedResponse.getResult()).thenReturn(loadTlv("pdu/extension/extension-response-v2-multiple-payloads-mixed-up.tlv"));
-
-        KSI ksi = getKsiWithPduV2AndInternalVerification();
-
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).thenReturn(mockedResponse);
-        KSISignature extenderSignature = ksi.extend(loadSignature("ok-sig-2014-06-2.ksig"));
-        Assert.assertNotNull(extenderSignature);
-        Assert.assertTrue(extenderSignature.isExtended());
-    }
-
-    private KSI getKsiWithPduV2AndInternalVerification() throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(TestUtil.load("ksi-truststore.jks"), "changeit".toCharArray());
-
-        Mockito.when(mockedSigningClient.getPduVersion()).thenReturn(PduVersion.V2);
-        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V2);
-
-        return new KSIBuilder().
-                setKsiProtocolExtenderClient(mockedExtenderClient).
-                setKsiProtocolPublicationsFileClient(mockedPublicationsFileClient).
-                setPublicationsFileTrustedCertSelector(certSelector).
-                setKsiProtocolSignerClient(mockedSigningClient).
-                setPublicationsFilePkiTrustStore(keyStore).
-                setDefaultVerificationPolicy(new InternalVerificationPolicy()).
-                setPduIdentifierProvider(mockedIdentifierProvider).build();
     }
 
 }

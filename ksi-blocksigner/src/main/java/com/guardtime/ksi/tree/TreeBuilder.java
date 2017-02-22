@@ -40,6 +40,14 @@ public interface TreeBuilder<N extends TreeNode> {
     void add(N node) throws KSIException;
 
     /**
+     * Calculates the binary tree height if new leaf would be added.
+     *
+     * @param node
+     *         a leaf to be added to the tree. must not be null.
+     */
+    long calculateHeight(N node) throws KSIException;
+
+    /**
      * Adds a new list of leafs to the binary tree
      *
      * @param nodes

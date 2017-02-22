@@ -10,7 +10,7 @@ internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingLeftLink.ksig;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-MissingRightLink.ksig;true;false;INT_10;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoAggrAlg.ksig;true;false;INT_03;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoAggrTime.ksig;true;false;INT_02;;
-internal-verification-aggr-chain/NewSignature-AggrHashCore-NoChainIndex.ksig;false;false;;InvalidSignatureException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-NoChainIndex.ksig;true;false;INT_12;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoCoreAggr.ksig;false;false;;InvalidAggregationHashChainException;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoInputHash.ksig;false;false;;TLVParserException;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-NoLeftLink.ksig;false;false;;InvalidAggregationHashChainException;
@@ -21,7 +21,7 @@ internal-verification-aggr-chain/NewSignature-AggrHashCore-NoRightLink1.ksig;fal
 internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongRightLink.ksig;true;false;INT_03;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongAggrAlg.ksig;true;false;INT_03;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongAggrTime.ksig;true;false;INT_02;;
-internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongChainIndex.ksig;false;false;;InvalidSignatureException;
+internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongChainIndex.ksig;true;false;INT_12;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongInputHash.ksig;true;false;INT_01;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongLeftLink1.ksig;true;false;INT_03;;
 internal-verification-aggr-chain/NewSignature-AggrHashCore-WrongLeftLink2.ksig;true;false;INT_03;;
@@ -32,7 +32,7 @@ internal-verification-aggr-chain/NewSignature-AggrHashGW-NoLeftLinkClientId.ksig
 internal-verification-aggr-chain/NewSignature-AggrHashGW-NoReqTime.ksig;true;false;INT_01;;
 internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongAggrAlgo2.ksig;false;false;;InvalidAggregationHashChainException;
 internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongAggrTime.ksig;true;false;INT_02;;
-internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongChainID2.ksig;false;false;;InvalidSignatureException;
+internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongChainID2.ksig;true;false;INT_12;;
 internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongInputHash.ksig;true;false;INT_01;;
 internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongLeftLinkClientId.ksig;true;false;INT_01;;
 internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongReqTimeFuture.ksig;true;false;INT_01;;
@@ -83,7 +83,7 @@ publication-based-verification/ok-sig-2014-06-2-extended-one-empty-publication-r
 signature/signature-with-rfc3161-record-ok.ksig;true;true;;;
 non-signature-file.ksig;false;false;;TLVParserException;Invalid TLV element. Expected=0x800, got=0x701
 internal-verification-aggr-chain/invalid-sibling-algorithm-legacy-id-tlv-changed-to-sibling-hash.ksig;false;false;;TLVParserException;Invalid DataHash
-internal-verification-aggr-chain/single-invalid-chain-index.ksig;false;false;;InvalidSignatureException;Aggregation chain indexes are invalid. Invalid value. Expected 6275039, got 6275038
+internal-verification-aggr-chain/single-invalid-chain-index.ksig;true;false;INT_12;;
 internal-verification-aggr-chain/invalid-legacy-id-prefix.ksig;false;false;;InvalidAggregationHashChainException;Invalid legacyId prefix
 internal-verification-aggr-chain/invalid-legacy-id-ending-byte.ksig;false;false;;InvalidAggregationHashChainException;Invalid legacyId padding
 internal-verification-aggr-chain/legacy-id-algorithm.ksig;false;false;;InvalidAggregationHashChainException;Invalid legacyId prefix

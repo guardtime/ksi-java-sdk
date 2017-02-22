@@ -77,19 +77,17 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
      * Adds a new single child node to the hash tree
      */
     public void add(ImprintNode node) throws HashException {
-        notNull(node, "Node");
-        LOGGER.debug("Adding node with hash {} and height {} to the hash tree", node.getValue(), node.getLevel());
-        ImprintNode n = node;
-        if (!heads.isEmpty()) {
-            ImprintNode head = heads.getLast();
-            if (head.getLevel() <= n.getLevel()) {
-                heads.removeLast();
-                add(aggregate(head, n));
-                return;
-            }
-        }
-        heads.add(n);
-        LOGGER.debug("New root added. Roots size is {}", heads.size());
+        addToHeads(heads, node);
+    }
+
+    public long calculateHeight(ImprintNode node) throws HashException {
+        LinkedList<ImprintNode> tmpHeads = new LinkedList<ImprintNode>(heads);
+        addToHeads(tmpHeads, node);
+
+        ImprintNode root = getRootNode(tmpHeads);
+        LOGGER.debug("Adding node with hash {} and height {}, the hash tree height would be {}", node.getValue(), node.getLevel(),
+                root.getLevel());
+        return root.getLevel();
     }
 
     /**
@@ -109,14 +107,34 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
         if (heads.isEmpty()) {
             throw new IllegalStateException("Add leaf nodes before building a tree");
         }
+        return getRootNode(heads);
+    }
+
+    private ImprintNode getRootNode(LinkedList<ImprintNode> heads) {
         ImprintNode previous = heads.getLast();
         if (heads.size() > 1) {
-            for (int i = heads.size()-2; i > -1; i--) {
+            for (int i = heads.size() - 2; i > -1; i--) {
                 ImprintNode current = heads.get(i);
                 previous = aggregate(previous, current);
             }
         }
         return previous;
+    }
+
+    private void addToHeads(LinkedList<ImprintNode> heads, ImprintNode node) throws HashException {
+        notNull(node, "Node");
+        LOGGER.debug("Adding node with hash {} and height {} to the hash tree", node.getValue(), node.getLevel());
+        ImprintNode n = node;
+        if (!heads.isEmpty()) {
+            ImprintNode head = heads.getLast();
+            if (head.getLevel() <= n.getLevel()) {
+                heads.removeLast();
+                addToHeads(heads, aggregate(head, n));
+                return;
+            }
+        }
+        heads.add(n);
+        LOGGER.debug("New root added. Roots size is {}", heads.size());
     }
 
     private ImprintNode aggregate(ImprintNode left, ImprintNode right) throws HashException {

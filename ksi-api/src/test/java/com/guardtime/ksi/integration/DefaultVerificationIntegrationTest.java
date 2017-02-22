@@ -42,10 +42,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     @BeforeMethod
     public void setUp() throws Exception {
         SimpleHttpClient httpClient = new SimpleHttpClient(loadHTTPSettings());
-        ksiBuilder = new KSIBuilder().setKsiProtocolExtenderClient(httpClient).
-                setKsiProtocolPublicationsFileClient(httpClient).
-                setKsiProtocolSignerClient(httpClient).
-                setPublicationsFileTrustedCertSelector(createCertSelector());
+        ksiBuilder = initKsiBuilder(httpClient, httpClient, httpClient);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Verification inconclusive.*")
@@ -91,7 +88,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         ksiTest.read(loadFile("internal-verification-authentication-records/NewSignature-CalAuth-WrongCertID.ksig"));
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Aggregation hash chain root hash and calendar hash chain input hash mismatch.*")
+    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Aggregation hash chain root hash and calendar database hash chain input hash mismatch.*")
     public void testCalendarBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_CAL2() throws Exception {
         Policy policy = new CalendarBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();

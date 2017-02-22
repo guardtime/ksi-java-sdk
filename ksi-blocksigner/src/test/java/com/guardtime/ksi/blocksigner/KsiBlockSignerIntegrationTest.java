@@ -66,7 +66,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client")
     public void testCreateSignatureLargeAggregationTree() throws Exception {
         KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
-        builder.add(DATA_HASH, 255L, metadata);
+        builder.add(DATA_HASH, 254L, metadata);
         builder.sign();
     }
 
@@ -114,6 +114,17 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         }
         Object[][] objects = new Object[hashAlgorithms.size()][];
         return hashAlgorithms.toArray(objects);
+    }
+
+    @Test
+    public void testBlockSignerWithMaxTreeHeight() throws Exception {
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setMaxTreeHeight(3).build();
+        // Up to 4 hashes with meta data could be added without exceeding max tree height 3.
+        assertTrue(builder.add(DATA_HASH, metadata));
+        assertTrue(builder.add(DATA_HASH, metadata));
+        assertTrue(builder.add(DATA_HASH, metadata));
+        assertTrue(builder.add(DATA_HASH, metadata));
+        assertFalse(builder.add(DATA_HASH, metadata));
     }
 
 }

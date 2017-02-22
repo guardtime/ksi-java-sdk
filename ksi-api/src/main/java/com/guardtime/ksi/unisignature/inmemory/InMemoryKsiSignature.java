@@ -267,39 +267,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
                 return chain2.getChainIndex().size() - chain1.getChainIndex().size();
             }
         });
-
-        Iterator<AggregationHashChain> chainIterator = chains.iterator();
-        AggregationHashChain previousChain = null;
-        AggregationHashChain first = null;
-        while (chainIterator.hasNext()) {
-            AggregationHashChain currentChain = chainIterator.next();
-            if (first == null) {
-                first = currentChain;
-            }
-            if (previousChain != null) {
-                compareChains(previousChain, currentChain);
-            }
-            previousChain = currentChain;
-        }
-
         return chains;
-    }
-
-    private void compareChains(AggregationHashChain previousChain, AggregationHashChain currentChain) throws InvalidSignatureException {
-        List<Long> previousChainIndexes = previousChain.getChainIndex();
-        List<Long> currentChainIndexes = currentChain.getChainIndex();
-
-        // check size
-        int previousChainSize = previousChainIndexes.size();
-        if ((previousChainSize - 1) != currentChainIndexes.size()) {
-            throw new InvalidSignatureException("Aggregation chain indexes are invalid. Invalid length");
-        }
-        // check that indexes are equal
-        for (int i = 0; i < currentChainIndexes.size(); i++) {
-            if (!currentChainIndexes.get(i).equals(previousChainIndexes.get(i))) {
-                throw new InvalidSignatureException("Aggregation chain indexes are invalid. Invalid value. Expected " + previousChainIndexes.get(i) + ", got " + currentChainIndexes.get(i));
-            }
-        }
     }
 
 }

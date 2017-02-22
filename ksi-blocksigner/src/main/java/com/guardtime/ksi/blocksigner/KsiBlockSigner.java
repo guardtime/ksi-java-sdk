@@ -82,7 +82,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
     private static final String DEFAULT_CLIENT_ID_LOCAL_AGGREGATION = "local-aggregation";
-    private static final int MAXIMUM_LEVEL = 255;
+    protected static final int MAXIMUM_LEVEL = 255;
 
     private final Map<LeafKey, AggregationChainLink> chains = new HashMap<LeafKey, AggregationChainLink>();
     private final HashTreeBuilder treeBuilder;
@@ -94,6 +94,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
     private DataHasher linkDataHasher;
+    private int maxTreeHeight;
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}. Default hash algorithm is
@@ -115,7 +116,8 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         }
         this.signingClient = signingClient;
         this.treeBuilder = new HashTreeBuilder(this.algorithm);
-        this.linkDataHasher = new DataHasher(algorithm);
+        this.linkDataHasher = new DataHasher(this.algorithm);
+        this.maxTreeHeight = MAXIMUM_LEVEL;
     }
 
     /**
@@ -135,24 +137,30 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         this.pduIdentifierProvider = pduIdentifierProvider;
     }
 
+    KsiBlockSigner(KSISigningClient signingClient, PduFactory pduFactory, PduIdentifierProvider pduIdentifierProvider,
+            KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight) {
+        this(signingClient, pduFactory, pduIdentifierProvider, signatureFactory, algorithm);
+        this.maxTreeHeight = maxTreeHeight;
+    }
+
     /**
      * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
      */
-    public KsiBlockSigner add(DataHash dataHash, IdentityMetadata metadata) throws KSIException {
+    public boolean add(DataHash dataHash, IdentityMetadata metadata) throws KSIException {
         return add(dataHash, 0L, metadata);
     }
 
     /**
      * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
      */
-    public KsiBlockSigner add(DataHash dataHash) throws KSIException {
+    public boolean add(DataHash dataHash) throws KSIException {
         return add(dataHash, 0L, null);
     }
 
     /**
      * Adds a hash (with specific level) and a signature metadata to the {@link KsiBlockSigner}.
      */
-    public KsiBlockSigner add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException {
+    public boolean add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException {
         notNull(dataHash, "DataHash");
         if (level < 0 || level > MAXIMUM_LEVEL) {
             throw new IllegalStateException("Level must be between 0 and 255");
@@ -167,8 +175,13 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         AggregationChainLink metadataLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(linkMetadata, level);
         ImprintNode leaf = calculateChainStepLeft(dataHash.getImprint(), metadataLink.getSiblingData(), level );
         chains.put(new LeafKey(leaf, dataHash), metadataLink);
+
+        if(treeBuilder.calculateHeight(leaf) > maxTreeHeight){
+            return false;
+        }
+
         treeBuilder.add(leaf);
-        return this;
+        return true;
     }
 
     public ImprintNode calculateChainStepLeft(byte[] left, byte[] right, long length) throws KSIException {

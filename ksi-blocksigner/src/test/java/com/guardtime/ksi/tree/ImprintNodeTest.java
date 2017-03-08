@@ -31,7 +31,8 @@ public class ImprintNodeTest {
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "InputHash can not be null")
     public void testCreateImprintNodeWithoutDataHash() throws Exception {
-        new ImprintNode(null);
+        DataHash dataHash = null;
+        new ImprintNode(dataHash);
     }
 
     @Test

@@ -38,6 +38,14 @@ public class ImprintNode implements TreeNode {
 
     private boolean left = false;
 
+    protected ImprintNode(ImprintNode node) {
+        this.value = node.value;
+        this.level = node.level;
+        this.parent = node.parent;
+        this.leftChild = node.leftChild;
+        this.rightChild = node.rightChild;
+    }
+
     public ImprintNode(DataHash value) {
         this(value, 0L);
     }

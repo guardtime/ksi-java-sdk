@@ -127,4 +127,21 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         assertFalse(builder.add(DATA_HASH, metadata));
     }
 
+    @Test
+    public void testBlockSignerWithMaxTreeHeightAndVerification() throws Exception {
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setMaxTreeHeight(15).build();
+
+        assertTrue(builder.add(DATA_HASH, 14, metadata));
+        assertFalse(builder.add(DATA_HASH, 14, metadata));
+
+        List<KSISignature> signatures = builder.sign();
+        assertNotNull(signatures);
+        assertFalse(signatures.isEmpty());
+        assertEquals(signatures.size(), 1L);
+        for (KSISignature signature : signatures) {
+            assertTrue(ksi.verify(signature, new KeyBasedVerificationPolicy()).isOk());
+            assertEquals(signature.getAggregationHashChains()[0].getAggregationAlgorithm(), HashAlgorithm.SHA2_256);
+        }
+    }
+
 }

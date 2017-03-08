@@ -117,7 +117,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     }
 
     @Test
-    public void testBlockSignerWithMaxTreeHeight() throws Exception {
+    public void testBlockSignerWithMaxTreeHeightAndVerification() throws Exception {
         KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setMaxTreeHeight(3).build();
         // Up to 4 hashes with meta data could be added without exceeding max tree height 3.
         assertTrue(builder.add(DATA_HASH, metadata));
@@ -125,19 +125,11 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         assertTrue(builder.add(DATA_HASH, metadata));
         assertTrue(builder.add(DATA_HASH, metadata));
         assertFalse(builder.add(DATA_HASH, metadata));
-    }
-
-    @Test
-    public void testBlockSignerWithMaxTreeHeightAndVerification() throws Exception {
-        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setMaxTreeHeight(15).build();
-
-        assertTrue(builder.add(DATA_HASH, 14, metadata));
-        assertFalse(builder.add(DATA_HASH, 14, metadata));
 
         List<KSISignature> signatures = builder.sign();
         assertNotNull(signatures);
         assertFalse(signatures.isEmpty());
-        assertEquals(signatures.size(), 1L);
+        assertEquals(signatures.size(), 4);
         for (KSISignature signature : signatures) {
             assertTrue(ksi.verify(signature, new KeyBasedVerificationPolicy()).isOk());
             assertEquals(signature.getAggregationHashChains()[0].getAggregationAlgorithm(), HashAlgorithm.SHA2_256);

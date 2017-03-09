@@ -1,5 +1,7 @@
 Version 4.7
 
+* BUGFIX: Fixed SimpleHttpPostRequestFuture response handling when response body is empty
+
 2017-02-22 4.7.85
 
 * IMPROVEMENT: Check, if given hash could be added to the BlockSigner without exceeding given tree height. BlockSigner interface changed, add method returns boolean instead of KsiBlockSigner.

@@ -39,6 +39,7 @@ public class ImprintNode implements TreeNode {
     private boolean left = false;
 
     protected ImprintNode(ImprintNode node) {
+        notNull(node, "ImprintNode");
         this.value = node.value;
         this.level = node.level;
         this.parent = node.parent;
@@ -57,6 +58,9 @@ public class ImprintNode implements TreeNode {
     }
 
     ImprintNode(TreeNode leftChild, TreeNode rightChild, DataHash value, long level) {
+        notNull(leftChild, "LeftChild");
+        notNull(rightChild, "RightChild");
+        notNull(value, "DataHash");
         this.leftChild = leftChild;
         this.rightChild = rightChild;
         this.leftChild.setParent(this);

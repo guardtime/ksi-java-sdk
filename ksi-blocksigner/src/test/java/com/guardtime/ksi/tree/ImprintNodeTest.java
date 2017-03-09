@@ -60,4 +60,20 @@ public class ImprintNodeTest {
         assertEquals(root.getRightChildNode(), right);
     }
 
+    @Test
+    public void testCopyImprintNode() throws Exception {
+        DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, INPUT_HASH_VALUE);
+        ImprintNode left = new ImprintNode(dataHash);
+        ImprintNode right = new ImprintNode(dataHash);
+        ImprintNode root = new ImprintNode(left, right, dataHash, 2);
+
+        ImprintNode copy = new ImprintNode(root);
+
+        assertEquals(copy.getLeftChildNode(), left);
+        assertEquals(copy.getRightChildNode(), right);
+        assertEquals(copy.getLevel(), 2);
+        assertEquals(copy.getValue(), root.getValue());
+        assertNotSame(copy, root);
+    }
+
 }

@@ -19,12 +19,19 @@
 
 package com.guardtime.ksi.blocksigner;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
+import com.guardtime.ksi.pdu.v1.PduV1Factory;
+import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
+
+import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -34,7 +41,11 @@ import java.util.List;
 
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_2;
-import static org.testng.Assert.*;
+import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest {
 
@@ -63,6 +74,18 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         this.dataHashRipemd160 = new DataHash(HashAlgorithm.RIPEMD_160, new byte[20]);
     }
 
+    @DataProvider(name = WORKING_HASH_ALGORITHMS)
+    public Object[][] hashAlgorithms() {
+        List<Object[]> hashAlgorithms = new ArrayList<Object[]>();
+        for (HashAlgorithm algorithm : HashAlgorithm.values()) {
+            if (HashAlgorithm.Status.NOT_IMPLEMENTED != algorithm.getStatus()) {
+                hashAlgorithms.add(new Object[]{algorithm});
+            }
+        }
+        Object[][] objects = new Object[hashAlgorithms.size()][];
+        return hashAlgorithms.toArray(objects);
+    }
+
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client")
     public void testCreateSignatureLargeAggregationTree() throws Exception {
         KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
@@ -89,47 +112,59 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
     @Test(dataProvider = WORKING_HASH_ALGORITHMS)
     public void testBlockSignerWithAllWorkingHashAlgorithms(HashAlgorithm algorithm) throws Exception {
-        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setDefaultHashAlgorithm(algorithm).build();
-        builder.add(dataHashSha512, metadata4);
-        builder.add(dataHashSha1, metadata);
-        builder.add(dataHashRipemd160, metadata2);
-        builder.add(dataHashSha386, metadata3);
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setDefaultHashAlgorithm(algorithm).build();
+        blockSigner.add(dataHashSha512, metadata4);
+        blockSigner.add(dataHashSha1, metadata);
+        blockSigner.add(dataHashRipemd160, metadata2);
+        blockSigner.add(dataHashSha386, metadata3);
 
-        List<KSISignature> signatures = builder.sign();
-        assertNotNull(signatures);
-        assertFalse(signatures.isEmpty());
-        assertEquals(signatures.size(), 4L);
-        for (KSISignature signature : signatures) {
-            assertTrue(ksi.verify(signature, new KeyBasedVerificationPolicy()).isOk());
-        }
-    }
-
-    @DataProvider(name = WORKING_HASH_ALGORITHMS)
-    public Object[][] hashAlgorithms() {
-        List<Object[]> hashAlgorithms = new ArrayList<Object[]>();
-        for (HashAlgorithm algorithm : HashAlgorithm.values()) {
-            if (HashAlgorithm.Status.NOT_IMPLEMENTED != algorithm.getStatus()) {
-                hashAlgorithms.add(new Object[]{algorithm});
-            }
-        }
-        Object[][] objects = new Object[hashAlgorithms.size()][];
-        return hashAlgorithms.toArray(objects);
+        signAndVerify(blockSigner, 4);
     }
 
     @Test
-    public void testBlockSignerWithMaxTreeHeightAndVerification() throws Exception {
-        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setMaxTreeHeight(3).build();
+    public void testBlockSignerWithMaxTreeHeightAndPerformVerification() throws Exception {
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setMaxTreeHeight(3).build();
         // Up to 4 hashes with meta data could be added without exceeding max tree height 3.
-        assertTrue(builder.add(DATA_HASH, metadata));
-        assertTrue(builder.add(DATA_HASH, metadata));
-        assertTrue(builder.add(DATA_HASH, metadata));
-        assertTrue(builder.add(DATA_HASH, metadata));
-        assertFalse(builder.add(DATA_HASH, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, metadata));
+        assertFalse(blockSigner.add(DATA_HASH, metadata));
 
-        List<KSISignature> signatures = builder.sign();
+        signAndVerify(blockSigner, 4);
+    }
+
+    @Test
+    public void testBlockSignerWithVerification() throws Exception {
+        PublicationsFileClientAdapter mockAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
+        when(mockAdapter.getPublicationsFile()).thenReturn(ksi.getPublicationsFile());
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder()
+                .setKsiSigningClient(simpleHttpClient)
+                .setMaxTreeHeight(3)
+                .setSignatureFactory(new InMemoryKsiSignatureFactory(
+                        new KeyBasedVerificationPolicy(),
+                        mockAdapter,
+                        simpleHttpClient,
+                        false,
+                        new PduV1Factory(),
+                        new InMemoryKsiSignatureComponentFactory()
+                )).build();
+
+        assertTrue(blockSigner.add(DATA_HASH, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, metadata));
+        assertFalse(blockSigner.add(DATA_HASH, metadata));
+
+        signAndVerify(blockSigner, 4);
+
+    }
+
+    private void signAndVerify(KsiBlockSigner signer, int size) throws KSIException {
+        List<KSISignature> signatures = signer.sign();
         assertNotNull(signatures);
         assertFalse(signatures.isEmpty());
-        assertEquals(signatures.size(), 4);
+        assertEquals(signatures.size(), size);
         for (KSISignature signature : signatures) {
             assertTrue(ksi.verify(signature, new KeyBasedVerificationPolicy()).isOk());
         }

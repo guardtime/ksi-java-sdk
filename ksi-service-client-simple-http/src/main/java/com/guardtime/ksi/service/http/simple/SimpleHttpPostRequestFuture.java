@@ -35,7 +35,7 @@ public class SimpleHttpPostRequestFuture extends HttpPostRequestFuture {
 
     private int responseCode;
     private String responseMessage;
-    private byte[] response;
+    private byte[] response = new byte[]{};
 
     public SimpleHttpPostRequestFuture(HttpURLConnection connection) throws IOException {
         this.responseCode = connection.getResponseCode();
@@ -44,11 +44,10 @@ public class SimpleHttpPostRequestFuture extends HttpPostRequestFuture {
         try {
             if (connection.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
                 input = connection.getErrorStream();
-                if (input != null) {
-                    this.response = Util.toByteArray(input);
-                }
             } else {
                 input = connection.getInputStream();
+            }
+            if (input != null) {
                 this.response = Util.toByteArray(input);
             }
         } finally {

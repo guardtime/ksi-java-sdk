@@ -81,7 +81,11 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     }
 
     public long calculateHeight(ImprintNode node) throws HashException {
-        LinkedList<ImprintNode> tmpHeads = new LinkedList<ImprintNode>(heads);
+        LinkedList<ImprintNode> tmpHeads = new LinkedList<ImprintNode>();
+        for (ImprintNode in : heads) {
+            tmpHeads.add(new ImprintNode(in));
+        }
+
         addToHeads(tmpHeads, node);
 
         ImprintNode root = getRootNode(tmpHeads);

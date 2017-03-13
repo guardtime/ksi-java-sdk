@@ -174,11 +174,11 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
         AggregationChainLink metadataLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(linkMetadata, level);
         ImprintNode leaf = calculateChainStepLeft(dataHash.getImprint(), metadataLink.getSiblingData(), level );
-        chains.put(new LeafKey(leaf, dataHash), metadataLink);
 
         if(treeBuilder.calculateHeight(leaf) > maxTreeHeight){
             return false;
         }
+        chains.put(new LeafKey(leaf, dataHash), metadataLink);
 
         treeBuilder.add(leaf);
         return true;
@@ -241,7 +241,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId, pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
         AggregationRequest requestMessage = pduFactory.createAggregationRequest(requestContext, dataHash, rootNode.getLevel());
         Future<TLVElement> future = signingClient.sign(new ByteArrayInputStream(requestMessage.toByteArray()));
-        AggregationFuture aggregationFuture = new AggregationFuture(future, requestContext, signatureFactory, dataHash, pduFactory);
+        AggregationFuture aggregationFuture = new AggregationFuture(future, requestContext, new InMemoryKsiSignatureFactory(), dataHash, pduFactory);
         return aggregationFuture.getResult();
     }
 

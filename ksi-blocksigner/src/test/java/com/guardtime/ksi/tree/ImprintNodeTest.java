@@ -31,7 +31,8 @@ public class ImprintNodeTest {
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "InputHash can not be null")
     public void testCreateImprintNodeWithoutDataHash() throws Exception {
-        new ImprintNode(null);
+        DataHash dataHash = null;
+        new ImprintNode(dataHash);
     }
 
     @Test
@@ -57,6 +58,21 @@ public class ImprintNodeTest {
         assertFalse(right.isLeft());
         assertEquals(root.getLeftChildNode(), left);
         assertEquals(root.getRightChildNode(), right);
+    }
+
+    @Test
+    public void testCopyImprintNode() throws Exception {
+        DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, INPUT_HASH_VALUE);
+        ImprintNode childNode = new ImprintNode(dataHash);
+        ImprintNode root = new ImprintNode(childNode, childNode, dataHash, 2);
+
+        ImprintNode copy = new ImprintNode(root);
+
+        assertEquals(copy.getLeftChildNode(), childNode);
+        assertEquals(copy.getRightChildNode(), childNode);
+        assertEquals(copy.getLevel(), root.getLevel());
+        assertEquals(copy.getValue(), root.getValue());
+        assertNotSame(copy, root);
     }
 
 }

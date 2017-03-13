@@ -1,6 +1,7 @@
 Version 4.7
 
 * BUGFIX: Fixed KsiBlockSigner maxTreeHeight validation.
+* BUGFIX: Fixed SimpleHttpPostRequestFuture response handling when response body is empty
 
 2017-02-22 4.7.85
 

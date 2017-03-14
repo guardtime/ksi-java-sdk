@@ -1,5 +1,7 @@
 Version 4.8
 
+* BUGFIX: Fixed adding datahashes with non-zero level value to BlockSigner
+
 2017-03-13 4.8.89
 
 * BUGFIX: Fixed KsiBlockSigner maxTreeHeight validation.

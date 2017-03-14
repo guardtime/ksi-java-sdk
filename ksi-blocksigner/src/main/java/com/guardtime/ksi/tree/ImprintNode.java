@@ -38,7 +38,7 @@ public class ImprintNode implements TreeNode {
 
     private boolean left = false;
 
-    protected ImprintNode(ImprintNode node) {
+    public ImprintNode(ImprintNode node) {
         notNull(node, "ImprintNode");
         this.value = node.value;
         this.level = node.level;

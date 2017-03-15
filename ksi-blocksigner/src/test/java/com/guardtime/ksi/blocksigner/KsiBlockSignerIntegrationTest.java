@@ -30,7 +30,6 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
-
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -158,6 +157,52 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
         signAndVerify(blockSigner, 4);
 
+    }
+
+    @Test
+    public void testBlockSignerWithVerificationLevelDesc() throws Exception {
+        PublicationsFileClientAdapter mockAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
+        when(mockAdapter.getPublicationsFile()).thenReturn(ksi.getPublicationsFile());
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder()
+                .setKsiSigningClient(simpleHttpClient)
+                .setMaxTreeHeight(4)
+                .setSignatureFactory(new InMemoryKsiSignatureFactory(
+                        new KeyBasedVerificationPolicy(),
+                        mockAdapter,
+                        simpleHttpClient,
+                        false,
+                        new PduV1Factory(),
+                        new InMemoryKsiSignatureComponentFactory()
+                        )).build();
+
+        assertTrue(blockSigner.add(DATA_HASH, 2L, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, 1L, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, metadata));
+
+        signAndVerify(blockSigner, 3);
+    }
+
+    @Test
+    public void testBlockSignerWithVerificationLevelRandomOrder() throws Exception {
+        PublicationsFileClientAdapter mockAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
+        when(mockAdapter.getPublicationsFile()).thenReturn(ksi.getPublicationsFile());
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder()
+                .setKsiSigningClient(simpleHttpClient)
+                .setMaxTreeHeight(5)
+                .setSignatureFactory(new InMemoryKsiSignatureFactory(
+                        new KeyBasedVerificationPolicy(),
+                        mockAdapter,
+                        simpleHttpClient,
+                        false,
+                        new PduV1Factory(),
+                        new InMemoryKsiSignatureComponentFactory()
+                        )).build();
+
+        assertTrue(blockSigner.add(DATA_HASH, 1L, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, metadata));
+        assertTrue(blockSigner.add(DATA_HASH, 2L, metadata));
+
+        signAndVerify(blockSigner, 3);
     }
 
     private void signAndVerify(KsiBlockSigner signer, int size) throws KSIException {

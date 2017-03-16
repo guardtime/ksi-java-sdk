@@ -175,7 +175,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         AggregationChainLink metadataLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(linkMetadata, level);
         ImprintNode leaf = calculateChainStepLeft(dataHash.getImprint(), metadataLink.getSiblingData(), level );
 
-        if(treeBuilder.calculateHeight(leaf) > maxTreeHeight){
+        if (treeBuilder.calculateHeight(new ImprintNode(leaf)) > maxTreeHeight) {
             return false;
         }
         chains.put(new LeafKey(leaf, dataHash), metadataLink);

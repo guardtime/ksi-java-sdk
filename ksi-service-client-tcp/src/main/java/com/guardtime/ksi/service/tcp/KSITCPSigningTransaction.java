@@ -49,6 +49,7 @@ class KSITCPSigningTransaction {
     private long correlationId;
     private TLVElement request;
     private TLVElement response;
+    private static Long confRequestId = 0L;
 
     private KSITCPSigningTransaction() {
     }
@@ -56,7 +57,7 @@ class KSITCPSigningTransaction {
     static KSITCPSigningTransaction fromRequest(InputStream request) throws IOException, KSIException {
         KSITCPSigningTransaction transaction = new KSITCPSigningTransaction();
         TLVElement tlv = TLVElement.create(Util.toByteArray(request));
-        transaction.correlationId = extractTransactionIdFromRequestTLV(tlv);
+        transaction.correlationId = isConfigurationPayload(tlv) ? getNewConfId() : extractTransactionIdFromRequestTLV(tlv);
         transaction.request = tlv;
         return transaction;
     }
@@ -66,9 +67,25 @@ class KSITCPSigningTransaction {
         byte[] responseData = new byte[ioBuffer.remaining()];
         ioBuffer.get(responseData);
         TLVElement tlv = parse(responseData);
-        transaction.correlationId = extractTransactionIdFromResponseTLV(tlv);
+
+        if (isConfigurationPayload(tlv)) {
+            synchronized (confRequestId) {
+                transaction.correlationId = confRequestId;
+                confRequestId = confRequestId+1;
+            }
+        } else {
+            transaction.correlationId = extractTransactionIdFromResponseTLV(tlv);
+        }
+
+
         transaction.response = tlv;
         return transaction;
+    }
+
+    static long getNewConfId() {
+        synchronized (confRequestId) {
+            return --confRequestId;
+        }
     }
 
     static TLVElement parse(byte[] data) throws KSIProtocolException {
@@ -79,6 +96,14 @@ class KSITCPSigningTransaction {
         } catch (TLVParserException e) {
             throw new KSIProtocolException("Can't parse response message", e);
         }
+    }
+
+    private static boolean isConfigurationPayload(TLVElement tlv) {
+        if (tlv.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2 ||
+                tlv.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2) {
+            return tlv.getFirstChildElement(0x04) != null;
+        }
+        return false;
     }
 
     private static long extractTransactionIdFromRequestTLV(TLVElement tlvData) throws KSITCPTransactionException {

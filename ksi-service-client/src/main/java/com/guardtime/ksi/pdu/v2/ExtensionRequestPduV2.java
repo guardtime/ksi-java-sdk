@@ -24,6 +24,7 @@ import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
+import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 
@@ -33,7 +34,7 @@ class ExtensionRequestPduV2 extends PduV2 implements ExtensionRequest {
 
     private static final int[] SUPPORTED_PAYLOAD_TYPES = new int[]{0x02, 0x04};
 
-    public ExtensionRequestPduV2(List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context) throws KSIException {
+    public ExtensionRequestPduV2(List<TLVElement> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context) throws KSIException {
         super(new PduMessageHeader(context), payloads, macAlgorithm, context.getLoginKey());
     }
 

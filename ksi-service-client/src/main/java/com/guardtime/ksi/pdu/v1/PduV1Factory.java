@@ -2,13 +2,7 @@ package com.guardtime.ksi.pdu.v1;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.pdu.AggregationRequest;
-import com.guardtime.ksi.pdu.AggregationResponse;
-import com.guardtime.ksi.pdu.ExtensionRequest;
-import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.PduMessageHeader;
+import com.guardtime.ksi.pdu.*;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -53,6 +47,22 @@ public class PduV1Factory implements PduFactory {
             throw new KSIProtocolException("Received PDU v2 response to PDU v1 request. Configure the SDK to use PDU v2 format for the given Extender");
         }
         return new ExtensionResponseV1(input, context).getResponsePayload();
+    }
+
+    public AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext requestContext) throws KSIException {
+        throw new KSIException("Not supported. Configure the SDK to use PDU v2 format.");
+    }
+
+    public AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext requestContext, TLVElement input) throws KSIException {
+        throw new KSIException("Not supported. Configure the SDK to use PDU v2 format.");
+    }
+
+    public ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext requestContext) throws KSIException {
+        throw new KSIException("Not supported. Configure the SDK to use PDU v2 format.");
+    }
+
+    public ExtenderConfiguration readExtensionConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
+        throw new KSIException("Not supported. Configure the SDK to use PDU v2 format.");
     }
 
 }

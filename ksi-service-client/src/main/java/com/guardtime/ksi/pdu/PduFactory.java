@@ -20,6 +20,7 @@ package com.guardtime.ksi.pdu;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 
 import java.util.Date;
@@ -49,4 +50,14 @@ public interface PduFactory {
      */
     ExtensionResponse readExtensionResponse(KSIRequestContext context, TLVElement input) throws KSIException;
 
+    AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext requestContext) throws KSIException;
+
+    AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext requestContext, TLVElement input) throws KSIException;
+
+    /**
+     * This method can be used to create an extension configuration request
+     */
+    ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext requestContext) throws KSIException;
+
+    ExtenderConfiguration readExtensionConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException;
 }

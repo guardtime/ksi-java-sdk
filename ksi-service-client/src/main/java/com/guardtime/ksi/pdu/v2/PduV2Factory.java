@@ -34,6 +34,8 @@ import java.util.List;
 
 public class PduV2Factory implements PduFactory {
 
+    public static final int ELEMENT_TYPE_CONFIGURATION = 0x04;
+
     public AggregationRequest createAggregationRequest(KSIRequestContext context, DataHash imprint, Long level) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(imprint, "DataHash");
@@ -43,38 +45,17 @@ public class PduV2Factory implements PduFactory {
 
     public AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext context) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
-        TLVElement payload = new TLVElement(false, false, false, 0x04);
+        TLVElement payload = new TLVElement(false, false, false, ELEMENT_TYPE_CONFIGURATION);
         return new AggregationRequestPduV2(Arrays.asList(payload), HashAlgorithm.SHA2_256, context);
     }
 
     public AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
-        Util.notNull(context, "KsiRequestContext");
-        Util.notNull(input, "Input TLV");
-        if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_PDU_V1) {
-            throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator");
-        }
-        AggregationResponsePduV2 aggregationResponsePdu = new AggregationResponsePduV2(input, context);
-        List<TLVElement> payloads = aggregationResponsePdu.getPayloads(0x04);
-
-        if (payloads.isEmpty()) {
-            throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(0x04) + " not found");
-        }
-
+        List<TLVElement> payloads = getAggregatorPayloadElements(context, input, ELEMENT_TYPE_CONFIGURATION);
         return new AggregatorConfigurationPayload(payloads.get(0));
     }
 
     public AggregationResponse readAggregationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
-        Util.notNull(context, "KsiRequestContext");
-        Util.notNull(input, "Input TLV");
-        if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_PDU_V1) {
-            throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator");
-        }
-        AggregationResponsePduV2 aggregationResponsePdu = new AggregationResponsePduV2(input, context);
-        List<TLVElement> payloads = aggregationResponsePdu.getPayloads(AggregationResponsePayloadV2.ELEMENT_TYPE);
-
-        if (payloads.isEmpty()) {
-            throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(AggregationResponsePayloadV2.ELEMENT_TYPE) + " not found");
-        }
+        List<TLVElement> payloads = getAggregatorPayloadElements(context, input, AggregationResponsePayloadV2.ELEMENT_TYPE);
 
         TLVElement responsePayload = getPayload(payloads, context.getRequestId());
         if (responsePayload == null) {
@@ -95,22 +76,12 @@ public class PduV2Factory implements PduFactory {
 
     public ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext context) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
-        TLVElement payload = new TLVElement(false, false, false, 0x04);
+        TLVElement payload = new TLVElement(false, false, false, ELEMENT_TYPE_CONFIGURATION);
         return new ExtensionRequestPduV2(Arrays.asList(payload), HashAlgorithm.SHA2_256, context);
     }
 
     public ExtensionResponse readExtensionResponse(KSIRequestContext context, TLVElement input) throws KSIException {
-        Util.notNull(context, "KsiRequestContext");
-        Util.notNull(input, "Input TLV");
-        if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_PDU_V1) {
-            throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender");
-        }
-        ExtensionResponsePduV2 responsePdu = new ExtensionResponsePduV2(input, context);
-
-        List<TLVElement> payloads = responsePdu.getPayloads(ExtensionResponsePayloadV2.ELEMENT_TYPE);
-        if (payloads.isEmpty()) {
-            throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(ExtensionResponsePayloadV2.ELEMENT_TYPE) + " not found");
-        }
+        List<TLVElement> payloads = getExtenderPayloadElements(context, input, ExtensionResponsePayloadV2.ELEMENT_TYPE);
 
         TLVElement responsePayload = getPayload(payloads, context.getRequestId());
         if (responsePayload == null) {
@@ -121,17 +92,7 @@ public class PduV2Factory implements PduFactory {
     }
 
     public ExtenderConfiguration readExtenderConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
-        Util.notNull(context, "KsiRequestContext");
-        Util.notNull(input, "Input TLV");
-        if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_PDU_V1) {
-            throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender");
-        }
-        ExtensionResponsePduV2 pdu = new ExtensionResponsePduV2(input, context);
-        List<TLVElement> payloads = pdu.getPayloads(0x04);
-
-        if (payloads.isEmpty()) {
-            throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(0x04) + " not found");
-        }
+        List<TLVElement> payloads = getExtenderPayloadElements(context, input, ELEMENT_TYPE_CONFIGURATION);
         return new ExtenderConfigurationPayload(payloads.get(0));
     }
 
@@ -146,6 +107,36 @@ public class PduV2Factory implements PduFactory {
             }
         }
         return responsePayload;
+    }
+
+    private List<TLVElement> getAggregatorPayloadElements(KSIRequestContext context, TLVElement input, int payloadType) throws KSIException {
+        Util.notNull(context, "KsiRequestContext");
+        Util.notNull(input, "Input TLV");
+        if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_PDU_V1) {
+            throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator");
+        }
+        AggregationResponsePduV2 aggregationResponsePdu = new AggregationResponsePduV2(input, context);
+        List<TLVElement> payloads = aggregationResponsePdu.getPayloads(payloadType);
+
+        if (payloads.isEmpty()) {
+            throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(payloadType) + " not found");
+        }
+        return payloads;
+    }
+
+    private List<TLVElement> getExtenderPayloadElements(KSIRequestContext context, TLVElement input, int payloadType) throws KSIException {
+        Util.notNull(context, "KsiRequestContext");
+        Util.notNull(input, "Input TLV");
+        if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_PDU_V1) {
+            throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender");
+        }
+        ExtensionResponsePduV2 pdu = new ExtensionResponsePduV2(input, context);
+        List<TLVElement> payloads = pdu.getPayloads(payloadType);
+
+        if (payloads.isEmpty()) {
+            throw new IllegalStateException("Payload with TLV type 0x" + Integer.toHexString(payloadType) + " not found");
+        }
+        return payloads;
     }
 
 }

@@ -23,15 +23,34 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 
 import java.util.List;
 
+/**
+ * Interface for aggregator configuration.
+ */
 public interface AggregatorConfiguration {
 
+    /**
+     * Return the maximum level value that the client's aggregation tree are allowed to have.
+     */
     Long getMaximumLevel();
 
+    /**
+     * Return the  hash function that the client is recommended to use in its aggregation trees.
+     */
     HashAlgorithm getAggregationAlgorithm();
 
+    /**
+     * Return the recommended duration of client's aggregation round, in milliseconds.
+     */
     Long getAggregationPeriod();
 
+    /**
+     * Returns the maximum number of requests the client is allowed to send within one aggregation period of the
+     * recommended duration.
+     */
     Long getMaximumRequests();
 
+    /**
+     * Returns a list of parent server URI-s
+     */
     List<String> getParentUris();
 }

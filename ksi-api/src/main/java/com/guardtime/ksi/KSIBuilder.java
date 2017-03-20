@@ -484,7 +484,7 @@ public final class KSIBuilder {
             KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId, pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
             ExtensionRequest request = signerPduFactory.createExtensionConfigurationRequest(requestContext);
             Future<TLVElement> future = extenderClient.extend(new ByteArrayInputStream(request.toByteArray()));
-            return signerPduFactory.readExtensionConfigurationResponse(requestContext, future.getResult());
+            return signerPduFactory.readExtenderConfigurationResponse(requestContext, future.getResult());
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {

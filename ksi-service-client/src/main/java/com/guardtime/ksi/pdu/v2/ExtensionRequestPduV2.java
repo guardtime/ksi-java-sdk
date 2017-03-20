@@ -26,7 +26,6 @@ import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
-import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.List;
 

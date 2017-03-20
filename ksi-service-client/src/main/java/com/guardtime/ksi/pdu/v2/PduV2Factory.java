@@ -120,7 +120,7 @@ public class PduV2Factory implements PduFactory {
         return new ExtensionResponsePayloadV2(responsePayload);
     }
 
-    public ExtenderConfiguration readExtensionConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
+    public ExtenderConfiguration readExtenderConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(input, "Input TLV");
         if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_PDU_V1) {

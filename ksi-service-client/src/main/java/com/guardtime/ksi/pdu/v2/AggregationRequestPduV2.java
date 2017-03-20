@@ -26,7 +26,6 @@ import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
-import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.List;
 
@@ -38,7 +37,7 @@ class AggregationRequestPduV2 extends PduV2 implements AggregationRequest {
 
     @Override
     public int[] getSupportedPayloadTypes() {
-        return new int[] {AggregationRequestPayloadV2.ELEMENT_TYPE, 0x04};
+        return new int[]{AggregationRequestPayloadV2.ELEMENT_TYPE, 0x04};
     }
 
     @Override

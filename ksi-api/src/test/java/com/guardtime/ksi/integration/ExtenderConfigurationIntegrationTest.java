@@ -17,32 +17,24 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.pdu;
+package com.guardtime.ksi.integration;
 
-import java.util.Date;
-import java.util.List;
+import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-/**
- * Interface for extender configuration.
- */
-public interface ExtenderConfiguration {
-    /**
-     * Returns the maximum number of requests the client is allowed to send within one second
-     */
-    Long getMaximumRequests();
+public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
-    /**
-     * Returns a list of parent server URI-s
-     */
-    List<String> getParents();
+    @Test
+    public void testExtenderConfigurationRequestV2() throws Exception {
+        ExtenderConfiguration response = ksiV2.getExtenderConfiguration();
+        Assert.assertNotNull(response);
+    }
 
-    /**
-     * Returns the aggregation time of the newest calendar record the extender has.
-     */
-    Date getCalendarFirstTime();
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
+    public void testExtenderConfigurationRequestV1() throws Exception {
+        ksi.getExtenderConfiguration();
+    }
 
-    /**
-     * Return the aggregation time of the oldest calendar record the extender has
-     */
-    Date getCalendarLastTime();
 }

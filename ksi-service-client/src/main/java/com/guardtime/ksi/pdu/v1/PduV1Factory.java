@@ -80,7 +80,7 @@ public class PduV1Factory implements PduFactory {
         throw new KSIException("Not supported. Configure the SDK to use PDU v2 format.");
     }
 
-    public ExtenderConfiguration readExtensionConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
+    public ExtenderConfiguration readExtenderConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
         throw new KSIException("Not supported. Configure the SDK to use PDU v2 format.");
     }
 

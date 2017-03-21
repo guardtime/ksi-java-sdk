@@ -18,7 +18,6 @@
  */
 package com.guardtime.ksi.service.ha.clientpicker;
 
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.client.KSISigningClient;
 
 import java.io.IOException;

@@ -1,104 +1,93 @@
+/*
+ * Copyright 2013-2017 Guardtime, Inc.
+ *
+ * This file is part of the Guardtime client SDK.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ * "Guardtime" and "KSI" are trademarks or registered trademarks of
+ * Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ * reserves and retains all trademark rights.
+ */
 package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.client.KSIClientException;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.settings.HAClientSettings;
-import org.mockito.Mockito;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
+import java.util.Date;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 public class HAClientTest {
 
     @Test(expectedExceptions = KSIException.class,
-            expectedExceptionsMessageRegExp = "Invalid input parameter. KSI signing clients list must be present")
-    public void testAddingNullSigningClientList() throws Exception {
-        new HAClient(null);
+            expectedExceptionsMessageRegExp = "It is impossible to perform a signing request using this HAClient because there " +
+                    "are no signing clients in selection")
+    public void testAddingNoSigningClientsAndAttemptingToSign() throws Exception {
+        HAClient haClient = new HAClient(null, Collections.singletonList(mock(KSIExtenderClient.class)));
+        haClient.sign(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L), mock(DataHash.class), 0L);
     }
 
     @Test(expectedExceptions = KSIException.class,
-            expectedExceptionsMessageRegExp = "Invalid input parameter. KSI signing clients list must contain at least one " +
-                    "element")
-    public void testAddingEmptySigningClientList() throws Exception {
-        new HAClient(Collections.<KSISigningClient>emptyList());
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. All the KSI " +
-            "signing clients must have the same service credentials")
-    public void testAddingSigningClientsWithDifferentCredentialsWillResultToAnError() throws Exception {
-        KSISigningClient client1 = Mockito.mock(KSISigningClient.class);
-        KSISigningClient client2 = Mockito.mock(KSISigningClient.class);
-        KSISigningClient client3 = Mockito.mock(KSISigningClient.class);
-        KSIServiceCredentials credentials1 = new KSIServiceCredentials("1", "1");
-        KSIServiceCredentials credentials2 = new KSIServiceCredentials("2", "2");
-        when(client1.getServiceCredentials()).thenReturn(credentials1);
-        when(client2.getServiceCredentials()).thenReturn(credentials1);
-        when(client3.getServiceCredentials()).thenReturn(credentials2);
-        when(client1.getPduVersion()).thenReturn(PduVersion.V1);
-        when(client2.getPduVersion()).thenReturn(PduVersion.V1);
-        when(client3.getPduVersion()).thenReturn(PduVersion.V1);
-        new HAClient(Arrays.asList(client1, client2, client3));
-    }
-
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. All the KSI " +
-            "signing clients must have the same PDU version")
-    public void testAddingSigningClientsWithDifferentPduVersions() throws Exception {
-        KSISigningClient client1 = Mockito.mock(KSISigningClient.class);
-        KSISigningClient client2 = Mockito.mock(KSISigningClient.class);
-        KSISigningClient client3 = Mockito.mock(KSISigningClient.class);
-        KSIServiceCredentials credentials = new KSIServiceCredentials("1", "1");
-        when(client1.getServiceCredentials()).thenReturn(credentials);
-        when(client2.getServiceCredentials()).thenReturn(credentials);
-        when(client3.getServiceCredentials()).thenReturn(credentials);
-        when(client1.getPduVersion()).thenReturn(PduVersion.V1);
-        when(client2.getPduVersion()).thenReturn(PduVersion.V2);
-        when(client3.getPduVersion()).thenReturn(PduVersion.V1);
-        new HAClient(Arrays.asList(client1, client2, client3));
-    }
-
-    @Test
-    public void testGettingServiceCredentials() throws Exception {
-        KSISigningClient client1 = Mockito.mock(KSISigningClient.class);
-        KSISigningClient client2 = Mockito.mock(KSISigningClient.class);
-        KSISigningClient client3 = Mockito.mock(KSISigningClient.class);
-        KSIServiceCredentials credentials = new KSIServiceCredentials("1", "1");
-        when(client1.getServiceCredentials()).thenReturn(credentials);
-        when(client2.getServiceCredentials()).thenReturn(credentials);
-        when(client3.getServiceCredentials()).thenReturn(credentials);
-        when(client1.getPduVersion()).thenReturn(PduVersion.V1);
-        when(client2.getPduVersion()).thenReturn(PduVersion.V1);
-        when(client3.getPduVersion()).thenReturn(PduVersion.V1);
-        Assert.assertEquals(credentials, new HAClient(Arrays.asList(client1, client2, client3)).getServiceCredentials());
-    }
-
-    @Test
-    public void testGettingPduVersion() throws Exception {
-        KSISigningClient client1 = Mockito.mock(KSISigningClient.class);
-        KSISigningClient client2 = Mockito.mock(KSISigningClient.class);
-        KSISigningClient client3 = Mockito.mock(KSISigningClient.class);
-        KSIServiceCredentials credentials = new KSIServiceCredentials("1", "1");
-        when(client1.getServiceCredentials()).thenReturn(credentials);
-        when(client2.getServiceCredentials()).thenReturn(credentials);
-        when(client3.getServiceCredentials()).thenReturn(credentials);
-        when(client1.getPduVersion()).thenReturn(PduVersion.V1);
-        when(client2.getPduVersion()).thenReturn(PduVersion.V1);
-        when(client3.getPduVersion()).thenReturn(PduVersion.V1);
-        Assert.assertEquals(PduVersion.V1, new HAClient(Arrays.asList(client1, client2, client3)).getPduVersion());
+            expectedExceptionsMessageRegExp = "It is impossible to perform a signing request using this HAClient because there " +
+                    "are no extending clients in selection")
+    public void testAddingNoExtendingClientsAndAttemptingToExtend() throws Exception {
+        HAClient haClient = new HAClient(Collections.singletonList(mock(KSISigningClient.class)), null);
+        haClient.extend(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L), new Date(), new Date());
     }
 
     @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Property " +
-            "HAClientSettings.aggregatorsPerRequest must not be larger than the list of given KSI signing clients")
-    public void testActiveClientsPerRequestLargerThanSigningClientsList() throws Exception {
-        KSISigningClient client1 = Mockito.mock(KSISigningClient.class);
-        when(client1.getServiceCredentials()).thenReturn(new KSIServiceCredentials("1", "1"));
-        when(client1.getPduVersion()).thenReturn(PduVersion.V1);
-        new HAClient(Collections.singletonList(client1), new HAClientSettings(2, 1));
+            "HAClientSettings.activeSigningClientsPerRequest must not be larger than the list of given KSI signing clients")
+    public void testActiveSigningClientsPerRequestLargerThanSigningClientsList() throws Exception {
+        new HAClient(
+                Collections.singletonList(mock(KSISigningClient.class)),
+                Collections.singletonList(mock(KSIExtenderClient.class)),
+                new HAClientSettings(2, 1)
+        );
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Property " +
+            "HAClientSettings.activeExtenderClientsPerRequest must not be larger than the list of given KSI extender clients")
+    public void testActiveExtenderClientsPerRequestLargerThanSigningClientsList() throws Exception {
+        new HAClient(
+                Collections.singletonList(mock(KSISigningClient.class)),
+                Collections.singletonList(mock(KSIExtenderClient.class)),
+                new HAClientSettings(1, 2)
+        );
+    }
+
+    @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "HAClient.sign\\(inputStream\\) is not supported. Use HAClient.sign\\(ksiRequestContext, dataHash, level\\) instead")
+    public void testSigningStream() throws Exception {
+        HAClient client = new HAClient(
+                Collections.singletonList(mock(KSISigningClient.class)),
+                Collections.singletonList(mock(KSIExtenderClient.class))
+        );
+        client.sign(new ByteArrayInputStream(new byte[]{}));
+    }
+
+    @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "HAClient.extend\\(inputStream\\) is not supported. Use HAClient.extend\\(ksiRequestContext, aggregationTime, publicationTime\\) instead")
+    public void testExtendingStream() throws Exception {
+        HAClient client = new HAClient(
+                Collections.singletonList(mock(KSISigningClient.class)),
+                Collections.singletonList(mock(KSIExtenderClient.class))
+        );
+        client.extend(new ByteArrayInputStream(new byte[]{}));
     }
 
 }

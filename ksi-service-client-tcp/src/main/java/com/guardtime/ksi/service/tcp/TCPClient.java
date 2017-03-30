@@ -18,9 +18,11 @@
  */
 package com.guardtime.ksi.service.tcp;
 
+import com.guardtime.ksi.pdu.PduFactoryFactory;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.client.ExternalServiceConfigurationAwareSigningClient;
+import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
 import org.apache.mina.core.future.ConnectFuture;
@@ -39,7 +41,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * KSI TCP client for signing.
  */
-public class TCPClient implements KSISigningClient {
+public class TCPClient extends ExternalServiceConfigurationAwareSigningClient {
 
     private static final Logger logger = LoggerFactory.getLogger(TCPClient.class);
 
@@ -49,13 +51,14 @@ public class TCPClient implements KSISigningClient {
     private NioSocketConnector connector;
 
     public TCPClient(TCPClientSettings tcpClientSettings) {
+        super(PduFactoryFactory.createPduFactory(tcpClientSettings.getPduVersion()));
         this.tcpClientSettings = tcpClientSettings;
         this.connector = createConnector();
         executorService = Executors.newCachedThreadPool();
         ((ThreadPoolExecutor) executorService).setMaximumPoolSize(tcpClientSettings.getTcpTransactionThreadPoolSize());
     }
 
-    public Future<TLVElement> sign(InputStream request) throws KSITCPTransactionException {
+    public Future<TLVElement> callAggregator(InputStream request) throws KSITCPTransactionException {
         synchronized (this) {
             if (tcpSession == null || tcpSession.isClosing()) {
                 this.tcpSession = createTcpSession();
@@ -69,6 +72,10 @@ public class TCPClient implements KSISigningClient {
             throw new KSITCPTransactionException("There was a problem with initiating a TCP signing transaction with endpoint " +
                     tcpClientSettings.getEndpoint() + ".", e);
         }
+    }
+
+    public Future<TLVElement> sign(InputStream request) throws KSIClientException {
+        return callAggregator(request);
     }
 
     public void close() {
@@ -108,4 +115,8 @@ public class TCPClient implements KSISigningClient {
         return connector;
     }
 
+    @Override
+    public String toString() {
+        return "TCPClient{PDU Version=" + getPduVersion() + "}";
+    }
 }

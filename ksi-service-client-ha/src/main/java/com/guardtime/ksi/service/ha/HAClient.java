@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -19,13 +19,16 @@
 package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.ExtensionResponseFuture;
+import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIClientException;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.service.ha.clientpicker.KSIClientsPicker;
-import com.guardtime.ksi.service.ha.clientpicker.RoundRobinKSIClientsPicker;
+import com.guardtime.ksi.service.ha.selectionmaker.RoundRobinSelectionMaker;
+import com.guardtime.ksi.service.ha.selectionmaker.SelectionMaker;
 import com.guardtime.ksi.service.ha.settings.HAClientSettings;
 import com.guardtime.ksi.tlv.TLVElement;
 import org.slf4j.Logger;
@@ -34,79 +37,102 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
- * KSI Signing Client which combines other clients for high availability and load balancing purposes.
+ * KSI Signing Client which combines other clients for high availability and load balancing purposes. TODO: NB!!! This is still
+ * work in progress. Client picking strategy is working but sending request to multiple clients in parallel currently is not.
  */
-public class HAClient implements KSISigningClient {
+public class HAClient implements KSISigningClient, KSIExtenderClient {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(HAClient.class);
+    private final SelectionMaker<KSISigningClient> ksiSigningClientsPicker;
+    private final SelectionMaker<KSIExtenderClient> ksiExtenderClientsPicker;
 
-    private final ServiceCredentials serviceCredentials;
-    private final PduVersion pduVersion;
-    private final KSIClientsPicker ksiClientsPicker;
-    private final ExecutorService executorService;
-
-
-    public HAClient(List<KSISigningClient> signingClients) throws KSIException {
-        this(signingClients, new HAClientSettings(1, 1000));
+    public HAClient(List<KSISigningClient> signingClients, List<KSIExtenderClient> extenderClients) throws KSIException {
+        this(signingClients, extenderClients, createDefaultSettings(signingClients, extenderClients));
     }
 
-    public HAClient(List<KSISigningClient> signingClients, HAClientSettings settings) throws KSIException {
-        validateInitializationParameters(signingClients, settings);
-        this.serviceCredentials = signingClients.get(0).getServiceCredentials();
-        this.pduVersion = signingClients.get(0).getPduVersion();
-        this.ksiClientsPicker = new RoundRobinKSIClientsPicker(signingClients, settings.getActiveSigningClientsPerRequest());
-        this.executorService = Executors.newFixedThreadPool(settings.getThreadPoolSize());
+    public HAClient(List<KSISigningClient> signingClients, List<KSIExtenderClient> extenderClients, HAClientSettings settings)
+            throws KSIClientException {
+        if (signingClients == null) {
+            signingClients = Collections.emptyList();
+        }
+        if (extenderClients == null) {
+            extenderClients = Collections.emptyList();
+        }
+        if (settings.getActiveSigningClientsPerRequest() > signingClients.size()) {
+            throw new KSIClientException("Invalid input parameter. Property HAClientSettings.activeSigningClientsPerRequest must not " +
+                    "be larger than the list of given KSI signing clients");
+        }
+        if (settings.getActiveExtenderClientsPerRequest() > extenderClients.size()) {
+            throw new KSIClientException("Invalid input parameter. Property HAClientSettings.activeExtenderClientsPerRequest must not" +
+                    " be larger than the list of given KSI extender clients");
+        }
+        this.ksiSigningClientsPicker = new RoundRobinSelectionMaker<KSISigningClient>(signingClients,
+                settings.getActiveSigningClientsPerRequest());
+        this.ksiExtenderClientsPicker = new RoundRobinSelectionMaker<KSIExtenderClient>(extenderClients,
+                settings.getActiveExtenderClientsPerRequest());
         LOGGER.debug("High availability signing client initialized with settings %s and %d signing clients", settings,
                 signingClients.size());
     }
 
-    public ServiceCredentials getServiceCredentials() {
-        return serviceCredentials;
+    public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
+        Collection<KSISigningClient> clients = ksiSigningClientsPicker.makeSelection();
+        if (clients.isEmpty()) {
+            throw new KSIClientException("It is impossible to perform a signing request using this HAClient because there are no " +
+                    "signing clients in selection");
+        }
+        return clients.iterator().next().sign(requestContext, dataHash, level);
     }
 
-    public PduVersion getPduVersion() {
-        return pduVersion;
-    }
-
-
-    public Future<TLVElement> sign(final InputStream request) throws KSIClientException {
-        Collection<KSISigningClient> clients = ksiClientsPicker.pick();
-        return clients.iterator().next().sign(request);
+    public ExtensionResponseFuture extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime)
+            throws KSIException {
+        Collection<KSIExtenderClient> clients = ksiExtenderClientsPicker.makeSelection();
+        if (clients.isEmpty()) {
+            throw new KSIClientException("It is impossible to perform a signing request using this HAClient because there are no " +
+                    "extending clients in selection");
+        }
+        return clients.iterator().next().extend(requestContext, aggregationTime, publicationTime);
     }
 
     public void close() throws IOException {
-        ksiClientsPicker.close();
-    }
-
-    private void validateInitializationParameters(List<KSISigningClient> signingClients, HAClientSettings settings) throws KSIException {
-        if (signingClients == null) {
-            throw new KSIException("Invalid input parameter. KSI signing clients list must be present");
-        }
-        if (signingClients.isEmpty()) {
-            throw new KSIException("Invalid input parameter. KSI signing clients list must contain at least one element");
-        }
-        if (signingClients.size() > 1) {
-            for (int i = 1; i < signingClients.size(); i++) {
-                KSISigningClient client1 = signingClients.get(i - 1);
-                KSISigningClient client2 = signingClients.get(i);
-                if (!client1.getServiceCredentials().equals(client2.getServiceCredentials())) {
-                    throw new KSIException(
-                            "Invalid input parameter. All the KSI signing clients must have the same service credentials");
-                }
-                if (client1.getPduVersion() != client2.getPduVersion()) {
-                    throw new KSIException(
-                            "Invalid input parameter. All the KSI signing clients must have the same PDU version");
-                }
+        for (KSISigningClient client : ksiSigningClientsPicker.getAll()) {
+            try {
+                client.close();
+            } catch (IOException e) {
+                LOGGER.error("Failed to close one of the HAClient KSISigningClients.", e);
             }
         }
-        if (settings.getActiveSigningClientsPerRequest() > signingClients.size()) {
-            throw new KSIException("Invalid input parameter. Property HAClientSettings.aggregatorsPerRequest must not be larger" +
-                    " than the list of given KSI signing clients");
+        for (KSIExtenderClient client : ksiExtenderClientsPicker.getAll()) {
+            try {
+                client.close();
+            } catch (IOException e) {
+                LOGGER.error("Failed to close one of the HAClient KSISigningClients.", e);
+            }
         }
+    }
+
+    private static HAClientSettings createDefaultSettings(List<KSISigningClient> signingClients, List<KSIExtenderClient>
+            extenderClients) throws KSIException {
+        return new HAClientSettings(signingClients == null ? 0 : signingClients.size(), extenderClients == null ? 0 :
+                extenderClients.size());
+    }
+
+    @Override
+    public String toString() {
+        return "HAClient{LB Strategy=" + ksiSigningClientsPicker + "}";
+    }
+
+    public Future<TLVElement> sign(InputStream request) throws KSIClientException {
+        throw new KSIClientException("HAClient.sign(inputStream) is not supported. Use " +
+                "HAClient.sign(ksiRequestContext, dataHash, level) instead");
+    }
+
+    public Future<TLVElement> extend(InputStream request) throws KSIClientException {
+        throw new KSIClientException("HAClient.extend(inputStream) is not supported. Use " +
+                "HAClient.extend(ksiRequestContext, aggregationTime, publicationTime) instead");
     }
 }

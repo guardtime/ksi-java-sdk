@@ -19,6 +19,7 @@
 package com.guardtime.ksi.pdu;
 
 import com.guardtime.ksi.service.client.ServiceCredentials;
+import com.guardtime.ksi.util.Util;
 
 
 /**
@@ -43,10 +44,14 @@ public final class KSIRequestContext {
     }
 
     public KSIRequestContext(ServiceCredentials credentials, Long requestId, Long instanceId, Long messageId) {
+        this(requestId, instanceId, messageId);
+        this.credentials = credentials;
+    }
+
+    public KSIRequestContext(Long requestId, Long instanceId, Long messageId) {
         this.requestId = requestId;
         this.instanceId = instanceId;
         this.messageId = messageId;
-        this.credentials = credentials;
     }
 
     public Long getRequestId() {
@@ -54,10 +59,12 @@ public final class KSIRequestContext {
     }
 
     public String getLoginId() {
+        Util.notNull(credentials, "KSIRequestContext.credentials");
         return credentials.getLoginId();
     }
 
     public byte[] getLoginKey() {
+        Util.notNull(credentials, "KSIRequestContext.credentials");
         return credentials.getLoginKey();
     }
 
@@ -67,5 +74,9 @@ public final class KSIRequestContext {
 
     public Long getMessageId() {
         return messageId;
+    }
+
+    public void setCredentials(ServiceCredentials credentials) {
+        this.credentials = credentials;
     }
 }

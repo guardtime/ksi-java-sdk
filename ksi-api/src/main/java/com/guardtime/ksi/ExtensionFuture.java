@@ -20,13 +20,15 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.tlv.TLVElement;
-import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.CalendarHashChain;
+import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
+import com.guardtime.ksi.unisignature.KSISignatureFactory;
+import com.guardtime.ksi.unisignature.SignaturePublicationRecord;
 
 import static java.util.Arrays.asList;
 
@@ -37,33 +39,27 @@ import static java.util.Arrays.asList;
  */
 public final class ExtensionFuture implements Future<KSISignature> {
 
-    private final Future<TLVElement> future;
+    private final ExtensionResponseFuture future;
     private final PublicationRecord publicationRecord;
     private final KSISignature signature;
-    private final KSIRequestContext context;
     private final KSISignatureFactory signatureFactory;
     private final KSISignatureComponentFactory signatureComponentFactory;
-    private final PduFactory pduFactory;
 
     private KSISignature extendedSignature;
 
-    public ExtensionFuture(Future<TLVElement> future, PublicationRecord publicationRecord, KSISignature signature,
-                           KSIRequestContext context, KSISignatureComponentFactory signatureComponentFactory,
-                           PduFactory pduFactory, KSISignatureFactory signatureFactory) {
+    public ExtensionFuture(ExtensionResponseFuture future, PublicationRecord publicationRecord, KSISignature signature,
+                           KSISignatureComponentFactory signatureComponentFactory, KSISignatureFactory signatureFactory) {
         this.future = future;
         this.publicationRecord = publicationRecord;
         this.signature = signature;
-        this.context = context;
         this.signatureComponentFactory = signatureComponentFactory;
-        this.pduFactory = pduFactory;
         this.signatureFactory = signatureFactory;
     }
 
     public KSISignature getResult() throws KSIException {
         if (extendedSignature == null) {
             try {
-                TLVElement tlvElement = future.getResult();
-                ExtensionResponse extensionResponse = pduFactory.readExtensionResponse(context, tlvElement);
+                ExtensionResponse extensionResponse = future.getResult();
                 CalendarHashChain calendarHashChain = signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());
                 SignaturePublicationRecord publication = signatureComponentFactory.createPublicationRecord(publicationRecord.getPublicationData(), publicationRecord.getPublicationReferences(), publicationRecord.getPublicationRepositoryURIs());
                 extendedSignature = signatureFactory.createSignature(asList(signature.getAggregationHashChains()), calendarHashChain, null, publication, signature.getRfc3161Record());

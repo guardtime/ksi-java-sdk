@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -25,32 +25,26 @@ import com.guardtime.ksi.exceptions.KSIException;
  */
 public class HAClientSettings {
     private final int activeSigningClientsPerRequest;
-    private final int threadPoolSize;
+    private final int activeExtenderClientsPerRequest;
 
-    public HAClientSettings(int activeSigningClientsPerRequest, int threadPoolSize) throws KSIException {
-        if (activeSigningClientsPerRequest < 1) {
-            throw new KSIException("Invalid input parameter. Property activeSigningClientsPerRequest must not be smaller than 1");
-        }
-        if (threadPoolSize < 1) {
-            throw new KSIException("Invalid input parameter. Property threadPoolSize must not be smaller than 1");
-        }
+    public HAClientSettings(int activeSigningClientsPerRequest, int activeExtenderClientsPerRequest) throws KSIException {
         this.activeSigningClientsPerRequest = activeSigningClientsPerRequest;
-        this.threadPoolSize = threadPoolSize;
+        this.activeExtenderClientsPerRequest = activeExtenderClientsPerRequest;
     }
 
     public int getActiveSigningClientsPerRequest() {
         return activeSigningClientsPerRequest;
     }
 
-    public int getThreadPoolSize() {
-        return threadPoolSize;
+    public int getActiveExtenderClientsPerRequest() {
+        return activeExtenderClientsPerRequest;
     }
 
     @Override
     public String toString() {
         return "HAClientSettings{" +
                 "activeSigningClientsPerRequest=" + activeSigningClientsPerRequest +
-                ", threadPoolSize=" + threadPoolSize +
+                ", activeExtenderClientsPerRequest=" + activeExtenderClientsPerRequest +
                 '}';
     }
 }

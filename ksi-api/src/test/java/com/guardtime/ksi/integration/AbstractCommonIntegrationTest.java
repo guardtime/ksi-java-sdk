@@ -26,10 +26,16 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.ExtensionRequest;
+import com.guardtime.ksi.pdu.ExtensionResponseFuture;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.*;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
+import com.guardtime.ksi.service.client.http.HttpPostRequestFuture;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.service.tcp.TCPClient;
@@ -56,6 +62,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Properties;
 
 import static com.guardtime.ksi.TestUtil.*;
@@ -205,10 +212,9 @@ public abstract class AbstractCommonIntegrationTest {
         return ksi.verify(builder.createVerificationContext(), policy);
     }
 
-    protected void mockExtenderResponseCalendarHashCain(String responseCalendarChainFile, KSIExtenderClient mockedExtenderClient) throws Exception {
+    protected void mockExtenderResponseCalendarHashCain(String responseCalendarChainFile, final KSIExtenderClient mockedExtenderClient) throws Exception {
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
-        Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(serviceCredentials);
         final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
         final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
@@ -223,6 +229,20 @@ public abstract class AbstractCommonIntegrationTest {
                 payload.replace(payload.getFirstChildElement(CalendarHashChain.ELEMENT_TYPE), calendarChain);
                 responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(serviceCredentials.getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
                 return mockedFuture;
+            }
+        });
+
+        Mockito.when(mockedExtenderClient.extend(Mockito.any(KSIRequestContext.class), Mockito.any(Date.class), Mockito.any(Date.class))).then(new Answer<Future>() {
+            public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
+                KSIRequestContext requestContext = (KSIRequestContext) invocationOnMock.getArguments()[0];
+                requestContext.setCredentials(new KSIServiceCredentials("anon", "anon"));
+                Date aggregationTime = (Date) invocationOnMock.getArguments()[1];
+                Date publicationTime = (Date) invocationOnMock.getArguments()[2];
+                PduFactory pduFactory = new PduV1Factory();
+                ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, aggregationTime, publicationTime);
+                ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());
+                Future<TLVElement> extensionResponseFuture = mockedExtenderClient.extend(requestStream);
+                return new ExtensionResponseFuture(extensionResponseFuture, requestContext, pduFactory);
             }
         });
     }

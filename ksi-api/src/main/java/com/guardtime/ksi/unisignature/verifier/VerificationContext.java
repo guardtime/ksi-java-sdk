@@ -122,11 +122,6 @@ public interface VerificationContext {
     PublicationRecord getPublicationRecord();
 
     /**
-     * Sets the pdu factory used in verification process
-     */
-    void setPduFactory(PduFactory pduFactory);
-
-    /**
      * Sets the KSISignatureComponentFactory used in verification process
      */
     void setKsiSignatureComponentFactory(KSISignatureComponentFactory signatureComponentFactory);

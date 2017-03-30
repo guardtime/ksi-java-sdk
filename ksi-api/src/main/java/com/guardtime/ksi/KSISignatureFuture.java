@@ -22,8 +22,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.pdu.AggregationResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -38,41 +36,34 @@ import java.util.List;
  *
  * @see Future
  */
-public final class AggregationFuture implements Future<KSISignature> {
+public final class KSISignatureFuture implements Future<KSISignature> {
 
-    private final Future<TLVElement> requestFuture;
-    private final KSIRequestContext requestContext;
-    private final PduFactory pduFactory;
+    private final Future<AggregationResponse> aggregationResponseFuture;
     private KSISignatureFactory signatureFactory;
     private DataHash inputHash;
 
     private KSISignature response;
 
-    public AggregationFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, KSISignatureFactory signatureFactory, DataHash inputHash, PduFactory pduFactory) {
-        this.requestFuture = requestFuture;
-        this.requestContext = requestContext;
+    public KSISignatureFuture(Future<AggregationResponse> aggregationResponseFuture, KSISignatureFactory signatureFactory, DataHash inputHash) {
+        this.aggregationResponseFuture = aggregationResponseFuture;
         this.signatureFactory = signatureFactory;
         this.inputHash = inputHash;
-        this.pduFactory = pduFactory;
     }
 
     public final KSISignature getResult() throws KSIException {
         try {
             if (response == null) {
-                TLVElement response = requestFuture.getResult();
-                AggregationResponse aggregationResponse = pduFactory.readAggregationResponse(requestContext, response);
+                AggregationResponse aggregationResponse = aggregationResponseFuture.getResult();
                 this.response = signatureFactory.createSignature(convert(aggregationResponse.getPayload()), inputHash);
             }
             return response;
-        } catch (com.guardtime.ksi.tlv.TLVParserException e) {
-            throw new KSIProtocolException("Can't parse response message", e);
         } catch (HashException e) {
             throw new KSIProtocolException("Hashing exception occurred when turning signature creation", e);
         }
     }
 
     public final boolean isFinished() {
-        return this.requestFuture.isFinished();
+        return this.aggregationResponseFuture.isFinished();
     }
 
     private TLVElement convert(TLVElement response) throws TLVParserException {

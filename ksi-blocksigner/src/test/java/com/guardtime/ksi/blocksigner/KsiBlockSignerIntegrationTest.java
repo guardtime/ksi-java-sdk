@@ -145,7 +145,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
                         mockAdapter,
                         simpleHttpClient,
                         false,
-                        new PduV1Factory(),
                         new InMemoryKsiSignatureComponentFactory()
                 )).build();
 
@@ -171,7 +170,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
                         mockAdapter,
                         simpleHttpClient,
                         false,
-                        new PduV1Factory(),
                         new InMemoryKsiSignatureComponentFactory()
                         )).build();
 
@@ -194,7 +192,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
                         mockAdapter,
                         simpleHttpClient,
                         false,
-                        new PduV1Factory(),
                         new InMemoryKsiSignatureComponentFactory()
                         )).build();
 

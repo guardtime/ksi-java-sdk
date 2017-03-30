@@ -19,7 +19,7 @@
 
 package com.guardtime.ksi.blocksigner;
 
-import com.guardtime.ksi.AggregationFuture;
+import com.guardtime.ksi.KSISignatureFuture;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
@@ -28,8 +28,6 @@ import com.guardtime.ksi.pdu.*;
 import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
@@ -40,7 +38,6 @@ import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -237,12 +234,10 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     private KSISignature signRootNode(TreeNode rootNode) throws KSIException {
         DataHash dataHash = new DataHash(rootNode.getValue());
         Long requestId = pduIdentifierProvider.nextRequestId();
-        ServiceCredentials credentials = signingClient.getServiceCredentials();
-        KSIRequestContext requestContext = new KSIRequestContext(credentials, requestId, pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
-        AggregationRequest requestMessage = pduFactory.createAggregationRequest(requestContext, dataHash, rootNode.getLevel());
-        Future<TLVElement> future = signingClient.sign(new ByteArrayInputStream(requestMessage.toByteArray()));
-        AggregationFuture aggregationFuture = new AggregationFuture(future, requestContext, new InMemoryKsiSignatureFactory(), dataHash, pduFactory);
-        return aggregationFuture.getResult();
+        KSIRequestContext requestContext = new KSIRequestContext(requestId, pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
+        Future<AggregationResponse> future = signingClient.sign(requestContext, dataHash, rootNode.getLevel());
+        KSISignatureFuture KSISignatureFuture = new KSISignatureFuture(future, new InMemoryKsiSignatureFactory(), dataHash);
+        return KSISignatureFuture.getResult();
     }
 
     private AggregationChainLink createLink(TreeNode node, TreeNode parent) throws KSIException {

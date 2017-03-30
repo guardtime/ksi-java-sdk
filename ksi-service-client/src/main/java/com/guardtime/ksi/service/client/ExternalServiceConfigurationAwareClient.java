@@ -23,10 +23,9 @@ import com.guardtime.ksi.pdu.PduVersion;
 import java.io.Closeable;
 
 /**
- * KSI client is an interface that defines KSI related services.
+ * ExternalServiceConfigurationAwareClient is an interface that defines clients which connect to a service with same configuration every time
  */
-interface KSICredentialsAwareClient extends Closeable {
-
+public interface ExternalServiceConfigurationAwareClient extends Closeable {
     /**
      * Returns the service credentials used by this service
      */
@@ -36,5 +35,4 @@ interface KSICredentialsAwareClient extends Closeable {
      * Returns the PDU format version of the client
      */
     PduVersion getPduVersion();
-
 }

@@ -19,15 +19,21 @@
 
 package com.guardtime.ksi.service.client;
 
+import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregationResponseFuture;
+import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.tlv.TLVElement;
 
+import java.io.Closeable;
 import java.io.InputStream;
 
 /**
  * KSI client for signing service
  */
-public interface KSISigningClient extends KSICredentialsAwareClient {
+public interface KSISigningClient extends Closeable {
 
     /**
      * Used to create new signature.
@@ -39,4 +45,15 @@ public interface KSISigningClient extends KSICredentialsAwareClient {
      */
     Future<TLVElement> sign(InputStream request) throws KSIClientException;
 
+    /**
+     * Used to create new signature.
+     *
+     * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
+     * @param dataHash - instance of {@link DataHash} to be signed. May not be null.
+     * @param level - level of the dataHash to be signed in the overall tree. May not be null.
+     *
+     * @return instance of {@link AggregationResponseFuture} containing Aggregation response data.
+     * @throws KSIException
+     */
+    Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException;
 }

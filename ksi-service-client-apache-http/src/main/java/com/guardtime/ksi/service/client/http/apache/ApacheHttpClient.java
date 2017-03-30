@@ -97,7 +97,7 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
         }
     }
 
-    private ApacheHttpPostRequestFuture post(InputStream request, URL url) throws KSIClientException {
+    protected ApacheHttpPostRequestFuture post(InputStream request, URL url) throws KSIClientException {
         try {
             HttpPost httpRequest = new HttpPost(url.toURI());
             httpRequest.setHeader(AbstractHttpClient.HEADER_NAME_CONTENT_TYPE, AbstractHttpClient.HEADER_APPLICATION_KSI_REQUEST);
@@ -181,4 +181,10 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
         return RequestConfig.custom().setConnectionRequestTimeout(connectionTimeout).setSocketTimeout(socketTimeout).build();
     }
 
+    @Override
+    public String toString() {
+        return "ApacheHttpClient{" +
+                "PDU Version=" + getPduVersion() +
+                '}';
+    }
 }

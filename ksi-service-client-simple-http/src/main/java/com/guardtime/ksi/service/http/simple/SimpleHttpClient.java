@@ -42,11 +42,11 @@ public class SimpleHttpClient extends AbstractHttpClient implements KSISigningCl
     }
 
     public SimpleHttpPostRequestFuture sign(InputStream request) throws KSIClientException {
-        return post(request, settings.getSigningUrl(), settings);
+        return post(request, settings.getSigningUrl());
     }
 
     public SimpleHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
-        return post(request, settings.getExtendingUrl(), settings);
+        return post(request, settings.getExtendingUrl());
     }
 
     public SimpleHttpGetRequestFuture getPublicationsFile() throws KSIClientException {
@@ -60,7 +60,7 @@ public class SimpleHttpClient extends AbstractHttpClient implements KSISigningCl
         }
     }
 
-    private SimpleHttpPostRequestFuture post(InputStream request, URL url, AbstractHttpClientSettings settings) throws KSIClientException {
+    protected SimpleHttpPostRequestFuture post(InputStream request, URL url) throws KSIClientException {
         OutputStream outputStream = null;
         try {
             HttpURLConnection connection = getConnection(url, settings);
@@ -110,4 +110,8 @@ public class SimpleHttpClient extends AbstractHttpClient implements KSISigningCl
     public void close() {
     }
 
+    @Override
+    public String toString() {
+        return "SimpleHttpClient{PDU Version=" + getPduVersion() + "}";
+    }
 }

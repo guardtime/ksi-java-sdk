@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -16,21 +16,25 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.clientpicker;
+package com.guardtime.ksi.service.ha.selectionmaker;
 
-import com.guardtime.ksi.service.client.KSISigningClient;
-
-import java.io.Closeable;
 import java.util.Collection;
 
 /**
- * Interface which implementations have different strategies for picking clients for any given signing request.
+ * Interface for different strategies for making a subset selection from list of things.
  */
-public interface KSIClientsPicker extends Closeable {
+public interface SelectionMaker<T> {
 
     /**
-     * Makes the selection of KSISigningClients ready to be used for next request.
+     * Makes the selection.
+     *
+     * @return collection of selected objects
      */
-    Collection<KSISigningClient> pick();
+    Collection<T> makeSelection();
+
+    /**
+     * @return collection of all the objects that are part of making the selection.
+     */
+    Collection<T> getAll();
 
 }

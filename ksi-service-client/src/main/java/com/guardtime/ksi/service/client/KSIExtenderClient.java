@@ -19,15 +19,20 @@
 
 package com.guardtime.ksi.service.client;
 
+import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.ExtensionResponseFuture;
+import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.tlv.TLVElement;
 
+import java.io.Closeable;
 import java.io.InputStream;
+import java.util.Date;
 
 /**
  * KSI client for extender service
  */
-public interface KSIExtenderClient extends KSICredentialsAwareClient {
+public interface KSIExtenderClient extends Closeable {
 
     /**
      * Used to extend existing signatures.
@@ -38,5 +43,16 @@ public interface KSIExtenderClient extends KSICredentialsAwareClient {
      * @throws KSIClientException
      */
     Future<TLVElement> extend(InputStream request) throws KSIClientException;
+
+    /**
+     * Used to extend existing signatures.
+     *
+     * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
+     * @param aggregationTime - aggregation time of the existing signature. May not be null.
+     * @param publicationTime - publication time to which the existing signature is to be extended. May not be null.
+     * @return instance of {@ExtensionResponseFuture} containing calendar chains needed to extend the signature.
+     * @throws KSIException
+     */
+    ExtensionResponseFuture extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException;
 
 }

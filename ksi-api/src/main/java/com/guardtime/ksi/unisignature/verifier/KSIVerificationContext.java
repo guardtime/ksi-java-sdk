@@ -29,7 +29,9 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.CertificateNotFoundException;
+import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
@@ -149,7 +151,11 @@ final class KSIVerificationContext implements VerificationContext {
         KSIRequestContext context = new KSIRequestContext(Util.nextLong(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
         ExtensionResponseFuture extenderFuture = extenderClient.extend(context, getSignature().getAggregationTime(), publicationTime);
         ExtensionResponse extensionResponse = extenderFuture.getResult();
-        return signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());
+        try {
+            return signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());
+        } catch (TLVParserException e) {
+            throw new KSIProtocolException("Can't parse response message", e);
+        }
 
     }
 

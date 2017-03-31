@@ -23,7 +23,7 @@ import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.PduFactoryFactory;
+import com.guardtime.ksi.pdu.PduFactoryProvider;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.ExternalServiceConfigurationAwareClient;
@@ -52,8 +52,8 @@ public abstract class AbstractHttpClient extends ExternalServiceConfigurationAwa
     protected final PduFactory pduFactory;
 
     public AbstractHttpClient(AbstractHttpClientSettings settings) {
-        super(PduFactoryFactory.createPduFactory(settings.getPduVersion()));
-        this.pduFactory = PduFactoryFactory.createPduFactory(settings.getPduVersion());
+        super(PduFactoryProvider.get(settings.getPduVersion()));
+        this.pduFactory = PduFactoryProvider.get(settings.getPduVersion());
         this.settings = settings;
     }
 

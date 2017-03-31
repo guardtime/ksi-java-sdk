@@ -39,6 +39,17 @@ public abstract class ExternalServiceConfigurationAwareSigningClient implements 
         this.pduFactory = pduFactory;
     }
 
+    /**
+     * Creates the PDU for signing request with correct aggregator login information and PDU version and sends it to gateway.
+     * Parses the response PDU.
+     *
+     * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
+     * @param dataHash - instance of {@link DataHash} to be signed. May not be null.
+     * @param level - level of the dataHash to be signed in the overall tree. May not be null.
+     *
+     * @return {@link AggregationResponseFuture}
+     * @throws KSIException
+     */
     public AggregationResponseFuture sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
         requestContext.setCredentials(getServiceCredentials());
         Future<TLVElement> requestFuture = sign(new ByteArrayInputStream(pduFactory.createAggregationRequest(requestContext,

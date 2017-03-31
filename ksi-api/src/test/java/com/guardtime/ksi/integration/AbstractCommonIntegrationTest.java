@@ -35,8 +35,8 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.*;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
-import com.guardtime.ksi.service.client.http.HttpPostRequestFuture;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
+import com.guardtime.ksi.service.ha.HAClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.service.tcp.TCPClient;
 import com.guardtime.ksi.service.tcp.TCPClientSettings;
@@ -62,7 +62,9 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import static com.guardtime.ksi.TestUtil.*;
@@ -124,11 +126,17 @@ public abstract class AbstractCommonIntegrationTest {
         ApacheHttpClient apacheHttpClient = new ApacheHttpClient(httpSettings);
         TCPClientSettings tcpSettings = loadTCPSettings();
         KSISigningClient tcpClient = new TCPClient(tcpSettings);
+        List<KSISigningClient> signingClients = Arrays.asList(simpleHttpClient, apacheHttpClient, tcpClient);
+        List<KSIExtenderClient> extenderClients = new ArrayList<KSIExtenderClient>();
+        extenderClients.add(simpleHttpClient);
+        extenderClients.add(apacheHttpClient);
+        HAClient haClient = new HAClient(signingClients, extenderClients);
 
         return new Object[][]{
                 new Object[]{createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient), simpleHttpClient},
                 new Object[]{createKsi(apacheHttpClient, apacheHttpClient, apacheHttpClient), apacheHttpClient},
-                new Object[]{createKsi(apacheHttpClient, tcpClient, apacheHttpClient), apacheHttpClient}
+                new Object[]{createKsi(apacheHttpClient, tcpClient, apacheHttpClient), apacheHttpClient},
+                new Object[]{createKsi(haClient, haClient, simpleHttpClient), haClient}
         };
     }
 

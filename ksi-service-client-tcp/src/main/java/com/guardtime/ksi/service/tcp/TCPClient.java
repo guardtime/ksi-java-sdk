@@ -18,7 +18,7 @@
  */
 package com.guardtime.ksi.service.tcp;
 
-import com.guardtime.ksi.pdu.PduFactoryFactory;
+import com.guardtime.ksi.pdu.PduFactoryProvider;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.ExternalServiceConfigurationAwareSigningClient;
@@ -51,14 +51,14 @@ public class TCPClient extends ExternalServiceConfigurationAwareSigningClient {
     private NioSocketConnector connector;
 
     public TCPClient(TCPClientSettings tcpClientSettings) {
-        super(PduFactoryFactory.createPduFactory(tcpClientSettings.getPduVersion()));
+        super(PduFactoryProvider.get(tcpClientSettings.getPduVersion()));
         this.tcpClientSettings = tcpClientSettings;
         this.connector = createConnector();
         executorService = Executors.newCachedThreadPool();
         ((ThreadPoolExecutor) executorService).setMaximumPoolSize(tcpClientSettings.getTcpTransactionThreadPoolSize());
     }
 
-    public Future<TLVElement> callAggregator(InputStream request) throws KSITCPTransactionException {
+    public Future<TLVElement> sign(InputStream request) throws KSIClientException {
         synchronized (this) {
             if (tcpSession == null || tcpSession.isClosing()) {
                 this.tcpSession = createTcpSession();
@@ -72,10 +72,6 @@ public class TCPClient extends ExternalServiceConfigurationAwareSigningClient {
             throw new KSITCPTransactionException("There was a problem with initiating a TCP signing transaction with endpoint " +
                     tcpClientSettings.getEndpoint() + ".", e);
         }
-    }
-
-    public Future<TLVElement> sign(InputStream request) throws KSIClientException {
-        return callAggregator(request);
     }
 
     public void close() {

@@ -42,8 +42,10 @@ public interface KSISigningClient extends Closeable {
      *         - instance of {@link InputStream} that contains request data.
      * @return instance of {@link Future} containing KSI response data.
      * @throws KSIClientException
+     *
+     * @deprecated Not for public use since version 4.9. This method is expected to be retained only as a package private method. Replaced by {@link #sign(KSIRequestContext, DataHash, Long)}
      */
-    Future<TLVElement> sign(InputStream request) throws KSIClientException;
+    @Deprecated Future<TLVElement> sign(InputStream request) throws KSIClientException;
 
     /**
      * Used to create new signature.

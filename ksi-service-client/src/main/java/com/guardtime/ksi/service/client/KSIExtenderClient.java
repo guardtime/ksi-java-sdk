@@ -16,7 +16,6 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-
 package com.guardtime.ksi.service.client;
 
 import com.guardtime.ksi.exceptions.KSIException;
@@ -41,6 +40,8 @@ public interface KSIExtenderClient extends Closeable {
      *         instance of {@link InputStream} that contains request data.
      * @return instance of {@link Future} containing KSI response data.
      * @throws KSIClientException
+     *
+     * @deprecated Not for public use since version 4.9. This method is expected to be retained only as a package private method. Replaced by {@link #extend(KSIRequestContext, Date, Date)}
      */
     Future<TLVElement> extend(InputStream request) throws KSIClientException;
 

@@ -52,5 +52,5 @@ public interface AggregatorConfiguration {
     /**
      * Returns a list of parent server URI-s
      */
-    List<String> getParentUris();
+    List<String> getParents();
 }

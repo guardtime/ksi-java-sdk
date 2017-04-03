@@ -87,7 +87,7 @@ public class AggregatorConfigurationPayload extends TLVStructure implements Aggr
         return maximumRequests;
     }
 
-    public List<String> getParentUris() {
+    public List<String> getParents() {
         return parentUris;
     }
 

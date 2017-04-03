@@ -24,20 +24,20 @@ import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
+import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
-import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.List;
 
 class AggregationRequestPduV2 extends PduV2 implements AggregationRequest {
 
-    public AggregationRequestPduV2(List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context) throws KSIException {
+    public AggregationRequestPduV2(List<TLVElement> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context) throws KSIException {
         super(new PduMessageHeader(context), payloads, macAlgorithm, context.getLoginKey());
     }
 
     @Override
     public int[] getSupportedPayloadTypes() {
-        return new int[] {AggregationRequestPayloadV2.ELEMENT_TYPE};
+        return new int[]{AggregationRequestPayloadV2.ELEMENT_TYPE, 0x04};
     }
 
     @Override

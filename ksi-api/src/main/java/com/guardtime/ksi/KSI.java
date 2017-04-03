@@ -22,6 +22,8 @@ package com.guardtime.ksi;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -109,6 +111,18 @@ public interface KSI extends Closeable {
      *         when error occurs (e.g when communication with KSI service fails)
      */
     KSISignature sign(byte[] bytes) throws KSIException;
+
+    /**
+     * GetAggregatorConfiguration method is used to ask aggregation configuration from KSI gateway/aggregator.Only supported
+     * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
+     */
+    AggregatorConfiguration getAggregatorConfiguration() throws KSIException;
+
+    /**
+     * GetExtenderConfiguration method is used to ask extender configuration from KSI gateway/aggregator. Only supported
+     * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
+     */
+    ExtenderConfiguration getExtenderConfiguration() throws KSIException;
 
     /**
      * This method is used to sign data hash asynchronously. Use method {@link Future#getResult()} to get keyless

@@ -17,10 +17,24 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.service.tcp;
+package com.guardtime.ksi.integration;
 
-public class TCPTimeoutException extends KSITCPTransactionException {
-    public TCPTimeoutException(String message) {
-        super("TCP timeout: " + message);
+import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
+
+    @Test
+    public void testAggregationConfigurationRequestV2() throws Exception {
+        AggregatorConfiguration response = ksiV2.getAggregatorConfiguration();
+        Assert.assertNotNull(response);
     }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
+    public void testAggregationConfigurationRequestV1() throws Exception {
+        ksi.getAggregatorConfiguration();
+    }
+
 }

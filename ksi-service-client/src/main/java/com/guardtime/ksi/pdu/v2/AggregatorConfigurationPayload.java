@@ -63,7 +63,7 @@ public class AggregatorConfigurationPayload extends TLVStructure implements Aggr
                     this.maximumRequests = readOnce(child).getDecodedLong();
                     continue;
                 case TYPE_PARENT_URI:
-                    parentUris.add(readOnce(child).getDecodedString());
+                    parentUris.add(child.getDecodedString());
                     continue;
                 default:
                     verifyCriticalFlag(child);

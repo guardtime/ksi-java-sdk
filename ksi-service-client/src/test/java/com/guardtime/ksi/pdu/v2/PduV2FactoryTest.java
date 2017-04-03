@@ -199,6 +199,8 @@ public class PduV2FactoryTest {
         Assert.assertNotNull(response.getAggregationPeriod());
         Assert.assertNotNull(response.getMaximumLevel());
         Assert.assertNotNull(response.getMaximumRequests());
+        Assert.assertNotNull(response.getParentUris());
+        Assert.assertEquals(response.getParentUris().size(), 3);
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator")
@@ -232,6 +234,7 @@ public class PduV2FactoryTest {
         Assert.assertNotNull(response.getCalendarFirstTime());
         Assert.assertNotNull(response.getCalendarLastTime());
         Assert.assertNotNull(response.getParents());
+        Assert.assertEquals(response.getMaximumRequests(), Long.valueOf(4));
     }
 
 }

@@ -23,7 +23,7 @@
 
 	<groupId>com.guardtime</groupId>
 	<artifactId>ksi</artifactId>
-	<version>4.9.93-SNAPSHOT</version>
+	<version>4.9.94-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>KSI SDK</name>

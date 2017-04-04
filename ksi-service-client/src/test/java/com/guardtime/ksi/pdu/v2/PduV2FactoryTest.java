@@ -31,6 +31,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Date;
+
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class PduV2FactoryTest {
@@ -184,6 +186,84 @@ public class PduV2FactoryTest {
         TLVElement tlv = TLVElement.create(request.toByteArray());
         Assert.assertEquals(tlv.getType(), GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2);
         Assert.assertEquals(tlv.getChildElements(0x04).size(), 1);
+    }
+    @Test
+    public void testAggregationConfigurationResponseParsingWithMultiplePayloadsV2() throws Exception {
+        AggregatorConfiguration cnf = pduFactory.readAggregatorConfigurationResponse(requestContext, loadTlv("pdu/aggregation/aggregator-response-with-conf-ack-and-signature.tlv"));
+
+        Assert.assertEquals(cnf.getAggregationAlgorithm(), HashAlgorithm.SHA2_384);
+        Assert.assertTrue(cnf.getAggregationPeriod().equals(12288L));
+        Assert.assertTrue(cnf.getMaximumLevel().equals(19L));
+        Assert.assertTrue(cnf.getMaximumRequests().equals(17L));
+        Assert.assertTrue(cnf.getParents().size() == 3);
+        for (String parent : cnf.getParents()){
+            Assert.assertTrue(parent.contains(".url"));
+        }
+    }
+
+    @Test
+    public void testAggregationResponseParsingWithMultipleConfsV2() throws Exception {
+        AggregatorConfiguration cnf = pduFactory.readAggregatorConfigurationResponse(requestContext, loadTlv("pdu/aggregation/aggregator-response-multiple-confs.tlv"));
+
+        Assert.assertNotNull(cnf);
+        Assert.assertEquals(cnf.getAggregationAlgorithm(), HashAlgorithm.RIPEMD_160);
+        Assert.assertTrue(cnf.getAggregationPeriod().equals(2L));
+        Assert.assertTrue(cnf.getMaximumLevel().equals(2L));
+        Assert.assertTrue(cnf.getMaximumRequests().equals(2L));
+        Assert.assertTrue(cnf.getParents().size() == 1);
+        for (String parent : cnf.getParents()){
+            Assert.assertEquals(parent, "anon");
+        }
+    }
+
+    @Test
+    public void testAggregationResponseParsingWithEmptyConfV2() throws Exception {
+        AggregatorConfiguration cnf = pduFactory.readAggregatorConfigurationResponse(requestContext, loadTlv("pdu/aggregation/aggregator-response-with-empty-conf.tlv"));
+
+        Assert.assertNotNull(cnf);
+        Assert.assertNull(cnf.getAggregationAlgorithm());
+        Assert.assertNull(cnf.getAggregationPeriod());
+        Assert.assertNull(cnf.getMaximumLevel());
+        Assert.assertNull(cnf.getMaximumRequests());
+        Assert.assertTrue(cnf.getParents().isEmpty());
+    }
+
+    @Test
+    public void testExtenderConfigurationResponseParsingWithMultiplePayloadsV2() throws Exception {
+        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, loadTlv("pdu/extension/extender-response-with-conf-and-calendar.tlv"));
+
+        Assert.assertTrue(cnf.getCalendarFirstTime().equals(new Date(5557150000L)));
+        Assert.assertTrue(cnf.getCalendarLastTime().equals(new Date(1422630579000L)));
+        Assert.assertTrue(cnf.getMaximumRequests().equals(4L));
+        Assert.assertTrue(cnf.getParents().size() == 3);
+        for (String parent : cnf.getParents()){
+            Assert.assertTrue(parent.contains(".url"));
+        }
+    }
+
+    @Test
+    public void testExtenderResponseParsingWithMultipleConfsV2() throws Exception {
+        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, loadTlv("pdu/extension/extender-response-multiple-confs.tlv"));
+
+        Assert.assertNotNull(cnf);
+        Assert.assertTrue(cnf.getCalendarFirstTime().equals(new Date(158000)));
+        Assert.assertTrue(cnf.getCalendarLastTime().equals(new Date(40627000)));
+        Assert.assertTrue(cnf.getMaximumRequests().equals(2L));
+        Assert.assertTrue(cnf.getParents().size() == 1);
+        for (String parent : cnf.getParents()){
+            Assert.assertEquals(parent, "anon");
+        }
+    }
+
+    @Test
+    public void testExtenderResponseParsingWithEmptyConfV2() throws Exception {
+        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, loadTlv("pdu/extension/extender-response-with-empty-conf.tlv"));
+
+        Assert.assertNotNull(cnf);
+        Assert.assertNull(cnf.getCalendarFirstTime());
+        Assert.assertNull(cnf.getCalendarLastTime());
+        Assert.assertNull(cnf.getMaximumRequests());
+        Assert.assertTrue(cnf.getParents().isEmpty());
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KsiRequestContext can not be null")

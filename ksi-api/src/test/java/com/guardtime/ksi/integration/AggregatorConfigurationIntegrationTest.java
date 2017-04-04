@@ -19,10 +19,20 @@
 
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.v2.PduV2Factory;
+import com.guardtime.ksi.service.client.KSIServiceCredentials;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Date;
+import java.util.List;
 
 public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
@@ -36,5 +46,4 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
     public void testAggregationConfigurationRequestV1() throws Exception {
         ksi.getAggregatorConfiguration();
     }
-
 }

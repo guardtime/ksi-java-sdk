@@ -53,6 +53,37 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
     }
 
     @Test
+    public void testConfigurationResponseParsingV2_2() throws Exception {
+        KSIRequestContext context = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L);
+        PduV2Factory factory = new PduV2Factory();
+        AggregatorConfiguration cnf = factory.readAggregatorConfigurationResponse(context, TestUtil.loadTlv("aggregator-response-multiple-confs.tlv"));
+
+        Assert.assertNotNull(cnf);
+        Assert.assertEquals(cnf.getAggregationAlgorithm(), HashAlgorithm.RIPEMD_160);
+        Assert.assertTrue(cnf.getAggregationPeriod().equals(2L));
+        Assert.assertTrue(cnf.getMaximumLevel().equals(2L));
+        Assert.assertTrue(cnf.getMaximumRequests().equals(2L));
+        Assert.assertTrue(cnf.getParents().size() == 1);
+        for (String parent : cnf.getParents()){
+            Assert.assertEquals(parent, "anon");
+        }
+    }
+
+    @Test
+    public void testConfigurationResponseParsingV2_3() throws Exception {
+        KSIRequestContext context = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L);
+        PduV2Factory factory = new PduV2Factory();
+        AggregatorConfiguration cnf = factory.readAggregatorConfigurationResponse(context, TestUtil.loadTlv("aggregator-response-with-empty-conf.tlv"));
+
+        Assert.assertNotNull(cnf);
+        Assert.assertNull(cnf.getAggregationAlgorithm());
+        Assert.assertNull(cnf.getAggregationPeriod());
+        Assert.assertNull(cnf.getMaximumLevel());
+        Assert.assertNull(cnf.getMaximumRequests());
+        Assert.assertTrue(cnf.getParents().isEmpty());
+    }
+
+    @Test
     public void testAggregationConfigurationRequestV2() throws Exception {
         AggregatorConfiguration response = ksiV2.getAggregatorConfiguration();
         Assert.assertNotNull(response);

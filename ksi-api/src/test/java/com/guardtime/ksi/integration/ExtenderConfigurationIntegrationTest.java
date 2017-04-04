@@ -49,6 +49,35 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
     }
 
     @Test
+    public void testConfigurationResponseParsingV2_2() throws Exception {
+        KSIRequestContext context = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L);
+        PduV2Factory factory = new PduV2Factory();
+        ExtenderConfiguration cnf = factory.readExtenderConfigurationResponse(context, TestUtil.loadTlv("extender-response-multiple-confs.tlv"));
+
+        Assert.assertNotNull(cnf);
+        Assert.assertTrue(cnf.getCalendarFirstTime().equals(new Date(158000)));
+        Assert.assertTrue(cnf.getCalendarLastTime().equals(new Date(40627000)));
+        Assert.assertTrue(cnf.getMaximumRequests().equals(2L));
+        Assert.assertTrue(cnf.getParents().size() == 1);
+        for (String parent : cnf.getParents()){
+            Assert.assertEquals(parent, "anon");
+        }
+    }
+
+    @Test
+    public void testConfigurationResponseParsingV2_3() throws Exception {
+        KSIRequestContext context = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L);
+        PduV2Factory factory = new PduV2Factory();
+        ExtenderConfiguration cnf = factory.readExtenderConfigurationResponse(context, TestUtil.loadTlv("extender-response-with-empty-conf.tlv"));
+
+        Assert.assertNotNull(cnf);
+        Assert.assertNull(cnf.getCalendarFirstTime());
+        Assert.assertNull(cnf.getCalendarLastTime());
+        Assert.assertNull(cnf.getMaximumRequests());
+        Assert.assertTrue(cnf.getParents().isEmpty());
+    }
+
+    @Test
     public void testExtenderConfigurationRequestV2() throws Exception {
         ExtenderConfiguration response = ksiV2.getExtenderConfiguration();
         Assert.assertNotNull(response);

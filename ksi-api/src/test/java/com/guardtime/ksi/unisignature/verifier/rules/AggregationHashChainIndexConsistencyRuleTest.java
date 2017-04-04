@@ -30,6 +30,7 @@ public class AggregationHashChainIndexConsistencyRuleTest extends AbstractRuleTe
 
     private AggregationHashChainIndexConsistencyRule rule = new AggregationHashChainIndexConsistencyRule();
 
+    //TODO: Start using new resource pack files.
     @Test
     public void testSignatureWithInconsistentAggregationChainIndexReturnsFailedStatus_Ok() throws Exception {
         RuleResult result = rule.verify(build(TestUtil.loadSignature("internal-verification-aggr-chain/invalid-chain-index.ksig")));

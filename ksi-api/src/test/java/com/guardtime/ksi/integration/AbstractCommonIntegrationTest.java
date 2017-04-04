@@ -251,42 +251,6 @@ public abstract class AbstractCommonIntegrationTest {
         return out.toByteArray();
     }
 
-    @DataProvider(name = INTERNAL_VERIFICATION_DATA_PROVIDER)
-    public static Object[][] getTestFilesAndResultsForInternalVerification() throws Exception {
-        try{
-            return getTestFilesAndResults("internal_verification_test_files_and_expected_results.txt");
-        } catch (Throwable e){
-            return new Object[][] {{}};
-        }
-    }
-
-    @DataProvider(name = CALENDAR_BASED_VERIFICATION_DATA_PROVIDER)
-    public static Object[][] getTestFilesAndResultsForCalendarBasedVerification() throws Exception {
-        try{
-            return getTestFilesAndResults("calendar_based_verification_test_files_and_expected_results.txt");
-        } catch (Throwable e){
-            return new Object[][] {{}};
-        }
-    }
-
-    @DataProvider(name = KEY_BASED_VERIFICATION_DATA_PROVIDER)
-    public static Object[][] getTestFilesAndResultsForKeyBasedVerification() throws Exception {
-        try{
-            return getTestFilesAndResults("key_based_verification_test_files_and_expected_results.txt");
-        } catch (Throwable e){
-            return new Object[][] {{}};
-        }
-    }
-
-    @DataProvider(name = TLV_PARSER_VERIFICATION_DATA_PROVIDER)
-    public static Object[][] getTestFilesAndResultsForTlvParserVerification() throws Exception {
-        try{
-            return getTestFilesAndResults("tlv_parser_verification_test_files_and_expected_results.txt");
-        } catch (Throwable e){
-            return new Object[][] {{}};
-        }
-    }
-
     @DataProvider(name = EXTENDER_RESPONSES_DATA_PROVIDER)
     public static Object[][] getExtenderResponsesAndResultsForTlvParserVerification() throws Exception {
         try{

@@ -44,6 +44,9 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
 
     private final PublicationsFileBasedVerificationPolicy policy = new PublicationsFileBasedVerificationPolicy();
 
+    //TODO: Looks like there are several publiation file prasing tests included.
+    //TODO: Most, if not all, tests should be covered with new tests?
+
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureWithCorrectDataAndSuitablePublicationInPublicationFile_VerificationReturnsOK() throws Exception {
         VerificationResult results = publicationFileBasedVerification(EXTENDED_SIGNATURE_2014_06_02, "publications.tlv", false, simpleHttpClient);
@@ -70,45 +73,6 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
         KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_04_30);
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, true);
         Assert.assertTrue(result.isOk());
-    }
-
-    @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyNewerSignatureWithOlderPublicationFile_VerificationReturnsGen2() throws Exception {
-        VerificationResult results = publicationFileBasedVerification("signature_2015-09-13_21-34-00.ksig", "publication-based-verification/old-publications.tlv", true, simpleHttpClient);
-        Assert.assertFalse(results.isOk());
-        Assert.assertEquals(results.getErrorCode(), VerificationErrorCode.GEN_2);
-    }
-
-    @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyExtendedSignatureWithWrongResponseMissMatchInInputHash_VerificationReturnsPub1() throws Exception {
-        KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
-
-        String responseFile = "publication-based-verification/extension-response-for-ok-sig-2014-06-2-wrong-input-hash.tlv";
-        mockExtenderResponseCalendarHashCain(responseFile, mockedExtenderClient);
-
-        VerificationResult result = publicationFileBasedVerification(SIGNATURE_2014_06_02, "publication-2015-09-15.tlv", true, mockedExtenderClient);
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_01);
-    }
-
-    @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyExtendedSignatureWithWrongResponseMissMatchInPublicationTime_VerificationReturnsPub2() throws Exception {
-
-        KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
-
-        String responseFile = "publication-based-verification/extension-response-for-ok-sig-2014-06-2-wrong-publication-time.tlv";
-        mockExtenderResponseCalendarHashCain(responseFile, mockedExtenderClient);
-
-        VerificationResult result = publicationFileBasedVerification(SIGNATURE_2014_06_02, "publication-2015-09-15.tlv", true, mockedExtenderClient);
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_02);
-    }
-
-    @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testVerifySignatureWithWrongHashChain_VerificationReturnsPub3() throws Exception {
-        VerificationResult results = publicationFileBasedVerification("publication-based-verification/all-wrong-hash-chains-in-signature.ksig", "publication-2015-09-15.tlv", true, simpleHttpClient);
-        Assert.assertFalse(results.isOk());
-        Assert.assertEquals(results.getErrorCode(), VerificationErrorCode.PUB_03);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x1 encountered")

@@ -40,6 +40,8 @@ import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
+    //TODO: Move used resources to new test resources where possible. If not all?
+
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testExtendToNearest_OK() throws Exception {
         KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_2014_06_02));

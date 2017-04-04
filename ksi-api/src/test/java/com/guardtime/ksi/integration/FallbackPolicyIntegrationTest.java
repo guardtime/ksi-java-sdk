@@ -32,6 +32,8 @@ import org.testng.annotations.Test;
 
 public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest {
 
+    //TODO: Fallback tests are needed but used resources should be moved to new test files.
+
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testFallbackFromKeyBasedVerificationToCalendarBasedVerification_Ok() throws Exception {
         KeyBasedVerificationPolicy policy = new KeyBasedVerificationPolicy();

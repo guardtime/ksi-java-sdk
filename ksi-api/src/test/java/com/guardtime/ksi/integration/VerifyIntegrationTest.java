@@ -35,6 +35,7 @@ import org.testng.annotations.Test;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
+    //TODO: Are all of the following tests covered by new tests?
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingKeyBasedPolicy_Ok() throws Exception {
@@ -57,6 +58,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(result.isOk());
     }
 
+    //TODO: Covered by new tests?
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingUserPublicationBasedPolicy_VerificationFailsWrongPublication() throws Exception {
         KSISignature sig = loadSignature(SIGNATURE_2014_06_02);
@@ -72,6 +74,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(result.isOk());
     }
 
+    //TODO: Covered by new tests?
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureUsingKeyBasedPolicy_FailInconclusive() throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
@@ -96,6 +99,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(result.isOk());
     }
 
+    //TODO: Covered by new tests?
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureUsingUserProvidedPublicationsBasedPolicy_FailInconclusive() throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
@@ -112,6 +116,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(result.isOk());
     }
 
+    //TODO: Covered by new tests?
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithInvalidRfc3161RecordUsingKeyBasedPolicy_VerificationFailInconsistentChain() throws Exception {
         KSISignature sig = loadSignature("signature/signature-with-invalid-rfc3161-output-hash.ksig");
@@ -122,20 +127,12 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertEquals(policyResult.getErrorCode(), VerificationErrorCode.INT_01);
     }
 
+    //TODO: Covered by new tests?
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void verifySignatureWithLocalPubFile_TestFailInconclusive() throws Exception {
         PublicationsFile pub = TestUtil.loadPublicationsFile("publications.15042014.tlv");
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, getFileHash(INPUT_FILE), pub), new PublicationsFileBasedVerificationPolicy());
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
-    }
-
-    @Test(groups = TEST_GROUP_INTEGRATION)
-    public void verifyExtendedSignatureWithOlderPublicationString_TestFailInconclusive() throws Exception {
-        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_04_30);
-        String publicationString = "AAAAAA-CLPCHI-AAPZUV-RPPRDK-ZZJHXR-DVO2VF-EXJD4C-MU6W3G-IIGWAH-S34OC2-MUTEOK-DZNQUW";
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, new PublicationData(publicationString), false), new UserProvidedPublicationBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
     }

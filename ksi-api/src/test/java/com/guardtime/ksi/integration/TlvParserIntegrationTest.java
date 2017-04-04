@@ -32,11 +32,6 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
     private static final Logger LOGGER = LoggerFactory.getLogger(TlvParserIntegrationTest.class);
     private final Policy policy = new KeyBasedVerificationPolicy();
 
-    @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = TLV_PARSER_VERIFICATION_DATA_PROVIDER)
-    public void testTlvParserVerification(DataHolderForIntegrationTests testData) throws Exception {
-        testExecution(testData, policy);
-    }
-
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = EXTENDER_RESPONSES_DATA_PROVIDER)
     public void testVerifySignatureWithExtraElementsInAggregationResponse(DataHolderForIntegrationTests testData) throws Exception {
         try {

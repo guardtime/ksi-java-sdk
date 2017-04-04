@@ -43,21 +43,25 @@ public class AggregationHashChainTest {
         Assert.assertEquals(identities[identities.length-1].getType(), IdentityType.METADATA);
     }
 
+    //TODO: Start using new resource pack files.
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation time can not be null")
     public void testDecodeAggregationHashChainWithoutAggregationTime_ThrowsInvalidAggregationHashChainException() throws Exception {
         load("aggregation-hash-chain/aggregation-chain-aggregation-time-missing.tlv");
     }
 
+    //TODO: Start using new resource pack files.
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain index list can not be empty")
     public void testDecodeAggregationHashChainWithoutChainIndex_ThrowsInvalidAggregationHashChainException() throws Exception {
         load("aggregation-hash-chain/aggregation-chain-no-indexes.tlv");
     }
 
+    //TODO: Start using new resource pack files.
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain input hash can not be empty")
     public void testDecodeAggregationHashChainWithoutInputHash_ThrowsInvalidAggregationHashChainException() throws Exception {
         load("aggregation-hash-chain/aggregation-chain-input-hash-missing.tlv");
     }
 
+    //TODO: Start using new resource pack files.
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain aggregation algorithm id can no be null")
     public void testDecodeAggregationHashChainWithoutAggregationAlgorithm_ThrowsInvalidAggregationHashChainException() throws Exception {
         load("aggregation-hash-chain/aggregation-chain-algorithm-missing.tlv");

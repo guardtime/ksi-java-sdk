@@ -49,6 +49,7 @@ public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTes
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
+    //TODO: Start using new resource pack files.
     @Test
     public void testPublicationFileDoesntContainsPublication_Ok() throws Exception {
         RuleResult result = rule.verify(build(TestUtil.loadSignature("publication-based-verification/ExtendedSignature-NoPubRec.ksig"), TestUtil.loadPublicationsFile("publications.tlv")));
@@ -56,7 +57,7 @@ public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTes
     }
 
     @Test
-    public void testPublicationFileDoesNotContainPublication_Ok() throws Exception {
+    public void testPublicationFileDoesNotContainPublication_NA() throws Exception {
         CalendarHashChain mockedChain = Mockito.mock(CalendarHashChain.class);
         Mockito.when(mockedChain.getRegistrationTime()).thenReturn(new Date());
         Mockito.when(context.getCalendarHashChain()).thenReturn(mockedChain);

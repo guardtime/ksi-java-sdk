@@ -19,12 +19,34 @@
 
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.v2.PduV2Factory;
+import com.guardtime.ksi.service.client.KSIServiceCredentials;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Date;
+
 public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
+    
+    @Test
+    public void testExtConf() throws Exception {
+        KSIRequestContext context = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L);
+        PduV2Factory factory = new PduV2Factory();
+        ExtenderConfiguration cnf = factory.readExtenderConfigurationResponse(context, TestUtil.loadTlv("extender-response-with-conf-and-calendar.tlv"));
+
+        Assert.assertTrue(cnf.getCalendarFirstTime().equals(new Date(5557150000L)));
+        Assert.assertTrue(cnf.getCalendarLastTime().equals(new Date(1422630579000L)));
+        Assert.assertTrue(cnf.getMaximumRequests().equals(4L));
+        Assert.assertTrue(cnf.getParents().size() == 3);
+        for (String parent : cnf.getParents()){
+            Assert.assertTrue(parent.contains(".url"));
+        }
+    }
 
     @Test
     public void testExtenderConfigurationRequestV2() throws Exception {

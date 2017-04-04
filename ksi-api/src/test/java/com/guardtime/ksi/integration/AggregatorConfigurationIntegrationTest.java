@@ -19,12 +19,38 @@
 
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.v2.PduV2Factory;
+import com.guardtime.ksi.service.client.KSIServiceCredentials;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Date;
+import java.util.List;
+
 public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
+
+    @Test
+    public void testAgggrConf() throws Exception {
+        KSIRequestContext context = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L);
+        PduV2Factory factory = new PduV2Factory();
+        AggregatorConfiguration cnf = factory.readAggregatorConfigurationResponse(context, TestUtil.loadTlv("aggregator-response-with-conf-ack-and-signature.tlv"));
+
+        Assert.assertEquals(cnf.getAggregationAlgorithm(), HashAlgorithm.SHA2_384);
+        Assert.assertTrue(cnf.getAggregationPeriod().equals(12288L));
+        Assert.assertTrue(cnf.getMaximumLevel().equals(19L));
+        Assert.assertTrue(cnf.getMaximumRequests().equals(17L));
+        Assert.assertTrue(cnf.getParents().size() == 3);
+        for (String parent : cnf.getParents()){
+            Assert.assertTrue(parent.contains(".url"));
+        }
+    }
 
     @Test
     public void testAggregationConfigurationRequestV2() throws Exception {
@@ -36,5 +62,4 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
     public void testAggregationConfigurationRequestV1() throws Exception {
         ksi.getAggregatorConfiguration();
     }
-
 }

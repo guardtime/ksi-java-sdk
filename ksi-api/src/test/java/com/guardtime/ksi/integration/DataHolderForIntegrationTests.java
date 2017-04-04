@@ -22,6 +22,7 @@ package com.guardtime.ksi.integration;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 
 public class DataHolderForIntegrationTests {
+//TODO: Convert to new format and add toString().
 
     private String testFile;
     private boolean expectException;

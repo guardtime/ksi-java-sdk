@@ -253,6 +253,7 @@ public abstract class AbstractCommonIntegrationTest {
 
     @DataProvider(name = EXTENDER_RESPONSES_DATA_PROVIDER)
     public static Object[][] getExtenderResponsesAndResultsForTlvParserVerification() throws Exception {
+        //TODO: Most likely should be converted into specific test cases.
         try{
             return getTestFilesAndResults("tlv_parser_verification_test_extender_responses_and_expected_results.txt");
         } catch (Throwable e){
@@ -261,6 +262,7 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     private static Object[][] getTestFilesAndResults(String fileName) throws Exception {
+        //TODO: Updated (if needed) according to new .csv format.
         BufferedReader fileReader = null;
         try {
             fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(CommonTestUtil.loadFile(fileName))));
@@ -295,6 +297,7 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     protected void testExecution(DataHolderForIntegrationTests testData, Policy policy) throws Exception {
+        //TODO: Update according to new .csv format and overall logic. Create specific classes (if) where needed.
         try {
             logger.info("Running test with the following data: " + testData.getTestDataInformation() + "; Policy: " + policy.getName());
             KSISignature signature = loadSignature(testData.getTestFile());

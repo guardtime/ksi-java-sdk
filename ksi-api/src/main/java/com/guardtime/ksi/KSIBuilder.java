@@ -25,7 +25,7 @@ import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
-import com.guardtime.ksi.pdu.ExtensionResponseFuture;
+import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.publication.PublicationData;
@@ -386,12 +386,7 @@ public final class KSIBuilder {
             if (dataHash == null) {
                 throw new KSIException("Invalid input parameter. Data hash must not be null");
             }
-            KSIRequestContext requestContext = new KSIRequestContext(
-                    pduIdentifierProvider.nextRequestId(),
-                    pduIdentifierProvider.getInstanceId(),
-                    pduIdentifierProvider.nextMessageId()
-            );
-            Future<AggregationResponse> aggregationResponseFuture = signingClient.sign(requestContext, dataHash, DEFAULT_LEVEL);
+            Future<AggregationResponse> aggregationResponseFuture = signingClient.sign(new KSIRequestContext(pduIdentifierProvider), dataHash, DEFAULT_LEVEL);
             return new KSISignatureFuture(aggregationResponseFuture, signatureFactory, dataHash);
         }
 
@@ -444,8 +439,7 @@ public final class KSIBuilder {
             if (signature.getAggregationTime().after(publicationRecord.getPublicationTime())) {
                 throw new KSIException("Publication is before signature");
             }
-            KSIRequestContext requestContext = new KSIRequestContext(pduIdentifierProvider.nextRequestId(), pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
-            ExtensionResponseFuture extenderFuture = extenderClient.extend(requestContext, signature.getAggregationTime(),
+            Future<ExtensionResponse> extenderFuture = extenderClient.extend(new KSIRequestContext(pduIdentifierProvider), signature.getAggregationTime(),
                     publicationRecord.getPublicationTime());
             return new ExtensionFuture(extenderFuture, publicationRecord, signature, signatureComponentFactory, signatureFactory);
         }

@@ -62,7 +62,6 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -125,12 +124,20 @@ public abstract class AbstractCommonIntegrationTest {
         SimpleHttpClient simpleHttpClient = new SimpleHttpClient(httpSettings);
         ApacheHttpClient apacheHttpClient = new ApacheHttpClient(httpSettings);
         TCPClientSettings tcpSettings = loadTCPSettings();
+        PendingKSIClient pendingKSIClient = new PendingKSIClient();
         KSISigningClient tcpClient = new TCPClient(tcpSettings);
-        List<KSISigningClient> signingClients = Arrays.asList(simpleHttpClient, apacheHttpClient, tcpClient);
-        List<KSIExtenderClient> extenderClients = new ArrayList<KSIExtenderClient>();
-        extenderClients.add(simpleHttpClient);
-        extenderClients.add(apacheHttpClient);
-        HAClient haClient = new HAClient(signingClients, extenderClients);
+        ApacheHttpClient failingClient = new ApacheHttpClient(new HttpClientSettings("http://.", "http://.", "http://.", new KSIServiceCredentials(".", ".")));
+        List<KSISigningClient> signingClientsForHa = new ArrayList<KSISigningClient>();
+        List<KSIExtenderClient> extenderClientsForHa = new ArrayList<KSIExtenderClient>();
+        signingClientsForHa.add(failingClient);
+        signingClientsForHa.add(simpleHttpClient);
+        signingClientsForHa.add(apacheHttpClient);
+        signingClientsForHa.add(pendingKSIClient);
+        extenderClientsForHa.add(simpleHttpClient);
+        extenderClientsForHa.add(apacheHttpClient);
+        extenderClientsForHa.add(failingClient);
+        extenderClientsForHa.add(pendingKSIClient);
+        HAClient haClient = new HAClient(signingClientsForHa, extenderClientsForHa);
 
         return new Object[][]{
                 new Object[]{createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient), simpleHttpClient},
@@ -242,8 +249,7 @@ public abstract class AbstractCommonIntegrationTest {
 
         Mockito.when(mockedExtenderClient.extend(Mockito.any(KSIRequestContext.class), Mockito.any(Date.class), Mockito.any(Date.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
-                KSIRequestContext requestContext = (KSIRequestContext) invocationOnMock.getArguments()[0];
-                requestContext.setCredentials(new KSIServiceCredentials("anon", "anon"));
+                KSIRequestContext requestContext = ((KSIRequestContext) invocationOnMock.getArguments()[0]).getWithCredentials(new KSIServiceCredentials("anon", "anon"));
                 Date aggregationTime = (Date) invocationOnMock.getArguments()[1];
                 Date publicationTime = (Date) invocationOnMock.getArguments()[2];
                 PduFactory pduFactory = new PduV1Factory();

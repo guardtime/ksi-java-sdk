@@ -51,9 +51,10 @@ public abstract class ExternalServiceConfigurationAwareSigningClient implements 
      * @throws KSIException
      */
     public AggregationResponseFuture sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
-        requestContext.setCredentials(getServiceCredentials());
+        requestContext = requestContext.getWithCredentials(getServiceCredentials());
         Future<TLVElement> requestFuture = sign(new ByteArrayInputStream(pduFactory.createAggregationRequest(requestContext,
                 dataHash, level).toByteArray()));
         return new AggregationResponseFuture(requestFuture, requestContext, pduFactory);
     }
+
 }

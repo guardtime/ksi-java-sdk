@@ -16,25 +16,24 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.selectionmaker;
+package com.guardtime.ksi.service.ha.settings;
 
-import java.util.Collection;
+public class SingleFunctionHAClientSettings {
 
-/**
- * Interface for different strategies for making a subset selection from list of things.
- */
-public interface SelectionMaker<T> {
+    private final int activeClientsInSingleSelection;
 
-    /**
-     * Makes the selection.
-     *
-     * @return collection of selected objects
-     */
-    Collection<T> select();
+    public SingleFunctionHAClientSettings(int activeClientsInSingleSelection) {
+        this.activeClientsInSingleSelection = activeClientsInSingleSelection;
+    }
 
-    /**
-     * @return collection of all the objects that are part of making the selection.
-     */
-    Collection<T> getAll();
+    public int getActiveClientsInSingleSelection() {
+        return activeClientsInSingleSelection;
+    }
 
+    @Override
+    public String toString() {
+        return "SingleFunctionHAClientSettings{" +
+                "activeClientsInSingleSelection=" + activeClientsInSingleSelection +
+                '}';
+    }
 }

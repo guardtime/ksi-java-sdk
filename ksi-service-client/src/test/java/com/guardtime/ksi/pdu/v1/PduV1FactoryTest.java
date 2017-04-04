@@ -43,8 +43,8 @@ public class PduV1FactoryTest {
     @BeforeMethod
     public void setUp() throws Exception {
         this.dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
-        this.requestContext = new KSIRequestContext(CREDENTIALS, 42275443333883166L, 42L, 42L);
-        this.extensionContext = new KSIRequestContext(CREDENTIALS, 5546551786909961666L, 42L, 42L);
+        this.requestContext = new KSIRequestContext(42275443333883166L, 42L, 42L).getWithCredentials(CREDENTIALS);
+        this.extensionContext = new KSIRequestContext(5546551786909961666L, 42L, 42L).getWithCredentials(CREDENTIALS);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class PduV1FactoryTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*request IDs do not match, sent .* received .*")
     public void testAggregationResponseContainsInvalidRequestId_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L, 42L, 42L), loadTlv("pdu/aggregation/aggregation-response-v1.tlv"));
+        pduFactory.readAggregationResponse(new KSIRequestContext(1L, 42L, 42L).getWithCredentials(CREDENTIALS), loadTlv("pdu/aggregation/aggregation-response-v1.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Response message does not contain response payload element")
@@ -115,7 +115,7 @@ public class PduV1FactoryTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(404\\):Not found")
     public void testExtensionRequest404ErrorWithResponse() throws Exception {
-        pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 4321L, 42L, 42L), loadTlv("pdu/extension/extension-response-v1-with-error-payload.tlv"));
+        pduFactory.readExtensionResponse(new KSIRequestContext(4321L, 42L, 42L).getWithCredentials(CREDENTIALS), loadTlv("pdu/extension/extension-response-v1-with-error-payload.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(404\\):Response error 404: Not found")

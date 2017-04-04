@@ -233,8 +233,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private KSISignature signRootNode(TreeNode rootNode) throws KSIException {
         DataHash dataHash = new DataHash(rootNode.getValue());
-        Long requestId = pduIdentifierProvider.nextRequestId();
-        KSIRequestContext requestContext = new KSIRequestContext(requestId, pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
+        KSIRequestContext requestContext = new KSIRequestContext(pduIdentifierProvider);
         Future<AggregationResponse> future = signingClient.sign(requestContext, dataHash, rootNode.getLevel());
         KSISignatureFuture KSISignatureFuture = new KSISignatureFuture(future, new InMemoryKsiSignatureFactory(), dataHash);
         return KSISignatureFuture.getResult();

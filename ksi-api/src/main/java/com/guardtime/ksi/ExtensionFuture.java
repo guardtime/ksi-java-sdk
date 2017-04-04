@@ -20,7 +20,6 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
@@ -39,7 +38,7 @@ import static java.util.Arrays.asList;
  */
 public final class ExtensionFuture implements Future<KSISignature> {
 
-    private final ExtensionResponseFuture future;
+    private final Future<ExtensionResponse> future;
     private final PublicationRecord publicationRecord;
     private final KSISignature signature;
     private final KSISignatureFactory signatureFactory;
@@ -47,7 +46,7 @@ public final class ExtensionFuture implements Future<KSISignature> {
 
     private KSISignature extendedSignature;
 
-    public ExtensionFuture(ExtensionResponseFuture future, PublicationRecord publicationRecord, KSISignature signature,
+    public ExtensionFuture(Future<ExtensionResponse> future, PublicationRecord publicationRecord, KSISignature signature,
                            KSISignatureComponentFactory signatureComponentFactory, KSISignatureFactory signatureFactory) {
         this.future = future;
         this.publicationRecord = publicationRecord;
@@ -63,7 +62,6 @@ public final class ExtensionFuture implements Future<KSISignature> {
                 CalendarHashChain calendarHashChain = signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());
                 SignaturePublicationRecord publication = signatureComponentFactory.createPublicationRecord(publicationRecord.getPublicationData(), publicationRecord.getPublicationReferences(), publicationRecord.getPublicationRepositoryURIs());
                 extendedSignature = signatureFactory.createSignature(asList(signature.getAggregationHashChains()), calendarHashChain, null, publication, signature.getRfc3161Record());
-
             } catch (com.guardtime.ksi.tlv.TLVParserException e) {
                 throw new KSIProtocolException("Can't parse response message", e);
             }

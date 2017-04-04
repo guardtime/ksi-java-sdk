@@ -35,7 +35,7 @@ public class RoundRobinSelectionMakerTest {
         RoundRobinSelectionMaker<Object> selectionMAker =
                 new RoundRobinSelectionMaker<Object>(singletonList(o), 1);
         for (int i = 0; i < 10; i++) {
-            Collection<Object> chosenSelection = selectionMAker.makeSelection();
+            Collection<Object> chosenSelection = selectionMAker.select();
             assertEquals(chosenSelection.size(), 1);
             assertTrue(chosenSelection.contains(o));
         }
@@ -47,13 +47,13 @@ public class RoundRobinSelectionMakerTest {
         Object o2 = new Object();
         RoundRobinSelectionMaker<Object> selectionMaker =
                 new RoundRobinSelectionMaker<Object>(asList(o1, o2), 1);
-        Collection<Object> chosenSelection = selectionMaker.makeSelection();
+        Collection<Object> chosenSelection = selectionMaker.select();
         assertEquals(chosenSelection.size(), 1);
         assertTrue(chosenSelection.contains(o1));
-        chosenSelection = selectionMaker.makeSelection();
+        chosenSelection = selectionMaker.select();
         assertEquals(chosenSelection.size(), 1);
         assertTrue(chosenSelection.contains(o2));
-        chosenSelection = selectionMaker.makeSelection();
+        chosenSelection = selectionMaker.select();
         assertEquals(chosenSelection.size(), 1);
         assertTrue(chosenSelection.contains(o1));
     }
@@ -64,7 +64,7 @@ public class RoundRobinSelectionMakerTest {
         Object o2 = new Object();
         RoundRobinSelectionMaker<Object> selectionMaker = new RoundRobinSelectionMaker<Object>(asList(o1, o2), 2);
         for (int i = 0; i < 10; i++) {
-            Collection<Object> chosenSelection = selectionMaker.makeSelection();
+            Collection<Object> chosenSelection = selectionMaker.select();
             assertEquals(chosenSelection.size(), 2);
             assertTrue(chosenSelection.contains(o1));
             assertTrue(chosenSelection.contains(o2));
@@ -80,32 +80,32 @@ public class RoundRobinSelectionMakerTest {
         Object o5 = new Object();
         RoundRobinSelectionMaker<Object> selectionMaker = new RoundRobinSelectionMaker<Object>(
                 asList(o1, o2, o3, o4, o5), 3);
-        Collection<Object> chosenSelection = selectionMaker.makeSelection();
+        Collection<Object> chosenSelection = selectionMaker.select();
         assertEquals(chosenSelection.size(), 3);
         assertTrue(chosenSelection.contains(o1));
         assertTrue(chosenSelection.contains(o2));
         assertTrue(chosenSelection.contains(o3));
-        chosenSelection = selectionMaker.makeSelection();
+        chosenSelection = selectionMaker.select();
         assertEquals(chosenSelection.size(), 3);
         assertTrue(chosenSelection.contains(o2));
         assertTrue(chosenSelection.contains(o3));
         assertTrue(chosenSelection.contains(o4));
-        chosenSelection = selectionMaker.makeSelection();
+        chosenSelection = selectionMaker.select();
         assertEquals(chosenSelection.size(), 3);
         assertTrue(chosenSelection.contains(o3));
         assertTrue(chosenSelection.contains(o4));
         assertTrue(chosenSelection.contains(o5));
-        chosenSelection = selectionMaker.makeSelection();
+        chosenSelection = selectionMaker.select();
         assertEquals(chosenSelection.size(), 3);
         assertTrue(chosenSelection.contains(o4));
         assertTrue(chosenSelection.contains(o5));
         assertTrue(chosenSelection.contains(o1));
-        chosenSelection = selectionMaker.makeSelection();
+        chosenSelection = selectionMaker.select();
         assertEquals(chosenSelection.size(), 3);
         assertTrue(chosenSelection.contains(o5));
         assertTrue(chosenSelection.contains(o1));
         assertTrue(chosenSelection.contains(o2));
-        chosenSelection = selectionMaker.makeSelection();
+        chosenSelection = selectionMaker.select();
         assertEquals(chosenSelection.size(), 3);
         assertTrue(chosenSelection.contains(o1));
         assertTrue(chosenSelection.contains(o2));

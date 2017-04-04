@@ -183,8 +183,6 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
 
     @Override
     public String toString() {
-        return "ApacheHttpClient{" +
-                "PDU Version=" + getPduVersion() +
-                '}';
+        return "ApacheHttpClient{Gateway='" + settings.getSigningUrl() + "', Extender='" + settings.getExtendingUrl() + "', Publications='" + settings.getPublicationsFileUrl() + "', LoginID='" + getServiceCredentials().getLoginId() + "', PDUVersion='" + getPduVersion() + "'}";
     }
 }

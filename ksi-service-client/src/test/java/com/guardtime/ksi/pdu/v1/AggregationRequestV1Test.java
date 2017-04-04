@@ -34,7 +34,7 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class AggregationRequestV1Test {
 
-    public static final KSIRequestContext REQUEST_CONTEXT = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 42L, 42L, 42L);
+    public static final KSIRequestContext REQUEST_CONTEXT = new KSIRequestContext(42L, 42L, 42L).getWithCredentials(new KSIServiceCredentials("anon", "anon"));
     private PduMessageHeader header;
 
     @BeforeMethod

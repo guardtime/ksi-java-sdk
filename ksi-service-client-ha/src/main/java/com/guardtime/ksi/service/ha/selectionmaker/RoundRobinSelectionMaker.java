@@ -36,7 +36,7 @@ public class RoundRobinSelectionMaker<T> implements SelectionMaker<T> {
         this.numberOfObjectsGivenInOnePick = numberOfObjectsGivenInOnePick;
     }
 
-    public synchronized Collection<T> makeSelection() {
+    public synchronized Collection<T> select() {
         if (objects.isEmpty() || objects.size() == numberOfObjectsGivenInOnePick) {
             return objects;
         }

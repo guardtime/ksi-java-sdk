@@ -16,25 +16,29 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.selectionmaker;
+package com.guardtime.ksi.service.ha;
 
-import java.util.Collection;
+import com.guardtime.ksi.service.client.KSIClientException;
+
+import java.util.Map;
 
 /**
- * Interface for different strategies for making a subset selection from list of things.
+ * This exception is thrown if all subclients of a HAClient fail.
  */
-public interface SelectionMaker<T> {
+public class AllHAClientSubclientsFailedException extends KSIClientException {
+
+    private Map<String, Exception> subClientsExceptions;
+
+    AllHAClientSubclientsFailedException(String message, Map<String, Exception> subClientsExceptions) {
+        super(message);
+        this.subClientsExceptions = subClientsExceptions;
+    }
 
     /**
-     * Makes the selection.
-     *
-     * @return collection of selected objects
+     * @return Exceptions thrown by subclients. Map keys are results of subclient ids and values are corresponding exceptions.
      */
-    Collection<T> select();
-
-    /**
-     * @return collection of all the objects that are part of making the selection.
-     */
-    Collection<T> getAll();
+    public Map<String, Exception> getSubClientsExceptions() {
+        return subClientsExceptions;
+    }
 
 }

@@ -58,7 +58,7 @@ public abstract class AbstractHttpClient extends ExternalServiceConfigurationAwa
     }
 
     public ExtensionResponseFuture extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
-        requestContext.setCredentials(getServiceCredentials());
+        requestContext = requestContext.getWithCredentials(getServiceCredentials());
         ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, aggregationTime, publicationTime);
         ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());
         HttpPostRequestFuture postRequestFuture = post(requestStream, settings.getExtendingUrl());

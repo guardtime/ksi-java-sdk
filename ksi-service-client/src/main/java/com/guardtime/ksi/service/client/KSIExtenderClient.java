@@ -19,6 +19,7 @@
 package com.guardtime.ksi.service.client;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
@@ -43,7 +44,7 @@ public interface KSIExtenderClient extends Closeable {
      *
      * @deprecated Not for public use since version 4.9. This method is expected to be retained only as a package private method. Replaced by {@link #extend(KSIRequestContext, Date, Date)}
      */
-    Future<TLVElement> extend(InputStream request) throws KSIClientException;
+    @Deprecated Future<TLVElement> extend(InputStream request) throws KSIClientException;
 
     /**
      * Used to extend existing signatures.
@@ -54,6 +55,6 @@ public interface KSIExtenderClient extends Closeable {
      * @return instance of {@ExtensionResponseFuture} containing calendar chains needed to extend the signature.
      * @throws KSIException
      */
-    ExtensionResponseFuture extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException;
+    Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException;
 
 }

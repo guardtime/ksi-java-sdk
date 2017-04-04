@@ -113,6 +113,6 @@ public class TCPClient extends ExternalServiceConfigurationAwareSigningClient {
 
     @Override
     public String toString() {
-        return "TCPClient{PDU Version=" + getPduVersion() + "}";
+        return "TCPClient{Gateway='" + tcpClientSettings.getEndpoint() + "', LoginID='" + getServiceCredentials().getLoginId() + "', PDUVersion='" + getPduVersion() + "'}";
     }
 }

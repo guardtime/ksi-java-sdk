@@ -45,8 +45,8 @@ public class PduV2FactoryTest {
     @BeforeMethod
     public void setUp() throws Exception {
         this.dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
-        this.requestContext = new KSIRequestContext(CREDENTIALS, 42275443333883166L, 42L, 42L);
-        this.extensionContext = new KSIRequestContext(CREDENTIALS, 5546551786909961666L, 42L, 42L);
+        this.requestContext = new KSIRequestContext(42275443333883166L, 42L, 42L).getWithCredentials(CREDENTIALS);
+        this.extensionContext = new KSIRequestContext(5546551786909961666L, 42L, 42L).getWithCredentials(CREDENTIALS);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class PduV2FactoryTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Aggregation response payload with requestId 1 wasn't found")
     public void testAggregationResponseContainsInvalidRequestId_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L, 42L, 42L), loadTlv("pdu/aggregation/aggregation-response-v2.tlv"));
+        pduFactory.readAggregationResponse(new KSIRequestContext(1L, 42L, 42L).getWithCredentials(CREDENTIALS), loadTlv("pdu/aggregation/aggregation-response-v2.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid response message. Response message must contain at least one payload element")
@@ -92,7 +92,7 @@ public class PduV2FactoryTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: .*")
     public void testAggregationResponseContainsErrorMessageInside02Element_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 8530358545345979581L, 42L, 42L), loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
+        pduFactory.readAggregationResponse(new KSIRequestContext(8530358545345979581L, 42L, 42L).getWithCredentials(CREDENTIALS), loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator")
@@ -137,7 +137,7 @@ public class PduV2FactoryTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: 'The request contained invalid payload'")
     public void testExtensionResponseContains02ErrorMessage_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readExtensionResponse(new KSIRequestContext(CREDENTIALS, 98765L, 42L, 42L), loadTlv("pdu/extension/extension-response-v2-with-error.tlv"));
+        pduFactory.readExtensionResponse(new KSIRequestContext(98765L, 42L, 42L).getWithCredentials(CREDENTIALS), loadTlv("pdu/extension/extension-response-v2-with-error.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid KSI response. Missing MAC.")
@@ -172,7 +172,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testReadV2ExtensionResponseContainingUnknownNonCriticalElement() throws Exception {
-        ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 8396215651691691389L, 42L, 42L), loadTlv("pdu/extension/extension-response-v2-unknown-non-critical-element.tlv"));
+        ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(8396215651691691389L, 42L, 42L).getWithCredentials(CREDENTIALS), loadTlv("pdu/extension/extension-response-v2-unknown-non-critical-element.tlv"));
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getCalendarHashChain());
     }

@@ -112,6 +112,6 @@ public class SimpleHttpClient extends AbstractHttpClient implements KSISigningCl
 
     @Override
     public String toString() {
-        return "SimpleHttpClient{PDU Version=" + getPduVersion() + "}";
+        return "SimpleHttpClient{Gateway='" + settings.getSigningUrl() + "', Extender='" + settings.getExtendingUrl() + "', Publications='" + settings.getPublicationsFileUrl() + "', LoginID='" + getServiceCredentials().getLoginId() + "', PDUVersion='" + getPduVersion() + "'}";
     }
 }

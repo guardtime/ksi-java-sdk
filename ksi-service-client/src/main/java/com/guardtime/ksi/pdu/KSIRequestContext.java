@@ -34,16 +34,11 @@ public final class KSIRequestContext {
     private Long messageId;
     private ServiceCredentials credentials;
 
-    /**
-     * @param credentials instance of {@link ServiceCredentials} object
-     * @param requestId   - request id
-     */
-    public KSIRequestContext(ServiceCredentials credentials, Long requestId) {
-        this.credentials = credentials;
-        this.requestId = requestId;
+    public KSIRequestContext(PduIdentifierProvider pduIdentifierProvider) {
+        this(pduIdentifierProvider.nextRequestId(),  pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
     }
 
-    public KSIRequestContext(ServiceCredentials credentials, Long requestId, Long instanceId, Long messageId) {
+    private KSIRequestContext(ServiceCredentials credentials, Long requestId, Long instanceId, Long messageId) {
         this(requestId, instanceId, messageId);
         this.credentials = credentials;
     }
@@ -76,7 +71,7 @@ public final class KSIRequestContext {
         return messageId;
     }
 
-    public void setCredentials(ServiceCredentials credentials) {
-        this.credentials = credentials;
+    public KSIRequestContext getWithCredentials(ServiceCredentials credentials) {
+        return new KSIRequestContext(credentials, requestId, instanceId, messageId);
     }
 }

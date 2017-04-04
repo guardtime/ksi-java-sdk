@@ -16,25 +16,26 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.selectionmaker;
+package com.guardtime.ksi.service.ha;
 
-import java.util.Collection;
+import com.guardtime.ksi.service.client.KSIClientException;
+import com.guardtime.ksi.service.client.KSISigningClient;
+import org.testng.annotations.Test;
 
-/**
- * Interface for different strategies for making a subset selection from list of things.
- */
-public interface SelectionMaker<T> {
+import java.io.ByteArrayInputStream;
+import java.util.Collections;
 
-    /**
-     * Makes the selection.
-     *
-     * @return collection of selected objects
-     */
-    Collection<T> select();
+import static org.mockito.Mockito.mock;
 
-    /**
-     * @return collection of all the objects that are part of making the selection.
-     */
-    Collection<T> getAll();
+public class SigningHAClientTest {
 
+    @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "SigningHAClient.sign\\" +
+            "(inputStream\\) is " +
+            "not supported. Use SignerHAClient.sign\\(ksiRequestContext, dataHash, level\\) instead")
+    public void testSigningStream() throws Exception {
+        SigningHAClient client = new SigningHAClient(
+                Collections.singletonList(mock(KSISigningClient.class))
+        );
+        client.sign(new ByteArrayInputStream(new byte[] {}));
+    }
 }

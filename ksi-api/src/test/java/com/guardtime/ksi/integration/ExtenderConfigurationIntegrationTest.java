@@ -34,7 +34,7 @@ import java.util.Date;
 public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
     
     @Test
-    public void testExtConf() throws Exception {
+    public void testConfigurationResponseParsingV2() throws Exception {
         KSIRequestContext context = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L);
         PduV2Factory factory = new PduV2Factory();
         ExtenderConfiguration cnf = factory.readExtenderConfigurationResponse(context, TestUtil.loadTlv("extender-response-with-conf-and-calendar.tlv"));

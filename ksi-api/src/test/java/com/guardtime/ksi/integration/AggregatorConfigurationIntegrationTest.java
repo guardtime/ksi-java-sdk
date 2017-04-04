@@ -37,7 +37,7 @@ import java.util.List;
 public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test
-    public void testAgggrConf() throws Exception {
+    public void testConfigurationResponseParsingV2() throws Exception {
         KSIRequestContext context = new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L);
         PduV2Factory factory = new PduV2Factory();
         AggregatorConfiguration cnf = factory.readAggregatorConfigurationResponse(context, TestUtil.loadTlv("aggregator-response-with-conf-ack-and-signature.tlv"));

@@ -188,7 +188,7 @@ public class PduV2FactoryTest {
         Assert.assertEquals(tlv.getChildElements(0x04).size(), 1);
     }
     @Test
-    public void testAggregationConfigurationResponseParsingV2() throws Exception {
+    public void testAggregationConfigurationResponseParsingWithMultiplePayloadsV2() throws Exception {
         AggregatorConfiguration cnf = pduFactory.readAggregatorConfigurationResponse(requestContext, loadTlv("pdu/aggregation/aggregator-response-with-conf-ack-and-signature.tlv"));
 
         Assert.assertEquals(cnf.getAggregationAlgorithm(), HashAlgorithm.SHA2_384);
@@ -229,7 +229,7 @@ public class PduV2FactoryTest {
     }
 
     @Test
-    public void testExtenderConfigurationResponseParsingV2() throws Exception {
+    public void testExtenderConfigurationResponseParsingWithMultiplePayloadsV2() throws Exception {
         ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, loadTlv("pdu/extension/extender-response-with-conf-and-calendar.tlv"));
 
         Assert.assertTrue(cnf.getCalendarFirstTime().equals(new Date(5557150000L)));

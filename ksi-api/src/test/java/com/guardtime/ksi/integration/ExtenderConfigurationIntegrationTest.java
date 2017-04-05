@@ -17,28 +17,31 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.unisignature.inmemory;
+package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.v2.PduV2Factory;
+import com.guardtime.ksi.service.client.KSIServiceCredentials;
 
-public class InvalidSignatureContentException extends KSIException {
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-    private KSISignature signature;
-    private VerificationResult verificationResult;
+import java.util.Date;
 
-    public InvalidSignatureContentException(InMemoryKsiSignature signature, VerificationResult verificationResult) {
-        super("Signature (inputHash:" + signature.getInputHash() + ", extended=" + signature.isExtended() + ") is invalid: " + verificationResult.getErrorCode() + "('" + verificationResult.getErrorCode().getMessage() + "')");
-        this.signature = signature;
-        this.verificationResult = verificationResult;
+public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
+
+    @Test
+    public void testExtenderConfigurationRequestV2() throws Exception {
+        ExtenderConfiguration response = ksiV2.getExtenderConfiguration();
+        Assert.assertNotNull(response);
     }
 
-    public KSISignature getSignature() {
-        return signature;
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
+    public void testExtenderConfigurationRequestV1() throws Exception {
+        ksi.getExtenderConfiguration();
     }
 
-    public VerificationResult getVerificationResult() {
-        return verificationResult;
-    }
 }

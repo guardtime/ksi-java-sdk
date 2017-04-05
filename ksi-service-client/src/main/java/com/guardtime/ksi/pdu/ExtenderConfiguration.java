@@ -17,10 +17,32 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi.service.tcp;
+package com.guardtime.ksi.pdu;
 
-public class TCPTimeoutException extends KSITCPTransactionException {
-    public TCPTimeoutException(String message) {
-        super("TCP timeout: " + message);
-    }
+import java.util.Date;
+import java.util.List;
+
+/**
+ * Interface for extender configuration.
+ */
+public interface ExtenderConfiguration {
+    /**
+     * Returns the maximum number of requests the client is allowed to send within one second
+     */
+    Long getMaximumRequests();
+
+    /**
+     * Returns a list of parent server URI-s
+     */
+    List<String> getParents();
+
+    /**
+     * Returns the aggregation time of the newest calendar record the extender has.
+     */
+    Date getCalendarFirstTime();
+
+    /**
+     * Return the aggregation time of the oldest calendar record the extender has
+     */
+    Date getCalendarLastTime();
 }

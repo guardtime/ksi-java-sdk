@@ -32,6 +32,8 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+
 public class UserProvidedPublicationHashEqualsToSignaturePublicationHashRuleTest extends AbstractRuleTest {
 
     private Rule rule = new UserProvidedPublicationHashEqualsToSignaturePublicationHashRule();
@@ -39,14 +41,14 @@ public class UserProvidedPublicationHashEqualsToSignaturePublicationHashRuleTest
     @Test
     public void testUserPublicationHashDoesNotEqualToSignaturePublicationHash_Ok() throws Exception {
         PublicationData publication = new PublicationData(new Date(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig"), publication));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02), publication));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_04);
     }
 
     @Test
     public void testUserPublicationHashEqualToSignaturePublicationHash_Ok() throws Exception {
-        KSISignature signature = TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig");
+        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
         Assert.assertEquals(rule.verify(build(signature, signature.getPublicationRecord().getPublicationData())).getResultCode(), VerificationResultCode.OK);
     }
 

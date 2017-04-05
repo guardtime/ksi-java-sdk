@@ -31,6 +31,10 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_NO_PUBLICATION_RECORD;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+
 public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTest {
 
     private PublicationsFileContainsPublicationRule rule = new PublicationsFileContainsPublicationRule();
@@ -40,19 +44,19 @@ public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTes
     @BeforeMethod
     public void setUp() throws Exception {
         this.context = Mockito.mock(VerificationContext.class);
-        Mockito.when(context.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile("publications-file/publications.tlv"));
+        Mockito.when(context.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile(PUBLICATIONS_FILE));
     }
 
     @Test
     public void testPublicationFileContainsPublication_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig"), TestUtil.loadPublicationsFile("publications-file/publications.tlv")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02), TestUtil.loadPublicationsFile(PUBLICATIONS_FILE)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     //TODO: Start using new resource pack files.
     @Test
     public void testPublicationFileDoesntContainsPublication_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("publication-based-verification/ExtendedSignature-NoPubRec.ksig"), TestUtil.loadPublicationsFile("publications-file/publications.tlv")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(EXTENDED_SIGNATURE_NO_PUBLICATION_RECORD), TestUtil.loadPublicationsFile(PUBLICATIONS_FILE)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 

@@ -32,6 +32,10 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_04_30;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+
 public class PublicationsFileExtendedSignatureInputHashRuleTest extends AbstractRuleTest {
 
     private Rule rule = new PublicationsFileExtendedSignatureInputHashRule();
@@ -39,18 +43,18 @@ public class PublicationsFileExtendedSignatureInputHashRuleTest extends Abstract
 
     @BeforeMethod
     public void setUp() throws Exception {
-        KSISignature sig = TestUtil.loadSignature("ok-sig-2014-04-30.1-extended.ksig");
+        KSISignature sig = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_04_30);
         this.mockedVerificationContext = Mockito.mock(VerificationContext.class);
         Mockito.when(mockedVerificationContext.getSignature()).thenReturn(sig);
         Mockito.when(mockedVerificationContext.getUserProvidedPublication()).thenReturn(sig.getPublicationRecord().getPublicationData());
-        Mockito.when(mockedVerificationContext.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile("publications-file/publications.tlv"));
+        Mockito.when(mockedVerificationContext.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile(PUBLICATIONS_FILE));
         Mockito.when(mockedVerificationContext.getCalendarHashChain()).thenReturn(sig.getCalendarHashChain());
         Mockito.when(mockedVerificationContext.getLastAggregationHashChain()).thenReturn(sig.getAggregationHashChains()[sig.getAggregationHashChains().length - 1]);
     }
 
     @Test
     public void testVerifyExtendedCalendarChainInputHashMatchesWithInitialSignature_Ok() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("ok-sig-2014-04-30.1-extended.ksig").getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_04_30).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertNull(result.getErrorCode());
@@ -58,7 +62,7 @@ public class PublicationsFileExtendedSignatureInputHashRuleTest extends Abstract
 
     @Test
     public void testVerifyExtendedCalendarChainInputHashDoesNotMatchWithInitialSignature_Ok() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig").getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_03);

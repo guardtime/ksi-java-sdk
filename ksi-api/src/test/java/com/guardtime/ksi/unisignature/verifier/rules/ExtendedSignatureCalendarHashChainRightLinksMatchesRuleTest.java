@@ -32,6 +32,10 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_04_30;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_04_30;
+
 public class ExtendedSignatureCalendarHashChainRightLinksMatchesRuleTest extends AbstractRuleTest {
 
     private Rule rule = new ExtendedSignatureCalendarHashChainRightLinksMatchesRule();
@@ -39,7 +43,7 @@ public class ExtendedSignatureCalendarHashChainRightLinksMatchesRuleTest extends
 
     @BeforeMethod
     public void setUp() throws Exception {
-        KSISignature sig = TestUtil.loadSignature("ok-sig-2014-04-30.1.ksig");
+        KSISignature sig = TestUtil.loadSignature(SIGNATURE_2014_04_30);
         this.mockedVerificationContext = Mockito.mock(VerificationContext.class);
         Mockito.when(mockedVerificationContext.getSignature()).thenReturn(sig);
         Mockito.when(mockedVerificationContext.getLastAggregationHashChain()).thenReturn(sig.getAggregationHashChains()[sig.getAggregationHashChains().length - 1]);
@@ -47,7 +51,7 @@ public class ExtendedSignatureCalendarHashChainRightLinksMatchesRuleTest extends
 
     @Test
     public void testVerifyExtendedSignatureContainsMoreRightLinks() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig").getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.CAL_04);
@@ -55,7 +59,7 @@ public class ExtendedSignatureCalendarHashChainRightLinksMatchesRuleTest extends
 
     @Test
     public void testVerifyExtendedSignatureContainsSameRightLinks() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("ok-sig-2014-04-30.1-extended.ksig").getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_04_30).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }

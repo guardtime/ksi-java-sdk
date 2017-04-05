@@ -26,6 +26,8 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+
 public class CalendarHashChainInputHashVerificationRuleTest extends AbstractRuleTest {
 
     private CalendarHashChainInputHashVerificationRule rule = new CalendarHashChainInputHashVerificationRule();
@@ -46,7 +48,7 @@ public class CalendarHashChainInputHashVerificationRuleTest extends AbstractRule
 
     @Test
     public void testVerifySignatureWithCorrectCalendarHashChainReturnsOkStatus_Ok() throws Exception {
-        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig"))).getResultCode(), VerificationResultCode.OK);
+        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature(SIGNATURE_2014_06_02))).getResultCode(), VerificationResultCode.OK);
     }
 
 }

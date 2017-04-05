@@ -26,19 +26,22 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+
 public class SignaturePublicationRecordPublicationHashRuleTest extends AbstractRuleTest {
 
     private SignaturePublicationRecordPublicationHashRule rule = new SignaturePublicationRecordPublicationHashRule();
 
     @Test
     public void testPublicationRecordPublicationDataHashEqualsToCalendarHashChainOutputHash_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testThatRuleReturnsStatusOkWhenPublicationRecordIsMissing_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2014_06_02)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 

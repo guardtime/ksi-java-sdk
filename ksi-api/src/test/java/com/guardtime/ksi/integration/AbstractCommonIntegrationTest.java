@@ -59,6 +59,9 @@ import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import static com.guardtime.ksi.Resources.CSV_TLV_PARSER;
+import static com.guardtime.ksi.Resources.PROPERTIES_INTEGRATION_TEST;
+import static com.guardtime.ksi.Resources.TRUSTSTORE_KSI;
 import static com.guardtime.ksi.TestUtil.*;
 
 public abstract class AbstractCommonIntegrationTest {
@@ -72,18 +75,13 @@ public abstract class AbstractCommonIntegrationTest {
     protected static final String TLV_PARSER_VERIFICATION_DATA_PROVIDER = "TLV_PARSER_VERIFICATION_DATA_PROVIDER";
     protected static final String EXTENDER_RESPONSES_DATA_PROVIDER = "EXTENDER_RESPONSES_DATA_PROVIDER";
     protected static final String DEFAULT_HASH_ALGORITHM = "DEFAULT";
-    protected static final String INPUT_FILE = "infile";
     private static final int DEFAULT_TIMEOUT = 5000;
     private static final String DEFAULT_SIGNING_URL = "http://stamper.guardtime.net/gt-signingservice";
     private static final String DEFAULT_EXTENDER_URL = "http://verifier.guardtime.net/gt-extendingservice";
     private static final String DEFAULT_PUBFILE_URL = "http://verify.guardtime.com/gt-controlpublications.bin";
     protected static String javaKeyStorePath = null;
 
-    public static final String SIGNATURE_2014_06_02 = "ok-sig-2014-06-2.ksig";
-    public static final String EXTENDED_SIGNATURE_2014_06_02 = "ok-sig-2014-06-2-extended.ksig";
-    public static final String EXTENDED_SIGNATURE_2014_04_30 = "ok-sig-2014-04-30.1-extended.ksig";
     public static final String PUIBLICATION_STRING_2014_05_15 = "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
-    public static final String KSI_TRUSTSTORE_LOCATION = "ksi-truststore.jks";
     public static final String KSI_TRUSTSTORE_PASSWORD = "changeit";
 
     protected KSI ksi;
@@ -134,7 +132,7 @@ public abstract class AbstractCommonIntegrationTest {
 
     protected static TCPClientSettings loadTCPSettings() throws IOException {
         Properties prop = new Properties();
-        prop.load(load("integrationtest.properties"));
+        prop.load(load(PROPERTIES_INTEGRATION_TEST));
         String signerIP = prop.getProperty("tcp.signerIP");
         int tcpThreadPoolSize = Integer.parseInt(prop.getProperty("tcp.maxParallelTransactions"));
         int signerPort = Integer.parseInt(prop.getProperty("tcp.signerPort"));
@@ -147,7 +145,7 @@ public abstract class AbstractCommonIntegrationTest {
 
     public static HttpClientSettings loadHTTPSettings(PduVersion pduVersion) throws IOException {
         Properties prop = new Properties();
-        prop.load(load("integrationtest.properties"));
+        prop.load(load(PROPERTIES_INTEGRATION_TEST));
         String extenderUrl = prop.getProperty("extenderUrl", DEFAULT_EXTENDER_URL);
         String publicationsFileUrl = prop.getProperty("pubfileUrl", DEFAULT_PUBFILE_URL);
         String signingUrl = prop.getProperty("gatewayUrl", DEFAULT_SIGNING_URL);
@@ -183,7 +181,7 @@ public abstract class AbstractCommonIntegrationTest {
 
     protected static KSIBuilder initKsiBuilder(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
         KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(KSI_TRUSTSTORE_LOCATION), KSI_TRUSTSTORE_PASSWORD.toCharArray());
+        trustStore.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(TRUSTSTORE_KSI), KSI_TRUSTSTORE_PASSWORD.toCharArray());
         return new KSIBuilder().setKsiProtocolExtenderClient(extenderClient).
                 setKsiProtocolPublicationsFileClient(publicationsFileClient).
                 setKsiProtocolSignerClient(signingClient).
@@ -255,7 +253,7 @@ public abstract class AbstractCommonIntegrationTest {
     public static Object[][] getExtenderResponsesAndResultsForTlvParserVerification() throws Exception {
         //TODO: Most likely should be converted into specific test cases.
         try{
-            return getTestFilesAndResults("tlv_parser_verification_test_extender_responses_and_expected_results.txt");
+            return getTestFilesAndResults(CSV_TLV_PARSER);
         } catch (Throwable e){
             return new Object[][] {{}};
         }

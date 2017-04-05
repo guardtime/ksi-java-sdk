@@ -44,7 +44,8 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
-import static com.guardtime.ksi.TestUtil.PUBLICATIONS_FILE_27_07_2016;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_2016_07_27;
+import static com.guardtime.ksi.Resources.TRUSTSTORE_KSI;
 
 public class KsiTest {
 
@@ -83,13 +84,13 @@ public class KsiTest {
         mockedResponse = Mockito.mock(Future.class);
 
         mockedPublicationsFileResponse = Mockito.mock(Future.class);
-        Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load(PUBLICATIONS_FILE_27_07_2016))));
+        Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load(PUBLICATIONS_FILE_2016_07_27))));
         Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(mockedPublicationsFileResponse);
 
         this.defaultDataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
 
         KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(TestUtil.load("ksi-truststore.jks"), "changeit".toCharArray());
+        keyStore.load(TestUtil.load(TRUSTSTORE_KSI), "changeit".toCharArray());
 
         this.ksi = new KSIBuilder().
                 setKsiProtocolExtenderClient(mockedExtenderClient).

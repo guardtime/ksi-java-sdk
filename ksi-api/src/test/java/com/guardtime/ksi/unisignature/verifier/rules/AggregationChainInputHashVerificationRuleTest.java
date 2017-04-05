@@ -26,13 +26,15 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+
 public class AggregationChainInputHashVerificationRuleTest extends AbstractRuleTest {
 
     private Rule rule = new AggregationChainInputHashVerificationRule();
 
     @Test
     public void testSignatureWithoutRfc3161RecordReturnsOkStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2014_06_02)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertEquals(result.getRuleName(), AggregationChainInputHashVerificationRule.class.getSimpleName());

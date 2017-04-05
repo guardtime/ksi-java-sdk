@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.guardtime.ksi.Resources.INPUT_FILE;
+
 public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
 
     private static final String KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER = "ksiInvalidCredentialsTCPDataProvider";

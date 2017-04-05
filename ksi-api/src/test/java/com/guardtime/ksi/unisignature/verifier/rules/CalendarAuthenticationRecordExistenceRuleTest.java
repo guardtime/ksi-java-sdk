@@ -26,6 +26,8 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+
 public class CalendarAuthenticationRecordExistenceRuleTest extends AbstractRuleTest {
 
     private CalendarAuthenticationRecordExistenceRule rule = new CalendarAuthenticationRecordExistenceRule();
@@ -40,7 +42,7 @@ public class CalendarAuthenticationRecordExistenceRuleTest extends AbstractRuleT
 
     @Test
     public void testSignatureWithCalendarAuthenticationRecordReturnsOkStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2014_06_02)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 

@@ -26,6 +26,8 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+
 public class AggregationHashChainTimeConsistencyRuleTest extends AbstractRuleTest {
 
     private AggregationHashChainTimeConsistencyRule rule = new AggregationHashChainTimeConsistencyRule();
@@ -40,7 +42,7 @@ public class AggregationHashChainTimeConsistencyRuleTest extends AbstractRuleTes
 
     @Test
     public void testSignatureWithCorrectAggregationChainsReturnsOkStatus_Ok() throws Exception {
-        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig"))).getResultCode(), VerificationResultCode.OK);
+        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature(SIGNATURE_2014_06_02))).getResultCode(), VerificationResultCode.OK);
     }
 
 }

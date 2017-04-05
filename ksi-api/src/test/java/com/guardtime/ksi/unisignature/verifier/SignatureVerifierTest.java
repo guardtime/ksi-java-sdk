@@ -31,6 +31,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+
 public class SignatureVerifierTest {
 
     private SignatureVerifier verifier;
@@ -44,7 +46,7 @@ public class SignatureVerifierTest {
         this.fallbackPolicy = Mockito.mock(Policy.class);
         this.verifier = new KSISignatureVerifier();
         this.context = Mockito.mock(VerificationContext.class);
-        Mockito.when(context.getSignature()).thenReturn(TestUtil.loadSignature("ok-sig-2014-06-2.ksig"));
+        Mockito.when(context.getSignature()).thenReturn(TestUtil.loadSignature(SIGNATURE_2014_06_02));
     }
 
     @Test

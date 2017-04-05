@@ -127,7 +127,7 @@ public class InMemoryKsiSignatureTest {
 
     @Test(expectedExceptions = {InvalidAggregationHashChainException.class}, expectedExceptionsMessageRegExp = "Aggregation chain index list can not be empty")
     public void verifyWithEmptyChainIndex_ThrowsException() throws Exception {
-        TestUtil.loadSignature("signature-test-pack/invalid-signatures/aggregation-chain/invalid-signature-aggr-chain-chain-index-missing-tag.tlv");
+        TestUtil.loadSignature("invalid-signatures/aggregation-chain/invalid-signature-aggr-chain-chain-index-missing-tag.tlv");
     }
 
     @Test

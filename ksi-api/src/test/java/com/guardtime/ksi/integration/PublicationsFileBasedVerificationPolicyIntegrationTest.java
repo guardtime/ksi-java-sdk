@@ -32,13 +32,29 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import org.bouncycastle.util.Store;
-import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.security.cert.X509Certificate;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_04_30;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_CERT;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_HEADER;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD2;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN_WITH_NON_CIRITCAL_ELEMENTS;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_CERT;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_HEADER;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN_WITH_CIRITCAL_ELEMENTS;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD2;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_WRONG_HASH;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
 
 public class PublicationsFileBasedVerificationPolicyIntegrationTest extends AbstractCommonIntegrationTest {
 
@@ -49,7 +65,7 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureWithCorrectDataAndSuitablePublicationInPublicationFile_VerificationReturnsOK() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(EXTENDED_SIGNATURE_2014_06_02, "publications-file/publications.tlv", false, simpleHttpClient);
+        VerificationResult results = publicationFileBasedVerification(EXTENDED_SIGNATURE_2014_06_02, PUBLICATIONS_FILE, false, simpleHttpClient);
         Assert.assertTrue(results.isOk());
     }
 
@@ -77,72 +93,72 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x1 encountered")
     public void testVerifySignatureWithPublicationWithExtraCriticalElementInPublicationRecordLvl1() throws Exception {
-        publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-critical-element-in-publication-record-lvl1.tlv", true, simpleHttpClient);
+        publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD, true, simpleHttpClient);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x5 encountered")
     public void testVerifySignatureWithPublicationWithExtraCriticalElementInPublicationRecordLvl2() throws Exception {
-        publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-critical-element-in-publication-record-lvl2.tlv", true, simpleHttpClient);
+        publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD2, true, simpleHttpClient);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
     public void testVerifySignatureWithPublicationWithNewCriticalTlvBlock() throws Exception {
-        publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-critical-nested-tlv-in-main.tlv", true, simpleHttpClient);
+        publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN, true, simpleHttpClient);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
     public void testVerifySignatureWithPublicationWithNewCriticalTlbBlockWithNonCriticalChild() throws Exception {
-        publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-critical-nested-tlv-in-main-with-non-critical-tlvs.tlv", true, simpleHttpClient);
+        publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN_WITH_NON_CIRITCAL_ELEMENTS, true, simpleHttpClient);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithPublicationWithNewNonCriticalElementInPublicationRecordLvl1() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-non-critical-element-in-publication-record-lvl1.tlv", true, simpleHttpClient);
+        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD, true, simpleHttpClient);
         Assert.assertTrue(results.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithPublicationWithNewNonCriticalElementInPublicationRecordLvl2() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-non-critical-element-in-publication-record-lvl2.tlv", true, simpleHttpClient);
+        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD2, true, simpleHttpClient);
         Assert.assertTrue(results.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
     public void testVerifySignatureWithPublicationWithNewNonCriticalTlvBlock() throws Exception {
-        publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-non-critical-nested-tlv-in-main.tlv", true, simpleHttpClient);
+        publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN, true, simpleHttpClient);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
     public void testVerifySignatureWithPublicationWithNewNonCriticalTlvBlockWithCriticalChild() throws Exception {
-        publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-non-critical-nested-tlv-in-main-with-critical-tlvs.tlv", true, simpleHttpClient);
+        publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN_WITH_CIRITCAL_ELEMENTS, true, simpleHttpClient);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x5 encountered")
     public void testVerifySignatureWithPublicationWithNewCriticalElementInCertificateRecord() throws Exception {
-        publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-critical-element-in-certificate-record-lvl1.tlv", true, simpleHttpClient);
+        publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_CERT, true, simpleHttpClient);
 
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x5 encountered")
     public void testVerifySignatureWithPublicationWithNewCriticalElementInPublicationHeader() throws Exception {
-        publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-critical-element-in-publication-header-lvl1.tlv", true, simpleHttpClient);
+        publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_HEADER, true, simpleHttpClient);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithPublicationWithNewNonCriticalElementInCertificateRecord() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-non-critical-element-in-certificate-record-lvl1.tlv", true, simpleHttpClient);
+        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_CERT, true, simpleHttpClient);
         Assert.assertTrue(results.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithPublicationWithNewNonCriticalElementInPublicationHeader() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publicartions-new-non-critical-element-in-publication-header-lvl1.tlv", true, simpleHttpClient);
+        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_HEADER, true, simpleHttpClient);
         Assert.assertTrue(results.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithPublicationWithWrongPublicationHash() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, "publications-file/publications-one-cert-one-publication-record-with-wrong-hash.tlv", true, simpleHttpClient);
+        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_WRONG_HASH, true, simpleHttpClient);
         Assert.assertFalse(results.isOk());
         Assert.assertEquals(results.getErrorCode(), VerificationErrorCode.PUB_01);
     }

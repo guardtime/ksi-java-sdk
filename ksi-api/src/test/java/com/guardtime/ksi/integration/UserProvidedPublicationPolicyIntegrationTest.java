@@ -20,21 +20,16 @@
 package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.unisignature.*;
-import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
-import org.mockito.Mockito;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Date;
-
-import static com.guardtime.ksi.TestUtil.loadSignature;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
 
 public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommonIntegrationTest {
 

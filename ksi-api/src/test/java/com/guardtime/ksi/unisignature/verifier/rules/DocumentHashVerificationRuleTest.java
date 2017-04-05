@@ -29,13 +29,16 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.INPUT_FILE;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+
 public class DocumentHashVerificationRuleTest extends AbstractRuleTest {
 
     private Rule rule = new DocumentHashVerificationRule();
 
     @Test
     public void testSignatureVerificationWithoutDocumentHashReturnsOkStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2014_06_02)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertNull(result.getErrorCode());
@@ -44,13 +47,13 @@ public class DocumentHashVerificationRuleTest extends AbstractRuleTest {
     @Test
     public void testSignatureVerificationWithValidDocumentHashReturnsOkStatus_Ok() throws Exception {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
-        hasher.addData(TestUtil.loadFile("infile"));
-        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig"), hasher.getHash())).getResultCode(), VerificationResultCode.OK);
+        hasher.addData(TestUtil.loadFile(INPUT_FILE));
+        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature(SIGNATURE_2014_06_02), hasher.getHash())).getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testSignatureVerificationWithInvalidDocumentHashReturnsOkStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig"), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2014_06_02), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_1);
     }

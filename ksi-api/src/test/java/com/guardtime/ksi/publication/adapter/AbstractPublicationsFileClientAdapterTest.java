@@ -31,7 +31,7 @@ import java.nio.ByteBuffer;
 import java.security.cert.X509Certificate;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
-import static com.guardtime.ksi.TestUtil.PUBLICATIONS_FILE_27_07_2016;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_2016_07_27;
 
 public class AbstractPublicationsFileClientAdapterTest {
 
@@ -46,7 +46,7 @@ public class AbstractPublicationsFileClientAdapterTest {
 
         mockedPublicationsFileClient = Mockito.mock(KSIPublicationsFileClient.class);
         mockedPublicationsFileResponse = Mockito.mock(Future.class);
-        Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load(PUBLICATIONS_FILE_27_07_2016))));
+        Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load(PUBLICATIONS_FILE_2016_07_27))));
         Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(mockedPublicationsFileResponse);
     }
 

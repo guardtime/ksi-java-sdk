@@ -36,6 +36,8 @@ import org.testng.annotations.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_2015_09_15;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
@@ -61,7 +63,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testExtendWithPublicationsFile_OK() throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2014_06_02);
-        PublicationsFile publicationsFile = TestUtil.loadPublicationsFile("publications-file/publication-2015-09-15.tlv");
+        PublicationsFile publicationsFile = TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_2015_09_15);
         PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(signature.getPublicationTime());
         KSISignature extendedSignature = ksi.extend(signature, publicationRecord);
         Assert.assertTrue(extendedSignature.isExtended());

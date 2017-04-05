@@ -29,6 +29,12 @@ import com.guardtime.ksi.unisignature.verifier.policies.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_04_30;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_WRONG_HASH;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.SIGNATURE_EXTENDED_2015_01;
+
 
 public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest {
 
@@ -73,8 +79,8 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         PublicationsFileBasedVerificationPolicy policy = new PublicationsFileBasedVerificationPolicy();
         policy.setFallbackPolicy(new UserProvidedPublicationBasedVerificationPolicy());
 
-        PublicationsFile publicationFile = TestUtil.loadPublicationsFile("publications-file/publications-one-cert-one-publication-record-with-wrong-hash.tlv");
-        KSISignature signature = TestUtil.loadSignature("testdata-extended.txt.2015-01.tlv");
+        PublicationsFile publicationFile = TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_WRONG_HASH);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_EXTENDED_2015_01);
         PublicationData publicationData = signature.getPublicationRecord().getPublicationData();
 
         VerificationContextBuilder builder = new VerificationContextBuilder();

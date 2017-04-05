@@ -28,6 +28,8 @@ import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPoli
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.INPUT_FILE;
+import static com.guardtime.ksi.Resources.INPUT_FILE_REVERSED;
 import static com.guardtime.ksi.TestUtil.loadFile;
 
 public class SignIntegrationTest extends AbstractCommonIntegrationTest {
@@ -49,7 +51,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
     public void testSignFileAndUseInvalidHashForVerification_VerificationFailsWithErrorGen1(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
         KSISignature sig = ksi.sign(loadFile(INPUT_FILE));
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, extenderClient, getFileHash("infile_rev")), new KeyBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, extenderClient, getFileHash(INPUT_FILE_REVERSED)), new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_1);
     }

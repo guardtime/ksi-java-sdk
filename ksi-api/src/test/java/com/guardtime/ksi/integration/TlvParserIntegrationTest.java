@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+
 public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TlvParserIntegrationTest.class);

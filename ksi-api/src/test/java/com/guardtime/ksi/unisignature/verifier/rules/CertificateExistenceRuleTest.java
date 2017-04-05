@@ -32,6 +32,8 @@ import org.testng.annotations.Test;
 
 import java.security.cert.Certificate;
 
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+
 public class CertificateExistenceRuleTest {
 
     private CertificateExistenceRule rule = new CertificateExistenceRule();
@@ -40,7 +42,7 @@ public class CertificateExistenceRuleTest {
     @BeforeMethod
     public void setUp() throws Exception {
         this.context = Mockito.mock(VerificationContext.class);
-        KSISignature signature = TestUtil.loadSignature("ok-sig-2014-06-2.ksig");
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_06_02);
         Mockito.when(context.getSignature()).thenReturn(signature);
         Mockito.when(context.getCalendarAuthenticationRecord()).thenReturn(signature.getCalendarAuthenticationRecord());
         Mockito.when(context.getCertificate(Mockito.any(byte[].class))).thenReturn(null);

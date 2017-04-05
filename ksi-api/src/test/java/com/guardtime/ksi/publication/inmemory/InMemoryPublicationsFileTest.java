@@ -31,7 +31,7 @@ import java.util.Date;
 
 public class InMemoryPublicationsFileTest {
 
-    public static final String PUBLICATIONS_FILE_OK = "publications.tlv";
+    public static final String PUBLICATIONS_FILE_OK = "publications-file/publications.tlv";
     public static final String PUBLICATIONS_FILE_INVALID_ORDER = "publications-file/publications-file-reordered.tlv";
     public static final String PUBLICATIONS_FILE_HEADER_MISSING = "publications-file/publications-file-header-missing.tlv";
     public static final String PUBLICATIONS_FILE_SIGNATURE_MISSING = "publications-file/publications-file-signature-missing.tlv";

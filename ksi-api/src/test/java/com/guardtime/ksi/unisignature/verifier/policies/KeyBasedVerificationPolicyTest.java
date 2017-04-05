@@ -80,9 +80,9 @@ public class KeyBasedVerificationPolicyTest {
     @Test
     public void testVerifySignatureOfflineWithInvalidAuthenticationRecord_ThrowsVerificationException() throws Exception {
         PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
-        KSISignature signature = TestUtil.loadSignature("not-ok-sig-2014-04-30.1-extended.ksig");
+        KSISignature signature = TestUtil.loadSignature("signature-test-pack/invalid-signatures/publication-record/invalid-signature-pub-rec-pub-hash-datahash-value-wrong.tlv");
 
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, TestUtil.getFileHash(loadFile("infile"), "SHA2-256"), mockedTrustProvider), new KeyBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_09);
     }
@@ -90,9 +90,9 @@ public class KeyBasedVerificationPolicyTest {
     @Test
     public void testVerifySignatureWithoutCalendarAuthenticationRecord() throws Exception {
         PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
-        KSISignature signature = TestUtil.loadSignature("calendar-auth-rec-missing.ksig");
+        KSISignature signature = TestUtil.loadSignature("signature-test-pack/valid-signatures/signature-no-calendar-auth-and-publication-record.ksig");
 
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, TestUtil.getFileHash(loadFile("infile"), "SHA2-256"), mockedTrustProvider), new KeyBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
         Map<Rule, RuleResult> resultMap = result.getPolicyVerificationResults().get(0).getRuleResults();
@@ -107,7 +107,7 @@ public class KeyBasedVerificationPolicyTest {
         Mockito.when(mockedTrustProvider.findCertificateById(Mockito.any(byte[].class))).thenThrow(new CertificateNotFoundException("Certificate not found"));
         Mockito.when(mockedTrustProvider.getName()).thenReturn("MockProvider");
         KSISignature signature = TestUtil.loadSignature("ok-sig-2014-04-30.1.ksig");
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, TestUtil.getFileHash(loadFile("infile"), "SHA2-256"), mockedTrustProvider), new KeyBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_01);
     }
@@ -119,7 +119,7 @@ public class KeyBasedVerificationPolicyTest {
         Mockito.when(mockedCertificate.getSigAlgName()).thenReturn("RSA");
         Mockito.when(mockedTrustProvider.findCertificateById(Mockito.any(byte[].class))).thenReturn(mockedCertificate);
         KSISignature signature = TestUtil.loadSignature("ok-sig-2014-04-30.1.ksig");
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, TestUtil.getFileHash(loadFile("infile"), "SHA2-256"), mockedTrustProvider), new KeyBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_02);
     }
@@ -131,7 +131,7 @@ public class KeyBasedVerificationPolicyTest {
         Mockito.when(mockedCertificate.getSigAlgName()).thenReturn("BLABLA_ALG");
         Mockito.when(mockedTrustProvider.findCertificateById(Mockito.any(byte[].class))).thenReturn(mockedCertificate);
         KSISignature signature = TestUtil.loadSignature("ok-sig-2014-04-30.1.ksig");
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, TestUtil.getFileHash(loadFile("infile"), "SHA2-256"), mockedTrustProvider), new KeyBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_02);
     }

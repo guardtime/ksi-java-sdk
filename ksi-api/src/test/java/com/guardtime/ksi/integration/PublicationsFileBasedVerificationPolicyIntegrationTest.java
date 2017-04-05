@@ -49,7 +49,7 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureWithCorrectDataAndSuitablePublicationInPublicationFile_VerificationReturnsOK() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(EXTENDED_SIGNATURE_2014_06_02, "publications.tlv", false, simpleHttpClient);
+        VerificationResult results = publicationFileBasedVerification(EXTENDED_SIGNATURE_2014_06_02, "publications-file/publications.tlv", false, simpleHttpClient);
         Assert.assertTrue(results.isOk());
     }
 

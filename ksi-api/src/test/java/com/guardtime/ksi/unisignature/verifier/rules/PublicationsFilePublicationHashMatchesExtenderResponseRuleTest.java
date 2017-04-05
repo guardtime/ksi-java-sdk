@@ -43,7 +43,7 @@ public class PublicationsFilePublicationHashMatchesExtenderResponseRuleTest exte
         this.mockedVerificationContext = Mockito.mock(VerificationContext.class);
         Mockito.when(mockedVerificationContext.getSignature()).thenReturn(sig);
         Mockito.when(mockedVerificationContext.getUserProvidedPublication()).thenReturn(sig.getPublicationRecord().getPublicationData());
-        Mockito.when(mockedVerificationContext.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile("publications.tlv"));
+        Mockito.when(mockedVerificationContext.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile("publications-file/publications.tlv"));
         Mockito.when(mockedVerificationContext.getCalendarHashChain()).thenReturn(sig.getCalendarHashChain());
     }
 

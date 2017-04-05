@@ -44,7 +44,7 @@ import java.security.cert.X509Certificate;
 public final class TestUtil extends CommonTestUtil {
 
     public static final KSIServiceCredentials CREDENTIALS_ANONYMOUS = new KSIServiceCredentials("anon", "anon");
-    public static final String PUBLICATIONS_FILE_27_07_2016 = "ksi-publications-27-07-2016.bin";
+    public static final String PUBLICATIONS_FILE_27_07_2016 = "publications-file/ksi-publications-27-07-2016.bin";
 
     private static InMemoryKsiSignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private static InMemoryPublicationsFileFactory publicationsFileFactory;

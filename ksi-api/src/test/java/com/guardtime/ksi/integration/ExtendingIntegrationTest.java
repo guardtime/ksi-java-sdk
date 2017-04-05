@@ -61,7 +61,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testExtendWithPublicationsFile_OK() throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2014_06_02);
-        PublicationsFile publicationsFile = TestUtil.loadPublicationsFile("publication-2015-09-15.tlv");
+        PublicationsFile publicationsFile = TestUtil.loadPublicationsFile("publications-file/publication-2015-09-15.tlv");
         PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(signature.getPublicationTime());
         KSISignature extendedSignature = ksi.extend(signature, publicationRecord);
         Assert.assertTrue(extendedSignature.isExtended());

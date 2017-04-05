@@ -36,11 +36,11 @@ public abstract class AbstractRuleTest {
     protected static final String SIGNATURE_WITH_RFC3161_RECORD = "signature/signature-with-rfc3161-record-ok.ksig";
 
     protected VerificationContext build(KSISignature signature) throws Exception {
-        return build(signature, null, TestUtil.loadPublicationsFile("publications.tlv"), null);
+        return build(signature, null, TestUtil.loadPublicationsFile("publications-file/publications.tlv"), null);
     }
 
     protected VerificationContext build(KSISignature signature, PublicationData publication) throws Exception {
-        return build(signature, null, TestUtil.loadPublicationsFile("publications.tlv"), publication);
+        return build(signature, null, TestUtil.loadPublicationsFile("publications-file/publications.tlv"), publication);
     }
 
     protected VerificationContext build(KSISignature signature, PublicationsFile trustStore) throws Exception {
@@ -48,7 +48,7 @@ public abstract class AbstractRuleTest {
     }
 
     protected VerificationContext build(KSISignature signature, DataHash documentHash) throws Exception {
-        return build(signature, documentHash, TestUtil.loadPublicationsFile("publications.tlv"), null);
+        return build(signature, documentHash, TestUtil.loadPublicationsFile("publications-file/publications.tlv"), null);
     }
 
     protected VerificationContext build(KSISignature signature, DataHash documentHash, PublicationsFile trustStore, PublicationData publication) throws Exception {

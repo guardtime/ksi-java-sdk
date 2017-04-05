@@ -130,9 +130,9 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     //TODO: Covered by new tests?
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void verifySignatureWithLocalPubFile_TestFailInconclusive() throws Exception {
-        PublicationsFile pub = TestUtil.loadPublicationsFile("publications.15042014.tlv");
+        PublicationsFile pub = TestUtil.loadPublicationsFile("publications-file/publications.15042014.tlv");
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, getFileHash(INPUT_FILE), pub), new PublicationsFileBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, null, pub), new PublicationsFileBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
     }

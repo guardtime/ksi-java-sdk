@@ -32,7 +32,7 @@ public class AggregationHashChainConsistencyRuleTest extends AbstractRuleTest {
 
     @Test
     public void testSignatureWithInconsistentAggregationChainsReturnsFailedStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("bad-aggregation-chain.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature-test-pack/invalid-signatures/aggregation-chain/invalid-signature-aggr-chain-multiple-chains-input-hash-wrong.tlv")));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_01);

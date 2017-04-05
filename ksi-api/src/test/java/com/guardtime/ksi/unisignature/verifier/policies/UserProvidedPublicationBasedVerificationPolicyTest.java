@@ -72,7 +72,7 @@ public class UserProvidedPublicationBasedVerificationPolicyTest {
         PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
         Mockito.when(mockedTrustProvider.getName()).thenReturn("MockProvider");
         Future<ByteBuffer> future = Mockito.mock(Future.class);
-        Mockito.when(future.getResult()).thenReturn(ByteBuffer.wrap(TestUtil.loadBytes("publications.tlv")));
+        Mockito.when(future.getResult()).thenReturn(ByteBuffer.wrap(TestUtil.loadBytes("publications-file/publications.tlv")));
         Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(future);
     }
 

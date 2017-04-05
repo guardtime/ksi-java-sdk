@@ -51,7 +51,7 @@ public class CalendarAuthenticationRecordSignatureVerificationRuleTest {
 
     @Test
     public void testSignatureWithCorrectCalendarAuthenticationRecordReturnsOkStatus_Ok() throws Exception {
-        PublicationsFile pubFile = TestUtil.loadPublicationsFile("publications.tlv");
+        PublicationsFile pubFile = TestUtil.loadPublicationsFile("publications-file/publications.tlv");
         Mockito.when(context.getCertificate(Mockito.any(byte[].class))).thenReturn(pubFile.findCertificateById(Base16.decode("C246B139")));
         Assert.assertEquals(rule.verify(context).getResultCode(), VerificationResultCode.OK);
     }

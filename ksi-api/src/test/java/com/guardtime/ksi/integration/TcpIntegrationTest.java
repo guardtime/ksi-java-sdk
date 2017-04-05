@@ -113,8 +113,9 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     private VerificationResult signAndVerify(HashAlgorithm algorithm) throws Exception {
-        KSISignature sig = ksi.sign(getFileHash(INPUT_FILE, algorithm));
-        return ksi.verify(TestUtil.buildContext(sig, ksi, httpClient, getFileHash(INPUT_FILE, algorithm)), new KeyBasedVerificationPolicy());
+        DataHash fileHash = getFileHash(INPUT_FILE, algorithm);
+        KSISignature sig = ksi.sign(fileHash);
+        return ksi.verify(TestUtil.buildContext(sig, ksi, httpClient, fileHash), new KeyBasedVerificationPolicy());
     }
 
     @DataProvider(name = VALID_HASH_ALGORITHMS_DATA_PROVIDER)

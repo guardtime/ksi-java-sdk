@@ -38,7 +38,7 @@ import static java.util.Arrays.asList;
 
 public class InMemoryKsiSignatureFactoryTest {
 
-    private static final String PUBLICATIONS_FILE_15042014 = "publications.15042014.tlv";
+    private static final String PUBLICATIONS_FILE_15042014 = "publications-file/publications.15042014.tlv";
     private static final String TEST_SIGNATURE = "ok-sig-2014-06-2.ksig";
     private static final String PUBLICATION_STRING = "AAAAAA-CTJR3I-AANBWU-RY76YF-7TH2M5-KGEZVA-WLLRGD-3GKYBG-AM5WWV-4MCLSP-XPRDDI-UFMHBA";
     private InMemoryKsiSignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();

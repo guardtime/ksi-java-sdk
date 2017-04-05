@@ -47,7 +47,7 @@ public class SignaturePublicationRecordPublicationTimeRuleTest extends AbstractR
 
     @Test
     public void testPublicationRecordPublicationDataHashDoesNotEqualsToCalendarHashChainOutputHash_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-invalid-publication-record-publication-data-time.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-invalid-publication-record-publication-data-time.ksig")));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_07);
     }

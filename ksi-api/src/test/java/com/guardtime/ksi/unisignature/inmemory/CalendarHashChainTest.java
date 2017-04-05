@@ -29,8 +29,8 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class CalendarHashChainTest {
 
-    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_OK = "signature/calendar-hash-chain-ok.tlv";
-    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM = "signature/calendar-hash-chain-invalid-algorithm.tlv";
+    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_OK = "TO-TESTPACK-signature/calendar-hash-chain-ok.tlv";
+    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM = "TO-TESTPACK-signature/calendar-hash-chain-invalid-algorithm.tlv";
 
     @Test
     public void testDecodeCalendarHashChain_Ok() throws Exception {
@@ -48,22 +48,22 @@ public class CalendarHashChainTest {
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain publication time is missing")
     public void testDecodeCalendarHashChainWithoutPublicationTime_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("calendar-hash-chain/calendar-hash-chain-without-publication-time.tlv");
+        load("TO-TESTPACK-calendar-hash-chain/calendar-hash-chain-without-publication-time.tlv");
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain input hash is missing")
     public void testDecodeCalendarHashChainWithoutInputHash_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("calendar-hash-chain/calendar-hash-chain-without-input-hash.tlv");
+        load("TO-TESTPACK-calendar-hash-chain/calendar-hash-chain-without-input-hash.tlv");
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain does not contain link elements")
     public void testDecodeCalendarHashChainWithoutLinks_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("calendar-hash-chain/calendar-hash-chain-no-links.tlv");
+        load("TO-TESTPACK-calendar-hash-chain/calendar-hash-chain-no-links.tlv");
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain shape is inconsistent with publication time")
     public void testDecodeCalendarHashChainContainingInvalidRegistrationTime_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("calendar-hash-chain/calendar-hash-chain-invalid-publication-time.tlv");
+        load("TO-TESTPACK-calendar-hash-chain/calendar-hash-chain-invalid-publication-time.tlv");
     }
 
     @Test
@@ -74,7 +74,7 @@ public class CalendarHashChainTest {
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain shape inconsistent with publication time")
     public void testDecodeCalendarHashChainContainingInvalidRegistrationTimeElement_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("calendar-hash-chain/calendar-hash-chain-invalid-publication-time2.tlv");
+        load("TO-TESTPACK-calendar-hash-chain/calendar-hash-chain-invalid-publication-time2.tlv");
     }
 
     @Test

@@ -66,7 +66,7 @@ public class ExtendedSignatureCalendarHashChainRightLinksMatchesRuleTest extends
 
     @Test
     public void testVerifyExtendedSignatureRightLinksAreDifferent() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("signature/invalid-calendar-right-link-sig-2014-04-30.1-extended.ksig").getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("TO-TESTPACK-signature/invalid-calendar-right-link-sig-2014-04-30.1-extended.ksig").getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.CAL_04);

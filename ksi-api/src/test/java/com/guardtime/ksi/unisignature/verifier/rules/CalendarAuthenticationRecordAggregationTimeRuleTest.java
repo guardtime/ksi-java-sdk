@@ -40,13 +40,13 @@ public class CalendarAuthenticationRecordAggregationTimeRuleTest extends Abstrac
 
     @Test
     public void testThatRuleReturnsStatusOkWhenCalendarAuthenticationRecordIsMissing_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-without-calendar-authentication-record.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-without-calendar-authentication-record.ksig")));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testCalendarAuthenticationRecordAggregationTimeDoesNotEqualsToCalendarHashChainOutputTime_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-invalid-authentication-record-publication-time.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-invalid-authentication-record-publication-time.ksig")));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_06);
     }

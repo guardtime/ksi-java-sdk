@@ -34,6 +34,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.METADATA_PADDING_TOO_LONG;
+import static com.guardtime.ksi.Resources.METADATA_PADDING_TOO_SHORT;
 import static com.guardtime.ksi.TestUtil.loadFile;
 
 public class DefaultVerificationIntegrationTest extends AbstractCommonIntegrationTest {
@@ -79,7 +81,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     public void testInternalVerificationAsDefaultPolicy_InvalidSignatureContentException_INT11() throws Exception {
         Policy policy = new InternalVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile("aggregation-hash-chain-metadata/metadata-padding-too-long.ksig"));
+        ksiTest.read(loadFile(METADATA_PADDING_TOO_LONG));
     }
 
     //TODO: Start using new resource pack files.

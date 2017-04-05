@@ -27,9 +27,9 @@ import static org.testng.Assert.assertNotNull;
 
 public class InMemoryCertificateRecordTest {
 
-    private static final String TEST_FILE_CERTIFICATE_RECORD = "certificate-record/certificate-record-ok.tlv";
-    private static final String TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE_ID = "certificate-record/certificate-record-missing-certificate-id.tlv";
-    private static final String TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE = "certificate-record/certificate-record-missing-certificate.tlv";
+    private static final String TEST_FILE_CERTIFICATE_RECORD = "TO-TESTPACK-certificate-record/certificate-record-ok.tlv";
+    private static final String TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE_ID = "TO-TESTPACK-certificate-record/certificate-record-missing-certificate-id.tlv";
+    private static final String TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE = "TO-TESTPACK-certificate-record/certificate-record-missing-certificate.tlv";
 
     @Test
     public void testDecodeCertificateRecord_Ok() throws Exception {

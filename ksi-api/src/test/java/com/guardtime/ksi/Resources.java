@@ -55,17 +55,30 @@ public class Resources {
      * Signature files
      */
     //RFC3161 Record
-
+    public static final String RFC3161_ = "";
     //Extended
     public static final String EXTENDED_SIGNATURE_2014_04_30 = SIGNATURES + "ok-sig-2014-04-30.1-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2-extended.ksig";
-    public static final String EXTENDED_SIGNATURE_NO_PUBLICATION_RECORD = SIGNATURES + "extended-signature-no-pub-record.ksig";
+    public static final String EXTENDED_SIGNATURE_2015_01 = SIGNATURES + "testdata-extended.txt.2015-01.tlv";
+    public static final String EXTENDED_SIGNATURE_NO_PUBLICATION_RECORD = SIGNATURES + "";
     //Not extended
     public static final String SIGNATURE_2014_04_30 = SIGNATURES + "ok-sig-2014-04-30.1.ksig";
     public static final String SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2.ksig";
-    public static final String SIGNATURE_PUBLICATION_RECORD_EMPTY = SIGNATURES + "extended-signature-empty-publication-record.ksig";
     public static final String SIGNATURE_2015_01 = SIGNATURES + "testdata.txt.2015-01.tlv";
-    public static final String SIGNATURE_EXTENDED_2015_01 = SIGNATURES + "testdata-extended.txt.2015-01.tlv";
+    public static final String SIGNATURE_PUBLICATION_RECORD_EMPTY = SIGNATURES + "extended-signature-empty-publication-record.ksig";
+    //METADATA -> Testpack? TestPack Improvement?
+    public static final String METADATA_MATCHING_HASH_IMPRINT = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-content-matches-hash-imprint.ksig";
+    public static final String METADATA_MISSING_PADDING = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-missing-padding-element.ksig";
+    public static final String METADATA_MULTIPLE_PADDINGS = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-multiple-padding-elements.ksig";
+    public static final String METADATA_PADDING_FLAGS_NOT_SET = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-flags-not-set.ksig";
+    public static final String METADATA_PADDING_F_FLAG_NOT_SET = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-forward-flag-not-set.ksig";
+    public static final String METADATA_PADDING_N_FLAG_NOT_SET = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-noncritical-flag-not-set.ksig";
+    public static final String METADATA_PADDING_TLV_16_FLAG_SET = "TO-TESTPACK-aggregation-hash-chain-metadata/TestAggregationHashChainMetadataPaddingNotTlv8Fail.ksig";
+    public static final String METADATA_PADDING_TOO_LONG = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-too-long.ksig";
+    public static final String METADATA_PADDING_TOO_SHORT = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-too-short.ksig";
+    public static final String METADATA_WRONG_CONTENT = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-wrong-content.ksig";
+    public static final String METADATA_WRONG_ORDER = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-wrong-order.ksig";
+    public static final String METADATA_VALID = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-signed-ok.ksig";
 
     /**
      * Publications files
@@ -103,8 +116,16 @@ public class Resources {
     /**
      * Extender responses
      */
+    public static final String EXTENDER_RESPONSE_ = "";
 
     /**
      * Aggregator responses
      */
+    public static final String AGGREGATOR_RESPONSE_ = "";
+
+    /**
+     * ETC
+     */
+    public static final String PUBLICATION_DATA_OK = "publication-data/publication-data-ok.tlv";
 }
+

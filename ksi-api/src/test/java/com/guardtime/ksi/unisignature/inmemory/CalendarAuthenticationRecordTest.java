@@ -28,19 +28,19 @@ public class CalendarAuthenticationRecordTest {
 
     @Test
     public void testDecodeCalendarAuthenticationRecord_Ok() throws Exception {
-        InMemoryCalendarAuthenticationRecord record = load("calendar-authentication-record/calendar-authentication-record-ok.tlv");
+        InMemoryCalendarAuthenticationRecord record = load("TO-TESTPACK-calendar-authentication-record/calendar-authentication-record-ok.tlv");
         Assert.assertNotNull(record.getPublicationData());
         Assert.assertNotNull(record.getSignatureData());
     }
 
     @Test(expectedExceptions = InvalidCalendarAuthenticationRecordException.class, expectedExceptionsMessageRegExp = "Calendar authentication does not contain publication data")
     public void testDecodeCalendarAuthenticationRecordWithoutPublicationData_ThrowsInvalidCalendarAuthenticationRecordException() throws Exception {
-        load("calendar-authentication-record/calendar-authentication-record-without-publication-data.tlv");
+        load("TO-TESTPACK-calendar-authentication-record/calendar-authentication-record-without-publication-data.tlv");
     }
 
     @Test(expectedExceptions = InvalidCalendarAuthenticationRecordException.class, expectedExceptionsMessageRegExp = "Calendar authentication record does not contain signature data")
     public void testDecodeCalendarAuthenticationRecordWithoutSignatureData_ThrowsInvalidCalendarAuthenticationRecordException() throws Exception {
-        load("calendar-authentication-record/calendar-authentication-record-without-signature-data.tlv");
+        load("TO-TESTPACK-calendar-authentication-record/calendar-authentication-record-without-signature-data.tlv");
     }
 
     private InMemoryCalendarAuthenticationRecord load(String file) throws Exception {

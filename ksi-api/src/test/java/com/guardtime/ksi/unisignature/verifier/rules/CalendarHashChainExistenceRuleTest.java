@@ -34,7 +34,7 @@ public class CalendarHashChainExistenceRuleTest extends AbstractRuleTest {
 
     @Test
     public void testSignatureWithoutCalendarHashChainReturnsNaStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-without-calendar-hash-chain.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-without-calendar-hash-chain.ksig")));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);

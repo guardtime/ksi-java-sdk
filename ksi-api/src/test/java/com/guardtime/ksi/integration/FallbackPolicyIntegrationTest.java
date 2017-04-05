@@ -33,7 +33,7 @@ import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_04_30;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_WRONG_HASH;
 import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
-import static com.guardtime.ksi.Resources.SIGNATURE_EXTENDED_2015_01;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2015_01;
 
 
 public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest {
@@ -80,7 +80,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         policy.setFallbackPolicy(new UserProvidedPublicationBasedVerificationPolicy());
 
         PublicationsFile publicationFile = TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_WRONG_HASH);
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_EXTENDED_2015_01);
+        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2015_01);
         PublicationData publicationData = signature.getPublicationRecord().getPublicationData();
 
         VerificationContextBuilder builder = new VerificationContextBuilder();

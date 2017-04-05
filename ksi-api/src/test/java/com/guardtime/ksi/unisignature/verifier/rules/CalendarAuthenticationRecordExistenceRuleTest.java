@@ -34,7 +34,7 @@ public class CalendarAuthenticationRecordExistenceRuleTest extends AbstractRuleT
 
     @Test
     public void testSignatureWithoutCalendarAuthenticationRecordReturnsNaStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-calendar-authentication-record-missing.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-calendar-authentication-record-missing.ksig")));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);

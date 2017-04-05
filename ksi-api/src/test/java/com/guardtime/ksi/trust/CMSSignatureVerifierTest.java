@@ -64,7 +64,7 @@ public class CMSSignatureVerifierTest {
 
     @Test
     public void testVerifySignature_Ok() throws Exception {
-        CMSSignature signature = new CMSSignature(TestUtil.loadBytes("cms/signed-data"), TestUtil.loadBytes("cms/cms-signature-ok.pkcs7"));
+        CMSSignature signature = new CMSSignature(TestUtil.loadBytes("TO-TESTPACK-cms/signed-data"), TestUtil.loadBytes("TO-TESTPACK-cms/cms-signature-ok.pkcs7"));
         CMSSignatureVerifier verifier = new CMSSignatureVerifier(trustStore);
         verifier.verify(signature);
         Assert.assertTrue(true);
@@ -72,7 +72,7 @@ public class CMSSignatureVerifierTest {
 
     @Test(expectedExceptions = InvalidCmsSignatureException.class, expectedExceptionsMessageRegExp = "Invalid CMS signature.*")
     public void testVerifySignatureUsingInvalidSignedData_ThrowsInvalidCmsSignatureException() throws Exception {
-        CMSSignature signature = new CMSSignature(new byte[128], TestUtil.loadBytes("cms/cms-signature-ok.pkcs7"));
+        CMSSignature signature = new CMSSignature(new byte[128], TestUtil.loadBytes("TO-TESTPACK-cms/cms-signature-ok.pkcs7"));
         CMSSignatureVerifier verifier = new CMSSignatureVerifier(trustStore);
         verifier.verify(signature);
 

@@ -34,7 +34,7 @@ public class AggregationHashChainTimeConsistencyRuleTest extends AbstractRuleTes
 
     @Test
     public void testSignatureWithInconsistentAggregationTimesReturnsFailedStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-inconsistent-aggregation-chain-time.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-inconsistent-aggregation-chain-time.ksig")));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_02);

@@ -29,7 +29,7 @@ public class SignatureDataTest {
 
     @Test
     public void testReadSignatureData_Ok() throws Exception {
-        InMemorySignatureData data = load("signature-data/signature-data-ok.tlv");
+        InMemorySignatureData data = load("TO-TESTPACK-signature-data/signature-data-ok.tlv");
         Assert.assertEquals(data.getElementType(), SignatureData.ELEMENT_TYPE);
         Assert.assertNotNull(data.getSignatureType());
         Assert.assertNotNull(data.getSignatureValue());
@@ -39,22 +39,22 @@ public class SignatureDataTest {
 
     @Test(expectedExceptions = InvalidSignatureDataException.class, expectedExceptionsMessageRegExp = "Signature data signature type can not be null")
     public void testReadSignatureDataWithoutSignatureType_ThrowsInvalidSignatureDataException() throws Exception {
-        load("signature-data/signature-data-without-signature-type.tlv");
+        load("TO-TESTPACK-signature-data/signature-data-without-signature-type.tlv");
     }
 
     @Test(expectedExceptions = InvalidSignatureDataException.class, expectedExceptionsMessageRegExp = "Signature data signature value can not be null")
     public void testReadSignatureDataWithoutSignatureValue_ThrowsInvalidSignatureDataException() throws Exception {
-        load("signature-data/signature-data-without-signature-value.tlv");
+        load("TO-TESTPACK-signature-data/signature-data-without-signature-value.tlv");
     }
 
     @Test(expectedExceptions = InvalidSignatureDataException.class, expectedExceptionsMessageRegExp = "Signature data certificate id can not be null")
     public void testReadSignatureDataWithoutCertificateId_ThrowsInvalidSignatureDataException() throws Exception {
-        load("signature-data/signature-data-without-certificate-id.tlv");
+        load("TO-TESTPACK-signature-data/signature-data-without-certificate-id.tlv");
     }
 
     @Test
     public void testReadSignatureDataWithCertificateRepositoryUri_Ok() throws Exception {
-        InMemorySignatureData data = load("signature-data/signature-data-with-repository-uri.tlv");
+        InMemorySignatureData data = load("TO-TESTPACK-signature-data/signature-data-with-repository-uri.tlv");
         Assert.assertNotNull(data.getCertificateRepositoryUri());
         Assert.assertEquals(data.getCertificateRepositoryUri(), "http://localhost/rep_uri");
     }

@@ -34,14 +34,14 @@ public class AggregationHashChainIndexSuccessorRuleTest extends AbstractRuleTest
 
     @Test
     public void testSignatureWithInvalidAggregationChainIndexValue() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-invalid-aggregation-chain-index-value.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-invalid-aggregation-chain-index-value.ksig")));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_12);
     }
 
     @Test
     public void testSignatureWithMissingOneAggregationChain() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-missing-one-aggregation-chain.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-missing-one-aggregation-chain.ksig")));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_12);
     }

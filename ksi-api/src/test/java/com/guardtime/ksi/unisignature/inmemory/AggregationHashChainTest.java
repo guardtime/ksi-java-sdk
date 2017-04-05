@@ -32,7 +32,7 @@ public class AggregationHashChainTest {
 
     @Test
     public void testDecodeAggregationHashChain_Ok() throws Exception {
-        InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
+        InMemoryAggregationHashChain chain = load("TO-TESTPACK-aggregation/aggregation-hash-chain-ok.tlv");
         Assert.assertEquals(chain.getElementType(), InMemoryAggregationHashChain.ELEMENT_TYPE);
         Assert.assertNotNull(chain.getAggregationTime());
         Assert.assertEquals(chain.getAggregationTime().getTime(), 1395317319000L);
@@ -46,30 +46,30 @@ public class AggregationHashChainTest {
     //TODO: Start using new resource pack files.
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation time can not be null")
     public void testDecodeAggregationHashChainWithoutAggregationTime_ThrowsInvalidAggregationHashChainException() throws Exception {
-        load("aggregation-hash-chain/aggregation-chain-aggregation-time-missing.tlv");
+        load("TO-TESTPACK-aggregation-hash-chain/aggregation-chain-aggregation-time-missing.tlv");
     }
 
     //TODO: Start using new resource pack files.
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain index list can not be empty")
     public void testDecodeAggregationHashChainWithoutChainIndex_ThrowsInvalidAggregationHashChainException() throws Exception {
-        load("aggregation-hash-chain/aggregation-chain-no-indexes.tlv");
+        load("TO-TESTPACK-aggregation-hash-chain/aggregation-chain-no-indexes.tlv");
     }
 
     //TODO: Start using new resource pack files.
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain input hash can not be empty")
     public void testDecodeAggregationHashChainWithoutInputHash_ThrowsInvalidAggregationHashChainException() throws Exception {
-        load("aggregation-hash-chain/aggregation-chain-input-hash-missing.tlv");
+        load("TO-TESTPACK-aggregation-hash-chain/aggregation-chain-input-hash-missing.tlv");
     }
 
     //TODO: Start using new resource pack files.
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain aggregation algorithm id can no be null")
     public void testDecodeAggregationHashChainWithoutAggregationAlgorithm_ThrowsInvalidAggregationHashChainException() throws Exception {
-        load("aggregation-hash-chain/aggregation-chain-algorithm-missing.tlv");
+        load("TO-TESTPACK-aggregation-hash-chain/aggregation-chain-algorithm-missing.tlv");
     }
 
     @Test
     public void testCalculateAggregationChainHash_Ok() throws Exception {
-        InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
+        InMemoryAggregationHashChain chain = load("TO-TESTPACK-aggregation/aggregation-hash-chain-ok.tlv");
         ChainResult chainHash = chain.calculateOutputHash(0L);
         Assert.assertNotNull(chainHash);
         Assert.assertEquals(chainHash.getLevel(), 116L);
@@ -78,7 +78,7 @@ public class AggregationHashChainTest {
 
     @Test
     public void testGetChainIdentityFromAggregationHashChain_Ok() throws Exception {
-        InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
+        InMemoryAggregationHashChain chain = load("TO-TESTPACK-aggregation/aggregation-hash-chain-ok.tlv");
         Assert.assertEquals(chain.getChainIdentity(" :: "), "GT :: testA :: B :: A");
     }
 

@@ -35,8 +35,8 @@ import static java.util.Arrays.asList;
 
 public class PublicationsFilePublicationRecordTest {
 
-    private static final String TEST_FILE_PUBLICATION_RECORD_PUBFILE_OK = "publication-record/publication-record-pubfile-ok.tlv";
-    private static final String TEST_FILE_PUBLICATION_RECORD_PUBFILE2_OK = "publication-record/publication-record-pubfile2-ok.tlv";
+    private static final String TEST_FILE_PUBLICATION_RECORD_PUBFILE_OK = "TO-TESTPACK-publication-record/publication-record-pubfile-ok.tlv";
+    private static final String TEST_FILE_PUBLICATION_RECORD_PUBFILE2_OK = "TO-TESTPACK-publication-record/publication-record-pubfile2-ok.tlv";
     private static final String PUBLICATION_STRING = "AAAAAA-CTJR3I-AANBWU-RY76YF-7TH2M5-KGEZVA-WLLRGD-3GKYBG-AM5WWV-4MCLSP-XPRDDI-UFMHBA";
     private static final int ELEMENT_TAG_PUBLICATION_REFERENCE = 0x09;
     private static final int ELEMENT_TAG_PUBLICATION_REPOSITORY_URI = 0x0A;

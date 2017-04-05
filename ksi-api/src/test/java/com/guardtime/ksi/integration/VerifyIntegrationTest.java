@@ -38,7 +38,7 @@ import static com.guardtime.ksi.Resources.INPUT_FILE_2015_01;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_2014_04_15;
 import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
 import static com.guardtime.ksi.Resources.SIGNATURE_2015_01;
-import static com.guardtime.ksi.Resources.SIGNATURE_EXTENDED_2015_01;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2015_01;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
@@ -126,7 +126,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     //TODO: Covered by new tests?
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithInvalidRfc3161RecordUsingKeyBasedPolicy_VerificationFailInconsistentChain() throws Exception {
-        KSISignature sig = loadSignature("signature/signature-with-invalid-rfc3161-output-hash.ksig");
+        KSISignature sig = loadSignature("TO-TESTPACK-signature/signature-with-invalid-rfc3161-output-hash.ksig");
         VerificationResult result = verify(ksi, simpleHttpClient, sig, new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         PolicyVerificationResult policyResult = result.getPolicyVerificationResults().get(0);
@@ -160,14 +160,14 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyOnlineExtendedKSIRfc3161SignatureWithPublicationString() throws Exception {
-        KSISignature signature = loadSignature(SIGNATURE_EXTENDED_2015_01);
+        KSISignature signature = loadSignature(EXTENDED_SIGNATURE_2015_01);
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, new PublicationData("AAAAAA-CUW4BQ-AAM6GY-ZSTYCJ-KTXF2M-AJB5RV-WEXTTH-3EWTQQ-XRUN6I-K7TXUN-X6PDV5-OIFY6C")), new UserProvidedPublicationBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyOfflineExtendedKSIRfc3161Signature() throws Exception {
-        KSISignature signature = loadSignature(SIGNATURE_EXTENDED_2015_01);
+        KSISignature signature = loadSignature(EXTENDED_SIGNATURE_2015_01);
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, getFileHash(INPUT_FILE_2015_01, "SHA2-256")), new PublicationsFileBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }

@@ -60,7 +60,7 @@ public class DocumentHashVerificationRuleTest extends AbstractRuleTest {
 
     @Test
     public void testSignatureVerificationWithInvalidRfc3161OutputHashReturnsFailStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-rfc3161-record-ok.ksig"), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-rfc3161-record-ok.ksig"), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_1);
     }

@@ -34,7 +34,7 @@ public class CalendarHashChainRegistrationTimeRuleTest extends AbstractRuleTest 
 
     @Test
     public void testSignatureWithInconsistentAggregationTimesReturnsFailedStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-invalid-calendar-chain-aggregation-time.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-invalid-calendar-chain-aggregation-time.ksig")));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_05);
@@ -42,7 +42,7 @@ public class CalendarHashChainRegistrationTimeRuleTest extends AbstractRuleTest 
 
     @Test
     public void testSignatureWithoutCalendarHashChainReturnsOkStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-without-calendar-hash-chain.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-without-calendar-hash-chain.ksig")));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 

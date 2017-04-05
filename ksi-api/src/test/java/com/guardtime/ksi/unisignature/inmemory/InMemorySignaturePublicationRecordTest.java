@@ -33,8 +33,8 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class InMemorySignaturePublicationRecordTest {
 
-    private static final String TEST_FILE_PUBLICATION_RECORD_SIGNATURE_OK = "publication-record/publication-record-signature-ok.tlv";
-    private static final String TEST_FILE_PUBLICATION_RECORD_SIGNATURE2_OK = "publication-record/publication-record-signature2-ok.tlv";
+    private static final String TEST_FILE_PUBLICATION_RECORD_SIGNATURE_OK = "TO-TESTPACK-publication-record/publication-record-signature-ok.tlv";
+    private static final String TEST_FILE_PUBLICATION_RECORD_SIGNATURE2_OK = "TO-TESTPACK-publication-record/publication-record-signature2-ok.tlv";
 
     @Test
     public void testDecodeInMemorySignaturePublicationRecord_Ok() throws Exception {

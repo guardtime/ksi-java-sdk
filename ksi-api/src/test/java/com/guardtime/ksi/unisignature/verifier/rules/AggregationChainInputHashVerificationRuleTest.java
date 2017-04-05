@@ -42,12 +42,12 @@ public class AggregationChainInputHashVerificationRuleTest extends AbstractRuleT
 
     @Test
     public void testSignatureWithValidRfc3161RecordChainsReturnsOkStatus_Ok() throws Exception {
-        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature("signature/signature-with-rfc3161-record-ok.ksig"))).getResultCode(), VerificationResultCode.OK);
+        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-rfc3161-record-ok.ksig"))).getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testSignatureWithInvalidRfc3161RecordChainsReturnsFailStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-invalid-rfc3161-output-hash.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-invalid-rfc3161-output-hash.ksig")));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_01);
     }

@@ -64,7 +64,6 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         }
     }
 
-    //TODO: Start using new resource pack files.
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Calendar hash chain input hash mismatch.*")
     public void testExtendInvalidSignature_InvalidSignatureContentException_INT3() throws Exception {
         KSI ksiTest = ksiBuilder.build();
@@ -87,7 +86,6 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         ksiTest.read(loadFile(SIGNATURE_METADATA_PADDING_TOO_LONG));
     }
 
-    //TODO: Start using new resource pack files.
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Certificate not found.*")
     public void testKeyBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_KEY1() throws Exception {
         Policy policy = new KeyBasedVerificationPolicy();
@@ -95,7 +93,6 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         ksiTest.read(loadFile(SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE));
     }
 
-    //TODO: Start using new resource pack files.
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Aggregation hash chain root hash and calendar database hash chain input hash mismatch.*")
     public void testCalendarBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_CAL2() throws Exception {
         Policy policy = new CalendarBasedVerificationPolicy();
@@ -103,7 +100,6 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         ksiTest.read(loadFile(SIGNATURE_OTHER_CORE));
     }
 
-    //TODO: Start using new resource pack files.
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Extender response input hash mismatch.*")
     public void testPublicationFileBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_PUB3() throws Exception {
         Policy policy = new PublicationsFileBasedVerificationPolicy();

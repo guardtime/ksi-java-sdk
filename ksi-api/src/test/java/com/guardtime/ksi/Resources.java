@@ -78,13 +78,12 @@ public class Resources {
     public static final String SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-changed-certificate-id-KEY-01.ksig";
     public static final String SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature-with-extended-calendar-PUB-03.ksig";
     //Aggregation Hash Chains
-    public static final String AGGREGATION_HASH_CHAIN_OK = AGGRGATION_HASH_CHAIN + "aggregation-hash-chain-ok.tlv";
-    public static final String AGGREGATION_HASH_CHAIN_INVALID = AGGRGATION_HASH_CHAIN + "aggregation-hash-chain-invalid.tlv";
-    public static final String AGGREGATION_HASH_CHAIN_NO_INDEX = AGGRGATION_HASH_CHAIN + "aggregation-chain-no-indexes.tlv";
-    public static final String AGGREGATION_HASH_CHAIN_NO_INPUT_HASH = AGGRGATION_HASH_CHAIN + "aggregation-chain-input-hash-missing.tlv";
-    public static final String AGGREGATION_HASH_CHAIN_NO_ALGORITHM = AGGRGATION_HASH_CHAIN + "aggregation-chain-algorithm-missing.tlv";
-    public static final String AGGREGATION_HASH_CHAIN_NO_AGGREGATION_TIME = AGGRGATION_HASH_CHAIN + "aggregation-chain-aggregation-time-missing.tlv";
-    //METADATA -> Testpack? TestPack Improvement?
+    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_OK = SIGNATURES + "aggregation-hash-chain-ok.tlv";
+    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INDEX = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-missing-tag.tlv";
+    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INPUT_HASH = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-input-hash-missing-tag.tlv";
+    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_ALGORITHM = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-aggr-algo-missing-tag.tlv";
+    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_TIME = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-aggr-time-missing-tag.tlv";
+    //Aggregation Hash Chains -> METADATA
     public static final String SIGNATURE_METADATA_MATCHING_HASH_IMPRINT = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-matches-imprint.tlv";
     public static final String SIGNATURE_METADATA_MISSING_PADDING = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-missing-tag.tlv";
     public static final String SIGNATURE_METADATA_MULTIPLE_PADDINGS = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-multiple-tags.tlv";
@@ -96,6 +95,9 @@ public class Resources {
     public static final String SIGNATURE_METADATA_PADDING_TOO_SHORT = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-value-too-short.tlv";
     public static final String SIGNATURE_METADATA_WRONG_CONTENT = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-value.tlv";
     public static final String SIGNATURE_METADATA_WRONG_ORDER = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-order.tlv";
+    //Calendar authentication record
+    public static final String SIGNATURE_CALENDAR_AUTH_NO_PUBLICATION_DATA = INVALID_SIGNATURES_CALENDAR_AUTH + "invalid-signature-cal-auth-rec-pub-data-missing-tag.tlv";
+    public static final String SIGNATURE_CALENDAR_AUTH_NO_SIGNATURE_DATA = INVALID_SIGNATURES_CALENDAR_AUTH + "invalid-signature-cal-auth-rec-sig-data-missing-tag.tlv";
     /**
      * Publications files
      */

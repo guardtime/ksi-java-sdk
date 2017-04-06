@@ -27,15 +27,15 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.SIGNATURE_CHAIN_INDEX_INVALID;
 
 public class AggregationHashChainIndexConsistencyRuleTest extends AbstractRuleTest {
 
     private AggregationHashChainIndexConsistencyRule rule = new AggregationHashChainIndexConsistencyRule();
 
-    //TODO: Start using new resource pack files.
     @Test
     public void testSignatureWithInconsistentAggregationChainIndexReturnsFailedStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("internal-verification-aggr-chain/invalid-chain-index.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_CHAIN_INDEX_INVALID)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_10);

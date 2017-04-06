@@ -36,6 +36,10 @@ import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.METADATA_PADDING_TOO_LONG;
 import static com.guardtime.ksi.Resources.METADATA_PADDING_TOO_SHORT;
+import static com.guardtime.ksi.Resources.SIGNATURE_CHANGED_CHAINS;
+import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE;
+import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR;
+import static com.guardtime.ksi.Resources.SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE;
 import static com.guardtime.ksi.TestUtil.loadFile;
 
 public class DefaultVerificationIntegrationTest extends AbstractCommonIntegrationTest {
@@ -65,7 +69,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Calendar hash chain input hash mismatch.*")
     public void testExtendInvalidSignature_InvalidSignatureContentException_INT3() throws Exception {
         KSI ksiTest = ksiBuilder.build();
-        KSISignature signature = ksiTest.read(loadFile("calendar-based-verification/all-wrong-hash-chains-in-signature.ksig"));
+        KSISignature signature = ksiTest.read(loadFile(SIGNATURE_CHANGED_CHAINS));
 
         PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData("AAAAAA-CX5TF7-IAOXTG-6N4TGI-AIGLHG-ZD2NOX-WHGLYG-HHOXAD-XJ3FIN-GXJSGS-72NPRL-3ECEBJ"));
         try {
@@ -89,7 +93,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     public void testKeyBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_KEY1() throws Exception {
         Policy policy = new KeyBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile("internal-verification-authentication-records/NewSignature-CalAuth-WrongCertID.ksig"));
+        ksiTest.read(loadFile(SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE));
     }
 
     //TODO: Start using new resource pack files.
@@ -97,7 +101,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     public void testCalendarBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_CAL2() throws Exception {
         Policy policy = new CalendarBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile("calendar-based-verification/all-wrong-hash-chains-in-signature.ksig"));
+        ksiTest.read(loadFile(SIGNATURE_OTHER_CORE));
     }
 
     //TODO: Start using new resource pack files.
@@ -105,6 +109,6 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     public void testPublicationFileBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_PUB3() throws Exception {
         Policy policy = new PublicationsFileBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile("calendar-based-verification/all-wrong-hash-chains-in-signature.ksig"));
+        ksiTest.read(loadFile(SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR));
     }
 }

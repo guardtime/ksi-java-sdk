@@ -21,14 +21,21 @@ package com.guardtime.ksi;
 
 public class Resources {
 
-    private static final String VALID_SIGNATURES = "valid-signatures";
-    private static final String INVALID_SIGNATURES = "invalid-signatures";
-    private static final String POLICY_VERIFICATION_SIGNATURES = "policy-verification-signatures";
+    private static final String VALID_SIGNATURES = "valid-signatures/";
+    private static final String INVALID_SIGNATURES = "invalid-signatures/";
+    private static final String INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN = INVALID_SIGNATURES + "aggregation-chain/";
+    private static final String INVALID_SIGNATURES_CALENDAR_HASH_CHAIN = INVALID_SIGNATURES + "calendar-hash-chain";
+    private static final String INVALID_SIGNATURES_CALENDAR_AUTH = INVALID_SIGNATURES + "calendar-authentication-record/";
+    private static final String INVALID_SIGNATURES_PUBLICATION_RECORD = INVALID_SIGNATURES + "publication-record/";
+    private static final String INVALID_SIGNATURES_RFC3161_RECORD = INVALID_SIGNATURES + "rfc3161-record/";
+    private static final String POLICY_VERIFICATION_SIGNATURES = "policy-verification-signatures/";
+    private static final String POLICY_VERIFICATION_RESOURCES = POLICY_VERIFICATION_SIGNATURES + "resources/";
     private static final String INPUT_FILES = "input-file/";
     private static final String SIGNATURES = "signatures/";
     private static final String PUBLICATIONS_FILES = "publications-file/";
     private static final String EXTENDER_RESPONSES = "extender-responses/";
     private static final String AGGREGATOR_RESPONSES = "aggregator-responses/";
+    private static final String AGGRGATION_HASH_CHAIN = "aggregation-hash-chain/";
 
     /**
      * Properties & TrustStore
@@ -60,12 +67,22 @@ public class Resources {
     public static final String EXTENDED_SIGNATURE_2014_04_30 = SIGNATURES + "ok-sig-2014-04-30.1-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2015_01 = SIGNATURES + "testdata-extended.txt.2015-01.tlv";
-    public static final String EXTENDED_SIGNATURE_NO_PUBLICATION_RECORD = SIGNATURES + "";
     //Not extended
     public static final String SIGNATURE_2014_04_30 = SIGNATURES + "ok-sig-2014-04-30.1.ksig";
     public static final String SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2.ksig";
     public static final String SIGNATURE_2015_01 = SIGNATURES + "testdata.txt.2015-01.tlv";
-    public static final String SIGNATURE_PUBLICATION_RECORD_EMPTY = SIGNATURES + "extended-signature-empty-publication-record.ksig";
+    public static final String SIGNATURE_CHAIN_INDEX_INVALID = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-int-value-wrong.tlv";
+    public static final String SIGNATURE_OTHER_CORE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature.ksig";
+    public static final String SIGNATURE_CHANGED_CHAINS = SIGNATURES + "all-wrong-hash-chains-in-signature.ksig";
+    public static final String SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-changed-certificate-id-KEY-01.ksig";
+    public static final String SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature-with-authentication-record-PUB-03.ksig";
+    //Aggregation Hash Chains
+    public static final String AGGREGATION_HASH_CHAIN_OK = AGGRGATION_HASH_CHAIN + "aggregation-hash-chain-ok.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_INVALID = AGGRGATION_HASH_CHAIN + "aggregation-hash-chain-invalid.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_NO_INDEX = AGGRGATION_HASH_CHAIN + "aggregation-chain-no-indexes.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_NO_INPUT_HASH = AGGRGATION_HASH_CHAIN + "aggregation-chain-input-hash-missing.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_NO_ALGORITHM = AGGRGATION_HASH_CHAIN + "aggregation-chain-algorithm-missing.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_NO_AGGREGATION_TIME = AGGRGATION_HASH_CHAIN + "aggregation-chain-aggregation-time-missing.tlv";
     //METADATA -> Testpack? TestPack Improvement?
     public static final String METADATA_MATCHING_HASH_IMPRINT = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-content-matches-hash-imprint.ksig";
     public static final String METADATA_MISSING_PADDING = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-missing-padding-element.ksig";

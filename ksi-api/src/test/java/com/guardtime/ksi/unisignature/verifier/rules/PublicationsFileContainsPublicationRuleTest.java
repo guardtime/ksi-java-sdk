@@ -32,7 +32,7 @@ import org.testng.annotations.Test;
 import java.util.Date;
 
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_NO_PUBLICATION_RECORD;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_04_30;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 
 public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTest {
@@ -55,8 +55,8 @@ public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTes
 
     //TODO: Start using new resource pack files.
     @Test
-    public void testPublicationFileDoesntContainsPublication_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(EXTENDED_SIGNATURE_NO_PUBLICATION_RECORD), TestUtil.loadPublicationsFile(PUBLICATIONS_FILE)));
+    public void testSignatureDoesNotContainPublicationRecordButSuitableInPublicationsFile_Ok() throws Exception {
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2014_04_30), TestUtil.loadPublicationsFile(PUBLICATIONS_FILE)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 

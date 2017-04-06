@@ -31,14 +31,14 @@ import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_
 import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_NO_INPUT_HASH;
 import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_NO_LINK;
 import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_NO_PUBLICATION_TIME;
-import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_OK;
-import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM;
+import static com.guardtime.ksi.Resources.CALENDAR_HASH_CHAIN_OK;
+import static com.guardtime.ksi.Resources.CALENDAR_HASH_CHAIN_INVALID_ALGORITHM;
 
 public class CalendarHashChainTest {
 
     @Test
     public void testDecodeCalendarHashChain_Ok() throws Exception {
-        InMemoryCalendarHashChain calendarHashChain = load(SIGNATURE_CALENDAR_HASH_CHAIN_OK);
+        InMemoryCalendarHashChain calendarHashChain = load(CALENDAR_HASH_CHAIN_OK);
         Assert.assertNotNull(calendarHashChain.getAggregationTime());
         Assert.assertNotNull(calendarHashChain.getRegistrationTime());
         Assert.assertNotNull(calendarHashChain.getElementType(), String.valueOf(0x0802));
@@ -47,7 +47,7 @@ public class CalendarHashChainTest {
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Invalid calendar hash chain. Hash algorithm SHA3-256 is not implemented")
     public void testDecodeCalendarHashChainContainingInvalidHashAlgorithm_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM);
+        load(CALENDAR_HASH_CHAIN_INVALID_ALGORITHM);
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain publication time is missing")
@@ -72,7 +72,7 @@ public class CalendarHashChainTest {
 
     @Test
     public void testGetRegistrationTimeFromCalendarHashChain_Ok() throws Exception {
-        InMemoryCalendarHashChain calendarHashChain = load(SIGNATURE_CALENDAR_HASH_CHAIN_OK);
+        InMemoryCalendarHashChain calendarHashChain = load(CALENDAR_HASH_CHAIN_OK);
         Assert.assertEquals(calendarHashChain.getRegistrationTime().getTime(), 1398153270000L);
     }
 
@@ -83,14 +83,14 @@ public class CalendarHashChainTest {
 
     @Test
     public void testCalculateCalendarHashChainOutputHash_Ok() throws Exception {
-        InMemoryCalendarHashChain calendarHashChain = load(SIGNATURE_CALENDAR_HASH_CHAIN_OK);
+        InMemoryCalendarHashChain calendarHashChain = load(CALENDAR_HASH_CHAIN_OK);
         Assert.assertEquals(calendarHashChain.getInputHash(), new DataHash(HashAlgorithm.SHA1, new byte[]{-95, 124, -102, -86, 97, -24, 10, 27, -9, 29, 13, -123, 10, -12, -27, -70, -87, -128, 11, -67}));
         Assert.assertEquals(calendarHashChain.getOutputHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[]{-118, 71, 62, 38, 49, -108, 26, -97, 14, 78, -13, -19, -53, 77, -14, -74, 125, -85, -30, -126, -120, 41, -60, -47, -41, -82, 60, -104, -22, -40, 13, 58}));
     }
 
     @Test
     public void testGetPublicationDataFromCalendarHashChain_Ok() throws Exception {
-        InMemoryCalendarHashChain calendarHashChain = load(SIGNATURE_CALENDAR_HASH_CHAIN_OK);
+        InMemoryCalendarHashChain calendarHashChain = load(CALENDAR_HASH_CHAIN_OK);
         PublicationData publicationData = calendarHashChain.getPublicationData();
         Assert.assertNotNull(publicationData.getPublicationTime());
         Assert.assertNotNull(publicationData.getPublicationDataHash());

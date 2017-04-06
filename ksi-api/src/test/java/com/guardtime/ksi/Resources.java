@@ -22,7 +22,11 @@ package com.guardtime.ksi;
 public class Resources {
 
     private static final String INPUT_FILES = "input-file/";
-    private static final String SIGNATURE_COMPONENTS = "signature-components/";
+    private static final String COMPONENTS = "components/";
+    private static final String COMPONENTS_CALENDAR_HASH_CHAIN = COMPONENTS + "calendar-hash-chain/";
+    private static final String COMPONENTS_CERTIFICATE_RECORD = COMPONENTS + "certificate-record/";
+    private static final String COMPONENTS_CMS_SIGNATURE = COMPONENTS + "cms-signature/";
+    private static final String COMPONENTS_PUBLICATION_RECORD = COMPONENTS + "publication-record/";
     private static final String SIGNATURES = "signatures/";
     private static final String VALID_SIGNATURES = "valid-signatures/";
     private static final String INVALID_SIGNATURES = "invalid-signatures/";
@@ -109,8 +113,21 @@ public class Resources {
     /**
      * Signature components
      */
-    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_OK = SIGNATURE_COMPONENTS + "calendar-hash-chain-ok.tlv";
-    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM = SIGNATURE_COMPONENTS + "calendar-hash-chain-invalid-algorithm.tlv";
+    public static final String CALENDAR_HASH_CHAIN_OK = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-ok.tlv";
+    public static final String CALENDAR_HASH_CHAIN_INVALID_ALGORITHM = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-invalid-algorithm.tlv";
+
+    /**
+     * Publications file components
+     */
+    public static final String CERTIFICATE_RECORD_OK = COMPONENTS_CERTIFICATE_RECORD + "certificate-record-ok.tlv";
+    public static final String CERTIFICATE_RECORD_MISSING_CERT_ID = COMPONENTS_CERTIFICATE_RECORD + "certificate-record-missing-certificate-id.tlv";
+    public static final String CERTIFICATE_RECORD_MISSING_CERT = COMPONENTS_CERTIFICATE_RECORD + "certificate-record-missing-certificate.tlv";
+    public static final String CMS_SIGNATURE_OK = COMPONENTS_CMS_SIGNATURE + "cms-signature-ok.pkcs7";
+    public static final String CMS_SIGNATURE_SIGNED_DATA = COMPONENTS_CMS_SIGNATURE + "signed_data";
+    public static final String PUBLICATION_RECORD_IN_SIGNATURE_OK = COMPONENTS_PUBLICATION_RECORD + "publication-record-signature-ok.tlv";
+    public static final String PUBLICATION_RECORD_WITH_REF_AND_REPO_URI_IN_SIGNATURE_OK = COMPONENTS_PUBLICATION_RECORD + "publication-record-signature-with-ref-and-uri-ok.tlv";
+    public static final String PUBLICATION_RECORD_IN_FILE_OK = COMPONENTS_PUBLICATION_RECORD + "publication-record-pubfile-ok.tlv";
+    public static final String PUBLICATION_RECORD_WITH_REF_AND_REPO_URI_IN_FILE_OK = COMPONENTS_PUBLICATION_RECORD + "publication-record-pubfile-with-ref-and-uri-ok.tlv";
 
     /**
      * Publications files

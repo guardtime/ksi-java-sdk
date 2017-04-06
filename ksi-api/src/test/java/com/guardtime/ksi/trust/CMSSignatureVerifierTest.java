@@ -30,6 +30,9 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.guardtime.ksi.Resources.CMS_SIGNATURE_OK;
+import static com.guardtime.ksi.Resources.CMS_SIGNATURE_SIGNED_DATA;
+
 public class CMSSignatureVerifierTest {
 
     private JKSTrustStore trustStore;
@@ -64,7 +67,7 @@ public class CMSSignatureVerifierTest {
 
     @Test
     public void testVerifySignature_Ok() throws Exception {
-        CMSSignature signature = new CMSSignature(TestUtil.loadBytes("TO-TESTPACK-cms/signed-data"), TestUtil.loadBytes("TO-TESTPACK-cms/cms-signature-ok.pkcs7"));
+        CMSSignature signature = new CMSSignature(TestUtil.loadBytes(CMS_SIGNATURE_SIGNED_DATA), TestUtil.loadBytes(CMS_SIGNATURE_OK));
         CMSSignatureVerifier verifier = new CMSSignatureVerifier(trustStore);
         verifier.verify(signature);
         Assert.assertTrue(true);
@@ -72,7 +75,7 @@ public class CMSSignatureVerifierTest {
 
     @Test(expectedExceptions = InvalidCmsSignatureException.class, expectedExceptionsMessageRegExp = "Invalid CMS signature.*")
     public void testVerifySignatureUsingInvalidSignedData_ThrowsInvalidCmsSignatureException() throws Exception {
-        CMSSignature signature = new CMSSignature(new byte[128], TestUtil.loadBytes("TO-TESTPACK-cms/cms-signature-ok.pkcs7"));
+        CMSSignature signature = new CMSSignature(new byte[128], TestUtil.loadBytes(CMS_SIGNATURE_OK));
         CMSSignatureVerifier verifier = new CMSSignatureVerifier(trustStore);
         verifier.verify(signature);
 

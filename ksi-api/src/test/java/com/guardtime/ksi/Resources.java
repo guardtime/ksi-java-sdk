@@ -21,21 +21,22 @@ package com.guardtime.ksi;
 
 public class Resources {
 
+    private static final String INPUT_FILES = "input-file/";
+    private static final String SIGNATURE_COMPONENTS = "signature-components/";
+    private static final String SIGNATURES = "signatures/";
     private static final String VALID_SIGNATURES = "valid-signatures/";
     private static final String INVALID_SIGNATURES = "invalid-signatures/";
+    private static final String POLICY_VERIFICATION_SIGNATURES = "policy-verification-signatures/";
     private static final String INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN = INVALID_SIGNATURES + "aggregation-chain/";
-    private static final String INVALID_SIGNATURES_CALENDAR_HASH_CHAIN = INVALID_SIGNATURES + "calendar-hash-chain";
+    private static final String INVALID_SIGNATURES_CALENDAR_HASH_CHAIN = INVALID_SIGNATURES + "calendar-hash-chain/";
     private static final String INVALID_SIGNATURES_CALENDAR_AUTH = INVALID_SIGNATURES + "calendar-authentication-record/";
     private static final String INVALID_SIGNATURES_PUBLICATION_RECORD = INVALID_SIGNATURES + "publication-record/";
     private static final String INVALID_SIGNATURES_RFC3161_RECORD = INVALID_SIGNATURES + "rfc3161-record/";
-    private static final String POLICY_VERIFICATION_SIGNATURES = "policy-verification-signatures/";
     private static final String POLICY_VERIFICATION_RESOURCES = POLICY_VERIFICATION_SIGNATURES + "resources/";
-    private static final String INPUT_FILES = "input-file/";
-    private static final String SIGNATURES = "signatures/";
     private static final String PUBLICATIONS_FILES = "RENAME-TEST-TO-PUBLICATIONS-FILE-TESTS-publications-file/";
     private static final String EXTENDER_RESPONSES = "extender-responses/";
     private static final String AGGREGATOR_RESPONSES = "aggregator-responses/";
-    private static final String AGGRGATION_HASH_CHAIN = "aggregation-hash-chain/";
+
 
     /**
      * Properties & TrustStore
@@ -98,6 +99,19 @@ public class Resources {
     //Calendar authentication record
     public static final String SIGNATURE_CALENDAR_AUTH_NO_PUBLICATION_DATA = INVALID_SIGNATURES_CALENDAR_AUTH + "invalid-signature-cal-auth-rec-pub-data-missing-tag.tlv";
     public static final String SIGNATURE_CALENDAR_AUTH_NO_SIGNATURE_DATA = INVALID_SIGNATURES_CALENDAR_AUTH + "invalid-signature-cal-auth-rec-sig-data-missing-tag.tlv";
+    //Calendar Hash Chain
+    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_PAST = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-pub-time-int-value-wrong.tlv";
+    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_FUTURE = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-pub-time-future-value.tlv";
+    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_NO_LINK = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-no-links.tlv";
+    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_NO_INPUT_HASH = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-input-hash-missing-tag.tlv";
+    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_NO_PUBLICATION_TIME = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-pub-time-missing-tag.tlv";
+
+    /**
+     * Signature components
+     */
+    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_OK = SIGNATURE_COMPONENTS + "calendar-hash-chain-ok.tlv";
+    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM = SIGNATURE_COMPONENTS + "calendar-hash-chain-invalid-algorithm.tlv";
+
     /**
      * Publications files
      */

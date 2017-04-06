@@ -26,11 +26,15 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_FUTURE;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_PAST;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_NO_INPUT_HASH;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_NO_LINK;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_NO_PUBLICATION_TIME;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_OK;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM;
 
 public class CalendarHashChainTest {
-
-    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_OK = "TO-TESTPACK-signature/calendar-hash-chain-ok.tlv";
-    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_ALGORITHM = "TO-TESTPACK-signature/calendar-hash-chain-invalid-algorithm.tlv";
 
     @Test
     public void testDecodeCalendarHashChain_Ok() throws Exception {
@@ -48,22 +52,22 @@ public class CalendarHashChainTest {
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain publication time is missing")
     public void testDecodeCalendarHashChainWithoutPublicationTime_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("TO-TESTPACK-calendar-hash-chain/calendar-hash-chain-without-publication-time.tlv");
+        load(SIGNATURE_CALENDAR_HASH_CHAIN_NO_PUBLICATION_TIME, InMemoryAggregationHashChain.ELEMENT_TYPE);
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain input hash is missing")
     public void testDecodeCalendarHashChainWithoutInputHash_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("TO-TESTPACK-calendar-hash-chain/calendar-hash-chain-without-input-hash.tlv");
+        load(SIGNATURE_CALENDAR_HASH_CHAIN_NO_INPUT_HASH, InMemoryAggregationHashChain.ELEMENT_TYPE);
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain does not contain link elements")
     public void testDecodeCalendarHashChainWithoutLinks_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("TO-TESTPACK-calendar-hash-chain/calendar-hash-chain-no-links.tlv");
+        load(SIGNATURE_CALENDAR_HASH_CHAIN_NO_LINK, InMemoryAggregationHashChain.ELEMENT_TYPE);
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain shape is inconsistent with publication time")
     public void testDecodeCalendarHashChainContainingInvalidRegistrationTime_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("TO-TESTPACK-calendar-hash-chain/calendar-hash-chain-invalid-publication-time.tlv");
+        load(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_PAST, InMemoryAggregationHashChain.ELEMENT_TYPE);
     }
 
     @Test
@@ -74,7 +78,7 @@ public class CalendarHashChainTest {
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain shape inconsistent with publication time")
     public void testDecodeCalendarHashChainContainingInvalidRegistrationTimeElement_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("TO-TESTPACK-calendar-hash-chain/calendar-hash-chain-invalid-publication-time2.tlv");
+        load(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_FUTURE, InMemoryAggregationHashChain.ELEMENT_TYPE);
     }
 
     @Test
@@ -98,4 +102,7 @@ public class CalendarHashChainTest {
         return new InMemoryCalendarHashChain(loadTlv(file));
     }
 
+    static InMemoryCalendarHashChain load(String file, int type) throws Exception {
+        return new InMemoryCalendarHashChain(loadTlv(file).getFirstChildElement(InMemoryCalendarHashChain.ELEMENT_TYPE));
+    }
 }

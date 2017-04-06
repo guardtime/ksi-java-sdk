@@ -26,18 +26,18 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.METADATA_MATCHING_HASH_IMPRINT;
-import static com.guardtime.ksi.Resources.METADATA_MISSING_PADDING;
-import static com.guardtime.ksi.Resources.METADATA_MULTIPLE_PADDINGS;
-import static com.guardtime.ksi.Resources.METADATA_PADDING_FLAGS_NOT_SET;
-import static com.guardtime.ksi.Resources.METADATA_PADDING_F_FLAG_NOT_SET;
-import static com.guardtime.ksi.Resources.METADATA_PADDING_N_FLAG_NOT_SET;
-import static com.guardtime.ksi.Resources.METADATA_PADDING_TLV_16_FLAG_SET;
-import static com.guardtime.ksi.Resources.METADATA_PADDING_TOO_LONG;
-import static com.guardtime.ksi.Resources.METADATA_PADDING_TOO_SHORT;
-import static com.guardtime.ksi.Resources.METADATA_VALID;
-import static com.guardtime.ksi.Resources.METADATA_WRONG_CONTENT;
-import static com.guardtime.ksi.Resources.METADATA_WRONG_ORDER;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_MATCHING_HASH_IMPRINT;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_MISSING_PADDING;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_MULTIPLE_PADDINGS;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_FLAGS_NOT_SET;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_F_FLAG_NOT_SET;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_N_FLAG_NOT_SET;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_TLV_16_FLAG_SET;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_TOO_LONG;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_TOO_SHORT;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_WRONG_CONTENT;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_WRONG_ORDER;
+import static com.guardtime.ksi.Resources.SIGNATURE_NEWEST;
 
 public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
@@ -45,7 +45,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testCorrectMetadataWithPadding() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_VALID)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_NEWEST)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -53,7 +53,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataWithMissingPaddingNotMistakenForHashImprint() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_MISSING_PADDING)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_MISSING_PADDING)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -61,7 +61,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataWithPaddingNotFirstElement() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_WRONG_ORDER)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_WRONG_ORDER)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -69,7 +69,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataWithMultiplePadding() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_MULTIPLE_PADDINGS)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_MULTIPLE_PADDINGS)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -77,7 +77,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataWithTooLongPadding() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_PADDING_TOO_LONG)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_PADDING_TOO_LONG)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -85,7 +85,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataWithInvalidPaddingContent() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_WRONG_CONTENT)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_WRONG_CONTENT)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -93,7 +93,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataWithPaddingForwardFlagNotSet() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_PADDING_F_FLAG_NOT_SET)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_PADDING_F_FLAG_NOT_SET)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -101,7 +101,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataWithPaddingNonCriticalFlagNotSet() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_PADDING_N_FLAG_NOT_SET)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_PADDING_N_FLAG_NOT_SET)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -109,7 +109,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataWithPaddingTLV16FlagSet() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_PADDING_TLV_16_FLAG_SET)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_PADDING_TLV_16_FLAG_SET)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -117,7 +117,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataWithPaddingNoFlagsSet() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_PADDING_FLAGS_NOT_SET)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_PADDING_FLAGS_NOT_SET)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -125,7 +125,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataWithPaddingTooShort() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_PADDING_TOO_SHORT)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_PADDING_TOO_SHORT)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);
@@ -133,7 +133,7 @@ public class AggregationHashChainLinkMetadataRuleTest extends AbstractRuleTest {
 
     @Test
     public void testMetadataMatchesHashImprint() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(METADATA_MATCHING_HASH_IMPRINT)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_METADATA_MATCHING_HASH_IMPRINT)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_11);

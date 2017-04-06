@@ -32,7 +32,7 @@ public class Resources {
     private static final String POLICY_VERIFICATION_RESOURCES = POLICY_VERIFICATION_SIGNATURES + "resources/";
     private static final String INPUT_FILES = "input-file/";
     private static final String SIGNATURES = "signatures/";
-    private static final String PUBLICATIONS_FILES = "publications-file/";
+    private static final String PUBLICATIONS_FILES = "RENAME-TEST-TO-PUBLICATIONS-FILE-TESTS-publications-file/";
     private static final String EXTENDER_RESPONSES = "extender-responses/";
     private static final String AGGREGATOR_RESPONSES = "aggregator-responses/";
     private static final String AGGRGATION_HASH_CHAIN = "aggregation-hash-chain/";
@@ -71,11 +71,12 @@ public class Resources {
     public static final String SIGNATURE_2014_04_30 = SIGNATURES + "ok-sig-2014-04-30.1.ksig";
     public static final String SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2.ksig";
     public static final String SIGNATURE_2015_01 = SIGNATURES + "testdata.txt.2015-01.tlv";
+    public static final String SIGNATURE_NEWEST = VALID_SIGNATURES + "signature.ksig";
     public static final String SIGNATURE_CHAIN_INDEX_INVALID = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-int-value-wrong.tlv";
     public static final String SIGNATURE_OTHER_CORE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature.ksig";
     public static final String SIGNATURE_CHANGED_CHAINS = SIGNATURES + "all-wrong-hash-chains-in-signature.ksig";
     public static final String SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-changed-certificate-id-KEY-01.ksig";
-    public static final String SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature-with-authentication-record-PUB-03.ksig";
+    public static final String SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature-with-extended-calendar-PUB-03.ksig";
     //Aggregation Hash Chains
     public static final String AGGREGATION_HASH_CHAIN_OK = AGGRGATION_HASH_CHAIN + "aggregation-hash-chain-ok.tlv";
     public static final String AGGREGATION_HASH_CHAIN_INVALID = AGGRGATION_HASH_CHAIN + "aggregation-hash-chain-invalid.tlv";
@@ -84,19 +85,17 @@ public class Resources {
     public static final String AGGREGATION_HASH_CHAIN_NO_ALGORITHM = AGGRGATION_HASH_CHAIN + "aggregation-chain-algorithm-missing.tlv";
     public static final String AGGREGATION_HASH_CHAIN_NO_AGGREGATION_TIME = AGGRGATION_HASH_CHAIN + "aggregation-chain-aggregation-time-missing.tlv";
     //METADATA -> Testpack? TestPack Improvement?
-    public static final String METADATA_MATCHING_HASH_IMPRINT = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-content-matches-hash-imprint.ksig";
-    public static final String METADATA_MISSING_PADDING = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-missing-padding-element.ksig";
-    public static final String METADATA_MULTIPLE_PADDINGS = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-multiple-padding-elements.ksig";
-    public static final String METADATA_PADDING_FLAGS_NOT_SET = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-flags-not-set.ksig";
-    public static final String METADATA_PADDING_F_FLAG_NOT_SET = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-forward-flag-not-set.ksig";
-    public static final String METADATA_PADDING_N_FLAG_NOT_SET = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-noncritical-flag-not-set.ksig";
-    public static final String METADATA_PADDING_TLV_16_FLAG_SET = "TO-TESTPACK-aggregation-hash-chain-metadata/TestAggregationHashChainMetadataPaddingNotTlv8Fail.ksig";
-    public static final String METADATA_PADDING_TOO_LONG = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-too-long.ksig";
-    public static final String METADATA_PADDING_TOO_SHORT = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-too-short.ksig";
-    public static final String METADATA_WRONG_CONTENT = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-padding-wrong-content.ksig";
-    public static final String METADATA_WRONG_ORDER = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-wrong-order.ksig";
-    public static final String METADATA_VALID = "TO-TESTPACK-aggregation-hash-chain-metadata/metadata-signed-ok.ksig";
-
+    public static final String SIGNATURE_METADATA_MATCHING_HASH_IMPRINT = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-matches-imprint.tlv";
+    public static final String SIGNATURE_METADATA_MISSING_PADDING = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-missing-tag.tlv";
+    public static final String SIGNATURE_METADATA_MULTIPLE_PADDINGS = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-multiple-tags.tlv";
+    public static final String SIGNATURE_METADATA_PADDING_FLAGS_NOT_SET = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-flags-not-set.tlv";
+    public static final String SIGNATURE_METADATA_PADDING_F_FLAG_NOT_SET = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-non-forward-flag-not-set.tlv";
+    public static final String SIGNATURE_METADATA_PADDING_N_FLAG_NOT_SET = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-non-critical-flag-not-set.tlv";
+    public static final String SIGNATURE_METADATA_PADDING_TLV_16_FLAG_SET = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-tlv16-flag-set.tlv";
+    public static final String SIGNATURE_METADATA_PADDING_TOO_LONG = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-value-too-long.tlv";
+    public static final String SIGNATURE_METADATA_PADDING_TOO_SHORT = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-value-too-short.tlv";
+    public static final String SIGNATURE_METADATA_WRONG_CONTENT = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-value.tlv";
+    public static final String SIGNATURE_METADATA_WRONG_ORDER = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-order.tlv";
     /**
      * Publications files
      */

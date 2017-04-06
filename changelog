@@ -5,6 +5,7 @@ Version 4.9
 * IMPROVEMENT: Removed com.guardtime.ksi.unisignature.verifier.VerificationContext.setPduVersion(com.guardtime.ksi.pdu.PduVersion) as PDU version is decided in the client now.
 * IMPROVEMENT: Not all KSISigningClients and KSIExtenderClients are now aware of external service settings like credentials and PDU version. So those interfaces do not have methods to ask this kind of information anymore.
 * IMPROVEMENT: New implementation KSISigningClient and KSIExtenderClient: HAClient. HAClient (High-availability client) is a client that combines multiple KSISigningClients and KSIExtenderClients and loadbalances between them.
+* FEATURE: Aggregator and extender configuration requests
 
 Version 4.8
 

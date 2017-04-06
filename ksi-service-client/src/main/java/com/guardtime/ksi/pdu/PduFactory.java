@@ -49,4 +49,14 @@ public interface PduFactory {
      */
     ExtensionResponse readExtensionResponse(KSIRequestContext context, TLVElement input) throws KSIException;
 
+    AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext requestContext) throws KSIException;
+
+    AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext requestContext, TLVElement input) throws KSIException;
+
+    /**
+     * This method can be used to create an extension configuration request
+     */
+    ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext requestContext) throws KSIException;
+
+    ExtenderConfiguration readExtenderConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException;
 }

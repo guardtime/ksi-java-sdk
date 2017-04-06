@@ -60,6 +60,10 @@ public class RoundRobinSelectionMaker<T> implements SelectionMaker<T> {
         return objects;
     }
 
+    public int getNumberOfObjectsGivenInOneSelection() {
+        return numberOfObjectsGivenInOnePick;
+    }
+
     public String toString() {
         return "RoundRobinSelectionMaker{numberOfObjectsGivenInOnePick=" + numberOfObjectsGivenInOnePick + ", objects=" + objects + "}";
     }

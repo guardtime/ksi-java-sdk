@@ -19,6 +19,7 @@
 package com.guardtime.ksi.service.client.http;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.pdu.KSIRequestContext;
@@ -63,6 +64,13 @@ public abstract class AbstractHttpClient extends ExternalServiceConfigurationAwa
         ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());
         HttpPostRequestFuture postRequestFuture = post(requestStream, settings.getExtendingUrl());
         return new ExtensionResponseFuture(postRequestFuture, requestContext, pduFactory);
+    }
+
+    public ExtenderConfiguration getExtendersConfiguration(KSIRequestContext requestContext) throws KSIException {
+        requestContext = requestContext.getWithCredentials(getServiceCredentials());
+        ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext);
+        Future<TLVElement> future = extend(new ByteArrayInputStream(request.toByteArray()));
+        return pduFactory.readExtenderConfigurationResponse(requestContext, future.getResult());
     }
 
     public Future<TLVElement> sign(InputStream inputStream) throws KSIClientException {

@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE> implements Closeable {
+abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE, CONFIG_RESPONSE> implements Closeable {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -72,11 +73,57 @@ abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE> imple
         return clients;
     }
 
-    ServiceCallFuture<CLIENT_RESPONSE> callServices(Collection<ServiceCallingTask<CLIENT_RESPONSE>> tasks, Long requestId)
+    public CONFIG_RESPONSE getConfiguration(Collection<Callable<CONFIG_RESPONSE>> configurationRequestTasks) throws KSIClientException {
+        try {
+            List<java.util.concurrent.Future<CONFIG_RESPONSE>> configurationFutures = callAllServices(configurationRequestTasks);
+            List<CONFIG_RESPONSE> configurations = new ArrayList<CONFIG_RESPONSE>();
+            for (java.util.concurrent.Future<CONFIG_RESPONSE> configurationFuture : configurationFutures) {
+                try {
+                    configurations.add(configurationFuture.get());
+                } catch (Exception e) {
+                    logger.error("Asking configuration from one of the clients failed", e);
+                }
+            }
+            if (configurations.isEmpty()) {
+                throw new KSIClientException(getClass().getSimpleName() + " received no configuration responses to use for building the most optimal configuration");
+            }
+            if (!areAllConfigrationsSame(configurations)) {
+                logger.warn("Configurations gotten via " + getClass().getSimpleName() +
+                        " from subclients differ from eachother. This could mean that external services our configured wrong. " +
+                        "All configurations: " + configurationsToString(configurations));
+            }
+            return composeAggregatedConfiguration(configurations);
+        } catch (Exception e) {
+            throw new KSIClientException("Asking extender configurations failed", e);
+        }
+    }
+
+    private boolean areAllConfigrationsSame(List<CONFIG_RESPONSE> configurations) {
+        for (int i = 1; i < configurations.size(); i++) {
+            if (!configurationsEqual(configurations.get(i - 1), configurations.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected abstract boolean configurationsEqual(CONFIG_RESPONSE c1, CONFIG_RESPONSE c2);
+
+    protected abstract String configurationsToString(List<CONFIG_RESPONSE> configurations);
+
+    protected abstract CONFIG_RESPONSE composeAggregatedConfiguration(List<CONFIG_RESPONSE> configurations);
+
+    ServiceCallFuture<CLIENT_RESPONSE> callAnyService(Collection<ServiceCallingTask<CLIENT_RESPONSE>> tasks, Long requestId)
             throws KSIClientException {
         registerTasksExceptionHolders(tasks, requestId);
-        Future<CLIENT_RESPONSE> clientResponse = executorService.submit(new ServiceCallsTask(requestId, tasks));
+        Future<CLIENT_RESPONSE> clientResponse = executorService.submit(new AnyServiceCallTask(requestId, tasks));
         return new ServiceCallFuture<CLIENT_RESPONSE>(clientResponse);
+    }
+
+
+    List<Future<CONFIG_RESPONSE>> callAllServices(Collection<Callable<CONFIG_RESPONSE>> tasks)
+            throws KSIClientException, InterruptedException {
+        return executorService.invokeAll(tasks);
     }
 
     private void registerTasksExceptionHolders(Collection<ServiceCallingTask<CLIENT_RESPONSE>> tasks, Long requestId) {
@@ -110,12 +157,12 @@ abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE> imple
         return this.getClass().getSimpleName() + "{LB Strategy=" + clientsPicker + "}";
     }
 
-    private class ServiceCallsTask implements Callable<CLIENT_RESPONSE> {
+    private class AnyServiceCallTask implements Callable<CLIENT_RESPONSE> {
 
         private final Long requestId;
         private final Collection<ServiceCallingTask<CLIENT_RESPONSE>>  serviceCallTasks;
 
-        ServiceCallsTask(Long requestId, Collection<ServiceCallingTask<CLIENT_RESPONSE>> serviceCallTasks) {
+        AnyServiceCallTask(Long requestId, Collection<ServiceCallingTask<CLIENT_RESPONSE>> serviceCallTasks) {
             this.requestId = requestId;
             this.serviceCallTasks = serviceCallTasks;
         }
@@ -135,5 +182,13 @@ abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE> imple
                 }
             }
         }
+    }
+
+    protected Collection<CLIENT> getAllSubclients() {
+        return clientsPicker.getAll();
+    }
+
+    protected int getNumberClientsUsedInOneRound() {
+        return clientsPicker.getNumberOfObjectsGivenInOneSelection();
     }
 }

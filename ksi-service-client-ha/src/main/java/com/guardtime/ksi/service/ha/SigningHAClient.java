@@ -21,24 +21,28 @@ package com.guardtime.ksi.service.ha;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.settings.SingleFunctionHAClientSettings;
+import com.guardtime.ksi.service.ha.tasks.AggregatorConfigurationCallingTask;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
 import com.guardtime.ksi.service.ha.tasks.SigningTask;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.util.Util;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * KSI Signing Client which combines other clients for high availability and load balancing purposes.
  */
-public class SigningHAClient extends AbstractHAClient<KSISigningClient, AggregationResponse> implements KSISigningClient {
+public class SigningHAClient extends AbstractHAClient<KSISigningClient, AggregationResponse, AggregatorConfiguration> implements KSISigningClient {
 
     public SigningHAClient(List<KSISigningClient> subclients) throws KSIException {
         this(subclients, null);
@@ -47,6 +51,45 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
     public SigningHAClient(List<KSISigningClient> signingClients, SingleFunctionHAClientSettings settings) throws
             KSIException {
         super(signingClients, settings);
+    }
+
+    public AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException {
+        Collection<Callable<AggregatorConfiguration>> tasks = new ArrayList<Callable<AggregatorConfiguration>>();
+        for (KSISigningClient client : getAllSubclients()) {
+            tasks.add(new AggregatorConfigurationCallingTask(requestContext, client));
+        }
+        return getConfiguration(tasks);
+    }
+
+    protected boolean configurationsEqual(AggregatorConfiguration c1, AggregatorConfiguration c2) {
+        return Util.equals(c1.getMaximumLevel(), c2.getMaximumLevel()) &&
+                Util.equals(c1.getAggregationAlgorithm(), c2.getAggregationAlgorithm()) &&
+                Util.equals(c1.getAggregationPeriod(), c2.getAggregationPeriod()) &&
+                Util.equals(c1.getMaximumRequests(), c2.getMaximumRequests()) &&
+                Util.equalsIgnoreOrder(c1.getParents(), c2.getParents());
+    }
+
+
+    protected String configurationsToString(List<AggregatorConfiguration> configurations) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < configurations.size(); i++) {
+            AggregatorConfiguration conf = configurations.get(i);
+            sb.append(String.format("AggregatorConfiguration{" +
+                    "maximumRequests='%s'," +
+                    "parents='%s'," +
+                    "maxLevel='%s'," +
+                    "aggregationAlgorithm='%s'," +
+                    "aggregationPeriod='%s'" +
+                    "}", conf.getMaximumRequests(), conf.getParents(), conf.getMaximumLevel(), conf.getAggregationAlgorithm(), conf.getAggregationPeriod()));
+            if (i != configurations.size() - 1) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
+    }
+
+    protected AggregatorConfiguration composeAggregatedConfiguration(List<AggregatorConfiguration> configurations) {
+        return new AggregatedAggregatorConfiguration(configurations, getAllSubclients().size(), getNumberClientsUsedInOneRound());
     }
 
     public Future<TLVElement> sign(InputStream request) throws KSIClientException {
@@ -61,6 +104,6 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
         for (KSISigningClient client : clients) {
             tasks.add(new SigningTask(client, requestContext, dataHash, level));
         }
-        return callServices(tasks, requestId);
+        return callAnyService(tasks, requestId);
     }
 }

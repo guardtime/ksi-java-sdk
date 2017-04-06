@@ -21,6 +21,8 @@ package com.guardtime.ksi.service.ha;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
@@ -36,7 +38,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Combines {@link SigningHAClient} and {@link ExtenderHAClient}.
+ * Combines {@link SigningHAClient} and {@link ExtenderHAClient}
  */
 public class HAClient implements KSISigningClient, KSIExtenderClient {
 
@@ -60,6 +62,14 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
 
     public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
         return signingHAClient.sign(requestContext, dataHash, level);
+    }
+
+    public AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException {
+        return signingHAClient.getAggregatorsConfiguration(requestContext);
+    }
+
+    public ExtenderConfiguration getExtendersConfiguration(KSIRequestContext requestContext) throws KSIException {
+        return extenderHAClient.getExtendersConfiguration(requestContext);
     }
 
     public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime)

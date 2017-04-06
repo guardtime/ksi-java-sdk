@@ -31,6 +31,7 @@ import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.v1.PduV1Factory;
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.*;
@@ -70,7 +71,7 @@ import static com.guardtime.ksi.TestUtil.*;
 
 public abstract class AbstractCommonIntegrationTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommonIntegrationTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractCommonIntegrationTest.class);
     protected static final String TEST_GROUP_INTEGRATION = "integration";
     protected static final String KSI_DATA_GROUP_NAME = "ksiDataProvider";
     protected static final String INTERNAL_VERIFICATION_DATA_PROVIDER = "INTERNAL_VERIFICATION_DATA_PROVIDER";
@@ -84,6 +85,8 @@ public abstract class AbstractCommonIntegrationTest {
     private static final String DEFAULT_SIGNING_URL = "http://stamper.guardtime.net/gt-signingservice";
     private static final String DEFAULT_EXTENDER_URL = "http://verifier.guardtime.net/gt-extendingservice";
     private static final String DEFAULT_PUBFILE_URL = "http://verify.guardtime.com/gt-controlpublications.bin";
+    private static final HttpClientSettings FAULTY_HTTP_SETTINGS = new HttpClientSettings("http://.", "http://.", "http://.", new
+            KSIServiceCredentials(".", "."));
     protected static String javaKeyStorePath = null;
 
     public static final String SIGNATURE_2014_06_02 = "ok-sig-2014-06-2.ksig";
@@ -94,14 +97,31 @@ public abstract class AbstractCommonIntegrationTest {
     public static final String KSI_TRUSTSTORE_PASSWORD = "changeit";
 
     protected KSI ksi;
+    protected KSI ksiV2;
+    protected KSI haKsi;
     protected SimpleHttpClient simpleHttpClient;
+    protected SimpleHttpClient simpleHttpClientV2;
     protected ServiceCredentials serviceCredentials;
+
 
     @BeforeMethod
     public void setUp() throws Exception {
         this.simpleHttpClient = new SimpleHttpClient(loadHTTPSettings());
         this.serviceCredentials = simpleHttpClient.getServiceCredentials();
-        this.ksi = createKsi(simpleHttpClient,simpleHttpClient, simpleHttpClient);
+        this.ksi = createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient);
+        this.simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
+        ApacheHttpClient failingApacheClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
+        List<KSISigningClient> signingClients = new ArrayList<KSISigningClient>();
+        signingClients.add(simpleHttpClientV2);
+        signingClients.add(failingApacheClient);
+        signingClients.add(simpleHttpClient);
+        List<KSIExtenderClient> extenderClients = new ArrayList<KSIExtenderClient>();
+        extenderClients.add(simpleHttpClientV2);
+        extenderClients.add(failingApacheClient);
+        extenderClients.add(simpleHttpClient);
+        HAClient haClient = new HAClient(signingClients, extenderClients);
+        this.haKsi = createKsi(haClient, haClient, simpleHttpClient);
+        this.ksiV2 = createKsi(simpleHttpClientV2,simpleHttpClientV2, simpleHttpClientV2);
     }
 
     public static DataHash getFileHash(String fileName, String name) throws Exception {
@@ -126,7 +146,7 @@ public abstract class AbstractCommonIntegrationTest {
         TCPClientSettings tcpSettings = loadTCPSettings();
         PendingKSIClient pendingKSIClient = new PendingKSIClient();
         KSISigningClient tcpClient = new TCPClient(tcpSettings);
-        ApacheHttpClient failingClient = new ApacheHttpClient(new HttpClientSettings("http://.", "http://.", "http://.", new KSIServiceCredentials(".", ".")));
+        ApacheHttpClient failingClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
         List<KSISigningClient> signingClientsForHa = new ArrayList<KSISigningClient>();
         List<KSIExtenderClient> extenderClientsForHa = new ArrayList<KSIExtenderClient>();
         signingClientsForHa.add(failingClient);
@@ -160,7 +180,7 @@ public abstract class AbstractCommonIntegrationTest {
         return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec, tcpThreadPoolSize, serviceCredentials);
     }
 
-    public static HttpClientSettings loadHTTPSettings() throws IOException {
+    public static HttpClientSettings loadHTTPSettings(PduVersion pduVersion) throws IOException {
         Properties prop = new Properties();
         prop.load(load("integrationtest.properties"));
         String extenderUrl = prop.getProperty("extenderUrl", DEFAULT_EXTENDER_URL);
@@ -178,10 +198,14 @@ public abstract class AbstractCommonIntegrationTest {
             javaKeyStorePath = prop.getProperty("javaKeyStorePath");
         }
 
-        HttpClientSettings serviceSettings = new HttpClientSettings(signingUrl, extenderUrl, publicationsFileUrl, credentials);
+        HttpClientSettings serviceSettings = new HttpClientSettings(signingUrl, extenderUrl, publicationsFileUrl, credentials, pduVersion);
         serviceSettings.getParameters().setConnectionTimeout(DEFAULT_TIMEOUT);
         serviceSettings.getParameters().setReadTimeout(DEFAULT_TIMEOUT);
         return serviceSettings;
+    }
+
+    public static HttpClientSettings loadHTTPSettings() throws IOException {
+        return loadHTTPSettings(PduVersion.V1);
     }
 
     protected static Object[] createKsiObject(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
@@ -340,7 +364,7 @@ public abstract class AbstractCommonIntegrationTest {
                 try{
                     data[i] = new Object[]{new DataHolderForIntegrationTests(lines.get(i).split(";"), httpClient)};
                 } catch (Exception e){
-                    LOGGER.warn("Error while parsing the following line: '" + lines.get(i) + "' from file: " + fileName);
+                    logger.warn("Error while parsing the following line: '" + lines.get(i) + "' from file: " + fileName);
                     throw e;
                 }
             }
@@ -355,7 +379,7 @@ public abstract class AbstractCommonIntegrationTest {
 
     protected void testExecution(DataHolderForIntegrationTests testData, Policy policy) throws Exception {
         try {
-            LOGGER.info("Running test with the following data: " + testData.getTestDataInformation() + "; Policy: " + policy.getName());
+            logger.info("Running test with the following data: " + testData.getTestDataInformation() + "; Policy: " + policy.getName());
             KSISignature signature = loadSignature(testData.getTestFile());
             Assert.assertTrue(testData.getExpectException(), testData.getTestFile() + " supposed to fail with class " + testData.getExpectedExceptionClass() + " exception.");
             VerificationResult result = verify(ksi, testData.getHttpClient(), signature, policy);
@@ -371,7 +395,7 @@ public abstract class AbstractCommonIntegrationTest {
             if (!(e.getMessage().contains(testData.getExpectedExceptionMessage()) &&
                     e.getClass().toString().contains(testData.getExpectedExceptionClass()) &&
                     !testData.getExpectException() && testData.getExpectedFailureCode().equals(""))) {
-                LOGGER.warn("Test failed with " + testData.getTestDataInformation() + "; Policy: " + policy.getName());
+                logger.warn("Test failed with " + testData.getTestDataInformation() + "; Policy: " + policy.getName());
                 throw e;
             }
         }

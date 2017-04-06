@@ -19,26 +19,30 @@
 package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.ha.settings.SingleFunctionHAClientSettings;
+import com.guardtime.ksi.service.ha.tasks.ExtenderConfigurationCallingTask;
 import com.guardtime.ksi.service.ha.tasks.ExtendingTask;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.util.Util;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * KSI Extender Client which combines other clients for high availability and load balancing purposes.
  */
-public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, ExtensionResponse> implements KSIExtenderClient {
+public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, ExtensionResponse, ExtenderConfiguration> implements KSIExtenderClient {
 
     public ExtenderHAClient(List<KSIExtenderClient> subclients) throws KSIException {
         this(subclients, null);
@@ -46,6 +50,18 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
 
     public ExtenderHAClient(List<KSIExtenderClient> subclients, SingleFunctionHAClientSettings settings) throws KSIException {
         super(subclients, settings);
+    }
+
+    protected ExtenderConfiguration composeAggregatedConfiguration(List<ExtenderConfiguration> configurations) {
+        return new AggregatedExtenderConfiguration(configurations, getAllSubclients().size(), getNumberClientsUsedInOneRound());
+    }
+
+    public ExtenderConfiguration getExtendersConfiguration(KSIRequestContext requestContext) throws KSIException {
+        Collection<Callable<ExtenderConfiguration>> tasks = new ArrayList<Callable<ExtenderConfiguration>>();
+        for (KSIExtenderClient client : getAllSubclients()) {
+            tasks.add(new ExtenderConfigurationCallingTask(requestContext, client));
+        }
+        return getConfiguration(tasks);
     }
 
     public Future<TLVElement> extend(InputStream request) throws KSIClientException {
@@ -60,6 +76,30 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
         for (KSIExtenderClient client : clients) {
             tasks.add(new ExtendingTask(client, requestContext, aggregationTime, publicationTime));
         }
-        return callServices(tasks, requestId);
+        return callAnyService(tasks, requestId);
+    }
+
+    protected boolean configurationsEqual(ExtenderConfiguration c1, ExtenderConfiguration c2) {
+        return Util.equals(c1.getMaximumRequests(), c2.getMaximumRequests()) &&
+                Util.equals(c1.getCalendarFirstTime(), c2.getCalendarFirstTime()) &&
+                Util.equals(c1.getCalendarLastTime(), c2.getCalendarLastTime()) &&
+                Util.equalsIgnoreOrder(c1.getParents(), c2.getParents());
+    }
+
+    protected String configurationsToString(List<ExtenderConfiguration> configurations) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < configurations.size(); i++) {
+            ExtenderConfiguration conf = configurations.get(i);
+            sb.append(String.format("ExtenderConfiguration{" +
+                    "maximumRequests='%s'," +
+                    "parents='%s'," +
+                    "calendarFirstTime='%s'," +
+                    "calendarLastTime='%s'" +
+                    "}", conf.getMaximumRequests(), conf.getParents(), conf.getCalendarFirstTime(), conf.getCalendarLastTime()));
+            if (i != configurations.size() - 1) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
     }
 }

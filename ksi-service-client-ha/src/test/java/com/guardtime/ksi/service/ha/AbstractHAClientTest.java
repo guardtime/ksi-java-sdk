@@ -72,7 +72,7 @@ public class AbstractHAClientTest {
             tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 10")));
             tasks.add(new DumbTask(777));
             tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 11")));
-            Integer result = haClient.callServices(tasks, 0L).getResult();
+            Integer result = haClient.callAnyService(tasks, 0L).getResult();
             Assert.assertEquals(new Integer(777), result);
         }
     }
@@ -94,7 +94,7 @@ public class AbstractHAClientTest {
             tasks.add(new DummySlowTask(10));
             tasks.add(new DumbTask(777));
             tasks.add(new DummySlowTask(11));
-            Integer result = haClient.callServices(tasks, 0L).getResult();
+            Integer result = haClient.callAnyService(tasks, 0L).getResult();
             Assert.assertEquals(new Integer(777), result);
         }
     }
@@ -114,12 +114,24 @@ public class AbstractHAClientTest {
         tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 9")));
         tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 10")));
         tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 11")));
-        haClient.callServices(tasks, 0L).getResult();
+        haClient.callAnyService(tasks, 0L).getResult();
     }
 
-    private static class DummyHAClient extends AbstractHAClient<DummyClient, Integer> {
+    private static class DummyHAClient extends AbstractHAClient<DummyClient, Integer, Object> {
         public DummyHAClient(List subclients, SingleFunctionHAClientSettings settings) throws KSIException {
             super(subclients, settings);
+        }
+
+        protected boolean configurationsEqual(Object c1, Object c2) {
+            return c1.equals(c2);
+        }
+
+        protected String configurationsToString(List<Object> configurations) {
+            return configurations.toString();
+        }
+
+        protected Object composeAggregatedConfiguration(List<Object> configurations) {
+            return configurations.get(0);
         }
     }
 

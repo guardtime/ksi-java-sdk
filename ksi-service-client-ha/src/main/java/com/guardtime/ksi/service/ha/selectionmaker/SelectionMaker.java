@@ -37,4 +37,9 @@ public interface SelectionMaker<T> {
      */
     Collection<T> getAll();
 
+    /**
+     * @return size of the collection returned invoking {@link #select()}
+     */
+    int getNumberOfObjectsGivenInOneSelection();
+
 }

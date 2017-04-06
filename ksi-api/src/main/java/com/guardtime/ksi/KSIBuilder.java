@@ -24,7 +24,9 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
@@ -223,9 +225,9 @@ public final class KSIBuilder {
      * This method can be used to set a default verification policy. Default verification policy is used to perform
      * signature verification in the following cases:
      * <ul>
-     *     <li>new signature is created</li>
-     *     <li>existing signature is extended</li>
-     *     <li>existing signature is read from stream, byte array or file</li>
+     * <li>new signature is created</li>
+     * <li>existing signature is extended</li>
+     * <li>existing signature is read from stream, byte array or file</li>
      * </ul>
      *
      * Verification will be ran before signature is returned to the user. If signature verification fails,
@@ -236,15 +238,15 @@ public final class KSIBuilder {
      * </p>
      * The following values are used to build a verification context that will be used by default verification policy:
      * <ul>
-     *     <li>{@link VerificationContextBuilder#setExtendingAllowed(boolean)} is set to true</li>
-     *     <li>{@link VerificationContextBuilder#setExtenderClient(KSIExtenderClient)} - an extender client configure by
-     *     {@link KSIBuilder} class is used</li>
-     *     <li>{@link VerificationContextBuilder#setPublicationsFile(PublicationsFile)} - a publication file configured
-     *     by {@link KSIBuilder} class is used</li>
-     *     <li>{@link VerificationContextBuilder#setDocumentHash(DataHash)} - in case of signature creation input hash
-     *     is used, otherwise null value is used.</li>
-     *     <li>{@link VerificationContextBuilder#setUserPublication(PublicationData)} - null value is always used</li>
-     *     <li>{@link VerificationContextBuilder#setSignature(KSISignature)} - the signature to be returned to the user</li>
+     * <li>{@link VerificationContextBuilder#setExtendingAllowed(boolean)} is set to true</li>
+     * <li>{@link VerificationContextBuilder#setExtenderClient(KSIExtenderClient)} - an extender client configure by
+     * {@link KSIBuilder} class is used</li>
+     * <li>{@link VerificationContextBuilder#setPublicationsFile(PublicationsFile)} - a publication file configured
+     * by {@link KSIBuilder} class is used</li>
+     * <li>{@link VerificationContextBuilder#setDocumentHash(DataHash)} - in case of signature creation input hash
+     * is used, otherwise null value is used.</li>
+     * <li>{@link VerificationContextBuilder#setUserPublication(PublicationData)} - null value is always used</li>
+     * <li>{@link VerificationContextBuilder#setSignature(KSISignature)} - the signature to be returned to the user</li>
      * </ul>
      * </p>
      * Policies that are using {@link com.guardtime.ksi.publication.PublicationData} can not
@@ -408,6 +410,10 @@ public final class KSIBuilder {
             return asyncSign(hasher.getHash());
         }
 
+        public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
+            return signingClient.getAggregatorsConfiguration(new KSIRequestContext(pduIdentifierProvider));
+        }
+
         public KSISignature extend(KSISignature signature) throws KSIException {
             Future<KSISignature> future = asyncExtend(signature);
             return future.getResult();
@@ -442,6 +448,10 @@ public final class KSIBuilder {
             Future<ExtensionResponse> extenderFuture = extenderClient.extend(new KSIRequestContext(pduIdentifierProvider), signature.getAggregationTime(),
                     publicationRecord.getPublicationTime());
             return new ExtensionFuture(extenderFuture, publicationRecord, signature, signatureComponentFactory, signatureFactory);
+        }
+
+        public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
+            return extenderClient.getExtendersConfiguration(new KSIRequestContext(pduIdentifierProvider));
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {

@@ -23,6 +23,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregationResponseFuture;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -58,4 +59,12 @@ public interface KSISigningClient extends Closeable {
      * @throws KSIException
      */
     Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException;
+
+    /**
+     *
+     * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
+     * @return {@link AggregatorConfiguration} one should rely on when using this client
+     * @throws KSIException
+     */
+    AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException;
 }

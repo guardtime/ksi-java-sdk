@@ -52,7 +52,7 @@ abstract class PduV2 extends TLVStructure {
     /**
      * Constructor for creating a request PDU message
      */
-    public PduV2(PduMessageHeader header, List<? extends TLVStructure> payloads, HashAlgorithm macAlgorithm, byte[] loginKey) throws KSIException {
+    public PduV2(PduMessageHeader header, List<TLVElement> payloads, HashAlgorithm macAlgorithm, byte[] loginKey) throws KSIException {
         // root element
         this.rootElement = new TLVElement(false, false, getElementType());
 
@@ -60,8 +60,7 @@ abstract class PduV2 extends TLVStructure {
         this.rootElement.addChildElement(header.getRootElement());
 
         // pdu payloads
-        for (TLVStructure payload : payloads) {
-            TLVElement payloadElement = payload.getRootElement();
+        for (TLVElement payloadElement : payloads) {
             if (!isSupportedPayloadElement(payloadElement)) {
                 throw new IllegalArgumentException("TLV type 0x" + Integer.toHexString(payloadElement.getType()) + " isn't supported");
             }

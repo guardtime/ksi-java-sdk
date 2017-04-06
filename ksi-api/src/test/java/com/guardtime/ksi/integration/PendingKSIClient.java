@@ -3,6 +3,8 @@ package com.guardtime.ksi.integration;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
@@ -31,6 +33,10 @@ public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
         throw new KSIClientException("FAILURE!!!!");
     }
 
+    public ExtenderConfiguration getExtendersConfiguration(KSIRequestContext requestContext) throws KSIException {
+        throw new KSIClientException("FAILURE!!!!");
+    }
+
     public Future<TLVElement> sign(InputStream request) throws KSIClientException {
         sleep1M();
         throw new KSIClientException("FAILURE!!!!");
@@ -38,6 +44,10 @@ public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
 
     public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
         sleep1M();
+        throw new KSIClientException("FAILURE!!!!");
+    }
+
+    public AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException {
         throw new KSIClientException("FAILURE!!!!");
     }
 

@@ -20,7 +20,9 @@ package com.guardtime.ksi.service.client;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.pdu.AggregationResponseFuture;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.service.Future;
@@ -57,4 +59,10 @@ public abstract class ExternalServiceConfigurationAwareSigningClient implements 
         return new AggregationResponseFuture(requestFuture, requestContext, pduFactory);
     }
 
+    public AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException {
+        requestContext = requestContext.getWithCredentials(getServiceCredentials());
+        AggregationRequest requestMessage = pduFactory.createAggregatorConfigurationRequest(requestContext);
+        Future<TLVElement> future = sign(new ByteArrayInputStream(requestMessage.toByteArray()));
+        return pduFactory.readAggregatorConfigurationResponse(requestContext, future.getResult());
+    }
 }

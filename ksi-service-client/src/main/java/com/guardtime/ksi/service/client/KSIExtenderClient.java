@@ -19,6 +19,7 @@
 package com.guardtime.ksi.service.client;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.pdu.KSIRequestContext;
@@ -52,9 +53,16 @@ public interface KSIExtenderClient extends Closeable {
      * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
      * @param aggregationTime - aggregation time of the existing signature. May not be null.
      * @param publicationTime - publication time to which the existing signature is to be extended. May not be null.
-     * @return instance of {@ExtensionResponseFuture} containing calendar chains needed to extend the signature.
+     * @return instance of {@link ExtensionResponseFuture} containing calendar chains needed to extend the signature.
      * @throws KSIException
      */
     Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException;
+
+    /**
+     * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
+     * @return {@link ExtenderConfiguration} one should rely on when using this client
+     * @throws KSIException
+     */
+    ExtenderConfiguration getExtendersConfiguration(KSIRequestContext requestContext) throws KSIException;
 
 }

@@ -16,7 +16,6 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-
 package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.exceptions.KSIException;
@@ -25,7 +24,7 @@ import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
+public class ExtenderConfigurationIntegrationTest extends AbstractConfigurationIntegrationTest {
 
     @Test
     public void testExtenderConfigurationRequestV2() throws Exception {

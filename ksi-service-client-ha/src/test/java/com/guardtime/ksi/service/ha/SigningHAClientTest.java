@@ -29,9 +29,7 @@ import static org.mockito.Mockito.mock;
 
 public class SigningHAClientTest {
 
-    @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "SigningHAClient.sign\\" +
-            "(inputStream\\) is " +
-            "not supported. Use SignerHAClient.sign\\(ksiRequestContext, dataHash, level\\) instead")
+    @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "SigningHAClient.sign\\(inputStream\\) is not supported. Use SignerHAClient.sign\\(ksiRequestContext, dataHash, level\\) instead")
     public void testSigningStream() throws Exception {
         SigningHAClient client = new SigningHAClient(
                 Collections.singletonList(mock(KSISigningClient.class))

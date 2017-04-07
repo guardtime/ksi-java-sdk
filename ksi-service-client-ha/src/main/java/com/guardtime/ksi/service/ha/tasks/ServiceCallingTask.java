@@ -31,10 +31,10 @@ public abstract class ServiceCallingTask<T> implements Callable<T>{
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    protected Map<String, Exception> exceptionHolder;
+    private Map<String, Exception> exceptionHolder;
 
     private final String clientKey;
-    protected final KSIRequestContext requestContext;
+    final KSIRequestContext requestContext;
 
     public ServiceCallingTask(String clientKey, KSIRequestContext requestContext) {
         this.clientKey = clientKey;
@@ -58,7 +58,7 @@ public abstract class ServiceCallingTask<T> implements Callable<T>{
 
     protected abstract T completeTask() throws KSIException;
 
-    public static String createClientKey(Object client) {
+    protected static String createClientKey(Object client) {
         return "#" + Util.nextLong() + ": " + client.toString();
     }
 }

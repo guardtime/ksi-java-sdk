@@ -24,32 +24,37 @@ import java.util.Date;
 import java.util.List;
 
 class AggregatedExtenderConfiguration implements ExtenderConfiguration {
+
     private final Long maximumRequests;
     private final List<String> parents;
     private final Date calendarFirstTime;
     private final Date calendarLastTime;
 
     AggregatedExtenderConfiguration(List<ExtenderConfiguration> subConfigurations, int totalNumberOfClients, int numberOfClientsInOneRound) {
-        ExtenderConfiguration firstSubConf = subConfigurations.get(0);
-        Long minMaximumRequests = firstSubConf.getMaximumRequests();
-        Date maxCalendarFirstTime = firstSubConf.getCalendarFirstTime();
-        Date minCalendarLastTime = firstSubConf.getCalendarLastTime();
-        for (int i = 1; i < subConfigurations.size(); i++) {
-            ExtenderConfiguration subConfiguration = subConfigurations.get(i);
+        Long minMaximumRequests = null;
+        Date maxCalendarFirstTime = null;
+        Date minCalendarLastTime = null;
+        List<String> aggregatedParents = null;
+        for (ExtenderConfiguration subConfiguration : subConfigurations) {
             Long subConfMaxRequests = subConfiguration.getMaximumRequests();
             Date subConfCalendarFirstTime = subConfiguration.getCalendarFirstTime();
             Date subConfCalendarLastTime = subConfiguration.getCalendarLastTime();
             if (minMaximumRequests == null || (subConfMaxRequests != null && subConfMaxRequests <= minMaximumRequests)) {
                 minMaximumRequests = subConfMaxRequests;
             }
-            if (maxCalendarFirstTime == null || (subConfCalendarFirstTime != null && maxCalendarFirstTime.before(subConfCalendarFirstTime))) {
+            if (maxCalendarFirstTime == null || (subConfCalendarFirstTime != null && maxCalendarFirstTime.before
+                    (subConfCalendarFirstTime))) {
                 maxCalendarFirstTime = subConfCalendarFirstTime;
             }
-            if (minCalendarLastTime == null || (subConfCalendarFirstTime != null && minCalendarLastTime.after(subConfCalendarFirstTime))) {
+            if (minCalendarLastTime == null || (subConfCalendarLastTime != null && minCalendarLastTime.after(subConfCalendarLastTime))) {
                 minCalendarLastTime = subConfCalendarLastTime;
             }
+            List<String> subConfParents = subConfiguration.getParents();
+            if (aggregatedParents == null && subConfParents != null) {
+                aggregatedParents = subConfParents;
+            }
         }
-        this.parents = firstSubConf.getParents();
+        this.parents = aggregatedParents;
         this.maximumRequests = minMaximumRequests == null ? null : (long) (minMaximumRequests * (((double) totalNumberOfClients) / numberOfClientsInOneRound));
         this.calendarFirstTime = maxCalendarFirstTime;
         this.calendarLastTime = minCalendarLastTime;

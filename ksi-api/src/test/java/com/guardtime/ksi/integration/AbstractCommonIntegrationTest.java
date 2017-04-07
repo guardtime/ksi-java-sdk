@@ -30,11 +30,15 @@ import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.*;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
+import com.guardtime.ksi.service.client.KSIServiceCredentials;
+import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
 import com.guardtime.ksi.service.ha.HAClient;
@@ -59,7 +63,13 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.util.ArrayList;
@@ -67,7 +77,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import static com.guardtime.ksi.TestUtil.*;
+import static com.guardtime.ksi.TestUtil.load;
+import static com.guardtime.ksi.TestUtil.loadFile;
+import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public abstract class AbstractCommonIntegrationTest {
 
@@ -85,43 +97,26 @@ public abstract class AbstractCommonIntegrationTest {
     private static final String DEFAULT_SIGNING_URL = "http://stamper.guardtime.net/gt-signingservice";
     private static final String DEFAULT_EXTENDER_URL = "http://verifier.guardtime.net/gt-extendingservice";
     private static final String DEFAULT_PUBFILE_URL = "http://verify.guardtime.com/gt-controlpublications.bin";
-    private static final HttpClientSettings FAULTY_HTTP_SETTINGS = new HttpClientSettings("http://.", "http://.", "http://.", new
-            KSIServiceCredentials(".", "."));
+    protected static final HttpClientSettings FAULTY_HTTP_SETTINGS =
+            new HttpClientSettings("http://.", "http://.", "http://.", new KSIServiceCredentials(".", "."));
     protected static String javaKeyStorePath = null;
 
     public static final String SIGNATURE_2014_06_02 = "ok-sig-2014-06-2.ksig";
     public static final String EXTENDED_SIGNATURE_2014_06_02 = "ok-sig-2014-06-2-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2014_04_30 = "ok-sig-2014-04-30.1-extended.ksig";
-    public static final String PUIBLICATION_STRING_2014_05_15 = "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
+    public static final String PUIBLICATION_STRING_2014_05_15 =
+            "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
     public static final String KSI_TRUSTSTORE_LOCATION = "ksi-truststore.jks";
     public static final String KSI_TRUSTSTORE_PASSWORD = "changeit";
 
     protected KSI ksi;
-    protected KSI ksiV2;
-    protected KSI haKsi;
     protected SimpleHttpClient simpleHttpClient;
-    protected SimpleHttpClient simpleHttpClientV2;
-    protected ServiceCredentials serviceCredentials;
 
 
     @BeforeMethod
     public void setUp() throws Exception {
         this.simpleHttpClient = new SimpleHttpClient(loadHTTPSettings());
-        this.serviceCredentials = simpleHttpClient.getServiceCredentials();
         this.ksi = createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient);
-        this.simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
-        ApacheHttpClient failingApacheClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
-        List<KSISigningClient> signingClients = new ArrayList<KSISigningClient>();
-        signingClients.add(simpleHttpClientV2);
-        signingClients.add(failingApacheClient);
-        signingClients.add(simpleHttpClient);
-        List<KSIExtenderClient> extenderClients = new ArrayList<KSIExtenderClient>();
-        extenderClients.add(simpleHttpClientV2);
-        extenderClients.add(failingApacheClient);
-        extenderClients.add(simpleHttpClient);
-        HAClient haClient = new HAClient(signingClients, extenderClients);
-        this.haKsi = createKsi(haClient, haClient, simpleHttpClient);
-        this.ksiV2 = createKsi(simpleHttpClientV2,simpleHttpClientV2, simpleHttpClientV2);
     }
 
     public static DataHash getFileHash(String fileName, String name) throws Exception {
@@ -159,11 +154,11 @@ public abstract class AbstractCommonIntegrationTest {
         extenderClientsForHa.add(pendingKSIClient);
         HAClient haClient = new HAClient(signingClientsForHa, extenderClientsForHa);
 
-        return new Object[][]{
-                new Object[]{createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient), simpleHttpClient},
-                new Object[]{createKsi(apacheHttpClient, apacheHttpClient, apacheHttpClient), apacheHttpClient},
-                new Object[]{createKsi(apacheHttpClient, tcpClient, apacheHttpClient), apacheHttpClient},
-                new Object[]{createKsi(haClient, haClient, simpleHttpClient), haClient}
+        return new Object[][] {
+                new Object[] {createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient), simpleHttpClient},
+                new Object[] {createKsi(apacheHttpClient, apacheHttpClient, apacheHttpClient), apacheHttpClient},
+                new Object[] {createKsi(apacheHttpClient, tcpClient, apacheHttpClient), apacheHttpClient},
+                new Object[] {createKsi(haClient, haClient, simpleHttpClient), haClient}
         };
     }
 
@@ -177,7 +172,8 @@ public abstract class AbstractCommonIntegrationTest {
         String loginId = prop.getProperty("tcp.loginId");
         String loginKey = prop.getProperty("tcp.loginKey");
         ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
-        return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec, tcpThreadPoolSize, serviceCredentials);
+        return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec, tcpThreadPoolSize,
+                serviceCredentials);
     }
 
     public static HttpClientSettings loadHTTPSettings(PduVersion pduVersion) throws IOException {
@@ -198,7 +194,8 @@ public abstract class AbstractCommonIntegrationTest {
             javaKeyStorePath = prop.getProperty("javaKeyStorePath");
         }
 
-        HttpClientSettings serviceSettings = new HttpClientSettings(signingUrl, extenderUrl, publicationsFileUrl, credentials, pduVersion);
+        HttpClientSettings serviceSettings = new HttpClientSettings(signingUrl, extenderUrl, publicationsFileUrl, credentials,
+                pduVersion);
         serviceSettings.getParameters().setConnectionTimeout(DEFAULT_TIMEOUT);
         serviceSettings.getParameters().setReadTimeout(DEFAULT_TIMEOUT);
         return serviceSettings;
@@ -208,17 +205,21 @@ public abstract class AbstractCommonIntegrationTest {
         return loadHTTPSettings(PduVersion.V1);
     }
 
-    protected static Object[] createKsiObject(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
-        return new Object[]{createKsi(extenderClient, signingClient, publicationsFileClient)};
+    protected static Object[] createKsiObject(KSIExtenderClient extenderClient, KSISigningClient signingClient,
+                                              KSIPublicationsFileClient publicationsFileClient) throws Exception {
+        return new Object[] {createKsi(extenderClient, signingClient, publicationsFileClient)};
     }
 
-    protected static KSI createKsi(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
+    protected static KSI createKsi(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient
+            publicationsFileClient) throws Exception {
         return initKsiBuilder(extenderClient, signingClient, publicationsFileClient).build();
     }
 
-    protected static KSIBuilder initKsiBuilder(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
+    protected static KSIBuilder initKsiBuilder(KSIExtenderClient extenderClient, KSISigningClient signingClient,
+                                               KSIPublicationsFileClient publicationsFileClient) throws Exception {
         KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(KSI_TRUSTSTORE_LOCATION), KSI_TRUSTSTORE_PASSWORD.toCharArray());
+        trustStore.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(KSI_TRUSTSTORE_LOCATION),
+                KSI_TRUSTSTORE_PASSWORD.toCharArray());
         return new KSIBuilder().setKsiProtocolExtenderClient(extenderClient).
                 setKsiProtocolPublicationsFileClient(publicationsFileClient).
                 setKsiProtocolSignerClient(signingClient).
@@ -230,20 +231,23 @@ public abstract class AbstractCommonIntegrationTest {
         return new X509CertificateSubjectRdnSelector("E=publications@guardtime.com");
     }
 
-    public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy) throws KSIException {
+    public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy) throws
+            KSIException {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setExtenderClient(extenderClient).setPublicationsFile(ksi.getPublicationsFile());
         return ksi.verify(builder.createVerificationContext(), policy);
     }
 
-    public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy, boolean extendingAllowed) throws KSIException {
+    public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy, boolean
+            extendingAllowed) throws KSIException {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setExtenderClient(extenderClient).setPublicationsFile(ksi.getPublicationsFile());
         builder.setExtendingAllowed(extendingAllowed);
         return ksi.verify(builder.createVerificationContext(), policy);
     }
 
-    public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy, PublicationData userPublication, boolean extendingAllowed) throws KSIException {
+    public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy,
+                                     PublicationData userPublication, boolean extendingAllowed) throws KSIException {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setExtenderClient(extenderClient).setPublicationsFile(ksi.getPublicationsFile());
         builder.setUserPublication(userPublication);
@@ -251,10 +255,12 @@ public abstract class AbstractCommonIntegrationTest {
         return ksi.verify(builder.createVerificationContext(), policy);
     }
 
-    protected void mockExtenderResponseCalendarHashCain(String responseCalendarChainFile, final KSIExtenderClient mockedExtenderClient) throws Exception {
+    protected void mockExtenderResponseCalendarHashCain(String responseCalendarChainFile, final KSIExtenderClient
+            mockedExtenderClient) throws Exception {
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
-        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
+        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes
+                ("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
         final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
 
@@ -263,21 +269,26 @@ public abstract class AbstractCommonIntegrationTest {
                 InputStream input = (InputStream) invocationOnMock.getArguments()[0];
                 TLVElement tlvElement = TLVElement.create(Util.toByteArray(input));
                 TLVElement payload = responseTLV.getFirstChildElement(0x302);
-                payload.getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x301).getFirstChildElement(0x01).getDecodedLong());
+                payload.getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x301).getFirstChildElement
+                        (0x01).getDecodedLong());
 
                 payload.replace(payload.getFirstChildElement(CalendarHashChain.ELEMENT_TYPE), calendarChain);
-                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(serviceCredentials.getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
+                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(simpleHttpClient.getServiceCredentials()
+                                .getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
                 return mockedFuture;
             }
         });
 
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(KSIRequestContext.class), Mockito.any(Date.class), Mockito.any(Date.class))).then(new Answer<Future>() {
+        Mockito.when(mockedExtenderClient.extend(Mockito.any(KSIRequestContext.class), Mockito.any(Date.class), Mockito.any
+                (Date.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
-                KSIRequestContext requestContext = ((KSIRequestContext) invocationOnMock.getArguments()[0]).getWithCredentials(new KSIServiceCredentials("anon", "anon"));
+                KSIRequestContext requestContext = ((KSIRequestContext) invocationOnMock.getArguments()[0]).getWithCredentials
+                        (new KSIServiceCredentials("anon", "anon"));
                 Date aggregationTime = (Date) invocationOnMock.getArguments()[1];
                 Date publicationTime = (Date) invocationOnMock.getArguments()[2];
                 PduFactory pduFactory = new PduV1Factory();
-                ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, aggregationTime, publicationTime);
+                ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, aggregationTime,
+                        publicationTime);
                 ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());
                 Future<TLVElement> extensionResponseFuture = mockedExtenderClient.extend(requestStream);
                 return new ExtensionResponseFuture(extensionResponseFuture, requestContext, pduFactory);
@@ -300,45 +311,45 @@ public abstract class AbstractCommonIntegrationTest {
 
     @DataProvider(name = INTERNAL_VERIFICATION_DATA_PROVIDER)
     public static Object[][] getTestFilesAndResultsForInternalVerification() throws Exception {
-        try{
+        try {
             return getTestFilesAndResults("internal_verification_test_files_and_expected_results.txt");
-        } catch (Throwable e){
+        } catch (Throwable e) {
             return new Object[][] {{}};
         }
     }
 
     @DataProvider(name = CALENDAR_BASED_VERIFICATION_DATA_PROVIDER)
     public static Object[][] getTestFilesAndResultsForCalendarBasedVerification() throws Exception {
-        try{
+        try {
             return getTestFilesAndResults("calendar_based_verification_test_files_and_expected_results.txt");
-        } catch (Throwable e){
+        } catch (Throwable e) {
             return new Object[][] {{}};
         }
     }
 
     @DataProvider(name = KEY_BASED_VERIFICATION_DATA_PROVIDER)
     public static Object[][] getTestFilesAndResultsForKeyBasedVerification() throws Exception {
-        try{
+        try {
             return getTestFilesAndResults("key_based_verification_test_files_and_expected_results.txt");
-        } catch (Throwable e){
+        } catch (Throwable e) {
             return new Object[][] {{}};
         }
     }
 
     @DataProvider(name = TLV_PARSER_VERIFICATION_DATA_PROVIDER)
     public static Object[][] getTestFilesAndResultsForTlvParserVerification() throws Exception {
-        try{
+        try {
             return getTestFilesAndResults("tlv_parser_verification_test_files_and_expected_results.txt");
-        } catch (Throwable e){
+        } catch (Throwable e) {
             return new Object[][] {{}};
         }
     }
 
     @DataProvider(name = EXTENDER_RESPONSES_DATA_PROVIDER)
     public static Object[][] getExtenderResponsesAndResultsForTlvParserVerification() throws Exception {
-        try{
+        try {
             return getTestFilesAndResults("tlv_parser_verification_test_extender_responses_and_expected_results.txt");
-        } catch (Throwable e){
+        } catch (Throwable e) {
             return new Object[][] {{}};
         }
     }
@@ -351,7 +362,7 @@ public abstract class AbstractCommonIntegrationTest {
             String line;
             while ((line = fileReader.readLine()) != null) {
                 if (!line.startsWith("#") || line.trim().length() < 1) {
-                    line = line.replace(";","; ");
+                    line = line.replace(";", "; ");
                     lines.add(line);
                 }
             }
@@ -361,16 +372,16 @@ public abstract class AbstractCommonIntegrationTest {
             SimpleHttpClient httpClient = new SimpleHttpClient(loadHTTPSettings());
 
             for (int i = 0; i < linesCount; i++) {
-                try{
-                    data[i] = new Object[]{new DataHolderForIntegrationTests(lines.get(i).split(";"), httpClient)};
-                } catch (Exception e){
+                try {
+                    data[i] = new Object[] {new DataHolderForIntegrationTests(lines.get(i).split(";"), httpClient)};
+                } catch (Exception e) {
                     logger.warn("Error while parsing the following line: '" + lines.get(i) + "' from file: " + fileName);
                     throw e;
                 }
             }
             return data;
         } finally {
-            if(fileReader != null) {
+            if (fileReader != null) {
                 fileReader.close();
             }
         }
@@ -379,9 +390,11 @@ public abstract class AbstractCommonIntegrationTest {
 
     protected void testExecution(DataHolderForIntegrationTests testData, Policy policy) throws Exception {
         try {
-            logger.info("Running test with the following data: " + testData.getTestDataInformation() + "; Policy: " + policy.getName());
+            logger.info("Running test with the following data: " + testData.getTestDataInformation() + "; Policy: " + policy
+                    .getName());
             KSISignature signature = loadSignature(testData.getTestFile());
-            Assert.assertTrue(testData.getExpectException(), testData.getTestFile() + " supposed to fail with class " + testData.getExpectedExceptionClass() + " exception.");
+            Assert.assertTrue(testData.getExpectException(), testData.getTestFile() + " supposed to fail with class " +
+                    testData.getExpectedExceptionClass() + " exception.");
             VerificationResult result = verify(ksi, testData.getHttpClient(), signature, policy);
             VerificationErrorCode errorCode = result.getErrorCode();
             if (testData.getExpectFailureWithErrorCode()) {

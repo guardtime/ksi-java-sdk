@@ -24,7 +24,7 @@ import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
+public class AggregatorConfigurationIntegrationTest extends AbstractConfigurationIntegrationTest {
 
     @Test
     public void testAggregationConfigurationRequestV2() throws Exception {
@@ -34,8 +34,8 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
 
     @Test
     public void testAggregationConfigurationRequestHA() throws Exception {
-        AggregatorConfiguration response = haKsi.getAggregatorConfiguration();
-        Assert.assertNotNull(response);
+      AggregatorConfiguration response = haKsi.getAggregatorConfiguration();
+      Assert.assertNotNull(response);
     }
 
     @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")

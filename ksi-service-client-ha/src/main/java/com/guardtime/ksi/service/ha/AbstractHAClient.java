@@ -40,7 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE, CONFIG_RESPONSE> implements Closeable {
+abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERVICE_CONFIG_RESPONSE> implements Closeable {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -48,7 +48,10 @@ abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE, CONFI
     private final ExecutorService executorService = Executors.newCachedThreadPool();
     private final Map<Long, Map<String, Exception>> failedRequests = new ConcurrentHashMap<Long, Map<String, Exception>>();
 
+    private final String implName;
+
     AbstractHAClient(List<CLIENT> subclients, SingleFunctionHAClientSettings settings) throws KSIException {
+        this.implName = getClass().getSimpleName();
         if (subclients == null) {
             subclients = Collections.emptyList();
         }
@@ -66,31 +69,29 @@ abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE, CONFI
     Collection<CLIENT> preprareClients() throws KSIClientException {
         Collection<CLIENT> clients = clientsPicker.select();
         if (clients.isEmpty()) {
-            throw new KSIClientException("It is not possible to perform a request using " +
-                    this.getClass().getSimpleName() + " because there are no clients in selection");
+            throw new KSIClientException("It is not possible to perform a request using " + implName + " because there are no clients in selection");
         }
         logger.debug("ksiClientsPicker picked clients: {}", clients);
         return clients;
     }
 
-    public CONFIG_RESPONSE getConfiguration(Collection<Callable<CONFIG_RESPONSE>> configurationRequestTasks) throws KSIClientException {
+    SERVICE_CONFIG_RESPONSE getConfiguration(Collection<Callable<SERVICE_CONFIG_RESPONSE>> configurationRequestTasks) throws KSIClientException {
         try {
-            List<java.util.concurrent.Future<CONFIG_RESPONSE>> configurationFutures = callAllServices(configurationRequestTasks);
-            List<CONFIG_RESPONSE> configurations = new ArrayList<CONFIG_RESPONSE>();
-            for (java.util.concurrent.Future<CONFIG_RESPONSE> configurationFuture : configurationFutures) {
+            List<java.util.concurrent.Future<SERVICE_CONFIG_RESPONSE>> configurationFutures = callAllServices(configurationRequestTasks);
+            List<SERVICE_CONFIG_RESPONSE> configurations = new ArrayList<SERVICE_CONFIG_RESPONSE>();
+            for (java.util.concurrent.Future<SERVICE_CONFIG_RESPONSE> configurationFuture : configurationFutures) {
                 try {
                     configurations.add(configurationFuture.get());
                 } catch (Exception e) {
-                    logger.error("Asking configuration from one of the clients failed", e);
+                    logger.error("Asking configuration from " + implName + " clients subclient failed", e);
                 }
             }
             if (configurations.isEmpty()) {
-                throw new KSIClientException(getClass().getSimpleName() + " received no configuration responses to use for building the most optimal configuration");
+                throw new KSIClientException(implName + " received no configuration responses to use for building the most optimal configuration");
             }
             if (!areAllConfigrationsSame(configurations)) {
-                logger.warn("Configurations gotten via " + getClass().getSimpleName() +
-                        " from subclients differ from eachother. This could mean that external services our configured wrong. " +
-                        "All configurations: " + configurationsToString(configurations));
+                logger.warn("Configurations gotten via " + implName + " from subclients differ from eachother. This could " +
+                        "mean that external services our configured wrong. All configurations: " + configurationsToString(configurations));
             }
             return composeAggregatedConfiguration(configurations);
         } catch (Exception e) {
@@ -98,7 +99,7 @@ abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE, CONFI
         }
     }
 
-    private boolean areAllConfigrationsSame(List<CONFIG_RESPONSE> configurations) {
+    private boolean areAllConfigrationsSame(List<SERVICE_CONFIG_RESPONSE> configurations) {
         for (int i = 1; i < configurations.size(); i++) {
             if (!configurationsEqual(configurations.get(i - 1), configurations.get(i))) {
                 return false;
@@ -107,28 +108,28 @@ abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE, CONFI
         return true;
     }
 
-    protected abstract boolean configurationsEqual(CONFIG_RESPONSE c1, CONFIG_RESPONSE c2);
+    protected abstract boolean configurationsEqual(SERVICE_CONFIG_RESPONSE c1, SERVICE_CONFIG_RESPONSE c2);
 
-    protected abstract String configurationsToString(List<CONFIG_RESPONSE> configurations);
+    protected abstract String configurationsToString(List<SERVICE_CONFIG_RESPONSE> configurations);
 
-    protected abstract CONFIG_RESPONSE composeAggregatedConfiguration(List<CONFIG_RESPONSE> configurations);
+    protected abstract SERVICE_CONFIG_RESPONSE composeAggregatedConfiguration(List<SERVICE_CONFIG_RESPONSE> configurations);
 
-    ServiceCallFuture<CLIENT_RESPONSE> callAnyService(Collection<ServiceCallingTask<CLIENT_RESPONSE>> tasks, Long requestId)
+    ServiceCallFuture<SERVICE_RESPONSE> callAnyService(Collection<ServiceCallingTask<SERVICE_RESPONSE>> tasks, Long requestId)
             throws KSIClientException {
         registerTasksExceptionHolders(tasks, requestId);
-        Future<CLIENT_RESPONSE> clientResponse = executorService.submit(new AnyServiceCallTask(requestId, tasks));
-        return new ServiceCallFuture<CLIENT_RESPONSE>(clientResponse);
+        Future<SERVICE_RESPONSE> clientResponse = executorService.submit(new ServiceCallsTask(requestId, tasks));
+        return new ServiceCallFuture<SERVICE_RESPONSE>(clientResponse);
     }
 
 
-    List<Future<CONFIG_RESPONSE>> callAllServices(Collection<Callable<CONFIG_RESPONSE>> tasks)
+    List<Future<SERVICE_CONFIG_RESPONSE>> callAllServices(Collection<Callable<SERVICE_CONFIG_RESPONSE>> tasks)
             throws KSIClientException, InterruptedException {
         return executorService.invokeAll(tasks);
     }
 
-    private void registerTasksExceptionHolders(Collection<ServiceCallingTask<CLIENT_RESPONSE>> tasks, Long requestId) {
+    private void registerTasksExceptionHolders(Collection<ServiceCallingTask<SERVICE_RESPONSE>> tasks, Long requestId) {
         Map<String, Exception> exceptionHolder = registerSubclientsExceptionHolder(requestId);
-        for (ServiceCallingTask<CLIENT_RESPONSE> task : tasks) {
+        for (ServiceCallingTask<SERVICE_RESPONSE> task : tasks) {
             task.setExceptionHolder(exceptionHolder);
         }
     }
@@ -152,43 +153,42 @@ abstract class AbstractHAClient<CLIENT extends Closeable, CLIENT_RESPONSE, CONFI
         }
     }
 
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "{LB Strategy=" + clientsPicker + "}";
+    Collection<CLIENT> getAllSubclients() {
+        return clientsPicker.getAll();
     }
 
-    private class AnyServiceCallTask implements Callable<CLIENT_RESPONSE> {
+    int getNumberClientsUsedInOneRound() {
+        return clientsPicker.getNumberOfObjectsGivenInOneSelection();
+    }
+
+    @Override
+    public String toString() {
+        return implName + "{LB Strategy=" + clientsPicker + "}";
+    }
+
+    private class ServiceCallsTask implements Callable<SERVICE_RESPONSE> {
 
         private final Long requestId;
-        private final Collection<ServiceCallingTask<CLIENT_RESPONSE>>  serviceCallTasks;
+        private final Collection<ServiceCallingTask<SERVICE_RESPONSE>>  serviceCallTasks;
 
-        AnyServiceCallTask(Long requestId, Collection<ServiceCallingTask<CLIENT_RESPONSE>> serviceCallTasks) {
+        ServiceCallsTask(Long requestId, Collection<ServiceCallingTask<SERVICE_RESPONSE>> serviceCallTasks) {
             this.requestId = requestId;
             this.serviceCallTasks = serviceCallTasks;
         }
 
-        public CLIENT_RESPONSE call() throws Exception {
+        public SERVICE_RESPONSE call() throws Exception {
             try {
-                CLIENT_RESPONSE clientResponse = executorService.invokeAny(serviceCallTasks);
+                SERVICE_RESPONSE clientResponse = executorService.invokeAny(serviceCallTasks);
                 deRegisterSubclientsExceptionHolder(requestId);
                 return clientResponse;
             } catch (Exception e) {
                 Map<String, Exception> subExceptions = deRegisterSubclientsExceptionHolder(requestId);
                 if (subExceptions != null && !subExceptions.isEmpty()) {
-                    throw new AllHAClientSubclientsFailedException("Invoking all subclients of " +
-                            AbstractHAClient.this.getClass().getSimpleName() + " failed.", subExceptions);
+                    throw new AllHAClientSubclientsFailedException("Invoking all subclients of " + implName + " failed.", subExceptions);
                 } else {
-                    throw new KSIClientException("Invoking " + AbstractHAClient.this.getClass().getSimpleName() + " failed", e);
+                    throw new KSIClientException("Invoking " + implName + " failed", e);
                 }
             }
         }
-    }
-
-    protected Collection<CLIENT> getAllSubclients() {
-        return clientsPicker.getAll();
-    }
-
-    protected int getNumberClientsUsedInOneRound() {
-        return clientsPicker.getNumberOfObjectsGivenInOneSelection();
     }
 }

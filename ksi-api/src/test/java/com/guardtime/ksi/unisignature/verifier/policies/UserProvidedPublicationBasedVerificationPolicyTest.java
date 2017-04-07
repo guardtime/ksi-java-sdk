@@ -35,7 +35,6 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
-import com.guardtime.ksi.util.Base16;
 
 import org.mockito.Mockito;
 import org.testng.Assert;
@@ -46,13 +45,9 @@ import java.nio.ByteBuffer;
 import java.security.cert.CertSelector;
 import java.security.cert.Certificate;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_04_30;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
-import static com.guardtime.ksi.Resources.SIGNATURE_2014_04_30;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.TRUSTSTORE_KSI;
 

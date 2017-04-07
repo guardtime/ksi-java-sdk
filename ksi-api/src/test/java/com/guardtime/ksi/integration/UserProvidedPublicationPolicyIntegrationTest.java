@@ -28,34 +28,34 @@ import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationB
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
-import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommonIntegrationTest {
 
     private final UserProvidedPublicationBasedVerificationPolicy policy = new UserProvidedPublicationBasedVerificationPolicy();
-    private static final String PUBLICATION_STRING_2014_09_15 = "AAAAAA-CUCYWA-AAOBM6-PNYLRK-EPI3VG-2PJGCF-Y5QHV3-XURLI2-GRFBK4-VHBED2-Q37QIB-UE3ENA";
-    //TODO: Covered by new tests?
+    private static final String PUBLICATION_STRING_2017_03_15 = "AAAAAA-CYZBC2-QANONS-4PPSPX-M3UFZ2-ZD3MEV-YUG4LI-KNWRAU-TZHEB6-V7SCG6-J4QK56-OKW6FT";
+    private static final String PUBLICATION_STRING_2017_03_18 = "AAAAAA-CYZTMY-QAPFTQ-SBXAY7-FNALRQ-HJ6QP4-U2CDTJ-OYLEND-DOHU47-QE7N27-OQHZPG-NVTZRV";
+
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithNoPublicationRecordinExtendingAllowed_VerificationReturnsOk() throws Exception {
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_06_02);
-        PublicationData publicationData = new PublicationData(PUBLICATION_STRING_2014_09_15);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
+        PublicationData publicationData = new PublicationData(PUBLICATION_STRING_2017_03_15);
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithCorrectData_VerificationReturnsOk() throws Exception {
-        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
-        PublicationData publicationData = signature.getPublicationRecord().getPublicationData();
-        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
+        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14);
+        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, signature.getPublicationRecord().getPublicationData(), false);
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingDifferentPublication_VerificationReturnsOk() throws Exception {
-        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
-        PublicationData publicationData = new PublicationData("AAAAAA-CTRQ5E-QAISH7-QFMEEV-CYN3XW-FWO33A-PXL4PD-4KS3Y5-FY2SYO-LIRKZK-HS25IW-5FIBTP");
+        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14);
+        PublicationData publicationData = new PublicationData(PUBLICATION_STRING_2017_03_18);
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
         Assert.assertTrue(result.isOk());
     }

@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 
 public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
 
@@ -42,7 +42,7 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
             String responseFile = testData.getTestFile();
             mockExtenderResponseCalendarHashCain(responseFile, mockedExtenderClient);
 
-            testData.setTestFile(EXTENDED_SIGNATURE_2014_06_02);
+            testData.setTestFile(EXTENDED_SIGNATURE_2017_03_14);
             testData.setHttpClient(mockedExtenderClient);
 
             testExecution(testData, new CalendarBasedVerificationPolicy());

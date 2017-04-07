@@ -48,8 +48,6 @@ import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
-    //TODO: Move used resources to new test resources where possible. If not all?
-
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testExtendToNearest_OK() throws Exception {
         KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_2017_03_14));
@@ -101,13 +99,13 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
     public void testExtendPublicationBeforeSignature_NOK() throws Exception {
-        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(PUIBLICATION_STRING_2014_05_15));
-        ksi.extend(loadSignature(SIGNATURE_2017_03_14), publicationRecord);
+        KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
+        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(new Date(signature.getAggregationTime().getTime()-1000000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        ksi.extend(signature, publicationRecord);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testExtendSignatureFromAnotherCore_NOK() throws Exception {
-        String publicationStringFromAnotherCore = "AAAAAA-CXQQZQ-AAOSZH-ONCB4K-TFGPBW-R6S6TF-6EW4DU-4QMP7X-GI2VCO-TNGAZM-EV6AZR-464IOA";
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
         PublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData(new Date(signature.getPublicationTime().getTime()+100000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
         try {

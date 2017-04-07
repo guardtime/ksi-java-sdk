@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
 import java.security.cert.X509Certificate;
 
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
-import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 public class CalendarAuthenticationRecordSignatureVerificationRuleTest {
 
@@ -46,7 +46,7 @@ public class CalendarAuthenticationRecordSignatureVerificationRuleTest {
     @BeforeMethod
     public void setUp() throws Exception {
         this.context = Mockito.mock(VerificationContext.class);
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_06_02);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
         Mockito.when(context.getSignature()).thenReturn(signature);
         Mockito.when(context.getCalendarAuthenticationRecord()).thenReturn(signature.getCalendarAuthenticationRecord());
         Mockito.when(context.getCalendarHashChain()).thenReturn(signature.getCalendarHashChain());
@@ -55,7 +55,7 @@ public class CalendarAuthenticationRecordSignatureVerificationRuleTest {
     @Test
     public void testSignatureWithCorrectCalendarAuthenticationRecordReturnsOkStatus_Ok() throws Exception {
         PublicationsFile pubFile = TestUtil.loadPublicationsFile(PUBLICATIONS_FILE);
-        Mockito.when(context.getCertificate(Mockito.any(byte[].class))).thenReturn(pubFile.findCertificateById(Base16.decode("C246B139")));
+        Mockito.when(context.getCertificate(Mockito.any(byte[].class))).thenReturn(pubFile.findCertificateById(Base16.decode("5aeddd35")));
         Assert.assertEquals(rule.verify(context).getResultCode(), VerificationResultCode.OK);
     }
 

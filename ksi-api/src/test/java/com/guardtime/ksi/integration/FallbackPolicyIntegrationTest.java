@@ -19,6 +19,7 @@
 
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.Resources;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -29,23 +30,19 @@ import com.guardtime.ksi.unisignature.verifier.policies.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_04_30;
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_WRONG_HASH;
-import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2015_01;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 
 public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest {
-
-    //TODO: Fallback tests are needed but used resources should be moved to new test files.
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testFallbackFromKeyBasedVerificationToCalendarBasedVerification_Ok() throws Exception {
         KeyBasedVerificationPolicy policy = new KeyBasedVerificationPolicy();
         policy.setFallbackPolicy(new CalendarBasedVerificationPolicy());
 
-        verification(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02), policy, false);
+        verification(TestUtil.loadSignature(Resources.EXTENDED_SIGNATURE_2017_03_14), policy, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -53,7 +50,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         KeyBasedVerificationPolicy policy = new KeyBasedVerificationPolicy();
         policy.setFallbackPolicy(new PublicationsFileBasedVerificationPolicy());
 
-        verification(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02), policy, false);
+        verification(TestUtil.loadSignature(Resources.EXTENDED_SIGNATURE_2017_03_14), policy, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -61,7 +58,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         KeyBasedVerificationPolicy policy = new KeyBasedVerificationPolicy();
         policy.setFallbackPolicy(new UserProvidedPublicationBasedVerificationPolicy());
 
-        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02);
+        KSISignature signature = TestUtil.loadSignature(Resources.EXTENDED_SIGNATURE_2017_03_14);
         PublicationData publicationData = signature.getPublicationRecord().getPublicationData();
         verificationWithPublicationData(signature, policy, publicationData, false);
     }
@@ -71,7 +68,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         PublicationsFileBasedVerificationPolicy policy = new PublicationsFileBasedVerificationPolicy();
         policy.setFallbackPolicy(new CalendarBasedVerificationPolicy());
 
-        verification(TestUtil.loadSignature(SIGNATURE_2014_06_02), policy, false);
+        verification(TestUtil.loadSignature(SIGNATURE_2017_03_14), policy, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -80,7 +77,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         policy.setFallbackPolicy(new UserProvidedPublicationBasedVerificationPolicy());
 
         PublicationsFile publicationFile = TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_WRONG_HASH);
-        KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2015_01);
+        KSISignature signature = TestUtil.loadSignature(Resources.EXTENDED_SIGNATURE_2017_03_14);
         PublicationData publicationData = signature.getPublicationRecord().getPublicationData();
 
         VerificationContextBuilder builder = new VerificationContextBuilder();
@@ -95,7 +92,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         PublicationsFileBasedVerificationPolicy policy = new PublicationsFileBasedVerificationPolicy();
         policy.setFallbackPolicy(new KeyBasedVerificationPolicy());
 
-        verification(TestUtil.loadSignature(SIGNATURE_2014_06_02), policy, false);
+        verification(TestUtil.loadSignature(SIGNATURE_2017_03_14), policy, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -103,8 +100,8 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         UserProvidedPublicationBasedVerificationPolicy policy = new UserProvidedPublicationBasedVerificationPolicy();
         policy.setFallbackPolicy(new CalendarBasedVerificationPolicy());
 
-        PublicationData publicationData = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02).getPublicationRecord().getPublicationData();
-        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2014_06_02), policy, publicationData, false);
+        PublicationData publicationData = TestUtil.loadSignature(Resources.EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord().getPublicationData();
+        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2017_03_14), policy, publicationData, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -113,7 +110,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         policy.setFallbackPolicy(new PublicationsFileBasedVerificationPolicy());
 
         PublicationData publicationData = new PublicationData("AAAAAA-CS2XHY-AAJCBE-DDAFMR-R3RKMY-GMAQDZ-FSAE7B-ZO64CT-QPNC3B-RQ6UGY-67QORK-6STDTS");
-        verificationWithPublicationData(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02), policy, publicationData, false);
+        verificationWithPublicationData(TestUtil.loadSignature(Resources.EXTENDED_SIGNATURE_2017_03_14), policy, publicationData, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -121,8 +118,8 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         UserProvidedPublicationBasedVerificationPolicy policy = new UserProvidedPublicationBasedVerificationPolicy();
         policy.setFallbackPolicy(new KeyBasedVerificationPolicy());
 
-        PublicationData publicationData = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02).getPublicationRecord().getPublicationData();
-        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2014_06_02), policy, publicationData, false);
+        PublicationData publicationData = TestUtil.loadSignature(Resources.EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord().getPublicationData();
+        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2017_03_14), policy, publicationData, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -132,8 +129,8 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         fallback_policy.setFallbackPolicy(new KeyBasedVerificationPolicy());
         policy.setFallbackPolicy(fallback_policy);
 
-        PublicationData publicationData = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_04_30).getPublicationRecord().getPublicationData();
-        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2014_06_02), policy, publicationData, false);
+        PublicationData publicationData = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord().getPublicationData();
+        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2017_03_14), policy, publicationData, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -143,8 +140,8 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         fallback_policy.setFallbackPolicy(new CalendarBasedVerificationPolicy());
         policy.setFallbackPolicy(fallback_policy);
 
-        PublicationData publicationData = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_04_30).getPublicationRecord().getPublicationData();
-        verificationWithPublicationData(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02), policy, publicationData, false);
+        PublicationData publicationData = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord().getPublicationData();
+        verificationWithPublicationData(TestUtil.loadSignature(Resources.EXTENDED_SIGNATURE_2017_03_14), policy, publicationData, false);
     }
 
     private void verification(KSISignature signature, Policy policy, boolean enableExtender) throws Exception {

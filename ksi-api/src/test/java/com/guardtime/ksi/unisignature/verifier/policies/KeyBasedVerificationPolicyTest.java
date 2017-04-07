@@ -45,7 +45,7 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
-import static com.guardtime.ksi.Resources.SIGNATURE_2014_04_30;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 public class KeyBasedVerificationPolicyTest {
 
@@ -106,7 +106,7 @@ public class KeyBasedVerificationPolicyTest {
         PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
         Mockito.when(mockedTrustProvider.findCertificateById(Mockito.any(byte[].class))).thenThrow(new CertificateNotFoundException("Certificate not found"));
         Mockito.when(mockedTrustProvider.getName()).thenReturn("MockProvider");
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_04_30);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_01);
@@ -118,7 +118,7 @@ public class KeyBasedVerificationPolicyTest {
         X509Certificate mockedCertificate = Mockito.mock(X509Certificate.class);
         Mockito.when(mockedCertificate.getSigAlgName()).thenReturn("RSA");
         Mockito.when(mockedTrustProvider.findCertificateById(Mockito.any(byte[].class))).thenReturn(mockedCertificate);
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_04_30);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_02);
@@ -130,7 +130,7 @@ public class KeyBasedVerificationPolicyTest {
         X509Certificate mockedCertificate = Mockito.mock(X509Certificate.class);
         Mockito.when(mockedCertificate.getSigAlgName()).thenReturn("BLABLA_ALG");
         Mockito.when(mockedTrustProvider.findCertificateById(Mockito.any(byte[].class))).thenReturn(mockedCertificate);
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_04_30);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_02);

@@ -20,9 +20,7 @@
 package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
-import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.PolicyVerificationResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
@@ -32,20 +30,14 @@ import com.guardtime.ksi.unisignature.verifier.policies.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_04_30;
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.INPUT_FILE_2015_01;
-import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION;
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
-import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2015_01;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
-    //TODO: Are all of the following tests covered by new tests?
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingKeyBasedPolicy_Ok() throws Exception {
@@ -110,14 +102,14 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyOfflineKSIRfc3161SignatureUsingKeyBasedPolicy() throws Exception {
         KSISignature signature = loadSignature(RFC3161_SIGNATURE);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, getFileHash(INPUT_FILE_2015_01, "SHA2-256")), new KeyBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, getFileHash(INPUT_FILE, "SHA2-256")), new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyOnlineKSIRfc3161SignatureUsingCalendarBasedVerificationPolicy() throws Exception {
         KSISignature signature = loadSignature(RFC3161_SIGNATURE);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, getFileHash(INPUT_FILE_2015_01, "SHA2-256")), new CalendarBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, getFileHash(INPUT_FILE, "SHA2-256")), new CalendarBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 

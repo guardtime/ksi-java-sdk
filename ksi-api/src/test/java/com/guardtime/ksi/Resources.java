@@ -63,7 +63,6 @@ public class Resources {
      */
     public static final String INPUT_FILE = INPUT_FILES + "infile";
     public static final String INPUT_FILE_REVERSED = INPUT_FILES +"infile_rev";
-    public static final String INPUT_FILE_2015_01 = INPUT_FILES + "testdata.txt";
 
     /**
      * Signature files
@@ -72,12 +71,9 @@ public class Resources {
     public static final String RFC3161_SIGNATURE = VALID_SIGNATURES + "rfc3161-signature.ksig";
     public static final String RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION = VALID_SIGNATURES + "rfc3161-signature-extended-for-publication-file-based-verification.ksig";
     //Extended
-    public static final String EXTENDED_SIGNATURE_2014_04_30 = SIGNATURES + "ok-sig-2014-04-30.1-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2-extended.ksig";
-    public static final String EXTENDED_SIGNATURE_2015_01 = SIGNATURES + "testdata-extended.txt.2015-01.tlv";
     public static final String EXTENDED_SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14-extended.ksig";
     //Not extended
-    public static final String SIGNATURE_2014_04_30 = SIGNATURES + "ok-sig-2014-04-30.1.ksig";
     public static final String SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2.ksig";
     public static final String SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14.ksig";
     public static final String SIGNATURE_CHAIN_INDEX_INVALID = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-int-value-wrong.tlv";

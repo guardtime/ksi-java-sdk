@@ -19,6 +19,7 @@
 
 package com.guardtime.ksi.unisignature.verifier.rules;
 
+import com.guardtime.ksi.Resources;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
@@ -32,7 +33,6 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 
@@ -60,7 +60,7 @@ public class PublicationsFilePublicationTimeMatchesExtenderResponseRuleTest exte
 
     @Test
     public void testVerifyExtendedCalendarChainTimeDoesNotMatchesWithPublication_Ok() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02).getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(Resources.RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_02);

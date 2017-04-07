@@ -136,6 +136,7 @@ calendar-hash-chain/invalid-signature-calendar-chain-input-hash-no-value.tlv;par
 calendar-hash-chain/invalid-signature-calendar-chain-input-hash-has-child-element.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-input-hash-multiple-tags.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-input-hash-missing-tag.tlv;parsing;;;;;;;;;;false;;;
+calendar-hash-chain/invalid-signature-calendar-chain-no-links.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-right-link-int-value.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-right-link-text-value.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-right-link-wrong.tlv;internal;INT-08;Calendar hash chain root hash is inconsistent with calendar authentication record input hash;;;;;;;;false;;;

@@ -34,8 +34,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_2014_04_15;
-import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static java.util.Arrays.asList;
 
 public class InMemoryKsiSignatureFactoryTest {
@@ -48,7 +48,7 @@ public class InMemoryKsiSignatureFactoryTest {
     @BeforeMethod
     public void setUp() throws Exception {
         this.mockedPublicationsFileAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
-        Mockito.when(mockedPublicationsFileAdapter.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_2014_04_15));
+        Mockito.when(mockedPublicationsFileAdapter.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile(PUBLICATIONS_FILE));
         this.signatureFactory = new InMemoryKsiSignatureFactory(new InternalVerificationPolicy(),
                 mockedPublicationsFileAdapter, Mockito.mock(KSIExtenderClient.class), false, new PduV1Factory(),
                 new InMemoryKsiSignatureComponentFactory());
@@ -56,20 +56,19 @@ public class InMemoryKsiSignatureFactoryTest {
 
     @Test
     public void testCreateValidKsiSignature_Ok() throws Exception {
-        KSISignature signature = signatureFactory.createSignature(TestUtil.loadTlv(SIGNATURE_2014_06_02), null);
+        KSISignature signature = signatureFactory.createSignature(TestUtil.loadTlv(SIGNATURE_2017_03_14), null);
         Assert.assertNotNull(signature);
     }
 
     @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: GEN_1.*Wrong document.*")
     public void testCreateSignatureWithInvalidInputHash_ThrowsInvalidSignatureContentException() throws Exception {
-        signatureFactory.createSignature(TestUtil.loadTlv(SIGNATURE_2014_06_02), new DataHash(HashAlgorithm.SHA1, new byte[20]));
+        signatureFactory.createSignature(TestUtil.loadTlv(SIGNATURE_2017_03_14), new DataHash(HashAlgorithm.SHA1, new byte[20]));
     }
 
     @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: INT_09.*")
     public void testCreateSignatureFromInvalidComponents_ThrowsInvalidSignatureContentException() throws Exception {
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_06_02);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
         SignaturePublicationRecord publicationRecord = signatureComponentFactory.createPublicationRecord(new PublicationData(PUBLICATION_STRING), null, null);
         signatureFactory.createSignature(asList(signature.getAggregationHashChains()), signature.getCalendarHashChain(), signature.getCalendarAuthenticationRecord(), publicationRecord, null);
     }
-
 }

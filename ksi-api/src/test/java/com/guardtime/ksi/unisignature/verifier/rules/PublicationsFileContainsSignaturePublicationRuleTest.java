@@ -24,6 +24,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
+import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.unisignature.inmemory.InMemorySignaturePublicationRecord;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
@@ -36,7 +37,7 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 
 public class PublicationsFileContainsSignaturePublicationRuleTest extends AbstractRuleTest {
@@ -53,7 +54,7 @@ public class PublicationsFileContainsSignaturePublicationRuleTest extends Abstra
 
     @Test
     public void testPublicationFileContainsSignaturePublication_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_06_02), TestUtil.loadPublicationsFile(PUBLICATIONS_FILE)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14), TestUtil.loadPublicationsFile(PUBLICATIONS_FILE)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
@@ -73,7 +74,8 @@ public class PublicationsFileContainsSignaturePublicationRuleTest extends Abstra
 
     @Test
     public void testPublicationFileContainPublicationWithDifferentHash() throws Exception {
-        mockPublication(new Date(1208217600000L));
+        PublicationsFile file = TestUtil.loadPublicationsFile(PUBLICATIONS_FILE);
+        mockPublication(file.getLatestPublication().getPublicationTime());
         RuleResult result = rule.verify(context);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_05);

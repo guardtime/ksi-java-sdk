@@ -34,11 +34,14 @@ import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_04_30;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.INPUT_FILE_2015_01;
-import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_2014_04_15;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+import static com.guardtime.ksi.Resources.RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION;
+import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
-import static com.guardtime.ksi.Resources.SIGNATURE_2015_01;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2015_01;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
@@ -46,45 +49,35 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingKeyBasedPolicy_Ok() throws Exception {
-        KSISignature sig = loadSignature(SIGNATURE_2014_06_02);
+        KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, simpleHttpClient, sig, new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingCalendarBasedPolicy_Ok() throws Exception {
-        KSISignature sig = loadSignature(SIGNATURE_2014_06_02);
+        KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, simpleHttpClient, sig, new CalendarBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithUsingPublicationsFileBasedVerificationPolicy_Ok() throws Exception {
-        KSISignature sig = loadSignature(SIGNATURE_2014_06_02);
+        KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, simpleHttpClient, sig, new PublicationsFileBasedVerificationPolicy(), true);
         Assert.assertTrue(result.isOk());
     }
 
-    //TODO: Covered by new tests?
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testVerifySignatureUsingUserPublicationBasedPolicy_VerificationFailsWrongPublication() throws Exception {
-        KSISignature sig = loadSignature(SIGNATURE_2014_06_02);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, new PublicationData(PUIBLICATION_STRING_2014_05_15)), new UserProvidedPublicationBasedVerificationPolicy());
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
-    }
-
-    @Test(groups = TEST_GROUP_INTEGRATION)
-    public void verifyExtendedSignatureWithUserProvidedPublicationString_OK() throws Exception {
-        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_04_30);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, new PublicationData(PUIBLICATION_STRING_2014_05_15)), new UserProvidedPublicationBasedVerificationPolicy());
+    public void testVerifyExtendedSignatureWithUserProvidedPublicationString_OK() throws Exception {
+        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
+        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, sig.getPublicationRecord().getPublicationData()), new UserProvidedPublicationBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
-    //TODO: Covered by new tests?
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureUsingKeyBasedPolicy_FailInconclusive() throws Exception {
-        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
+        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, simpleHttpClient, sig, new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         PolicyVerificationResult policyVerificationResult = result.getPolicyVerificationResults().get(0);
@@ -94,81 +87,51 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureUsingCalendarBasedPolicy_Ok() throws Exception {
-        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
+        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, simpleHttpClient, sig, new CalendarBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureUsingPublicationsFileBasedPolicy_Ok() throws Exception {
-        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
+        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, simpleHttpClient, sig, new PublicationsFileBasedVerificationPolicy(), true);
         Assert.assertTrue(result.isOk());
     }
 
-    //TODO: Covered by new tests?
-    @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyExtendedSignatureUsingUserProvidedPublicationsBasedPolicy_FailInconclusive() throws Exception {
-        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, new PublicationData(PUIBLICATION_STRING_2014_05_15)), new UserProvidedPublicationBasedVerificationPolicy());
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
-    }
-
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureUsingUserProvidedPublicationsBasedPolicyAllowExtending_Ok() throws Exception {
-        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
+        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         PublicationRecord publication = ksi.getPublicationsFile().getPublicationRecord(sig.getAggregationTime());
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, publication.getPublicationData(), true), new UserProvidedPublicationBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
-    //TODO: Covered by new tests?
-    @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testVerifySignatureWithInvalidRfc3161RecordUsingKeyBasedPolicy_VerificationFailInconsistentChain() throws Exception {
-        KSISignature sig = loadSignature("TO-TESTPACK-signature/signature-with-invalid-rfc3161-output-hash.ksig");
-        VerificationResult result = verify(ksi, simpleHttpClient, sig, new KeyBasedVerificationPolicy());
-        Assert.assertFalse(result.isOk());
-        PolicyVerificationResult policyResult = result.getPolicyVerificationResults().get(0);
-        Assert.assertEquals(policyResult.getPolicyStatus(), VerificationResultCode.FAIL);
-        Assert.assertEquals(policyResult.getErrorCode(), VerificationErrorCode.INT_01);
-    }
-
-    //TODO: Covered by new tests?
-    @Test(groups = TEST_GROUP_INTEGRATION)
-    public void verifySignatureWithLocalPubFile_TestFailInconclusive() throws Exception {
-        PublicationsFile pub = TestUtil.loadPublicationsFile(PUBLICATIONS_FILE_2014_04_15);
-        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, null, pub), new PublicationsFileBasedVerificationPolicy());
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
-    }
-
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyOfflineKSIRfc3161SignatureUsingKeyBasedPolicy() throws Exception {
-        KSISignature signature = loadSignature(SIGNATURE_2015_01);
+        KSISignature signature = loadSignature(RFC3161_SIGNATURE);
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, getFileHash(INPUT_FILE_2015_01, "SHA2-256")), new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyOnlineKSIRfc3161SignatureUsingCalendarBasedVerificationPolicy() throws Exception {
-        KSISignature signature = loadSignature(SIGNATURE_2015_01);
+        KSISignature signature = loadSignature(RFC3161_SIGNATURE);
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, getFileHash(INPUT_FILE_2015_01, "SHA2-256")), new CalendarBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyOnlineExtendedKSIRfc3161SignatureWithPublicationString() throws Exception {
-        KSISignature signature = loadSignature(EXTENDED_SIGNATURE_2015_01);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, new PublicationData("AAAAAA-CUW4BQ-AAM6GY-ZSTYCJ-KTXF2M-AJB5RV-WEXTTH-3EWTQQ-XRUN6I-K7TXUN-X6PDV5-OIFY6C")), new UserProvidedPublicationBasedVerificationPolicy());
+        KSISignature signature = loadSignature(RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION);
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, signature.getPublicationRecord().getPublicationData()), new UserProvidedPublicationBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyOfflineExtendedKSIRfc3161Signature() throws Exception {
-        KSISignature signature = loadSignature(EXTENDED_SIGNATURE_2015_01);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, getFileHash(INPUT_FILE_2015_01, "SHA2-256")), new PublicationsFileBasedVerificationPolicy());
+        KSISignature signature = loadSignature(RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION);
+        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, signature.getInputHash()), new PublicationsFileBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 }

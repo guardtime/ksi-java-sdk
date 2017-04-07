@@ -31,11 +31,19 @@ import java.util.Date;
 
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CERT_AND_PUBLICATION_RECORD_MISSING;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_CERT;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_HEADER;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD2;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN_WITH_NON_CIRITCAL_ELEMENTS;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_HAS_CRITICAL_ELEMENT;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_HAS_UNKNOWN_ELEMENT;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_HEADER_MISSING;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_INVALID_HASH_LENGTH;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_MULTI_HEADER;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN_WITH_CIRITCAL_ELEMENTS;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_REFERENCE_AFTER_SIGNATURE;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_REORDERED;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_SIGANTURE_MISSING;
@@ -135,4 +143,42 @@ public class InMemoryPublicationsFileTest {
         Assert.assertNull(publication.getPublicationRecord(new Date(latest.getPublicationTime().getTime() + 1000L)));
     }
 
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x1 encountered")
+    public void testDecodePublicationsFileWithUnknownCriticalElementInRecord() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD));
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x5 encountered")
+    public void testDecodePublicationsFileWithUnknownCriticalElementInRecord2() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD2));
+    }
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
+    public void testDecodePublicationsFileWithUnknownCriticalNestedTlv() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN));
+    }
+
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
+    public void testDecodePublicationsFileWithUnknownCriticalNestedTlvWithNonCriticalChild() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN_WITH_NON_CIRITCAL_ELEMENTS));
+    }
+
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
+    public void testDecodePublicationsFileWithUnknownNonCriticalElementInMain() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN));
+    }
+
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
+    public void testDecodePublicationsFileWithNonCriticalNestedTlvWithCriticalChild() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN_WITH_CIRITCAL_ELEMENTS));
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x5 encountered")
+    public void testDecodePublicationsFileWithCriticalElementInCertificateRecord() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_CERT));
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x5 encountered")
+    public void testDecodePublicationsFileWithCriticalElementInPublicationHeader() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_HEADER));
+    }
 }

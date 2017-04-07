@@ -32,8 +32,8 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_04_30;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 
 public class PublicationsFilePublicationTimeMatchesExtenderResponseRuleTest extends AbstractRuleTest {
@@ -43,7 +43,7 @@ public class PublicationsFilePublicationTimeMatchesExtenderResponseRuleTest exte
 
     @BeforeMethod
     public void setUp() throws Exception {
-        KSISignature sig = TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_04_30);
+        KSISignature sig = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         this.mockedVerificationContext = Mockito.mock(VerificationContext.class);
         Mockito.when(mockedVerificationContext.getSignature()).thenReturn(sig);
         Mockito.when(mockedVerificationContext.getUserProvidedPublication()).thenReturn(sig.getPublicationRecord().getPublicationData());
@@ -53,7 +53,7 @@ public class PublicationsFilePublicationTimeMatchesExtenderResponseRuleTest exte
 
     @Test
     public void testVerifyExtendedCalendarChainTimeMatchesWithPublication_Ok() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(EXTENDED_SIGNATURE_2014_04_30).getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }

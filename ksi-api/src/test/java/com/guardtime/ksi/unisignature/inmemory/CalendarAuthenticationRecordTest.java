@@ -23,15 +23,15 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_AUTH_NO_PUBLICATION_DATA;
 import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_AUTH_NO_SIGNATURE_DATA;
-import static com.guardtime.ksi.Resources.SIGNATURE_NEWEST;
 
 public class CalendarAuthenticationRecordTest {
 
     @Test
     public void testDecodeCalendarAuthenticationRecord_Ok() throws Exception {
-        InMemoryCalendarAuthenticationRecord record = load(SIGNATURE_NEWEST);
+        InMemoryCalendarAuthenticationRecord record = load(SIGNATURE_2017_03_14);
         Assert.assertNotNull(record.getPublicationData());
         Assert.assertNotNull(record.getSignatureData());
     }

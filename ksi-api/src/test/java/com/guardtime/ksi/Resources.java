@@ -23,22 +23,23 @@ public class Resources {
 
     private static final String INPUT_FILES = "input-file/";
     private static final String COMPONENTS = "components/";
+    private static final String COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA = COMPONENTS + "calendar-auth-signature-data/";
     private static final String COMPONENTS_CALENDAR_HASH_CHAIN = COMPONENTS + "calendar-hash-chain/";
     private static final String COMPONENTS_CERTIFICATE_RECORD = COMPONENTS + "certificate-record/";
     private static final String COMPONENTS_CMS_SIGNATURE = COMPONENTS + "cms-signature/";
+    private static final String COMPONENTS_PUBLICATION_DATA = COMPONENTS + "publication-data/";
     private static final String COMPONENTS_PUBLICATION_RECORD = COMPONENTS + "publication-record/";
-    private static final String COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA = COMPONENTS + "calendar-auth-signature-data/";
     private static final String SIGNATURES = "signatures/";
     private static final String VALID_SIGNATURES = "valid-signatures/";
     private static final String INVALID_SIGNATURES = "invalid-signatures/";
     private static final String POLICY_VERIFICATION_SIGNATURES = "policy-verification-signatures/";
     private static final String INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN = INVALID_SIGNATURES + "aggregation-chain/";
-    private static final String INVALID_SIGNATURES_CALENDAR_HASH_CHAIN = INVALID_SIGNATURES + "calendar-hash-chain/";
     private static final String INVALID_SIGNATURES_CALENDAR_AUTH = INVALID_SIGNATURES + "calendar-authentication-record/";
+    private static final String INVALID_SIGNATURES_CALENDAR_HASH_CHAIN = INVALID_SIGNATURES + "calendar-hash-chain/";
     private static final String INVALID_SIGNATURES_PUBLICATION_RECORD = INVALID_SIGNATURES + "publication-record/";
     private static final String INVALID_SIGNATURES_RFC3161_RECORD = INVALID_SIGNATURES + "rfc3161-record/";
     private static final String POLICY_VERIFICATION_RESOURCES = POLICY_VERIFICATION_SIGNATURES + "resources/";
-    private static final String PUBLICATIONS_FILES = "RENAME-TEST-TO-PUBLICATIONS-FILE-TESTS-publications-file/";
+    private static final String PUBLICATIONS_FILES = "publications-files/";
     private static final String EXTENDER_RESPONSES = "extender-responses/";
     private static final String AGGREGATOR_RESPONSES = "aggregator-responses/";
 
@@ -68,16 +69,17 @@ public class Resources {
      * Signature files
      */
     //RFC3161 Record
-    public static final String RFC3161_ = "";
+    public static final String RFC3161_SIGNATURE = VALID_SIGNATURES + "rfc3161-signature.ksig";
+    public static final String RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION = VALID_SIGNATURES + "rfc3161-signature-extended-for-publication-file-based-verification.ksig";
     //Extended
     public static final String EXTENDED_SIGNATURE_2014_04_30 = SIGNATURES + "ok-sig-2014-04-30.1-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2015_01 = SIGNATURES + "testdata-extended.txt.2015-01.tlv";
+    public static final String EXTENDED_SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14-extended.ksig";
     //Not extended
     public static final String SIGNATURE_2014_04_30 = SIGNATURES + "ok-sig-2014-04-30.1.ksig";
     public static final String SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2.ksig";
-    public static final String SIGNATURE_2015_01 = SIGNATURES + "testdata.txt.2015-01.tlv";
-    public static final String SIGNATURE_NEWEST = VALID_SIGNATURES + "signature.ksig";
+    public static final String SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14.ksig";
     public static final String SIGNATURE_CHAIN_INDEX_INVALID = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-int-value-wrong.tlv";
     public static final String SIGNATURE_OTHER_CORE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature.ksig";
     public static final String SIGNATURE_CHANGED_CHAINS = SIGNATURES + "all-wrong-hash-chains-in-signature.ksig";
@@ -116,13 +118,14 @@ public class Resources {
      */
     public static final String CALENDAR_HASH_CHAIN_OK = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-ok.tlv";
     public static final String CALENDAR_HASH_CHAIN_INVALID_ALGORITHM = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-invalid-algorithm.tlv";
-    public static final String PUBLICATION_RECORD_IN_SIGNATURE_OK = COMPONENTS_PUBLICATION_RECORD + "publication-record-signature-ok.tlv";
-    public static final String PUBLICATION_RECORD_WITH_REF_AND_REPO_URI_IN_SIGNATURE_OK = COMPONENTS_PUBLICATION_RECORD + "publication-record-signature-with-ref-and-uri-ok.tlv";
     public static final String CALENDAR_AUTH_SIGNATURE_DATA_OK = COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA + "signature-data-ok.tlv";
     public static final String CALENDAR_AUTH_SIGNATURE_DATA_NO_CERT_ID = COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA + "signature-data-without-certificate-id.tlv";
+    public static final String CALENDAR_AUTH_SIGNATURE_DATA_NO_REPO_URI = COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA + "signature-data-with-repository-uri.tlv";
     public static final String CALENDAR_AUTH_SIGNATURE_DATA_NO_SIGNATURE_TYPE = COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA + "signature-data-without-signature-type.tlv";
     public static final String CALENDAR_AUTH_SIGNATURE_DATA_NO_SIGNATURE_VALUE = COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA + "signature-data-without-signature-value.tlv";
-    public static final String CALENDAR_AUTH_SIGNATURE_DATA_NO_REPO_URI = COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA + "signature-data-with-repository-uri.tlv";
+    public static final String PUBLICATION_DATA_OK = COMPONENTS_PUBLICATION_DATA + "publication-data-ok.tlv";
+    public static final String PUBLICATION_RECORD_IN_SIGNATURE_OK = COMPONENTS_PUBLICATION_RECORD + "publication-record-signature-ok.tlv";
+    public static final String PUBLICATION_RECORD_WITH_REF_AND_REPO_URI_IN_SIGNATURE_OK = COMPONENTS_PUBLICATION_RECORD + "publication-record-signature-with-ref-and-uri-ok.tlv";
 
     /**
      * Publications file components
@@ -139,16 +142,13 @@ public class Resources {
      * Publications files
      */
     public static final String PUBLICATIONS_FILE = PUBLICATIONS_FILES + "publications.tlv";
-    public static final String PUBLICATIONS_FILE_2014_04_15 = PUBLICATIONS_FILES + "publications.15042014.tlv";
-    public static final String PUBLICATIONS_FILE_2015_09_15 = PUBLICATIONS_FILES + "publication-2015-09-15.tlv";
-    public static final String PUBLICATIONS_FILE_2016_07_27 = PUBLICATIONS_FILES + "ksi-publications-27-07-2016.bin";
     public static final String PUBLICATIONS_FILE_CERT_AND_PUBLICATION_RECORD_MISSING = PUBLICATIONS_FILES + "publications-file-cert-and-pub-records-missing.tlv";
-    public static final String PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_CERT = PUBLICATIONS_FILES + "publicartions-new-critical-element-in-certificate-record-lvl1.tlv";
-    public static final String PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_HEADER = PUBLICATIONS_FILES + "publicartions-new-critical-element-in-publication-header-lvl1.tlv";
-    public static final String PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD = PUBLICATIONS_FILES + "publicartions-new-critical-element-in-publication-record-lvl1.tlv";
-    public static final String PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD2 = PUBLICATIONS_FILES + "publicartions-new-critical-element-in-publication-record-lvl2.tlv";
-    public static final String PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN  = PUBLICATIONS_FILES + "publicartions-new-critical-nested-tlv-in-main.tlv";
-    public static final String PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN_WITH_NON_CIRITCAL_ELEMENTS = PUBLICATIONS_FILES + "publicartions-new-critical-nested-tlv-in-main-with-non-critical-tlvs.tlv";
+    public static final String PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_CERT = PUBLICATIONS_FILES + "publicartions-new-critical-element-in-certificate-record-lvl1.tlv";//
+    public static final String PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_HEADER = PUBLICATIONS_FILES + "publicartions-new-critical-element-in-publication-header-lvl1.tlv";//
+    public static final String PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD = PUBLICATIONS_FILES + "publicartions-new-critical-element-in-publication-record-lvl1.tlv";//
+    public static final String PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD2 = PUBLICATIONS_FILES + "publicartions-new-critical-element-in-publication-record-lvl2.tlv";//
+    public static final String PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN  = PUBLICATIONS_FILES + "publicartions-new-critical-nested-tlv-in-main.tlv";//
+    public static final String PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN_WITH_NON_CIRITCAL_ELEMENTS = PUBLICATIONS_FILES + "publicartions-new-critical-nested-tlv-in-main-with-non-critical-tlvs.tlv";//
     public static final String PUBLICATIONS_FILE_HAS_CRITICAL_ELEMENT = PUBLICATIONS_FILES + "publications-file-contains-critical-unknown-element.tlv";
     public static final String PUBLICATIONS_FILE_HAS_UNKNOWN_ELEMENT = PUBLICATIONS_FILES + "publications-file-contains-unknown-element.tlv";
     public static final String PUBLICATIONS_FILE_HEADER_MISSING = PUBLICATIONS_FILES + "publications-file-header-missing.tlv";
@@ -159,8 +159,8 @@ public class Resources {
     public static final String PUBLICATIONS_FILE_MULTI_HEADER = PUBLICATIONS_FILES + "publication-one-cert-one-record-multi-header.tlv";
     public static final String PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_CERT = PUBLICATIONS_FILES + "publicartions-new-non-critical-element-in-certificate-record-lvl1.tlv";
     public static final String PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_HEADER = PUBLICATIONS_FILES + "publicartions-new-non-critical-element-in-publication-header-lvl1.tlv";
-    public static final String PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN = PUBLICATIONS_FILES + "publicartions-new-non-critical-nested-tlv-in-main.tlv";
-    public static final String PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN_WITH_CIRITCAL_ELEMENTS = PUBLICATIONS_FILES + "publicartions-new-non-critical-nested-tlv-in-main-with-critical-tlvs.tlv";
+    public static final String PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN = PUBLICATIONS_FILES + "publicartions-new-non-critical-nested-tlv-in-main.tlv";//
+    public static final String PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN_WITH_CIRITCAL_ELEMENTS = PUBLICATIONS_FILES + "publicartions-new-non-critical-nested-tlv-in-main-with-critical-tlvs.tlv";//
     public static final String PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD = PUBLICATIONS_FILES + "publicartions-new-non-critical-element-in-publication-record-lvl1.tlv";
     public static final String PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD2 = PUBLICATIONS_FILES + "publicartions-new-non-critical-element-in-publication-record-lvl2.tlv";
     public static final String PUBLICATIONS_FILE_REFERENCE_AFTER_SIGNATURE = PUBLICATIONS_FILES + "publications-file-reference-after-signature.tlv";
@@ -181,6 +181,5 @@ public class Resources {
     /**
      * ETC
      */
-    public static final String PUBLICATION_DATA_OK = "publication-data/publication-data-ok.tlv";
 }
 

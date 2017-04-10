@@ -111,10 +111,10 @@ public class Resources {
     public static final String SIGNATURE_METADATA_WRONG_CONTENT = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-value.tlv";
     public static final String SIGNATURE_METADATA_WRONG_ORDER = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-order.tlv";
     //Aggregation Hash Chains -> Legacy ID
-    public static final String SIGNATURE_LEGACY_ID_TOO_LONG = SIGNATURES + "too-long-legacy-id.ksig";
-    public static final String SIGNATURE_LEGACY_ID_INVALID_ENDING_BYTE = SIGNATURES + "invalid-legacy-id-ending-byte.ksig";
-    public static final String SIGNATURE_LEGACY_ID_INVALID_OCTET_STRING_PADDING_LENGTH = SIGNATURES + "invalid-legacy-id-octet-string-padding-length.ksig";
-    public static final String SIGNATURE_LEGACY_ID_INVALID_PREFIX = SIGNATURES + "invalid-legacy-id-prefix.ksig";
+    public static final String SIGNATURE_LEGACY_ID_TOO_LONG = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-legacy-id-value-too-long.tlv";
+    public static final String SIGNATURE_LEGACY_ID_INVALID_ENDING_BYTE = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-legacy-id-invalid-ending-byte.tlv";
+    public static final String SIGNATURE_LEGACY_ID_INVALID_OCTET_STRING_PADDING_LENGTH = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-legacy-id-invalid-octet-string-padding.tlv";
+    public static final String SIGNATURE_LEGACY_ID_INVALID_PREFIX = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-legacy-id-invalid-prefix.tlv";
     //Calendar Hash Chain
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_PAST = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-pub-time-int-value-wrong.tlv";
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_FUTURE = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-pub-time-future-value.tlv";

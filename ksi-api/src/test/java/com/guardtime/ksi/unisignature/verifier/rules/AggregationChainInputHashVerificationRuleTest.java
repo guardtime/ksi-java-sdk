@@ -49,9 +49,8 @@ public class AggregationChainInputHashVerificationRuleTest extends AbstractRuleT
 
     @Test
     public void testSignatureWithInvalidRfc3161RecordChainsReturnsFailStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE_WRONG_RECORD_OUTPUT_HASH)));
+        RuleResult result = result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE_WRONG_RECORD_OUTPUT_HASH)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_01);
     }
-
 }

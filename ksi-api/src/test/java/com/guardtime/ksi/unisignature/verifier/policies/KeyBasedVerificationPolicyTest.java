@@ -45,30 +45,7 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
-import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
-
 public class KeyBasedVerificationPolicyTest {
-
-    private KSI ksi;
-    private KSIExtenderClient mockedExtenderClient;
-
-    //TODO: Tests with error codes will be covered by intergration tests.
-
-    @BeforeMethod
-    public void setUp() throws Exception {
-        mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
-        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V1);
-        KSIPublicationsFileClient mockedPublicationFileClient = Mockito.mock(KSIPublicationsFileClient.class);
-        KSISigningClient mockerSigningClient = Mockito.mock(KSISigningClient.class);
-        Mockito.when(mockerSigningClient.getPduVersion()).thenReturn(PduVersion.V1);
-        CertSelector mockedCertificateSelector = Mockito.mock(CertSelector.class);
-        Mockito.when(mockedCertificateSelector.match(Mockito.any(Certificate.class))).thenReturn(Boolean.TRUE);
-        ksi = new KSIBuilder().setKsiProtocolExtenderClient(mockedExtenderClient).
-                setKsiProtocolPublicationsFileClient(mockedPublicationFileClient).
-                setKsiProtocolSignerClient(mockerSigningClient).
-                setPublicationsFileTrustedCertSelector(mockedCertificateSelector).
-                build();
-    }
 
     @Test
     public void testCreateNewKeyBasedVerificationPolicy_Ok() throws Exception {
@@ -78,65 +55,4 @@ public class KeyBasedVerificationPolicyTest {
         Assert.assertFalse(policy.getRules().isEmpty());
         Assert.assertNotNull(policy.getType());
     }
-
-    @Test
-    public void testVerifySignatureOfflineWithInvalidAuthenticationRecord_ThrowsVerificationException() throws Exception {
-        PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
-        KSISignature signature = TestUtil.loadSignature("invalid-signatures/publication-record/invalid-signature-pub-rec-pub-hash-datahash-value-wrong.tlv");
-
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_09);
-    }
-
-    @Test
-    public void testVerifySignatureWithoutCalendarAuthenticationRecord() throws Exception {
-        PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
-        KSISignature signature = TestUtil.loadSignature("valid-signatures/signature-no-calendar-auth-and-publication-record.ksig");
-
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
-        Map<Rule, RuleResult> resultMap = result.getPolicyVerificationResults().get(0).getRuleResults();
-        RuleResult[] ruleResults = resultMap.values().toArray(new RuleResult[resultMap.size()]);
-        Assert.assertEquals(ruleResults[ruleResults.length - 1].getResultCode(), VerificationResultCode.NA);
-        Assert.assertEquals(ruleResults[ruleResults.length - 1].getRuleName(), CalendarAuthenticationRecordExistenceRule.class.getSimpleName());
-    }
-
-    @Test
-    public void testVerifySignatureOfflineSignedByUnknownCertificate() throws Exception {
-        PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
-        Mockito.when(mockedTrustProvider.findCertificateById(Mockito.any(byte[].class))).thenThrow(new CertificateNotFoundException("Certificate not found"));
-        Mockito.when(mockedTrustProvider.getName()).thenReturn("MockProvider");
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_01);
-    }
-
-    @Test
-    public void testVerifySignatureOfflineUsingInvalidPublicKey() throws Exception {
-        PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
-        X509Certificate mockedCertificate = Mockito.mock(X509Certificate.class);
-        Mockito.when(mockedCertificate.getSigAlgName()).thenReturn("RSA");
-        Mockito.when(mockedTrustProvider.findCertificateById(Mockito.any(byte[].class))).thenReturn(mockedCertificate);
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_02);
-    }
-
-    @Test
-    public void testVerifySignatureOfflineUsingInvalidAlgorithm() throws Exception {
-        PublicationsFile mockedTrustProvider = Mockito.mock(PublicationsFile.class);
-        X509Certificate mockedCertificate = Mockito.mock(X509Certificate.class);
-        Mockito.when(mockedCertificate.getSigAlgName()).thenReturn("BLABLA_ALG");
-        Mockito.when(mockedTrustProvider.findCertificateById(Mockito.any(byte[].class))).thenReturn(mockedCertificate);
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
-        VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, mockedExtenderClient, signature.getInputHash(), mockedTrustProvider), new KeyBasedVerificationPolicy());
-        Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_02);
-    }
-
-
 }

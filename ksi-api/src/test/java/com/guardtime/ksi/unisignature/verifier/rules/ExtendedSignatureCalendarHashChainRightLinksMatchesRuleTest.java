@@ -35,7 +35,7 @@ import java.util.Date;
 
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_RIGHT_LINK_VALUE;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_LAST_LINK_VALUE;
 
 public class ExtendedSignatureCalendarHashChainRightLinksMatchesRuleTest extends AbstractRuleTest {
 
@@ -65,10 +65,9 @@ public class ExtendedSignatureCalendarHashChainRightLinksMatchesRuleTest extends
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
-    //todo - ??? currnetly fails with due to mismatch with count of links
     @Test
     public void testVerifyExtendedSignatureRightLinksAreDifferent() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_RIGHT_LINK_VALUE).getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_LAST_LINK_VALUE).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.CAL_04);

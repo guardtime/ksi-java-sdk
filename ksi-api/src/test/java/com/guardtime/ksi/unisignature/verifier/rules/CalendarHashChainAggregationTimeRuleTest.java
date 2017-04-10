@@ -27,7 +27,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_INVALID_AGGREGATION_TIMES;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_AGGREGATION_TIME;
 import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS;
 
 public class CalendarHashChainAggregationTimeRuleTest extends AbstractRuleTest {
@@ -36,7 +36,7 @@ public class CalendarHashChainAggregationTimeRuleTest extends AbstractRuleTest {
 
     @Test
     public void testSignatureWithInconsistentAggregationTimesReturnsFailedStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_AGGREGATION_HASH_CHAIN_INVALID_AGGREGATION_TIMES)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_AGGREGATION_TIME)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_04);

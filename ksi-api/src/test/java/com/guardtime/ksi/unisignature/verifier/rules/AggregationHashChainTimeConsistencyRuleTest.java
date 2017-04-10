@@ -26,8 +26,8 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE_INVALID_AGGREGATION_TIME;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_INVALID_AGGREGATION_TIMES;
 
 public class AggregationHashChainTimeConsistencyRuleTest extends AbstractRuleTest {
 
@@ -35,7 +35,7 @@ public class AggregationHashChainTimeConsistencyRuleTest extends AbstractRuleTes
 
     @Test
     public void testSignatureWithInconsistentAggregationTimesReturnsFailedStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE_INVALID_AGGREGATION_TIME)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_AGGREGATION_HASH_CHAIN_INVALID_AGGREGATION_TIMES)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_02);

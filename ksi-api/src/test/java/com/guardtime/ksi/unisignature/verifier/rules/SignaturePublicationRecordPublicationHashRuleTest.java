@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_PUBLICATION_RECORD_INVALID_HASH;
 
 public class SignaturePublicationRecordPublicationHashRuleTest extends AbstractRuleTest {
 
@@ -47,7 +48,7 @@ public class SignaturePublicationRecordPublicationHashRuleTest extends AbstractR
 
     @Test
     public void testPublicationRecordPublicationDataHashDoesNotEqualsToCalendarHashChainOutputHash_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-invalid-publication-record-publication-data-hash.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_PUBLICATION_RECORD_INVALID_HASH)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_09);
     }

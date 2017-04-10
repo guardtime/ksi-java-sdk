@@ -27,6 +27,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_INPUT_HASH;
+import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS;
 
 public class CalendarHashChainInputHashVerificationRuleTest extends AbstractRuleTest {
 
@@ -34,7 +36,7 @@ public class CalendarHashChainInputHashVerificationRuleTest extends AbstractRule
 
     @Test
     public void testSignatureWithInvalidCalendarHashChainReturnsFailStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-invalid-calendar-hash-chain.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_INPUT_HASH)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_03);
@@ -42,7 +44,7 @@ public class CalendarHashChainInputHashVerificationRuleTest extends AbstractRule
 
     @Test
     public void testSignatureWithoutCalendarHashChainReturnsOkStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-without-calendar-hash-chain.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 

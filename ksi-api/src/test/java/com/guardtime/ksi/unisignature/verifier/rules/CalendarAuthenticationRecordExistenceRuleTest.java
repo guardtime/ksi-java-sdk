@@ -27,6 +27,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_NO_CALENDAR_AUTH_RECORD;
 
 public class CalendarAuthenticationRecordExistenceRuleTest extends AbstractRuleTest {
 
@@ -34,7 +35,7 @@ public class CalendarAuthenticationRecordExistenceRuleTest extends AbstractRuleT
 
     @Test
     public void testSignatureWithoutCalendarAuthenticationRecordReturnsNaStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-calendar-authentication-record-missing.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_NO_CALENDAR_AUTH_RECORD)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);

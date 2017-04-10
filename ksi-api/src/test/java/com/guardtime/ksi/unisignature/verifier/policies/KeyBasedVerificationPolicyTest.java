@@ -52,6 +52,8 @@ public class KeyBasedVerificationPolicyTest {
     private KSI ksi;
     private KSIExtenderClient mockedExtenderClient;
 
+    //TODO: Tests with error codes will be covered by intergration tests.
+
     @BeforeMethod
     public void setUp() throws Exception {
         mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);

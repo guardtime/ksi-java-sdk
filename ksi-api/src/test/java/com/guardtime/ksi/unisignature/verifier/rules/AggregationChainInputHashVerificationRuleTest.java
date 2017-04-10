@@ -26,6 +26,8 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
+import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE_WRONG_RECORD_OUTPUT_HASH;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 public class AggregationChainInputHashVerificationRuleTest extends AbstractRuleTest {
@@ -42,12 +44,12 @@ public class AggregationChainInputHashVerificationRuleTest extends AbstractRuleT
 
     @Test
     public void testSignatureWithValidRfc3161RecordChainsReturnsOkStatus_Ok() throws Exception {
-        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-rfc3161-record-ok.ksig"))).getResultCode(), VerificationResultCode.OK);
+        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE))).getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testSignatureWithInvalidRfc3161RecordChainsReturnsFailStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-invalid-rfc3161-output-hash.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE_WRONG_RECORD_OUTPUT_HASH)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_01);
     }

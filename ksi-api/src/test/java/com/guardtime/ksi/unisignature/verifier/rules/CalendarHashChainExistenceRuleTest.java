@@ -27,6 +27,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS;
 
 public class CalendarHashChainExistenceRuleTest extends AbstractRuleTest {
 
@@ -34,7 +35,7 @@ public class CalendarHashChainExistenceRuleTest extends AbstractRuleTest {
 
     @Test
     public void testSignatureWithoutCalendarHashChainReturnsNaStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-without-calendar-hash-chain.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);

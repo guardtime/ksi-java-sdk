@@ -33,10 +33,6 @@ import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 
 public abstract class AbstractRuleTest {
 
-    protected static final String SIGNATURE_WITH_RFC3161_RECORD_INVALID_AGGREGATION_TIME = "TO-TESTPACK-signature/signature-with-rfc3161-record-invalid-aggregation-time.ksig";
-    protected static final String SIGNATURE_WITH_RFC3161_RECORD_INVALID_CHAIN_INDEX = "TO-TESTPACK-signature/signature-with-rfc3161-record-invalid-chain-index.ksig";
-    protected static final String SIGNATURE_WITH_RFC3161_RECORD = "TO-TESTPACK-signature/signature-with-rfc3161-record-ok.ksig";
-
     protected VerificationContext build(KSISignature signature) throws Exception {
         return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null);
     }

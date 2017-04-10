@@ -52,22 +52,22 @@ public class CalendarHashChainTest {
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain publication time is missing")
     public void testDecodeCalendarHashChainWithoutPublicationTime_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load(SIGNATURE_CALENDAR_HASH_CHAIN_NO_PUBLICATION_TIME, InMemoryAggregationHashChain.ELEMENT_TYPE);
+        load(SIGNATURE_CALENDAR_HASH_CHAIN_NO_PUBLICATION_TIME, InMemoryCalendarHashChain.ELEMENT_TYPE);
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain input hash is missing")
     public void testDecodeCalendarHashChainWithoutInputHash_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load(SIGNATURE_CALENDAR_HASH_CHAIN_NO_INPUT_HASH, InMemoryAggregationHashChain.ELEMENT_TYPE);
+        load(SIGNATURE_CALENDAR_HASH_CHAIN_NO_INPUT_HASH, InMemoryCalendarHashChain.ELEMENT_TYPE);
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain does not contain link elements")
     public void testDecodeCalendarHashChainWithoutLinks_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load(SIGNATURE_CALENDAR_HASH_CHAIN_NO_LINK, InMemoryAggregationHashChain.ELEMENT_TYPE);
+        load(SIGNATURE_CALENDAR_HASH_CHAIN_NO_LINK, InMemoryCalendarHashChain.ELEMENT_TYPE);
     }
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain shape is inconsistent with publication time")
     public void testDecodeCalendarHashChainContainingInvalidRegistrationTime_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_PAST, InMemoryAggregationHashChain.ELEMENT_TYPE);
+        load(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_PAST, InMemoryCalendarHashChain.ELEMENT_TYPE);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class CalendarHashChainTest {
 
     @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain shape inconsistent with publication time")
     public void testDecodeCalendarHashChainContainingInvalidRegistrationTimeElement_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_FUTURE, InMemoryAggregationHashChain.ELEMENT_TYPE);
+        load(SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_FUTURE, InMemoryCalendarHashChain.ELEMENT_TYPE);
     }
 
     @Test
@@ -103,6 +103,6 @@ public class CalendarHashChainTest {
     }
 
     static InMemoryCalendarHashChain load(String file, int type) throws Exception {
-        return new InMemoryCalendarHashChain(loadTlv(file).getFirstChildElement(InMemoryCalendarHashChain.ELEMENT_TYPE));
+        return new InMemoryCalendarHashChain(loadTlv(file).getFirstChildElement(type));
     }
 }

@@ -27,6 +27,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_AUTH_INVALID_PUBLICATION_TIME;
+import static com.guardtime.ksi.Resources.SIGNATURE_NO_CALENDAR_AUTH_RECORD;
 
 public class CalendarAuthenticationRecordAggregationTimeRuleTest extends AbstractRuleTest {
 
@@ -40,13 +42,13 @@ public class CalendarAuthenticationRecordAggregationTimeRuleTest extends Abstrac
 
     @Test
     public void testThatRuleReturnsStatusOkWhenCalendarAuthenticationRecordIsMissing_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-without-calendar-authentication-record.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_NO_CALENDAR_AUTH_RECORD)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testCalendarAuthenticationRecordAggregationTimeDoesNotEqualsToCalendarHashChainOutputTime_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("TO-TESTPACK-signature/signature-with-invalid-authentication-record-publication-time.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_CALENDAR_AUTH_INVALID_PUBLICATION_TIME)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_06);
     }

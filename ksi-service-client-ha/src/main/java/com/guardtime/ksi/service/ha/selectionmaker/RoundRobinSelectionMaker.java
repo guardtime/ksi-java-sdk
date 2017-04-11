@@ -28,19 +28,19 @@ import java.util.List;
 public class RoundRobinSelectionMaker<T> implements SelectionMaker<T> {
 
     private final List<T> objects;
-    private final int numberOfObjectsGivenInOnePick;
+    private final int selectionSize;
     private int cue = 0;
 
-    public RoundRobinSelectionMaker(List<T> objects, int numberOfObjectsGivenInOnePick) {
+    public RoundRobinSelectionMaker(List<T> objects, int selectionSize) {
         this.objects = objects;
-        this.numberOfObjectsGivenInOnePick = numberOfObjectsGivenInOnePick;
+        this.selectionSize = selectionSize;
     }
 
     public synchronized Collection<T> select() {
-        if (objects.isEmpty() || objects.size() == numberOfObjectsGivenInOnePick) {
+        if (objects.isEmpty() || objects.size() == selectionSize) {
             return objects;
         }
-        int toIndex = numberOfObjectsGivenInOnePick + cue;
+        int toIndex = selectionSize + cue;
         List<T> result = new ArrayList<T>();
         if (toIndex > objects.size()) {
             int overflow = toIndex - objects.size();
@@ -60,11 +60,11 @@ public class RoundRobinSelectionMaker<T> implements SelectionMaker<T> {
         return objects;
     }
 
-    public int getNumberOfObjectsGivenInOneSelection() {
-        return numberOfObjectsGivenInOnePick;
+    public int selectionSize() {
+        return selectionSize;
     }
 
     public String toString() {
-        return "RoundRobinSelectionMaker{numberOfObjectsGivenInOnePick=" + numberOfObjectsGivenInOnePick + ", objects=" + objects + "}";
+        return "RoundRobinSelectionMaker{selectionSize=" + selectionSize + ", objects=" + objects + "}";
     }
 }

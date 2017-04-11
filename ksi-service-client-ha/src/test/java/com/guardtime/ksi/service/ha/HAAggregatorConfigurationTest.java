@@ -13,7 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.*;
 
-public class AggregatedAggregatorConfigurationTest {
+public class HAAggregatorConfigurationTest {
 
     private AggregatorConfiguration subConf1;
     private AggregatorConfiguration subConf2;
@@ -45,7 +45,7 @@ public class AggregatedAggregatorConfigurationTest {
 
     @Test
     public void testAllClientsActiveAnAllRequestsAllConfsEqual() {
-        AggregatorConfiguration configuration = new AggregatedAggregatorConfiguration(Arrays.asList(subConf1, subConf1, subConf1), 3, 3);
+        AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf1, subConf1), 3, 3);
         assertNull(configuration.getAggregationAlgorithm());
         assertEquals(configuration.getAggregationPeriod(), new Long(1000));
         assertEquals(configuration.getMaximumLevel(), new Long(15));
@@ -55,37 +55,37 @@ public class AggregatedAggregatorConfigurationTest {
 
     @Test
     public void testCalculatingMaxRequestsWhenLoadBalancing() {
-        assertEquals(new AggregatedAggregatorConfiguration(singletonList(subConf1), 3, 2).getMaximumRequests(), new Long(18));
-        assertEquals(new AggregatedAggregatorConfiguration(singletonList(subConf1), 3, 1).getMaximumRequests(), new Long(36));
+        assertEquals(new HAAggregatorConfiguration(singletonList(subConf1), 3, 2).getMaximumRequests(), new Long(18));
+        assertEquals(new HAAggregatorConfiguration(singletonList(subConf1), 3, 1).getMaximumRequests(), new Long(36));
     }
 
     @Test
     public void testMaxRequestsIsBasedOnMinimalSubconf() {
-        AggregatorConfiguration configuration = new AggregatedAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
+        AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getMaximumRequests(), new Long(10L));
     }
 
     @Test
     public void testAggregationPeriodIsBasedOnMaximalSubconf() {
-        AggregatorConfiguration configuration = new AggregatedAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
+        AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getAggregationPeriod(), new Long(1200L));
     }
 
     @Test
     public void testMaximumLevelIsBasedOnMinimalSubconf() {
-        AggregatorConfiguration configuration = new AggregatedAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
+        AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getMaximumLevel(), new Long(12L));
     }
 
     @Test
     public void testParentsAreBasedOnFirstNonNullSubConfParents() {
-        AggregatorConfiguration configuration = new AggregatedAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
+        AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getParents(), Arrays.asList("2", "3", "4"));
     }
 
     @Test
     public void testAggregationAlgorithmIsBasedOnFirstNonNullSubConfAggregationAlgorithm() {
-        AggregatorConfiguration configuration = new AggregatedAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
+        AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getAggregationAlgorithm(), SHA2_256);
     }
 }

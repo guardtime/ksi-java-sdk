@@ -21,7 +21,7 @@ package com.guardtime.ksi.service.tcp;
 import com.guardtime.ksi.pdu.PduFactoryProvider;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.ExternalServiceConfigurationAwareSigningClient;
+import com.guardtime.ksi.service.client.ConfigurationAwareSigningClient;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -41,7 +41,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * KSI TCP client for signing.
  */
-public class TCPClient extends ExternalServiceConfigurationAwareSigningClient {
+public class TCPClient extends ConfigurationAwareSigningClient {
 
     private static final Logger logger = LoggerFactory.getLogger(TCPClient.class);
 

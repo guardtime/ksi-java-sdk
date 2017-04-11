@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.*;
 
-public class AggregatedExtenderConfigurationTest {
+public class HAExtenderConfigurationTest {
     private ExtenderConfiguration subConf1;
     private ExtenderConfiguration subConf2;
     private ExtenderConfiguration subConf3;
@@ -40,7 +40,7 @@ public class AggregatedExtenderConfigurationTest {
 
     @Test
     public void testAllClientsActiveAnAllRequestsAllConfsEqual() {
-        ExtenderConfiguration configuration = new AggregatedExtenderConfiguration(Arrays.asList(subConf1, subConf1, subConf1), 3, 3);
+        ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf1, subConf1), 3, 3);
         assertNull(configuration.getCalendarFirstTime());
         assertNull(configuration.getCalendarLastTime());
         assertEquals(configuration.getMaximumRequests(), new Long(12));
@@ -49,31 +49,31 @@ public class AggregatedExtenderConfigurationTest {
 
     @Test
     public void testCalculatingMaxRequestsWhenLoadBalancing() {
-        assertEquals(new AggregatedExtenderConfiguration(singletonList(subConf1), 3, 2).getMaximumRequests(), new Long(18));
-        assertEquals(new AggregatedExtenderConfiguration(singletonList(subConf1), 3, 1).getMaximumRequests(), new Long(36));
+        assertEquals(new HAExtenderConfiguration(singletonList(subConf1), 3, 2).getMaximumRequests(), new Long(18));
+        assertEquals(new HAExtenderConfiguration(singletonList(subConf1), 3, 1).getMaximumRequests(), new Long(36));
     }
 
     @Test
     public void testMaxRequestsIsBasedOnMinimalSubconf() {
-        ExtenderConfiguration configuration = new AggregatedExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
+        ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getMaximumRequests(), new Long(11L));
     }
 
     @Test
     public void testCalendarFirstTimeIsBasedOnSubconfLatestCalendarFirstTime() {
-        ExtenderConfiguration configuration = new AggregatedExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
+        ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getCalendarFirstTime(), new Date(100));
     }
 
     @Test
     public void testCalendarLastTimeIsBasedOnSubconfEarliestCalendarLastTime() {
-        ExtenderConfiguration configuration = new AggregatedExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
+        ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getCalendarLastTime().getTime(), new Date(200).getTime());
     }
 
     @Test
     public void testParentsAreBasedOnFirstNonNullSubConfParents() {
-        ExtenderConfiguration configuration = new AggregatedExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
+        ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getParents(), Arrays.asList("2", "3", "4"));
     }
 

@@ -27,7 +27,7 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.settings.SingleFunctionHAClientSettings;
-import com.guardtime.ksi.service.ha.tasks.AggregatorConfigurationCallingTask;
+import com.guardtime.ksi.service.ha.tasks.AggregatorConfigurationTask;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
 import com.guardtime.ksi.service.ha.tasks.SigningTask;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -61,7 +61,7 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
     public AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException {
         Collection<Callable<AggregatorConfiguration>> tasks = new ArrayList<Callable<AggregatorConfiguration>>();
         for (KSISigningClient client : getAllSubclients()) {
-            tasks.add(new AggregatorConfigurationCallingTask(requestContext, client));
+            tasks.add(new AggregatorConfigurationTask(requestContext, client));
         }
         return getConfiguration(tasks);
     }
@@ -93,8 +93,8 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
         return sb.toString();
     }
 
-    protected AggregatorConfiguration composeAggregatedConfiguration(List<AggregatorConfiguration> configurations) {
-        return new AggregatedAggregatorConfiguration(configurations, getAllSubclients().size(), getNumberClientsUsedInOneRound());
+    protected AggregatorConfiguration aggregateConfigurations(List<AggregatorConfiguration> configurations) {
+        return new HAAggregatorConfiguration(configurations, getAllSubclients().size(), getRequestClientselectionSize());
     }
 
     public Future<TLVElement> sign(InputStream request) throws KSIClientException {

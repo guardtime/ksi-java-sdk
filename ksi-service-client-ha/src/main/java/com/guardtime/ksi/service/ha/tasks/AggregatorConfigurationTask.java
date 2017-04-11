@@ -16,29 +16,25 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha;
+package com.guardtime.ksi.service.ha.tasks;
 
-import com.guardtime.ksi.service.client.KSIClientException;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.client.KSISigningClient;
 
-import java.util.Map;
+import java.util.concurrent.Callable;
 
-/**
- * This exception is thrown if all subclients of a HAClient fail.
- */
-public class AllHAClientSubclientsFailedException extends KSIClientException {
+public class AggregatorConfigurationTask implements Callable<AggregatorConfiguration> {
+    private final KSIRequestContext context;
+    private final KSISigningClient client;
 
-    private Map<String, Exception> subClientsExceptions;
-
-    AllHAClientSubclientsFailedException(String message, Map<String, Exception> subClientsExceptions) {
-        super(message);
-        this.subClientsExceptions = subClientsExceptions;
+    public AggregatorConfigurationTask(KSIRequestContext context, KSISigningClient client) {
+        this.context = context;
+        this.client = client;
     }
 
-    /**
-     * @return Exceptions thrown by subclients. Map keys are results of subclient ids and values are corresponding exceptions.
-     */
-    public Map<String, Exception> getSubClientsExceptions() {
-        return subClientsExceptions;
+    public AggregatorConfiguration call() throws Exception {
+        return client.getAggregatorsConfiguration(context);
     }
 
 }

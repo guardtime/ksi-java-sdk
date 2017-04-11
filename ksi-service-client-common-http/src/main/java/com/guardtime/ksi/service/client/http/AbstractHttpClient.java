@@ -27,8 +27,8 @@ import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.PduFactoryProvider;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.ExternalServiceConfigurationAwareClient;
-import com.guardtime.ksi.service.client.ExternalServiceConfigurationAwareSigningClient;
+import com.guardtime.ksi.service.client.ConfigurationAwareClient;
+import com.guardtime.ksi.service.client.ConfigurationAwareSigningClient;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
@@ -44,7 +44,7 @@ import java.util.Date;
 /**
  * Common class for all KSI HTTP clients
  */
-public abstract class AbstractHttpClient extends ExternalServiceConfigurationAwareSigningClient implements ExternalServiceConfigurationAwareClient, KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
+public abstract class AbstractHttpClient extends ConfigurationAwareSigningClient implements ConfigurationAwareClient, KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
 
     public static final String HEADER_APPLICATION_KSI_REQUEST = "application/ksi-request";
     public static final String HEADER_NAME_CONTENT_TYPE = "Content-Type";

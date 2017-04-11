@@ -23,7 +23,7 @@ import com.guardtime.ksi.pdu.AggregatorConfiguration;
 
 import java.util.List;
 
-class AggregatedAggregatorConfiguration implements AggregatorConfiguration {
+class HAAggregatorConfiguration implements AggregatorConfiguration {
 
     private final Long maximumRequests;
     private final List<String> parents;
@@ -31,37 +31,36 @@ class AggregatedAggregatorConfiguration implements AggregatorConfiguration {
     private final HashAlgorithm aggregationAlgorithm;
     private final Long maximumLevel;
 
-    AggregatedAggregatorConfiguration(List<AggregatorConfiguration> subConfigurations, int totalNumberOfClients, int numberOfClientsInOneRound) {
-        Long minMaximumRequests = null;
+    HAAggregatorConfiguration(List<AggregatorConfiguration> confs, int totalClients, int clientsInRound) {
+        Long minMaxRequests = null;
         Long maxAggregationPeriod = null;
         Long minMaxLevel = null;
         HashAlgorithm aggregatedHashAlgorithm = null;
         List<String> aggregatedParents = null;
-        for (AggregatorConfiguration subConfiguration : subConfigurations) {
-            Long subConfMaxRequests = subConfiguration.getMaximumRequests();
-            Long subConfAggregationPeriod = subConfiguration.getAggregationPeriod();
-            Long subConfMaxLevel = subConfiguration.getMaximumLevel();
-            if (minMaximumRequests == null || (subConfMaxRequests != null && subConfMaxRequests <= minMaximumRequests)) {
-                minMaximumRequests = subConfMaxRequests;
+        for (AggregatorConfiguration conf : confs) {
+            Long confMaxRequests = conf.getMaximumRequests();
+            Long confAggregationPeriod = conf.getAggregationPeriod();
+            Long confMaxLevel = conf.getMaximumLevel();
+            if (minMaxRequests == null || (confMaxRequests != null && confMaxRequests <= minMaxRequests)) {
+                minMaxRequests = confMaxRequests;
             }
 
-            if (maxAggregationPeriod == null || (subConfAggregationPeriod != null && subConfAggregationPeriod >=
-                    maxAggregationPeriod)) {
-                maxAggregationPeriod = subConfAggregationPeriod;
+            if (maxAggregationPeriod == null || (confAggregationPeriod != null && confAggregationPeriod >= maxAggregationPeriod)) {
+                maxAggregationPeriod = confAggregationPeriod;
             }
-            if (minMaxLevel == null || (subConfMaxLevel != null && subConfMaxLevel <= minMaxLevel)) {
-                minMaxLevel = subConfMaxLevel;
+            if (minMaxLevel == null || (confMaxLevel != null && confMaxLevel <= minMaxLevel)) {
+                minMaxLevel = confMaxLevel;
             }
-            HashAlgorithm subConfAggregationAlgorithm = subConfiguration.getAggregationAlgorithm();
-            if (subConfAggregationAlgorithm != null && aggregatedHashAlgorithm == null) {
-                aggregatedHashAlgorithm = subConfAggregationAlgorithm;
+            HashAlgorithm confAggrAlgorithm = conf.getAggregationAlgorithm();
+            if (confAggrAlgorithm != null && aggregatedHashAlgorithm == null) {
+                aggregatedHashAlgorithm = confAggrAlgorithm;
             }
-            List<String> subConfParents = subConfiguration.getParents();
+            List<String> subConfParents = conf.getParents();
             if (subConfParents != null && aggregatedParents == null) {
                 aggregatedParents = subConfParents;
             }
         }
-        this.maximumRequests = calculateMaxRequests(totalNumberOfClients, numberOfClientsInOneRound, minMaximumRequests);
+        this.maximumRequests = calculateMaxRequests(totalClients, clientsInRound, minMaxRequests);
         this.aggregationPeriod = maxAggregationPeriod;
         this.maximumLevel = minMaxLevel;
         this.aggregationAlgorithm = aggregatedHashAlgorithm;

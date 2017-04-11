@@ -99,7 +99,7 @@ public class AbstractHAClientTest {
         }
     }
 
-    @Test(expectedExceptions = AllHAClientSubclientsFailedException.class)
+    @Test(expectedExceptions = HASubclientsFailedException.class)
     public void testAllServiceCallsFail() throws Exception {
         DummyHAClient haClient = new DummyHAClient(null, null);
         List<ServiceCallingTask<Integer>> tasks = new ArrayList<ServiceCallingTask<Integer>>();
@@ -130,7 +130,7 @@ public class AbstractHAClientTest {
             return configurations.toString();
         }
 
-        protected Object composeAggregatedConfiguration(List<Object> configurations) {
+        protected Object aggregateConfigurations(List<Object> configurations) {
             return configurations.get(0);
         }
     }

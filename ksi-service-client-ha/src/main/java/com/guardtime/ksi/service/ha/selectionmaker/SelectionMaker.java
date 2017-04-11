@@ -40,6 +40,6 @@ public interface SelectionMaker<T> {
     /**
      * @return size of the collection returned invoking {@link #select()}
      */
-    int getNumberOfObjectsGivenInOneSelection();
+    int selectionSize();
 
 }

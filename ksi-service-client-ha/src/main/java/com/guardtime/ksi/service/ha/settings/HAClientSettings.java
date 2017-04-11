@@ -27,9 +27,9 @@ public class HAClientSettings {
     private final SingleFunctionHAClientSettings signingClientSettings;
     private final SingleFunctionHAClientSettings extenderClientSettings;
 
-    public HAClientSettings(int activeSigningClientsPerRequest, int activeExtenderClientsPerRequest) throws KSIException {
-        this.signingClientSettings = new SingleFunctionHAClientSettings(activeSigningClientsPerRequest);
-        this.extenderClientSettings = new SingleFunctionHAClientSettings(activeExtenderClientsPerRequest);
+    public HAClientSettings(int signingClientsForRequest, int extendingClientsForRequest) throws KSIException {
+        this.signingClientSettings = new SingleFunctionHAClientSettings(signingClientsForRequest);
+        this.extenderClientSettings = new SingleFunctionHAClientSettings(extendingClientsForRequest);
     }
 
     public SingleFunctionHAClientSettings getSigningClientSettings() {

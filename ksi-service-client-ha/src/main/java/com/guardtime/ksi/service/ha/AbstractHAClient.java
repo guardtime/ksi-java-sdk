@@ -58,11 +58,11 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
         if (settings == null) {
             settings = new SingleFunctionHAClientSettings(subclients.size());
         }
-        if (settings.getActiveClientsInSingleSelection() > subclients.size()) {
+        if (settings.getActiveClientsForRequest() > subclients.size()) {
             throw new KSIClientException("Invalid input parameter. It is not possible to have more clients in one selection " +
                     "than there are available clients");
         }
-        this.clientsPicker = new RoundRobinSelectionMaker<CLIENT>(subclients, settings.getActiveClientsInSingleSelection());
+        this.clientsPicker = new RoundRobinSelectionMaker<CLIENT>(subclients, settings.getActiveClientsForRequest());
         logger.info("Client initialized with settings %s and %d subclients", settings, subclients.size());
     }
 
@@ -89,17 +89,17 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
             if (configurations.isEmpty()) {
                 throw new KSIClientException(implName + " received no configuration responses to use for building the most optimal configuration");
             }
-            if (!areAllConfigrationsSame(configurations)) {
+            if (!areAllConfsEqual(configurations)) {
                 logger.warn("Configurations gotten via " + implName + " from subclients differ from eachother. This could " +
                         "mean that external services our configured wrong. All configurations: " + configurationsToString(configurations));
             }
-            return composeAggregatedConfiguration(configurations);
+            return aggregateConfigurations(configurations);
         } catch (Exception e) {
             throw new KSIClientException("Asking extender configurations failed", e);
         }
     }
 
-    private boolean areAllConfigrationsSame(List<SERVICE_CONFIG_RESPONSE> configurations) {
+    private boolean areAllConfsEqual(List<SERVICE_CONFIG_RESPONSE> configurations) {
         for (int i = 1; i < configurations.size(); i++) {
             if (!configurationsEqual(configurations.get(i - 1), configurations.get(i))) {
                 return false;
@@ -112,7 +112,7 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
 
     protected abstract String configurationsToString(List<SERVICE_CONFIG_RESPONSE> configurations);
 
-    protected abstract SERVICE_CONFIG_RESPONSE composeAggregatedConfiguration(List<SERVICE_CONFIG_RESPONSE> configurations);
+    protected abstract SERVICE_CONFIG_RESPONSE aggregateConfigurations(List<SERVICE_CONFIG_RESPONSE> configurations);
 
     ServiceCallFuture<SERVICE_RESPONSE> callAnyService(Collection<ServiceCallingTask<SERVICE_RESPONSE>> tasks, Long requestId)
             throws KSIClientException {
@@ -157,8 +157,8 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
         return clientsPicker.getAll();
     }
 
-    int getNumberClientsUsedInOneRound() {
-        return clientsPicker.getNumberOfObjectsGivenInOneSelection();
+    int getRequestClientselectionSize() {
+        return clientsPicker.selectionSize();
     }
 
     @Override
@@ -184,7 +184,7 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
             } catch (Exception e) {
                 Map<String, Exception> subExceptions = deRegisterSubclientsExceptionHolder(requestId);
                 if (subExceptions != null && !subExceptions.isEmpty()) {
-                    throw new AllHAClientSubclientsFailedException("Invoking all subclients of " + implName + " failed.", subExceptions);
+                    throw new HASubclientsFailedException("Invoking all subclients of " + implName + " failed.", subExceptions);
                 } else {
                     throw new KSIClientException("Invoking " + implName + " failed", e);
                 }

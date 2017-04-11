@@ -24,12 +24,12 @@ import com.guardtime.ksi.service.client.KSIExtenderClient;
 
 import java.util.concurrent.Callable;
 
-public class ExtenderConfigurationCallingTask implements Callable<ExtenderConfiguration> {
+public class ExtenderConfigurationTask implements Callable<ExtenderConfiguration> {
 
     private final KSIRequestContext context;
     private final KSIExtenderClient client;
 
-    public ExtenderConfigurationCallingTask(KSIRequestContext context, KSIExtenderClient client) {
+    public ExtenderConfigurationTask(KSIRequestContext context, KSIExtenderClient client) {
         this.context = context;
         this.client = client;
     }

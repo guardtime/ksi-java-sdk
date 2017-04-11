@@ -20,20 +20,20 @@ package com.guardtime.ksi.service.ha.settings;
 
 public class SingleFunctionHAClientSettings {
 
-    private final int activeClientsInSingleSelection;
+    private final int activeClientsForRequest;
 
-    public SingleFunctionHAClientSettings(int activeClientsInSingleSelection) {
-        this.activeClientsInSingleSelection = activeClientsInSingleSelection;
+    public SingleFunctionHAClientSettings(int activeClientsForRequest) {
+        this.activeClientsForRequest = activeClientsForRequest;
     }
 
-    public int getActiveClientsInSingleSelection() {
-        return activeClientsInSingleSelection;
+    public int getActiveClientsForRequest() {
+        return activeClientsForRequest;
     }
 
     @Override
     public String toString() {
         return "SingleFunctionHAClientSettings{" +
-                "activeClientsInSingleSelection=" + activeClientsInSingleSelection +
+                "activeClientsForRequest=" + activeClientsForRequest +
                 '}';
     }
 }

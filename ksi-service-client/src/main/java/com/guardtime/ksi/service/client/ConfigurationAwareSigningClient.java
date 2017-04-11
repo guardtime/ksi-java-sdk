@@ -33,11 +33,11 @@ import java.io.ByteArrayInputStream;
 /**
  * Abstract KSI Signing client for the type of clients which connect only to a single aggregator.
  */
-public abstract class ExternalServiceConfigurationAwareSigningClient implements KSISigningClient, ExternalServiceConfigurationAwareClient {
+public abstract class ConfigurationAwareSigningClient implements KSISigningClient, ConfigurationAwareClient {
 
     private final PduFactory pduFactory;
 
-    protected ExternalServiceConfigurationAwareSigningClient(PduFactory pduFactory) {
+    protected ConfigurationAwareSigningClient(PduFactory pduFactory) {
         this.pduFactory = pduFactory;
     }
 

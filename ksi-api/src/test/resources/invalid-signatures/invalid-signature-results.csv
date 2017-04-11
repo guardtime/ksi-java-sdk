@@ -128,7 +128,7 @@ aggregation-chain/invalid-signature-aggr-chain-multiple-chains-aggr-time-wrong.t
 aggregation-chain/invalid-signature-aggr-chain-multiple-chains-chain-index-are-same.tlv;internal;INT-12;Inconsistent chain indexes;;;;;;;;false;;;
 aggregation-chain/invalid-signature-aggr-chain-multiple-chains-changed-order-chain-index-are-same.tlv;internal;INT-12;Inconsistent chain indexes;;;;;;;;false;;;
 aggregation-chain/invalid-signature-aggr-chain-multiple-chains-chain-index-wrong-value.tlv;internal;INT-12;Inconsistent chain indexes;;;;;;;;false;;;
-aggregation-chain/invalid-signature-aggr-chain-multiple-chains-one-chain-removed.tlv;internal;INT-10;Aggregation hash chain chain index mismatch;;;;;;;;false;;;
+aggregation-chain/invalid-signature-aggr-chain-multiple-chains-one-chain-removed.tlv;internal;INT-12;Inconsistent chain indexes;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-pub-time-int-value-wrong.tlv;internal;INT-05;Calendar hash chain shape inconsistent with aggregation time;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-pub-time-future-value.tlv;internal;INT-05;Calendar hash chain shape inconsistent with aggregation time;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-pub-time-text-value.tlv;parsing;;;;;;;;;;false;;;
@@ -152,15 +152,14 @@ calendar-hash-chain/invalid-signature-calendar-chain-input-hash-no-value.tlv;par
 calendar-hash-chain/invalid-signature-calendar-chain-input-hash-has-child-element.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-input-hash-multiple-tags.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-input-hash-missing-tag.tlv;parsing;;;;;;;;;;false;;;
-calendar-hash-chain/invalid-signature-calendar-chain-input-hash-wrong.tlv;parsing;;;;;;;;;;false;;;
-calendar-hash-chain/invalid-signature-calendar-chain-no-links.tlv;parsing;;;;;;;;;;false;;;
+calendar-hash-chain/invalid-signature-calendar-chain-input-hash-wrong.tlv;internal;INT-03;Calendar hash chain input hash mismatch;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-right-link-int-value.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-right-link-text-value.tlv;parsing;;;;;;;;;;false;;;
-calendar-hash-chain/invalid-signature-calendar-chain-right-link-wrong.tlv;internal;INT-08;Calendar hash chain root hash is inconsistent with calendar authentication record input hash;;;;;;;;false;;;
+calendar-hash-chain/invalid-signature-calendar-chain-right-link-datahash-value-wrong.tlv;internal;INT-08;Calendar hash chain root hash is inconsistent with calendar authentication record input hash;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-right-link-no-value.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-right-link-has-child-element.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-right-link-additional-tag.tlv;internal;INT-05;Calendar hash chain shape inconsistent with aggregation time;;;;;;;;false;;;
-calendar-hash-chain/invalid-signature-calendar-chain-right-link-one-missing-tag.tlv;internal;INT-05;Calendar hash chain shape inconsistent with aggregation time;;;;;;;;false;;;
+calendar-hash-chain/invalid-signature-calendar-chain-right-link-missing-tag.tlv;internal;INT-05;Calendar hash chain shape inconsistent with aggregation time;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-right-link-left-link-missing-tags.tlv;parsing;;;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-aggr-time-does-not-match-aggr-chain-time.tlv;internal;INT-05;Calendar hash chain shape inconsistent with aggregation time;;;;;;;;false;;;
 calendar-hash-chain/invalid-signature-calendar-chain-last-link-wrong.tlv;internal;INT-08;Calendar hash chain root hash is inconsistent with calendar auth record input hash;;;;;;;;false;;;

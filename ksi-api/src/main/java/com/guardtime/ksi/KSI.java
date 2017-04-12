@@ -38,7 +38,6 @@ import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import java.io.Closeable;
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * An instance of this class can be obtained using {@link KSIBuilder} class.

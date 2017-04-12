@@ -19,6 +19,7 @@
 
 package com.guardtime.ksi.unisignature.verifier;
 
+import com.guardtime.ksi.KSIBuilder;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.*;
@@ -58,15 +59,17 @@ final class KSIVerificationContext implements VerificationContext {
 
     private PduFactory pduFactory;
     private KSISignatureComponentFactory signatureComponentFactory;
+    private PduIdentifierProvider pduIdentifierProvider;
 
     KSIVerificationContext(PublicationsFile publicationsFile, KSISignature signature, PublicationData userPublication,
-                           boolean extendingAllowed, KSIExtenderClient extenderClient, DataHash documentHash) {
+                           boolean extendingAllowed, KSIExtenderClient extenderClient, DataHash documentHash, PduIdentifierProvider pduIdentifierProvider) {
         this.publicationsFile = publicationsFile;
         this.signature = signature;
         this.userPublication = userPublication;
         this.extendingAllowed = extendingAllowed;
         this.extenderClient = extenderClient;
         this.documentHash = documentHash;
+        this.pduIdentifierProvider = pduIdentifierProvider;
     }
 
     public void setPduFactory(PduFactory pduFactory) {
@@ -148,7 +151,7 @@ final class KSIVerificationContext implements VerificationContext {
     }
 
     private CalendarHashChain extend(Date publicationTime) throws KSIException {
-        KSIRequestContext context = new KSIRequestContext(extenderClient.getServiceCredentials(), Util.nextLong(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
+        KSIRequestContext context = new KSIRequestContext(extenderClient.getServiceCredentials(), pduIdentifierProvider.nextRequestId(), pduIdentifierProvider.nextMessageId(), pduIdentifierProvider.getInstanceId());
         ExtensionRequest extensionRequest = pduFactory.createExtensionRequest(context, getSignature().getAggregationTime(), publicationTime);
 
         Future<TLVElement> future = extenderClient.extend(new ByteArrayInputStream(extensionRequest.toByteArray()));

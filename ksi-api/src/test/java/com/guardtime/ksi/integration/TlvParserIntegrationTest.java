@@ -18,39 +18,143 @@
  */
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.tlv.MultipleTLVElementException;
+import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.unisignature.CalendarHashChain;
+import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
+import com.guardtime.ksi.util.Util;
+
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
+import static com.guardtime.ksi.CommonTestUtil.load;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TlvParserIntegrationTest.class);
-    private final Policy policy = new KeyBasedVerificationPolicy();
+    private final Policy policy = new CalendarBasedVerificationPolicy();
 
-    @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = EXTENDER_RESPONSES_DATA_PROVIDER)
-    public void testVerifySignatureWithExtraElementsInAggregationResponse(DataHolderForIntegrationTests testData) throws Exception {
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureWithNonCriticalElementInExtenderResponse() throws Exception {
+        String testFile = "extender-response/extension-response-for-ok-sig-2014-06-2-extra-element.ksig";
+
+        KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
+        LOGGER.info("Used response file: " + testFile);
+        mockExtenderResponseCalendarHashCain(testFile, mockedExtenderClient);
+
+        KSISignature signature = ksi.read(load(SIGNATURE_2017_03_14));
+        VerificationResult result = verify(ksi, mockedExtenderClient, signature, policy);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureWithUnknownCriticalElementInExtenderResponse() throws Exception {
+        String testFile = "extender-response/extension-response-for-ok-sig-2014-06-2-extra-critical-element.ksig";
+        String exceptionMessage = "parse response message";
+        Class exceptionClass = KSIProtocolException.class;
+        testExtenderResponses(testFile, exceptionClass, exceptionMessage);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureWithExtraCriticalPduInExtenderResponse() throws Exception {
+        String testFile = "extender-response/extension-response-for-ok-sig-2014-06-2-extra-critical-main-with-critical-tlv.ksig";
+        String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
+        Class exceptionClass = MultipleTLVElementException.class;
+        testExtenderResponses(testFile, exceptionClass, exceptionMessage);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureWithExtraCriticalPduWithNonCriticalElementsInExtenderResponse() throws Exception {
+        String testFile = "extender-response/extension-response-for-ok-sig-2014-06-2-extra-critical-main-with-non-critical-tlv.ksig";
+        String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
+        Class exceptionClass = MultipleTLVElementException.class;
+        testExtenderResponses(testFile, exceptionClass, exceptionMessage);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureWithExtraNonCiriticalCriticalPduInExtenderResponse() throws Exception {
+        String testFile = "extender-response/extension-response-for-ok-sig-2014-06-2-extra-main-with-critical-tlv.ksig";
+        String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
+        Class exceptionClass = MultipleTLVElementException.class;
+        testExtenderResponses(testFile, exceptionClass, exceptionMessage);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureWithExtraNonCriticalPduWithNonCriticalElementsInExtenderResponse() throws Exception {
+        String testFile = "extender-response/extension-response-for-ok-sig-2014-06-2-extra-main-with-non-critical-tlv.ksig";
+        String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
+        Class exceptionClass = MultipleTLVElementException.class;
+        testExtenderResponses(testFile, exceptionClass, exceptionMessage);
+    }
+
+    private void testExtenderResponses(String testFile, Class exceptionClass, String message) throws Exception {
         try {
             KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
-            LOGGER.info("Used response file: " + testData.getTestFile());
-            String responseFile = testData.getTestFile();
-            mockExtenderResponseCalendarHashCain(responseFile, mockedExtenderClient);
+            LOGGER.info("Used response file: " + testFile);
+            mockExtenderResponseCalendarHashCain(testFile, mockedExtenderClient);
 
-            testData.setTestFile(EXTENDED_SIGNATURE_2017_03_14);
-            testData.setHttpClient(mockedExtenderClient);
-
-            testExecution(testData, new CalendarBasedVerificationPolicy());
+            KSISignature signature = ksi.read(load(SIGNATURE_2017_03_14));
+            VerificationResult result = verify(ksi, mockedExtenderClient, signature, policy);
+            throw new IntegrationTestFailureException("No exception was thrown when verifying " + SIGNATURE_2017_03_14 + " with extender response " + testFile);
+        } catch (IntegrationTestFailureException e) {
+            throw e;
         } catch (Exception e) {
-            if (!(e.getMessage().contains(testData.getExpectedExceptionMessage()) && e.getClass().toString().contains(testData.getExpectedExceptionClass()))) {
-                throw e;
+            if (!(e.getClass().toString().equals(exceptionClass.toString()))) {
+                throw new IntegrationTestFailureException("Expected exception " + exceptionClass.toString() + " but received " + e.getClass().toString());
+            } else if (!(e.getMessage().contains(message))) {
+                throw new IntegrationTestFailureException("Expected exception message '" + message + "' was not found int " + e.getMessage());
             }
         }
+    }
+    protected void mockExtenderResponseCalendarHashCain(String responseCalendarChainFile, KSIExtenderClient mockedExtenderClient) throws Exception {
+        final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
+        Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
+        Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(serviceCredentials);
+        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
+        Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
+        final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
 
+        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).then(new Answer<Future>() {
+            public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
+                InputStream input = (InputStream) invocationOnMock.getArguments()[0];
+                TLVElement tlvElement = TLVElement.create(Util.toByteArray(input));
+                TLVElement payload = responseTLV.getFirstChildElement(0x302);
+                payload.getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x301).getFirstChildElement(0x01).getDecodedLong());
+
+                payload.replace(payload.getFirstChildElement(CalendarHashChain.ELEMENT_TYPE), calendarChain);
+                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(serviceCredentials.getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
+                return mockedFuture;
+            }
+        });
+    }
+
+    private DataHash calculateHash(byte[] key, TLVElement... elements) throws Exception {
+        HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
+        return new DataHash(algorithm, Util.calculateHMAC(getContent(elements), key, algorithm.getName()));
+    }
+
+    private byte[] getContent(TLVElement[] elements) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        for (TLVElement element : elements) {
+            out.write(element.getEncoded());
+        }
+        return out.toByteArray();
     }
 }

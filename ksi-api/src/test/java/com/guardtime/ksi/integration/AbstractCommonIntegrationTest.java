@@ -39,8 +39,8 @@ import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
-import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.util.Util;
@@ -56,10 +56,12 @@ import org.testng.annotations.DataProvider;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import static com.guardtime.ksi.Resources.CSV_TLV_PARSER;
 import static com.guardtime.ksi.Resources.PROPERTIES_INTEGRATION_TEST;
 import static com.guardtime.ksi.Resources.TRUSTSTORE_KSI;
 import static com.guardtime.ksi.TestUtil.*;
@@ -73,7 +75,9 @@ public abstract class AbstractCommonIntegrationTest {
     protected static final String CALENDAR_BASED_VERIFICATION_DATA_PROVIDER = "CALENDAR_BASED_VERIFICATION_DATA_PROVIDER";
     protected static final String KEY_BASED_VERIFICATION_DATA_PROVIDER = "KEY_BASED_VERIFICATION_DATA_PROVIDER";
     protected static final String TLV_PARSER_VERIFICATION_DATA_PROVIDER = "TLV_PARSER_VERIFICATION_DATA_PROVIDER";
-    protected static final String EXTENDER_RESPONSES_DATA_PROVIDER = "EXTENDER_RESPONSES_DATA_PROVIDER";
+    protected static final String INVALID_SIGNATURES = "INVALID_SIGNATURES";
+    protected static final String POLICY_VERIFICATION_SIGNATURES = "POLICY_VERIFICATION_SIGNATURES";
+    protected static final String VALID_SIGNATURES = "VALID_SIGNATURES";
     protected static final String DEFAULT_HASH_ALGORITHM = "DEFAULT";
     private static final int DEFAULT_TIMEOUT = 5000;
     private static final String DEFAULT_SIGNING_URL = "http://stamper.guardtime.net/gt-signingservice";
@@ -180,13 +184,17 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     protected static KSIBuilder initKsiBuilder(KSIExtenderClient extenderClient, KSISigningClient signingClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
-        KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(TRUSTSTORE_KSI), KSI_TRUSTSTORE_PASSWORD.toCharArray());
         return new KSIBuilder().setKsiProtocolExtenderClient(extenderClient).
                 setKsiProtocolPublicationsFileClient(publicationsFileClient).
                 setKsiProtocolSignerClient(signingClient).
-                setPublicationsFilePkiTrustStore(trustStore).
+                setPublicationsFilePkiTrustStore(createKeyStore()).
                 setPublicationsFileTrustedCertSelector(createCertSelector());
+    }
+
+    protected static KeyStore createKeyStore() throws CertificateException, NoSuchAlgorithmException, IOException, KeyStoreException {
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        trustStore.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(TRUSTSTORE_KSI), KSI_TRUSTSTORE_PASSWORD.toCharArray());
+        return trustStore;
     }
 
     protected static X509CertificateSubjectRdnSelector createCertSelector() throws KSIException {
@@ -214,61 +222,42 @@ public abstract class AbstractCommonIntegrationTest {
         return ksi.verify(builder.createVerificationContext(), policy);
     }
 
-    protected void mockExtenderResponseCalendarHashCain(String responseCalendarChainFile, KSIExtenderClient mockedExtenderClient) throws Exception {
-        final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
-        Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
-        Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(serviceCredentials);
-        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
-        Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
-        final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
-
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).then(new Answer<Future>() {
-            public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
-                InputStream input = (InputStream) invocationOnMock.getArguments()[0];
-                TLVElement tlvElement = TLVElement.create(Util.toByteArray(input));
-                TLVElement payload = responseTLV.getFirstChildElement(0x302);
-                payload.getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x301).getFirstChildElement(0x01).getDecodedLong());
-
-                payload.replace(payload.getFirstChildElement(CalendarHashChain.ELEMENT_TYPE), calendarChain);
-                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(serviceCredentials.getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
-                return mockedFuture;
-            }
-        });
-    }
-
-    private DataHash calculateHash(byte[] key, TLVElement... elements) throws Exception {
-        HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
-        return new DataHash(algorithm, Util.calculateHMAC(getContent(elements), key, algorithm.getName()));
-    }
-
-    private byte[] getContent(TLVElement[] elements) throws Exception {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (TLVElement element : elements) {
-            out.write(element.getEncoded());
-        }
-        return out.toByteArray();
-    }
-
-    @DataProvider(name = EXTENDER_RESPONSES_DATA_PROVIDER)
-    public static Object[][] getExtenderResponsesAndResultsForTlvParserVerification() throws Exception {
-        //TODO: Most likely should be converted into specific test cases.
+    @DataProvider(name = VALID_SIGNATURES)
+    public static Object[][] getTestDataAndResultsForValidSignatures() throws Exception {
         try{
-            return getTestFilesAndResults(CSV_TLV_PARSER);
+            return getTestFilesAndResults("valid-signatures/", "signature-results.csv");
         } catch (Throwable e){
             return new Object[][] {{}};
         }
     }
 
-    private static Object[][] getTestFilesAndResults(String fileName) throws Exception {
-        //TODO: Updated (if needed) according to new .csv format.
+    @DataProvider(name = INVALID_SIGNATURES)
+    public static Object[][] getTestDataAndResultsForInvalidSignatures() throws Exception {
+        try{
+            return getTestFilesAndResults("invalid-signatures/", "invalid-signature-results.csv");
+        } catch (Throwable e){
+            return new Object[][] {{}};
+        }
+    }
+
+    @DataProvider(name = POLICY_VERIFICATION_SIGNATURES)
+    public static Object[][] getTestDataAndResultsForPolicyVerificationSignatures() throws Exception {
+        try{
+            return getTestFilesAndResults("policy-verification-signatures/", "policy-verification-results.csv");
+        } catch (Throwable e){
+            return new Object[][] {{}};
+        }
+    }
+
+    private static Object[][] getTestFilesAndResults(String path, String fileName) throws Exception {
         BufferedReader fileReader = null;
         try {
-            fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(CommonTestUtil.loadFile(fileName))));
+            fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(CommonTestUtil.loadFile(path + fileName))));
             ArrayList<String> lines = new ArrayList<String>();
             String line;
             while ((line = fileReader.readLine()) != null) {
-                if (!line.startsWith("#") || line.trim().length() < 1) {
-                    line = line.replace(";","; ");
+                if (!line.startsWith("#") && line.trim().length() > 16 && !line.contains(IntegrationTestAction.NOT_IMPLEMENTED.getName())) {
+                    line = line.replace(";", "; ");
                     lines.add(line);
                 }
             }
@@ -279,7 +268,7 @@ public abstract class AbstractCommonIntegrationTest {
 
             for (int i = 0; i < linesCount; i++) {
                 try{
-                    data[i] = new Object[]{new DataHolderForIntegrationTests(lines.get(i).split(";"), httpClient)};
+                    data[i] = new Object[]{new DataHolderForIntegrationTests(path, lines.get(i).split(";"), httpClient)};
                 } catch (Exception e){
                     logger.warn("Error while parsing the following line: '" + lines.get(i) + "' from file: " + fileName);
                     throw e;
@@ -294,27 +283,39 @@ public abstract class AbstractCommonIntegrationTest {
 
     }
 
-    protected void testExecution(DataHolderForIntegrationTests testData, Policy policy) throws Exception {
-        //TODO: Update according to new .csv format and overall logic. Create specific classes (if) where needed.
-        try {
-            logger.info("Running test with the following data: " + testData.getTestDataInformation() + "; Policy: " + policy.getName());
-            KSISignature signature = loadSignature(testData.getTestFile());
-            Assert.assertTrue(testData.getExpectException(), testData.getTestFile() + " supposed to fail with class " + testData.getExpectedExceptionClass() + " exception.");
-            VerificationResult result = verify(ksi, testData.getHttpClient(), signature, policy);
-            VerificationErrorCode errorCode = result.getErrorCode();
-            if (testData.getExpectFailureWithErrorCode()) {
-                Assert.assertTrue(result.isOk(), "Result is not OK, error code: " + errorCode);
-                Assert.assertNull(result.getErrorCode(), "Error code is not null, error code: " + errorCode);
-            } else {
-                Assert.assertFalse(result.isOk(), "Result is not NOK, error code: " + errorCode);
-                Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.valueOf(testData.getExpectedFailureCode()));
+    protected void testExecution(DataHolderForIntegrationTests testData) throws Exception {
+        if (testData.getAction().equals(IntegrationTestAction.NOT_IMPLEMENTED)) {
+            return;
+        }
+
+        if (testData.getAction().equals(IntegrationTestAction.PARSING)) {
+            try {
+                ksi.read(new File(testData.getTestFile()));
+                throw new IntegrationTestFailureException("Did not fail at parinsg. " + testData.toString());
+            } catch(KSIException e) {
+                return;
             }
-        } catch (Exception e) {
-            if (!(e.getMessage().contains(testData.getExpectedExceptionMessage()) &&
-                    e.getClass().toString().contains(testData.getExpectedExceptionClass()) &&
-                    !testData.getExpectException() && testData.getExpectedFailureCode().equals(""))) {
-                logger.warn("Test failed with " + testData.getTestDataInformation() + "; Policy: " + policy.getName());
-                throw e;
+        }
+
+        if (testData.getResponseFile() != null) {
+            System.out.println("Catch me!");
+        }
+        KSI ksi = testData.getKsi();
+        KSISignature signature = ksi.read(load(testData.getTestFile()));
+        VerificationContext context = testData.getVerificationContext(signature);
+        VerificationResult result = ksi.verify(context, testData.getAction().getPolicy());
+
+        if (testData.getErrorCode() == null) {
+            Assert.assertTrue(result.isOk(), "Verification result is not OK. " + testData.toString());
+        } else {
+            if (!(testData.getErrorCode().getCode().equals(result.getErrorCode().getCode()))) {
+                throw new IntegrationTestFailureException("Expected verification result error code '" + testData.getErrorCode().getCode() +
+                        "' but received '" + result.getErrorCode().getCode() + "'. " + testData.toString());
+            } else {
+                if (!result.getErrorCode().getMessage().equals(testData.getErrorMessage())) {
+                    throw new IntegrationTestFailureException("Expected error message '" + testData.getErrorMessage() +
+                            "' but received '" + result.getErrorCode().getMessage() + "'. " + testData.toString());
+                }
             }
         }
     }

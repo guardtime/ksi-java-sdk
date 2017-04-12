@@ -39,6 +39,22 @@ import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
+    @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = VALID_SIGNATURES)
+    public void testValidSignatures(DataHolderForIntegrationTests testData) throws Exception {
+        testExecution(testData);
+    }
+
+    //TODO: fix some failing tests (if need to be fixed)
+    @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = INVALID_SIGNATURES)
+    public void testInvalidSignatures(DataHolderForIntegrationTests testData) throws Exception {
+        testExecution(testData);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = POLICY_VERIFICATION_SIGNATURES)
+    public void testPolicyVerificationSignatures(DataHolderForIntegrationTests testData) throws Exception {
+        testExecution(testData);
+    }
+
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingKeyBasedPolicy_Ok() throws Exception {
         KSISignature sig = loadSignature(SIGNATURE_2017_03_14);

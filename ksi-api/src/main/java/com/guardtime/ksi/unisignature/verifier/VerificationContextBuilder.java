@@ -21,8 +21,6 @@ package com.guardtime.ksi.unisignature.verifier;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
-import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -39,7 +37,6 @@ public class VerificationContextBuilder {
     private boolean extendingAllowed;
     private KSIExtenderClient extenderClient;
     private DataHash documentHash;
-    private PduIdentifierProvider pduIdentifierProvider = new DefaultPduIdentifierProvider();
 
     /**
      * Used to set the KSI signature that is verified.
@@ -115,19 +112,6 @@ public class VerificationContextBuilder {
     }
 
     /**
-     * Sets the PDU identifier provider used to generate different identifiers for PDU requests. Default value is
-     * {@link DefaultPduIdentifierProvider}.
-     *
-     * @param pduIdentifierProvider
-     *          pdu identifier provider
-     * @return instance of {@link VerificationContextBuilder}
-     */
-    public VerificationContextBuilder setPduIdentifierProvider(PduIdentifierProvider pduIdentifierProvider) {
-        this.pduIdentifierProvider = pduIdentifierProvider;
-        return this;
-    }
-
-    /**
      * Builds the verification context.
      *
      * @return instance of verification context
@@ -144,7 +128,7 @@ public class VerificationContextBuilder {
         if (publicationsFile == null) {
             throw new KSIException("Failed to createSignature verification context. PublicationsFile must be present.");
         }
-        return new KSIVerificationContext(publicationsFile, signature, userPublication, extendingAllowed, extenderClient, documentHash, pduIdentifierProvider);
+        return new KSIVerificationContext(publicationsFile, signature, userPublication, extendingAllowed, extenderClient, documentHash);
     }
 
 }

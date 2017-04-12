@@ -33,7 +33,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractConfigurationI
     }
 
     @Test
-    public void testAggregationConfigurationRequestHA() throws Exception {
+    public void testExtenderConfigurationRequestHA() throws Exception {
         ExtenderConfiguration response = haKsi.getExtenderConfiguration();
         Assert.assertNotNull(response);
     }

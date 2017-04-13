@@ -1,7 +1,7 @@
 Version 4.10
 
-* IMPROVEMENT: Deprecated com.guardtime.ksi.service.client.KSISigningClient.sign(java.io.InputStream) and provided and alternative com.guardtime.ksi.service.client.KSISigningClient.sign(com.guardtime.ksi.pdu.KSIRequestContext, com.guardtime.ksi.hashing.DataHash, java.lang.Long).
-* IMPROVEMENT: Deprecated com.guardtime.ksi.service.client.KSISigningClient.sign(java.io.InputStream) and provided and alternative com.guardtime.ksi.service.client.KSISigningClient.sign(com.guardtime.ksi.pdu.KSIRequestContext, com.guardtime.ksi.hashing.DataHash, java.lang.Long).
+* IMPROVEMENT: Removed com.guardtime.ksi.service.client.KSISigningClient.sign(java.io.InputStream) and provided and alternative com.guardtime.ksi.service.client.KSISigningClient.sign(com.guardtime.ksi.pdu.KSIRequestContext, com.guardtime.ksi.hashing.DataHash, java.lang.Long).
+* IMPROVEMENT: Removed com.guardtime.ksi.service.client.KSIExtenderClient.extend(java.io.InputStream) and provided and alternative com.guardtime.ksi.service.client.KSIExtenderClient.extend(com.guardtime.ksi.pdu.KSIRequestContext requestContext, java.util.Date aggregationTime, java.util.Date publicationTime).
 * IMPROVEMENT: Removed com.guardtime.ksi.unisignature.verifier.VerificationContext.setPduVersion(com.guardtime.ksi.pdu.PduVersion) as PDU version is decided in the client now.
 * IMPROVEMENT: Not all KSISigningClients and KSIExtenderClients are now aware of external service settings like credentials and PDU version. So those interfaces do not have methods to ask this kind of information anymore.
 * IMPROVEMENT: New implementation KSISigningClient and KSIExtenderClient: HAClient. HAClient (High-availability client) is a client that combines multiple KSISigningClients and KSIExtenderClients and loadbalances between them.

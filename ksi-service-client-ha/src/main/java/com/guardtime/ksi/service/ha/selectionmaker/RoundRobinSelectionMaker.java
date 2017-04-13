@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Selection making strategy which is based on Round-robin algorithm.
  */
-public class RoundRobinSelectionMaker<T> implements SelectionMaker<T> {
+public class RoundRobinSelectionMaker<T> {
 
     private final List<T> objects;
     private final int selectionSize;
@@ -36,6 +36,11 @@ public class RoundRobinSelectionMaker<T> implements SelectionMaker<T> {
         this.selectionSize = selectionSize;
     }
 
+    /**
+     * Makes the selection.
+     *
+     * @return collection of selected objects
+     */
     public synchronized Collection<T> select() {
         if (objects.isEmpty() || objects.size() == selectionSize) {
             return objects;
@@ -56,10 +61,16 @@ public class RoundRobinSelectionMaker<T> implements SelectionMaker<T> {
         return result;
     }
 
+    /**
+     * @return collection of all the objects that are part of making the selection.
+     */
     public Collection<T> getAll() {
         return objects;
     }
 
+    /**
+     * @return size of the collection returned invoking {@link #select()}
+     */
     public int selectionSize() {
         return selectionSize;
     }

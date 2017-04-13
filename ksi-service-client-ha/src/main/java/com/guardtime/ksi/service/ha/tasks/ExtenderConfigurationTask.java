@@ -35,6 +35,6 @@ public class ExtenderConfigurationTask implements Callable<ExtenderConfiguration
     }
 
     public ExtenderConfiguration call() throws Exception {
-        return client.getExtendersConfiguration(context);
+        return client.getExtenderConfiguration(context);
     }
 }

@@ -25,43 +25,56 @@ import java.util.List;
 
 class HAExtenderConfiguration implements ExtenderConfiguration {
 
-    private final Long maximumRequests;
-    private final List<String> parents;
-    private final Date calendarFirstTime;
-    private final Date calendarLastTime;
+    private Long maxRequests;
+    private List<String> parents;
+    private Date calFirstTime;
+    private Date calLastTime;
 
     HAExtenderConfiguration(List<ExtenderConfiguration> confs, int totalClients, int clientsInRound) {
-        Long minMaxRequests = null;
-        Date maxCalFirstTime = null;
-        Date minCalLastTime = null;
-        List<String> aggregatedParents = null;
         for (ExtenderConfiguration conf : confs) {
+
             Long confMaxRequests = conf.getMaximumRequests();
             Date confCalFirstTime = conf.getCalendarFirstTime();
             Date confCalLastTime = conf.getCalendarLastTime();
-            if (minMaxRequests == null || (confMaxRequests != null && confMaxRequests <= minMaxRequests)) {
-                minMaxRequests = confMaxRequests;
-            }
-            if (maxCalFirstTime == null || (confCalFirstTime != null && maxCalFirstTime.before
-                    (confCalFirstTime))) {
-                maxCalFirstTime = confCalFirstTime;
-            }
-            if (minCalLastTime == null || (confCalLastTime != null && minCalLastTime.after(confCalLastTime))) {
-                minCalLastTime = confCalLastTime;
-            }
             List<String> confParents = conf.getParents();
-            if (aggregatedParents == null && confParents != null) {
-                aggregatedParents = confParents;
+
+            if (isNewValSmaller(maxRequests, confMaxRequests)) {
+                maxRequests = confMaxRequests;
+            }
+            if (isNewValAfter(calFirstTime, confCalFirstTime)) {
+                calFirstTime = confCalFirstTime;
+            }
+            if (isNewValBefore(calLastTime, confCalLastTime)) {
+                calLastTime = confCalLastTime;
+            }
+            if (confParents != null) {
+                parents = confParents;
             }
         }
-        this.parents = aggregatedParents;
-        this.maximumRequests = minMaxRequests == null ? null : (long) (minMaxRequests * (((double) totalClients) / clientsInRound));
-        this.calendarFirstTime = maxCalFirstTime;
-        this.calendarLastTime = minCalLastTime;
+
+        this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
+    }
+
+    private boolean isNewValSmaller(Long oldVal, Long newVal) {
+        return oldVal == null || (newVal != null && newVal < oldVal);
+    }
+
+    private boolean isNewValAfter(Date oldVal, Date newVal) {
+        return oldVal == null || (newVal != null && newVal.after(oldVal));
+    }
+
+    private boolean isNewValBefore(Date oldVal, Date newVal) {
+        return oldVal == null || (newVal != null && newVal.before(oldVal));
+    }
+
+    private Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long subConfMaximumRequests) {
+        return subConfMaximumRequests == null ?
+                null :
+                (long) (subConfMaximumRequests * ((double) totalNumberOfClients / numberOfClientsInOneRound));
     }
 
     public Long getMaximumRequests() {
-        return maximumRequests;
+        return maxRequests;
     }
 
     public List<String> getParents() {
@@ -69,10 +82,10 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
     }
 
     public Date getCalendarFirstTime() {
-        return calendarFirstTime;
+        return calFirstTime;
     }
 
     public Date getCalendarLastTime() {
-        return calendarLastTime;
+        return calLastTime;
     }
 }

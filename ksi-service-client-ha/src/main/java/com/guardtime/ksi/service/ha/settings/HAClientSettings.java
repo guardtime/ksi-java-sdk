@@ -24,27 +24,28 @@ import com.guardtime.ksi.exceptions.KSIException;
  * Settings for the HAClient.
  */
 public class HAClientSettings {
-    private final SingleFunctionHAClientSettings signingClientSettings;
-    private final SingleFunctionHAClientSettings extenderClientSettings;
 
-    public HAClientSettings(int signingClientsForRequest, int extendingClientsForRequest) throws KSIException {
-        this.signingClientSettings = new SingleFunctionHAClientSettings(signingClientsForRequest);
-        this.extenderClientSettings = new SingleFunctionHAClientSettings(extendingClientsForRequest);
+    private final Integer signingClientsForRequest;
+    private final Integer extendingClientsForRequest;
+
+    public HAClientSettings(Integer signingClientsForRequest, Integer extendingClientsForRequest) throws KSIException {
+        this.signingClientsForRequest = signingClientsForRequest;
+        this.extendingClientsForRequest = extendingClientsForRequest;
     }
 
-    public SingleFunctionHAClientSettings getSigningClientSettings() {
-        return signingClientSettings;
+    public int getSigningClientsForRequest() {
+        return signingClientsForRequest;
     }
 
-    public SingleFunctionHAClientSettings getExtenderClientSettings() {
-        return extenderClientSettings;
+    public int getExtendingClientsForRequest() {
+        return extendingClientsForRequest;
     }
 
     @Override
     public String toString() {
         return "HAClientSettings{" +
-                "signingClientsSettings=" + signingClientSettings +
-                ", extenderClientSettings=" + extenderClientSettings +
+                "signingClientsForRequest=" + signingClientsForRequest +
+                ", extendingClientsForRequest=" + extendingClientsForRequest +
                 '}';
     }
 }

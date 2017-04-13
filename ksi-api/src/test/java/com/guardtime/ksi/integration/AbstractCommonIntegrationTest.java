@@ -68,7 +68,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
@@ -264,21 +263,6 @@ public abstract class AbstractCommonIntegrationTest {
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
         final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
 
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).then(new Answer<Future>() {
-            public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
-                InputStream input = (InputStream) invocationOnMock.getArguments()[0];
-                TLVElement tlvElement = TLVElement.create(Util.toByteArray(input));
-                TLVElement payload = responseTLV.getFirstChildElement(0x302);
-                payload.getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x301).getFirstChildElement
-                        (0x01).getDecodedLong());
-
-                payload.replace(payload.getFirstChildElement(CalendarHashChain.ELEMENT_TYPE), calendarChain);
-                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(simpleHttpClient.getServiceCredentials()
-                                .getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
-                return mockedFuture;
-            }
-        });
-
         Mockito.when(mockedExtenderClient.extend(Mockito.any(KSIRequestContext.class), Mockito.any(Date.class), Mockito.any
                 (Date.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
@@ -290,8 +274,15 @@ public abstract class AbstractCommonIntegrationTest {
                 ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, aggregationTime,
                         publicationTime);
                 ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());
-                Future<TLVElement> extensionResponseFuture = mockedExtenderClient.extend(requestStream);
-                return new ExtensionResponseFuture(extensionResponseFuture, requestContext, pduFactory);
+                TLVElement tlvElement = TLVElement.create(Util.toByteArray(requestStream));
+                TLVElement payload = responseTLV.getFirstChildElement(0x302);
+                payload.getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x301).getFirstChildElement
+                        (0x01).getDecodedLong());
+
+                payload.replace(payload.getFirstChildElement(CalendarHashChain.ELEMENT_TYPE), calendarChain);
+                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(simpleHttpClient.getServiceCredentials()
+                        .getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
+                return new ExtensionResponseFuture(mockedFuture, requestContext, pduFactory);
             }
         });
     }

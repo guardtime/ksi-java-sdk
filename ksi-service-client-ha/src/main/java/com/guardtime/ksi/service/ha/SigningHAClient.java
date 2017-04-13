@@ -24,16 +24,12 @@ import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.ha.settings.SingleFunctionHAClientSettings;
 import com.guardtime.ksi.service.ha.tasks.AggregatorConfigurationTask;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
 import com.guardtime.ksi.service.ha.tasks.SigningTask;
-import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.util.Util;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,23 +38,26 @@ import java.util.concurrent.Callable;
 /**
  * KSI Signing Client which combines other clients to achieve high availability and for load balancing.
  *
- * NB! It is highly recommended that all the aggregator configurations would be in sync with each other (except login accounts). If that is not the case then SigningHAClient will log a warning but it will still work.
- * If user asks for configuration from the SigningHAClient it will use the most conservative configuration of sub clients to compose aggregated configuration. Some parameters like maximum requests in a second take
- * account that there are multiple clients and if load balancing is enabled between those clients then those parameters are adjusted accordingly. This means that the user of the API can rely on this configuration
- * without worrying if load balancing is actually configured or not.
+ * NB! It is highly recommended that all the aggregator configurations would be in sync with each other (except login accounts).
+ * If that is not the case then SigningHAClient will log a warning but it will still work. If user asks for configuration from the
+ * SigningHAClient it will use the most conservative configuration of sub clients to compose aggregated configuration. Some
+ * parameters like maximum requests in a second take account that there are multiple clients and if load balancing is enabled
+ * between those clients then those parameters are adjusted accordingly. This means that the user of the API can rely on this
+ * configuration without worrying if load balancing is actually configured or not.
  */
-public class SigningHAClient extends AbstractHAClient<KSISigningClient, AggregationResponse, AggregatorConfiguration> implements KSISigningClient {
+public class SigningHAClient extends AbstractHAClient<KSISigningClient, AggregationResponse, AggregatorConfiguration>
+        implements KSISigningClient {
 
     public SigningHAClient(List<KSISigningClient> subclients) throws KSIException {
         this(subclients, null);
     }
 
-    public SigningHAClient(List<KSISigningClient> signingClients, SingleFunctionHAClientSettings settings) throws
+    public SigningHAClient(List<KSISigningClient> signingClients, Integer signingClientsForRequest) throws
             KSIException {
-        super(signingClients, settings);
+        super(signingClients, signingClientsForRequest);
     }
 
-    public AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException {
+    public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
         Collection<Callable<AggregatorConfiguration>> tasks = new ArrayList<Callable<AggregatorConfiguration>>();
         for (KSISigningClient client : getAllSubclients()) {
             tasks.add(new AggregatorConfigurationTask(requestContext, client));
@@ -85,7 +84,8 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
                     "maxLevel='%s'," +
                     "aggregationAlgorithm='%s'," +
                     "aggregationPeriod='%s'" +
-                    "}", conf.getMaximumRequests(), conf.getParents(), conf.getMaximumLevel(), conf.getAggregationAlgorithm(), conf.getAggregationPeriod()));
+                    "}", conf.getMaximumRequests(), conf.getParents(), conf.getMaximumLevel(), conf.getAggregationAlgorithm(),
+                    conf.getAggregationPeriod()));
             if (i != configurations.size() - 1) {
                 sb.append(",");
             }
@@ -97,15 +97,11 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
         return new HAAggregatorConfiguration(configurations, getAllSubclients().size(), getRequestClientselectionSize());
     }
 
-    public Future<TLVElement> sign(InputStream request) throws KSIClientException {
-        throw new KSIClientException("SigningHAClient.sign(inputStream) is not supported. Use SignerHAClient.sign" +
-                "(ksiRequestContext, dataHash, level) instead");
-    }
-
     public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
         final Long requestId = requestContext.getRequestId();
-        Collection<KSISigningClient> clients = preprareClients();
-        final Collection<ServiceCallingTask<AggregationResponse>> tasks = new ArrayList<ServiceCallingTask<AggregationResponse>>();
+        Collection<KSISigningClient> clients = prepareClients();
+        final Collection<ServiceCallingTask<AggregationResponse>> tasks = new
+                ArrayList<ServiceCallingTask<AggregationResponse>>();
         for (KSISigningClient client : clients) {
             tasks.add(new SigningTask(client, requestContext, dataHash, level));
         }

@@ -33,7 +33,7 @@ public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
         throw new KSIClientException("FAILURE!!!!");
     }
 
-    public ExtenderConfiguration getExtendersConfiguration(KSIRequestContext requestContext) throws KSIException {
+    public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
         throw new KSIClientException("FAILURE!!!!");
     }
 
@@ -47,7 +47,7 @@ public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
         throw new KSIClientException("FAILURE!!!!");
     }
 
-    public AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException {
+    public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
         throw new KSIClientException("FAILURE!!!!");
     }
 

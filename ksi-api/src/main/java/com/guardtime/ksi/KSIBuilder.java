@@ -411,7 +411,7 @@ public final class KSIBuilder {
         }
 
         public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
-            return signingClient.getAggregatorsConfiguration(new KSIRequestContext(pduIdentifierProvider));
+            return signingClient.getAggregatorConfiguration(new KSIRequestContext(pduIdentifierProvider));
         }
 
         public KSISignature extend(KSISignature signature) throws KSIException {
@@ -451,7 +451,7 @@ public final class KSIBuilder {
         }
 
         public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
-            return extenderClient.getExtendersConfiguration(new KSIRequestContext(pduIdentifierProvider));
+            return extenderClient.getExtenderConfiguration(new KSIRequestContext(pduIdentifierProvider));
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {

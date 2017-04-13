@@ -23,16 +23,12 @@ import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.ha.settings.SingleFunctionHAClientSettings;
 import com.guardtime.ksi.service.ha.tasks.ExtenderConfigurationTask;
 import com.guardtime.ksi.service.ha.tasks.ExtendingTask;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
-import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.util.Util;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -53,15 +49,15 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
         this(subclients, null);
     }
 
-    public ExtenderHAClient(List<KSIExtenderClient> subclients, SingleFunctionHAClientSettings settings) throws KSIException {
-        super(subclients, settings);
+    public ExtenderHAClient(List<KSIExtenderClient> subclients, Integer clientsForRequest) throws KSIException {
+        super(subclients, clientsForRequest);
     }
 
     protected ExtenderConfiguration aggregateConfigurations(List<ExtenderConfiguration> configurations) {
         return new HAExtenderConfiguration(configurations, getAllSubclients().size(), getRequestClientselectionSize());
     }
 
-    public ExtenderConfiguration getExtendersConfiguration(KSIRequestContext requestContext) throws KSIException {
+    public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
         Collection<Callable<ExtenderConfiguration>> tasks = new ArrayList<Callable<ExtenderConfiguration>>();
         for (KSIExtenderClient client : getAllSubclients()) {
             tasks.add(new ExtenderConfigurationTask(requestContext, client));
@@ -69,14 +65,9 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
         return getConfiguration(tasks);
     }
 
-    public Future<TLVElement> extend(InputStream request) throws KSIClientException {
-        throw new KSIClientException("ExtenderHAClient.extend(inputStream) is not supported. Use " +
-                "ExtenderHAClient.extend(ksiRequestContext, aggregationTime, publicationTime) instead");
-    }
-
     public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
         final Long requestId = requestContext.getRequestId();
-        Collection<KSIExtenderClient> clients = preprareClients();
+        Collection<KSIExtenderClient> clients = prepareClients();
         final Collection<ServiceCallingTask<ExtensionResponse>> tasks = new ArrayList<ServiceCallingTask<ExtensionResponse>>();
         for (KSIExtenderClient client : clients) {
             tasks.add(new ExtendingTask(client, requestContext, aggregationTime, publicationTime));

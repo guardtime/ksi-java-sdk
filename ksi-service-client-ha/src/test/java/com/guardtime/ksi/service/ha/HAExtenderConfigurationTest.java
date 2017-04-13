@@ -72,9 +72,9 @@ public class HAExtenderConfigurationTest {
     }
 
     @Test
-    public void testParentsAreBasedOnFirstNonNullSubConfParents() {
+    public void testParentsAreBasedOnLastNonNullSubConfParents() {
         ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
-        assertEquals(configuration.getParents(), Arrays.asList("2", "3", "4"));
+        assertEquals(configuration.getParents(), Arrays.asList("6", "7", "8"));
     }
 
 }

@@ -58,7 +58,7 @@ public class TCPClient extends ConfigurationAwareSigningClient {
         ((ThreadPoolExecutor) executorService).setMaximumPoolSize(tcpClientSettings.getTcpTransactionThreadPoolSize());
     }
 
-    public Future<TLVElement> sign(InputStream request) throws KSIClientException {
+    protected Future<TLVElement> sign(InputStream request) throws KSIClientException {
         synchronized (this) {
             if (tcpSession == null || tcpSession.isClosing()) {
                 this.tcpSession = createTcpSession();

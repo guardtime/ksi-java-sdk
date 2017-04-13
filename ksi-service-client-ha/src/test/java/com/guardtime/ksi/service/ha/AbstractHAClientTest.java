@@ -21,7 +21,6 @@ package com.guardtime.ksi.service.ha;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.ha.settings.SingleFunctionHAClientSettings;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -32,33 +31,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.mock;
 
 public class AbstractHAClientTest {
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. It is not " +
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. It is not " +
             "possible to have more clients in one selection than there are available clients")
     public void testActiveClientsPerRequestLargerThanClientsList() throws Exception {
-        new DummyHAClient(
-                Collections.singletonList(mock(KSISigningClient.class)),
-                new SingleFunctionHAClientSettings(2)
-        );
+        new DummyHAClient(singletonList(mock(KSISigningClient.class)), 2);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "It is not possible to perform a " +
-            "request using DummyHAClient because there are no clients in selection")
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize DummyHAClient with 0 or less subclients per selection")
     public void testCallingServicesWhenThereAreNoServicesToCall() throws Exception {
-        DummyHAClient dummyHAClient = new DummyHAClient(
-                Collections.singletonList(mock(KSISigningClient.class)),
-                new SingleFunctionHAClientSettings(0)
-        );
-        dummyHAClient.preprareClients();
+        DummyHAClient dummyHAClient = new DummyHAClient(singletonList(mock(KSISigningClient.class)), 0);
     }
 
     @Test
     public void testIfOneServiceCallInSelectionSucceeds() throws Exception {
         for (int i = 0; i < 100; i++) {
-            DummyHAClient haClient = new DummyHAClient(null, null);
+            DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)), null);
             List<ServiceCallingTask<Integer>> tasks = new ArrayList<ServiceCallingTask<Integer>>();
             tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 1")));
             tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 2")));
@@ -80,7 +72,7 @@ public class AbstractHAClientTest {
     @Test
     public void testAllButOneServiceCallInSelectionIsSlow() throws Exception {
         for (int i = 0; i < 100; i++) {
-            DummyHAClient haClient = new DummyHAClient(null, null);
+            DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)), null);
             List<ServiceCallingTask<Integer>> tasks = new ArrayList<ServiceCallingTask<Integer>>();
             tasks.add(new DummySlowTask(1));
             tasks.add(new DummySlowTask(2));
@@ -101,7 +93,7 @@ public class AbstractHAClientTest {
 
     @Test(expectedExceptions = HASubclientsFailedException.class)
     public void testAllServiceCallsFail() throws Exception {
-        DummyHAClient haClient = new DummyHAClient(null, null);
+        DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)), null);
         List<ServiceCallingTask<Integer>> tasks = new ArrayList<ServiceCallingTask<Integer>>();
         tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 1")));
         tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 2")));
@@ -118,8 +110,8 @@ public class AbstractHAClientTest {
     }
 
     private static class DummyHAClient extends AbstractHAClient<DummyClient, Integer, Object> {
-        public DummyHAClient(List subclients, SingleFunctionHAClientSettings settings) throws KSIException {
-            super(subclients, settings);
+        public DummyHAClient(List subclients, Integer clientsForRequest) throws KSIException {
+            super(subclients, clientsForRequest);
         }
 
         protected boolean configurationsEqual(Object c1, Object c2) {

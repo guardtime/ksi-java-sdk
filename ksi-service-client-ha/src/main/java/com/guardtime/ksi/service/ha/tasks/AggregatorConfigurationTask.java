@@ -34,7 +34,7 @@ public class AggregatorConfigurationTask implements Callable<AggregatorConfigura
     }
 
     public AggregatorConfiguration call() throws Exception {
-        return client.getAggregatorsConfiguration(context);
+        return client.getAggregatorConfiguration(context);
     }
 
 }

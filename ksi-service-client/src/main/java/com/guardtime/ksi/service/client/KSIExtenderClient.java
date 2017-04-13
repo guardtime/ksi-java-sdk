@@ -24,10 +24,8 @@ import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.tlv.TLVElement;
 
 import java.io.Closeable;
-import java.io.InputStream;
 import java.util.Date;
 
 /**
@@ -38,31 +36,18 @@ public interface KSIExtenderClient extends Closeable {
     /**
      * Used to extend existing signatures.
      *
-     * @param request
-     *         instance of {@link InputStream} that contains request data.
-     * @return instance of {@link Future} containing KSI response data.
-     * @throws KSIClientException
-     *
-     * @deprecated Not for public use since version 4.9. This method is expected to be retained only as a package private method. Replaced by {@link #extend(KSIRequestContext, Date, Date)}
-     */
-    @Deprecated Future<TLVElement> extend(InputStream request) throws KSIClientException;
-
-    /**
-     * Used to extend existing signatures.
-     *
-     * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
+     * @param requestContext  - instance of {@link KSIRequestContext}. May not be null.
      * @param aggregationTime - aggregation time of the existing signature. May not be null.
      * @param publicationTime - publication time to which the existing signature is to be extended. May not be null.
      * @return instance of {@link ExtensionResponseFuture} containing calendar chains needed to extend the signature.
-     * @throws KSIException
      */
-    Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException;
+    Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws
+            KSIException;
 
     /**
      * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
      * @return {@link ExtenderConfiguration} one should rely on when using this client
-     * @throws KSIException
      */
-    ExtenderConfiguration getExtendersConfiguration(KSIRequestContext requestContext) throws KSIException;
+    ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException;
 
 }

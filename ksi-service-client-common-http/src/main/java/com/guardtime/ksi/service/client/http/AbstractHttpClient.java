@@ -35,6 +35,7 @@ import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -53,9 +54,14 @@ public abstract class AbstractHttpClient extends ConfigurationAwareSigningClient
     protected final PduFactory pduFactory;
 
     public AbstractHttpClient(AbstractHttpClientSettings settings) {
-        super(PduFactoryProvider.get(settings.getPduVersion()));
+        super(PduFactoryProvider.get(exceptionIfNull(settings).getPduVersion()));
         this.pduFactory = PduFactoryProvider.get(settings.getPduVersion());
         this.settings = settings;
+    }
+
+    private static AbstractHttpClientSettings exceptionIfNull(AbstractHttpClientSettings settings) {
+        Util.notNull(settings, "HttpClient.settings");
+        return settings;
     }
 
     public ExtensionResponseFuture extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
@@ -66,14 +72,16 @@ public abstract class AbstractHttpClient extends ConfigurationAwareSigningClient
         return new ExtensionResponseFuture(postRequestFuture, requestContext, pduFactory);
     }
 
-    public ExtenderConfiguration getExtendersConfiguration(KSIRequestContext requestContext) throws KSIException {
+    public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
         requestContext = requestContext.getWithCredentials(getServiceCredentials());
         ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext);
         Future<TLVElement> future = extend(new ByteArrayInputStream(request.toByteArray()));
         return pduFactory.readExtenderConfigurationResponse(requestContext, future.getResult());
     }
 
-    public Future<TLVElement> sign(InputStream inputStream) throws KSIClientException {
+    public abstract Future<TLVElement> extend(InputStream request) throws KSIClientException;
+
+    protected Future<TLVElement> sign(InputStream inputStream) throws KSIClientException {
         return post(inputStream, settings.getSigningUrl());
     }
 

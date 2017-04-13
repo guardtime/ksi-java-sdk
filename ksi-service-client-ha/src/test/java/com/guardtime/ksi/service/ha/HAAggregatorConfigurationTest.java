@@ -78,14 +78,14 @@ public class HAAggregatorConfigurationTest {
     }
 
     @Test
-    public void testParentsAreBasedOnFirstNonNullSubConfParents() {
+    public void testParentsAreBasedOnLastNonNullSubConfParents() {
         AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
-        assertEquals(configuration.getParents(), Arrays.asList("2", "3", "4"));
+        assertEquals(configuration.getParents(), Arrays.asList("4", "5", "6"));
     }
 
     @Test
-    public void testAggregationAlgorithmIsBasedOnFirstNonNullSubConfAggregationAlgorithm() {
+    public void testAggregationAlgorithmIsBasedOnLastNonNullSubConfAggregationAlgorithm() {
         AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
-        assertEquals(configuration.getAggregationAlgorithm(), SHA2_256);
+        assertEquals(configuration.getAggregationAlgorithm(), SHA3_224);
     }
 }

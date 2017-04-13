@@ -29,6 +29,7 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.tlv.TLVElement;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 /**
  * Abstract KSI Signing client for the type of clients which connect only to a single aggregator.
@@ -59,7 +60,9 @@ public abstract class ConfigurationAwareSigningClient implements KSISigningClien
         return new AggregationResponseFuture(requestFuture, requestContext, pduFactory);
     }
 
-    public AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException {
+    protected abstract Future<TLVElement> sign(InputStream is) throws KSIClientException;
+
+    public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
         requestContext = requestContext.getWithCredentials(getServiceCredentials());
         AggregationRequest requestMessage = pduFactory.createAggregatorConfigurationRequest(requestContext);
         Future<TLVElement> future = sign(new ByteArrayInputStream(requestMessage.toByteArray()));

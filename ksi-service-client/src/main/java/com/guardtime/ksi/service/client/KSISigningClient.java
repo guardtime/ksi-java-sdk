@@ -26,27 +26,13 @@ import com.guardtime.ksi.pdu.AggregationResponseFuture;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.tlv.TLVElement;
 
 import java.io.Closeable;
-import java.io.InputStream;
 
 /**
  * KSI client for signing service
  */
 public interface KSISigningClient extends Closeable {
-
-    /**
-     * Used to create new signature.
-     *
-     * @param request
-     *         - instance of {@link InputStream} that contains request data.
-     * @return instance of {@link Future} containing KSI response data.
-     * @throws KSIClientException
-     *
-     * @deprecated Not for public use since version 4.9. This method is expected to be retained only as a package private method. Replaced by {@link #sign(KSIRequestContext, DataHash, Long)}
-     */
-    @Deprecated Future<TLVElement> sign(InputStream request) throws KSIClientException;
 
     /**
      * Used to create new signature.
@@ -66,5 +52,5 @@ public interface KSISigningClient extends Closeable {
      * @return {@link AggregatorConfiguration} one should rely on when using this client
      * @throws KSIException
      */
-    AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException;
+    AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException;
 }

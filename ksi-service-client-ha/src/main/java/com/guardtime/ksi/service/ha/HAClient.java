@@ -26,14 +26,11 @@ import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.settings.HAClientSettings;
-import com.guardtime.ksi.tlv.TLVElement;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -56,20 +53,20 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
                     signingClients == null ? 0 : signingClients.size(),
                     extenderClients == null ? 0 : extenderClients.size());
         }
-        this.signingHAClient = new SigningHAClient(signingClients, settings.getSigningClientSettings());
-        this.extenderHAClient = new ExtenderHAClient(extenderClients, settings.getExtenderClientSettings());
+        this.signingHAClient = new SigningHAClient(signingClients, settings.getSigningClientsForRequest());
+        this.extenderHAClient = new ExtenderHAClient(extenderClients, settings.getExtendingClientsForRequest());
     }
 
     public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
         return signingHAClient.sign(requestContext, dataHash, level);
     }
 
-    public AggregatorConfiguration getAggregatorsConfiguration(KSIRequestContext requestContext) throws KSIException {
-        return signingHAClient.getAggregatorsConfiguration(requestContext);
+    public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
+        return signingHAClient.getAggregatorConfiguration(requestContext);
     }
 
-    public ExtenderConfiguration getExtendersConfiguration(KSIRequestContext requestContext) throws KSIException {
-        return extenderHAClient.getExtendersConfiguration(requestContext);
+    public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
+        return extenderHAClient.getExtenderConfiguration(requestContext);
     }
 
     public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime)
@@ -85,14 +82,6 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
     @Override
     public String toString() {
         return "HAClient{SigningHAClient='" + signingHAClient + "', 'ExtenderHAClient" + extenderHAClient + "'}";
-    }
-
-    public Future<TLVElement> sign(InputStream request) throws KSIClientException {
-        return signingHAClient.sign(request);
-    }
-
-    public Future<TLVElement> extend(InputStream request) throws KSIClientException {
-        return extenderHAClient.extend(request);
     }
 
 }

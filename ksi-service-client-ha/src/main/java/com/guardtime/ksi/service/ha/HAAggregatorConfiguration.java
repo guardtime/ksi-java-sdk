@@ -25,54 +25,56 @@ import java.util.List;
 
 class HAAggregatorConfiguration implements AggregatorConfiguration {
 
-    private final Long maximumRequests;
-    private final List<String> parents;
-    private final Long aggregationPeriod;
-    private final HashAlgorithm aggregationAlgorithm;
-    private final Long maximumLevel;
+    private Long maxRequests;
+    private List<String> parents;
+    private Long aggregationPeriod;
+    private HashAlgorithm aggregationAlgorithm;
+    private Long maxLevel;
 
     HAAggregatorConfiguration(List<AggregatorConfiguration> confs, int totalClients, int clientsInRound) {
-        Long minMaxRequests = null;
-        Long maxAggregationPeriod = null;
-        Long minMaxLevel = null;
-        HashAlgorithm aggregatedHashAlgorithm = null;
-        List<String> aggregatedParents = null;
         for (AggregatorConfiguration conf : confs) {
+
             Long confMaxRequests = conf.getMaximumRequests();
             Long confAggregationPeriod = conf.getAggregationPeriod();
             Long confMaxLevel = conf.getMaximumLevel();
-            if (minMaxRequests == null || (confMaxRequests != null && confMaxRequests <= minMaxRequests)) {
-                minMaxRequests = confMaxRequests;
-            }
-
-            if (maxAggregationPeriod == null || (confAggregationPeriod != null && confAggregationPeriod >= maxAggregationPeriod)) {
-                maxAggregationPeriod = confAggregationPeriod;
-            }
-            if (minMaxLevel == null || (confMaxLevel != null && confMaxLevel <= minMaxLevel)) {
-                minMaxLevel = confMaxLevel;
-            }
             HashAlgorithm confAggrAlgorithm = conf.getAggregationAlgorithm();
-            if (confAggrAlgorithm != null && aggregatedHashAlgorithm == null) {
-                aggregatedHashAlgorithm = confAggrAlgorithm;
+            List<String> confParents = conf.getParents();
+
+            if (isNewValSmaller(maxRequests, confMaxRequests)) {
+                maxRequests = confMaxRequests;
             }
-            List<String> subConfParents = conf.getParents();
-            if (subConfParents != null && aggregatedParents == null) {
-                aggregatedParents = subConfParents;
+            if (isNewValBigger(aggregationPeriod, confAggregationPeriod)) {
+                aggregationPeriod = confAggregationPeriod;
+            }
+            if (isNewValSmaller(maxLevel, confMaxLevel)) {
+                maxLevel = confMaxLevel;
+            }
+            if (confAggrAlgorithm != null) {
+                aggregationAlgorithm = confAggrAlgorithm;
+            }
+            if (confParents != null) {
+                parents = confParents;
             }
         }
-        this.maximumRequests = calculateMaxRequests(totalClients, clientsInRound, minMaxRequests);
-        this.aggregationPeriod = maxAggregationPeriod;
-        this.maximumLevel = minMaxLevel;
-        this.aggregationAlgorithm = aggregatedHashAlgorithm;
-        this.parents = aggregatedParents;
+        this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
     }
 
-    Long calculateMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long subConfMaximumRequests) {
-        return subConfMaximumRequests == null ? null : (long) (subConfMaximumRequests * ((double) totalNumberOfClients / numberOfClientsInOneRound));
+    private boolean isNewValBigger(Long oldVal, Long newVal) {
+        return oldVal == null || (newVal != null && newVal > oldVal);
+    }
+
+    private boolean isNewValSmaller(Long oldVal, Long newVal) {
+        return oldVal == null || (newVal != null && newVal < oldVal);
+    }
+
+    private Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long subConfMaximumRequests) {
+        return subConfMaximumRequests == null ?
+                null :
+                (long) (subConfMaximumRequests * ((double) totalNumberOfClients / numberOfClientsInOneRound));
     }
 
     public Long getMaximumLevel() {
-        return maximumLevel;
+        return maxLevel;
     }
 
     public HashAlgorithm getAggregationAlgorithm() {
@@ -84,7 +86,7 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
     }
 
     public Long getMaximumRequests() {
-        return maximumRequests;
+        return maxRequests;
     }
 
     public List<String> getParents() {

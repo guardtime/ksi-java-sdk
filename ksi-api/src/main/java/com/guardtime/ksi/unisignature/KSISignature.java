@@ -44,14 +44,6 @@ public interface KSISignature {
     AggregationHashChain[] getAggregationHashChains();
 
     /**
-     * Adds a new aggregation hash chain to the signature
-
-     * @throws KSIException
-     *         will be thrown when aggregation hash chain is invalid
-     */
-    void addAggregationHashChain(AggregationHashChain aggregationHashChain) throws KSIException;
-
-    /**
      * Returns the signature calendar hash chain.
      */
     CalendarHashChain getCalendarHashChain();

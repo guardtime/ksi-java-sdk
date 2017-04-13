@@ -40,19 +40,19 @@ internal-verification-aggr-chain/NewSignature-AggrHashGW-WrongReqTimePast.ksig;t
 internal-verification-aggr-chain/NewSignature-AggrHash-WrongLeftLinkLevelCorrector.ksig;true;false;INT_01;;
 internal-verification-calendar-chain/NewSignature-CalHash-MissingAggrTime.ksig;true;false;INT_04;;
 internal-verification-calendar-chain/NewSignature-CalHash-MissingInputHash.ksig;false;false;;InvalidCalendarHashChainException;
-internal-verification-calendar-chain/NewSignature-CalHash-MissingLeftLinkLast.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-MissingLeftLinkLast.ksig;true;false;INT_05;;
 internal-verification-calendar-chain/NewSignature-CalHash-MissingPubTime.ksig;false;false;;InvalidCalendarHashChainException;
-internal-verification-calendar-chain/NewSignature-CalHash-MissingRightLink1.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-MissingRightLink1.ksig;true;false;INT_05;;
 internal-verification-calendar-chain/NewSignature-CalHash-NoAggrTime.ksig;true;false;INT_04;;
 internal-verification-calendar-chain/NewSignature-CalHash-NoCalHash.ksig;false;false;;InvalidCalendarHashChainException;
 internal-verification-calendar-chain/NewSignature-CalHash-NoInputHash.ksig;false;false;;TLVParserException;
 internal-verification-calendar-chain/NewSignature-CalHash-NoLeftLink1.ksig;false;false;;TLVParserException;
-internal-verification-calendar-chain/NewSignature-CalHash-NoPubTime.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-NoPubTime.ksig;true;false;INT_05;;
 internal-verification-calendar-chain/NewSignature-CalHash-NoRightLinkLast.ksig;false;false;;TLVParserException;
 internal-verification-calendar-chain/NewSignature-CalHash-WrongAggrTime.ksig;true;false;INT_04;;
 internal-verification-calendar-chain/NewSignature-CalHash-WrongInputHash.ksig;true;false;INT_03;;
 internal-verification-calendar-chain/NewSignature-CalHash-WrongLeftLinkLast.ksig;true;false;INT_08;;
-internal-verification-calendar-chain/NewSignature-CalHash-WrongPubTime.ksig;false;false;;InvalidCalendarHashChainException;
+internal-verification-calendar-chain/NewSignature-CalHash-WrongPubTime.ksig;true;false;INT_05;;
 internal-verification-calendar-chain/NewSignature-CalHash-WrongRightLink1.ksig;true;false;INT_08;;
 internal-verification-authentication-records/NewSignature-CalAuth-WrongSigType.ksig;false;false;;TLVParserException;Malformed UTF-8 data
 internal-verification-authentication-records/NewSignature-CalAuth-WrongPubTime.ksig;true;false;INT_06;;

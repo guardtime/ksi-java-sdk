@@ -38,7 +38,7 @@ public class Rfc3161RecordIndexRuleTest extends AbstractRuleTest {
         RuleResult result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE_INVALID_CHAIN_INDEX)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_10);
+        Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_12);
     }
 
     @Test

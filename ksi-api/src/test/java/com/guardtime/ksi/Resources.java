@@ -48,7 +48,8 @@ public class Resources {
      * Properties & TrustStore
      */
     public static final String PROPERTIES_INTEGRATION_TEST = "integrationtest.properties";
-    public static final String TRUSTSTORE_KSI = "ksi-truststore.jks";
+    public static final String KSI_TRUSTSTORE = "ksi-truststore.jks";
+    public static final String KSI_TRUSTSTORE_PASSWORD = "changeit";
 
     /**
      * CSV files
@@ -194,11 +195,12 @@ public class Resources {
     /**
      * Extender responses
      */
-    public static final String EXTENDER_RESPONSE_ = "";
+    public static final String EXTENDER_RESPONSE_WITH_CRITICAL_ELEMENT = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-critical-element.ksig";
+    public static final String EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-critical-main-with-critical-tlv.ksig";
+    public static final String EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-critical-main-with-non-critical-tlv.ksig";
+    public static final String EXTENDER_RESPONSE_WITH_NON_CRITICAL_ELEMENT = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-element.ksig";
+    public static final String EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-main-with-critical-tlv.ksig";
+    public static final String EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-main-with-non-critical-tlv.ksig";
 
-    /**
-     * Aggregator responses
-     */
-    public static final String AGGREGATOR_RESPONSE_ = "";
 }
 

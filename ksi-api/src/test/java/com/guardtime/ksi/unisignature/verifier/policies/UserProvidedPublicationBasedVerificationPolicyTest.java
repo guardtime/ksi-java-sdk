@@ -19,37 +19,8 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
-import com.guardtime.ksi.KSI;
-import com.guardtime.ksi.KSIBuilder;
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.publication.PublicationsFile;
-import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
-import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.verifier.VerificationContext;
-import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
-import com.guardtime.ksi.unisignature.verifier.VerificationResult;
-
-import org.mockito.Mockito;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.nio.ByteBuffer;
-import java.security.cert.CertSelector;
-import java.security.cert.Certificate;
-import java.util.Date;
-
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
-import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.TRUSTSTORE_KSI;
 
 public class UserProvidedPublicationBasedVerificationPolicyTest {
 

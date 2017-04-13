@@ -44,8 +44,9 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
+import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE_PASSWORD;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
-import static com.guardtime.ksi.Resources.TRUSTSTORE_KSI;
+import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE;
 
 public class KsiTest {
 
@@ -90,7 +91,7 @@ public class KsiTest {
         this.defaultDataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
 
         KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(TestUtil.load(TRUSTSTORE_KSI), "changeit".toCharArray());
+        keyStore.load(TestUtil.load(KSI_TRUSTSTORE), KSI_TRUSTSTORE_PASSWORD.toCharArray());
 
         this.ksi = new KSIBuilder().
                 setKsiProtocolExtenderClient(mockedExtenderClient).

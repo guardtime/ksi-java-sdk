@@ -44,7 +44,6 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         testExecution(testData);
     }
 
-    //TODO: fix some failing tests (if need to be fixed)
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = INVALID_SIGNATURES)
     public void testInvalidSignatures(DataHolderForIntegrationTests testData) throws Exception {
         testExecution(testData);

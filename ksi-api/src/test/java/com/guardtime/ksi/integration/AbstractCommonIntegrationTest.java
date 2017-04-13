@@ -278,9 +278,13 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     protected void testExecution(DataHolderForIntegrationTests testData) throws Exception {
+        KSISignature signature = null;
+        KSI ksi = testData.getKsi();
+
         if (testData.getAction().equals(IntegrationTestAction.NOT_IMPLEMENTED)) {
             return;
         }
+
 
         if (testData.getAction().equals(IntegrationTestAction.FAIL_AT_PARSING)) {
             try {
@@ -291,8 +295,12 @@ public abstract class AbstractCommonIntegrationTest {
             }
         }
 
-        KSI ksi = testData.getKsi();
-        KSISignature signature = ksi.read(load(testData.getTestFile()));
+        try {
+            signature = ksi.read(load(testData.getTestFile()));
+        } catch (Exception e) {
+            throw new IntegrationTestFailureException("Failure at signature parsing was not expected. " + testData.toString(), e);
+        }
+
         VerificationContext context = testData.getVerificationContext(signature);
         VerificationResult result = ksi.verify(context, testData.getAction().getPolicy());
 

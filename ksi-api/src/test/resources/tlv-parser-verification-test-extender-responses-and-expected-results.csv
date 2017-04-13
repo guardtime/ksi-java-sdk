@@ -1,8 +1,0 @@
-#Response file location with full path(later on changed for signature within test);pass signature internal verification;pass signature verification with OK results;verification error code (" " if none);expected exception class (" " if none);expected exception message (" " if none)
-#TODO: Needs new updated format. Exceptions are no longer verified ->  maybe create specific test case for each row instead?
-extender-response/extension-response-for-ok-sig-2014-06-2-extra-critical-element.ksig;true;false;;KSIProtocolException;parse response message
-extender-response/extension-response-for-ok-sig-2014-06-2-extra-critical-main-with-critical-tlv.ksig;false;false;;MultipleTLVElementException;Message outer most layer consists of more than one TLV elements.
-extender-response/extension-response-for-ok-sig-2014-06-2-extra-critical-main-with-non-critical-tlv.ksig;false;false;;MultipleTLVElementException;Message outer most layer consists of more than one TLV elements.
-extender-response/extension-response-for-ok-sig-2014-06-2-extra-element.ksig;true;false;CAL_01;;
-extender-response/extension-response-for-ok-sig-2014-06-2-extra-main-with-critical-tlv.ksig;false;false;;MultipleTLVElementException;Message outer most layer consists of more than one TLV elements.
-extender-response/extension-response-for-ok-sig-2014-06-2-extra-main-with-non-critical-tlv.ksig;false;false;;MultipleTLVElementException;Message outer most layer consists of more than one TLV elements.

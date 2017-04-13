@@ -26,4 +26,8 @@ public class IntegrationTestFailureException extends Exception {
     public IntegrationTestFailureException(String message) {
         super(message);
     }
+
+    public IntegrationTestFailureException(String message, Exception cause) {
+        super(message, cause);
+    }
 }

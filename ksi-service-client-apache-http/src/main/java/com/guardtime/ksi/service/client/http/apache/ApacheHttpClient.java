@@ -84,7 +84,7 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
         return post(request, settings.getSigningUrl());
     }
 
-    public ApacheHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
+    protected ApacheHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
         return post(request, settings.getExtendingUrl());
     }
 

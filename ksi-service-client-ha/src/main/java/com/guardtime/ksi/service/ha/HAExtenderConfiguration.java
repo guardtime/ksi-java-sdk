@@ -38,13 +38,13 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
             Date confCalLastTime = conf.getCalendarLastTime();
             List<String> confParents = conf.getParents();
 
-            if (isNewValSmaller(maxRequests, confMaxRequests)) {
+            if (isBigger(maxRequests, confMaxRequests)) {
                 maxRequests = confMaxRequests;
             }
-            if (isNewValAfter(calFirstTime, confCalFirstTime)) {
+            if (isAfter(calFirstTime, confCalFirstTime)) {
                 calFirstTime = confCalFirstTime;
             }
-            if (isNewValBefore(calLastTime, confCalLastTime)) {
+            if (isBefore(calLastTime, confCalLastTime)) {
                 calLastTime = confCalLastTime;
             }
             if (confParents != null) {
@@ -55,22 +55,28 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
         this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
     }
 
-    private boolean isNewValSmaller(Long oldVal, Long newVal) {
+    private boolean isBigger(Long oldVal, Long newVal) {
         return oldVal == null || (newVal != null && newVal < oldVal);
     }
 
-    private boolean isNewValAfter(Date oldVal, Date newVal) {
+    private boolean isAfter(Date oldVal, Date newVal) {
         return oldVal == null || (newVal != null && newVal.after(oldVal));
     }
 
-    private boolean isNewValBefore(Date oldVal, Date newVal) {
+    private boolean isBefore(Date oldVal, Date newVal) {
         return oldVal == null || (newVal != null && newVal.before(oldVal));
     }
 
-    private Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long subConfMaximumRequests) {
-        return subConfMaximumRequests == null ?
-                null :
-                (long) (subConfMaximumRequests * ((double) totalNumberOfClients / numberOfClientsInOneRound));
+    /**
+     * If a load balancing strategy is used then client can actually send more requests per second than it could
+     * to any single gateway because load is distributed. This method adjusts the max requests accordingly.
+     */
+    private Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long maxRequests) {
+        if (maxRequests == null) {
+            return null;
+        }
+        double percentageOfClientsTakingRequest = ((double) totalNumberOfClients) / numberOfClientsInOneRound;
+        return (long) (maxRequests * percentageOfClientsTakingRequest);
     }
 
     public Long getMaximumRequests() {

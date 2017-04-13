@@ -651,7 +651,7 @@ public final class Util {
      * @return true if both lists are null or if they have exactly the same components.
      */
     public static boolean equalsIgnoreOrder(Collection<?> c1, Collection<?> c2) {
-        return (c1 == null && c2 == null) || (c1 != null && c2 != null && c1.containsAll(c2) && c2.containsAll(c1));
+        return (c1 == null && c2 == null) || (c1 != null && c1.containsAll(c2) && c2.containsAll(c1));
     }
 
     /**

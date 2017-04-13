@@ -40,13 +40,13 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
             HashAlgorithm confAggrAlgorithm = conf.getAggregationAlgorithm();
             List<String> confParents = conf.getParents();
 
-            if (isNewValSmaller(maxRequests, confMaxRequests)) {
+            if (isSmaller(maxRequests, confMaxRequests)) {
                 maxRequests = confMaxRequests;
             }
-            if (isNewValBigger(aggregationPeriod, confAggregationPeriod)) {
+            if (isBigger(aggregationPeriod, confAggregationPeriod)) {
                 aggregationPeriod = confAggregationPeriod;
             }
-            if (isNewValSmaller(maxLevel, confMaxLevel)) {
+            if (isSmaller(maxLevel, confMaxLevel)) {
                 maxLevel = confMaxLevel;
             }
             if (confAggrAlgorithm != null) {
@@ -59,18 +59,24 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
         this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
     }
 
-    private boolean isNewValBigger(Long oldVal, Long newVal) {
+    private boolean isBigger(Long oldVal, Long newVal) {
         return oldVal == null || (newVal != null && newVal > oldVal);
     }
 
-    private boolean isNewValSmaller(Long oldVal, Long newVal) {
+    private boolean isSmaller(Long oldVal, Long newVal) {
         return oldVal == null || (newVal != null && newVal < oldVal);
     }
 
-    private Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long subConfMaximumRequests) {
-        return subConfMaximumRequests == null ?
-                null :
-                (long) (subConfMaximumRequests * ((double) totalNumberOfClients / numberOfClientsInOneRound));
+    /**
+     * If a load balancing strategy is used then client can actually send more requests per second than it could
+     * to any single gateway because load is distributed. This method adjusts the max requests accordingly.
+     */
+    private Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long maxRequests) {
+        if (maxRequests == null) {
+            return null;
+        }
+        double percentageOfClientsTakingRequest = ((double) totalNumberOfClients) / numberOfClientsInOneRound;
+        return (long) (maxRequests * percentageOfClientsTakingRequest);
     }
 
     public Long getMaximumLevel() {

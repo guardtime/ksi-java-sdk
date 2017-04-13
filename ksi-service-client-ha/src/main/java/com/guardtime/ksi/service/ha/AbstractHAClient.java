@@ -37,14 +37,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * This is an abstract class for different types of High Availability clients. All of them have twp common parts:
+ * This is an abstract class for different types of High Availability clients. All of them have two common parts:
  * <ul>
- *     <li>They all have configurations to ask for and the way it's asked is the same all though the configuration contents are not.</li>
- *     <li>All the services are invoked in the principle that all subclients are invoked and the quickest successful one counts.
- *          If all of them fail then a combined exception is throws.</li>
+ *     <li>They all have configurations to ask for and the way it's asked is the same although the configuration contents are not.</li>
+ *     <li>All the HA services are invoked in the same principle: all subclients are invoked and the first successful one counts.
+ *          If all of them fail then a combined exception is thrown.</li>
  * </ul>
  *
- * So to avoid duplication common algorithmic parts are implemented in this abstract superclass and as concrete types are different,
+ * To avoid duplication common algorithmic parts are implemented in this abstract superclass and as concrete types are different,
  * they are represented as generics
  *
  * @param <CLIENT> Type of subclients we are dealing with. Can be for example {@link com.guardtime.ksi.service.client.KSISigningClient} or
@@ -76,7 +76,7 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
             clientsForRequest = subclients.size();
         }
         if (clientsForRequest <= 0) {
-            throw new IllegalArgumentException("Can not initialize " + implName + " with 0 or less subclients per selection");
+            throw new IllegalArgumentException("Can not initialize " + implName + " with less than one subclients per selection");
         }
         if (clientsForRequest > subclients.size()) {
             throw new IllegalArgumentException("Invalid input parameter. It is not possible to have more clients in one selection " +
@@ -120,7 +120,7 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
             }
             if (!areAllConfsEqual(configurations)) {
                 logger.warn("Configurations gotten via " + implName + " from subclients differ from eachother. This could " +
-                        "mean that external services our configured wrong. All configurations: " + configurationsToString(configurations));
+                        "mean that external services are configured wrong. All configurations: " + configurationsToString(configurations));
             }
             return aggregateConfigurations(configurations);
         } catch (Exception e) {
@@ -144,11 +144,11 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
     protected abstract SERVICE_CONFIG_RESPONSE aggregateConfigurations(List<SERVICE_CONFIG_RESPONSE> configurations);
 
     /**
-     * Invokes all service calling tasks and returns a future that eventually returns the result of quickest successful one.
+     * Invokes all service calling tasks and returns a future that eventually returns the result of first successful one.
      *
      * @param tasks List of service call tasks
      * @param requestId ID of the request to keep track of requests
-     * @return {@link ServiceCallFuture<SERVICE_RESPONSE>} that can be used to get quickest successful service response
+     * @return {@link ServiceCallFuture<SERVICE_RESPONSE>} that can be used to get the first successful service response
      */
     ServiceCallFuture<SERVICE_RESPONSE> callAnyService(Collection<ServiceCallingTask<SERVICE_RESPONSE>> tasks, Long requestId) {
         registerTasksExceptionHolders(tasks, requestId);

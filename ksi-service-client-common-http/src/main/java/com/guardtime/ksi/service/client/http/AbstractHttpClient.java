@@ -79,7 +79,7 @@ public abstract class AbstractHttpClient extends ConfigurationAwareSigningClient
         return pduFactory.readExtenderConfigurationResponse(requestContext, future.getResult());
     }
 
-    public abstract Future<TLVElement> extend(InputStream request) throws KSIClientException;
+    protected abstract Future<TLVElement> extend(InputStream request) throws KSIClientException;
 
     protected Future<TLVElement> sign(InputStream inputStream) throws KSIClientException {
         return post(inputStream, settings.getSigningUrl());

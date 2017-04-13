@@ -56,9 +56,8 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
     public void testVerifySignatureWithNonCriticalElementInExtenderResponse() throws Exception {
         String testFile = "extender-response/extension-response-for-ok-sig-2014-06-2-extra-element.ksig";
 
-        KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
         LOGGER.info("Used response file: " + testFile);
-        mockExtenderResponseCalendarHashCain(testFile, mockedExtenderClient);
+        KSIExtenderClient mockedExtenderClient = mockExtenderResponseCalendarHashCain(testFile);
 
         KSISignature signature = ksi.read(load(SIGNATURE_2017_03_14));
         VerificationResult result = verify(ksi, mockedExtenderClient, signature, policy);
@@ -106,9 +105,8 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
 
     private void testExtenderResponses(String testFile, Class exceptionClass, String message) throws Exception {
         try {
-            KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
             LOGGER.info("Used response file: " + testFile);
-            mockExtenderResponseCalendarHashCain(testFile, mockedExtenderClient);
+            KSIExtenderClient mockedExtenderClient = mockExtenderResponseCalendarHashCain(testFile);
 
             KSISignature signature = ksi.read(load(SIGNATURE_2017_03_14));
             VerificationResult result = verify(ksi, mockedExtenderClient, signature, policy);
@@ -123,13 +121,15 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
             }
         }
     }
-    protected void mockExtenderResponseCalendarHashCain(String responseCalendarChainFile, KSIExtenderClient mockedExtenderClient) throws Exception {
+
+    protected KSIExtenderClient mockExtenderResponseCalendarHashCain(String responseCalendarHashChain) throws Exception {
+        KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
         Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(serviceCredentials);
         final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
-        final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
+        final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarHashChain));
 
         Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
@@ -143,6 +143,7 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
                 return mockedFuture;
             }
         });
+        return mockedExtenderClient;
     }
 
     private DataHash calculateHash(byte[] key, TLVElement... elements) throws Exception {

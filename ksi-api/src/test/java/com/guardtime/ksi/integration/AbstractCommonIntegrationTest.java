@@ -28,25 +28,19 @@ import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.*;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.service.tcp.TCPClient;
 import com.guardtime.ksi.service.tcp.TCPClientSettings;
-import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
-import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
-import com.guardtime.ksi.util.Util;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -288,18 +282,15 @@ public abstract class AbstractCommonIntegrationTest {
             return;
         }
 
-        if (testData.getAction().equals(IntegrationTestAction.PARSING)) {
+        if (testData.getAction().equals(IntegrationTestAction.FAIL_AT_PARSING)) {
             try {
                 ksi.read(new File(testData.getTestFile()));
-                throw new IntegrationTestFailureException("Did not fail at parinsg. " + testData.toString());
+                throw new IntegrationTestFailureException("Did not fail at parinsg while expected to. " + testData.toString());
             } catch(KSIException e) {
                 return;
             }
         }
 
-        if (testData.getResponseFile() != null) {
-            System.out.println("Catch me!");
-        }
         KSI ksi = testData.getKsi();
         KSISignature signature = ksi.read(load(testData.getTestFile()));
         VerificationContext context = testData.getVerificationContext(signature);

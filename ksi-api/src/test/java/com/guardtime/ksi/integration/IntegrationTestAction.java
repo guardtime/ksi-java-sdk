@@ -19,6 +19,7 @@
 
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.unisignature.verifier.AlwaysSuccessfulPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
@@ -27,13 +28,13 @@ import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVer
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
 
 public enum IntegrationTestAction {
-    PARSING("parsing", new InternalVerificationPolicy()),
-    NOT_IMPLEMENTED("not-implemented", new InternalVerificationPolicy()),
-    INTERNAL("internal", new InternalVerificationPolicy()),
-    KEY("key", new KeyBasedVerificationPolicy()),
-    CALENDAR("calendar", new CalendarBasedVerificationPolicy()),
-    USER_PUBLICATION("userPublication", new UserProvidedPublicationBasedVerificationPolicy()),
-    PUBLICATIONS_FILE("publicationsFile", new PublicationsFileBasedVerificationPolicy());
+    FAIL_AT_PARSING("parsing", new AlwaysSuccessfulPolicy()),
+    NOT_IMPLEMENTED("not-implemented", new AlwaysSuccessfulPolicy()),
+    POLICY_INTERNAL("internal", new InternalVerificationPolicy()),
+    POLICY_KEY("key", new KeyBasedVerificationPolicy()),
+    POLICY_CALENDAR("calendar", new CalendarBasedVerificationPolicy()),
+    POLICY_USER_PUBLICATION("userPublication", new UserProvidedPublicationBasedVerificationPolicy()),
+    POLICY_PUBLICATIONS_FILE("publicationsFile", new PublicationsFileBasedVerificationPolicy());
 
     IntegrationTestAction(String name, Policy policy) {
         this.name = name;
@@ -52,22 +53,17 @@ public enum IntegrationTestAction {
         return this.policy;
     }
 
-
-    static String nameNormalize(String name) {
-        return name.toUpperCase();
-    }
-
     public static IntegrationTestAction getByName(String name) {
         for (IntegrationTestAction action : values()) {
             if (action.getName().equals(name)) {
                 return action;
             }
         }
-        //TODO: Default to not_implemented for skipping instead?
         throw new IllegalArgumentException("Invalid action '" + name + "'.");
     }
 
+    @Override
     public String toString() {
-        return "Action: " + this.getName() + "\nPolicy: " + this.getPolicy().toString();
+        return "Action={ Name=" + this.getName() + ", Policy=" + this.getPolicy().toString() + " }";
     }
 }

@@ -140,7 +140,8 @@ public class DataHolderForIntegrationTests {
                 setPublicationsFilePkiTrustStore(createKeyStore()).
                 setPublicationsFileTrustedCertSelector(createCertSelector()).
                 setDefaultVerificationPolicy(new AlwaysSuccessfulPolicy()).
-                setPduIdentifierProvider(new DefaultPduIdentifierProvider());
+                setPduIdentifierProvider(new DefaultPduIdentifierProvider()).
+                setDefaultSigningHashAlgorithm(HashAlgorithm.SHA2_256);
 
         if (responseFile != null) {
 

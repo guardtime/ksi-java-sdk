@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * KSI Extender Client which combines other clients to achieve high availability and for load balancing.
+ * KSI Extender Client which combines other clients to achieve high availability and load balancing.
  *
- * NB! It is highly recommended that all the extender configurations would be in sync with each other (except login accounts). If that is not the case then ExtenderHAClient will log a warning but it will still work.
+ * NB! It is highly recommended that all the extender configurations would be in sync with each other (except credentials). If that is not the case then ExtenderHAClient will log a warning but it will still work.
  * If user asks for configuration from the ExtenderHAClient it will use the most conservative configuration of sub clients to compose aggregated configuration. Some parameters like maximum requests in a second take
  * account that there are multiple clients and if load balancing is enabled between those clients then those parameters are adjusted accordingly. This means that the user of the API can rely on this configuration
  * without worrying if load balancing is actually configured or not.

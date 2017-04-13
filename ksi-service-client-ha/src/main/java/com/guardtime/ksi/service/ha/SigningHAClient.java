@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * KSI Signing Client which combines other clients to achieve high availability and for load balancing.
+ * KSI Signing Client which combines other clients to achieve high availability and load balancing.
  *
- * NB! It is highly recommended that all the aggregator configurations would be in sync with each other (except login accounts).
+ * NB! It is highly recommended that all the aggregator configurations would be in sync with each other (except credentials).
  * If that is not the case then SigningHAClient will log a warning but it will still work. If user asks for configuration from the
  * SigningHAClient it will use the most conservative configuration of sub clients to compose aggregated configuration. Some
  * parameters like maximum requests in a second take account that there are multiple clients and if load balancing is enabled

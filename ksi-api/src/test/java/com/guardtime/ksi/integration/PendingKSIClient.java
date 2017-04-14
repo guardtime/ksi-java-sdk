@@ -18,37 +18,27 @@ import java.io.InputStream;
 import java.util.Date;
 
 /**
- * Dummy KSI Client all of which's calls pend for one minute and then fail.
+ * Dummy KSI Client all of which's calls idle for one minute and then fail.
  */
 public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
-
-    public Future<TLVElement> extend(InputStream request) throws KSIClientException {
-        sleep1M();
-        throw new KSIClientException("FAILURE!!!!");
-    }
-
+    
     public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime)
             throws KSIException {
         sleep1M();
-        throw new KSIClientException("FAILURE!!!!");
+        throw new KSIClientException("Failure!");
     }
 
     public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
-        throw new KSIClientException("FAILURE!!!!");
+        throw new KSIClientException("Failure!");
     }
-
-    public Future<TLVElement> sign(InputStream request) throws KSIClientException {
-        sleep1M();
-        throw new KSIClientException("FAILURE!!!!");
-    }
-
+    
     public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
         sleep1M();
-        throw new KSIClientException("FAILURE!!!!");
+        throw new KSIClientException("Failure!");
     }
 
     public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
-        throw new KSIClientException("FAILURE!!!!");
+        throw new KSIClientException("Failure!");
     }
 
     public void close() throws IOException {

@@ -58,6 +58,7 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
     }
 
     public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
+        Util.notNull(requestContext, "requestContext");
         Collection<Callable<ExtenderConfiguration>> tasks = new ArrayList<Callable<ExtenderConfiguration>>();
         for (KSIExtenderClient client : getAllSubclients()) {
             tasks.add(new ExtenderConfigurationTask(requestContext, client));
@@ -66,9 +67,12 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
     }
 
     public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
-        final Long requestId = requestContext.getRequestId();
+        Util.notNull(requestContext, "requestContext");
+        Util.notNull(aggregationTime, "aggregationTime");
+        Util.notNull(publicationTime, "publicationTime");
+        Long requestId = requestContext.getRequestId();
         Collection<KSIExtenderClient> clients = prepareClients();
-        final Collection<ServiceCallingTask<ExtensionResponse>> tasks = new ArrayList<ServiceCallingTask<ExtensionResponse>>();
+        Collection<ServiceCallingTask<ExtensionResponse>> tasks = new ArrayList<ServiceCallingTask<ExtensionResponse>>();
         for (KSIExtenderClient client : clients) {
             tasks.add(new ExtendingTask(client, requestContext, aggregationTime, publicationTime));
         }

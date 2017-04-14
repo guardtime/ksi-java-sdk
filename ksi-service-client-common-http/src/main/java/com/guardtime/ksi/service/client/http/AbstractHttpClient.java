@@ -65,6 +65,9 @@ public abstract class AbstractHttpClient extends ConfigurationAwareSigningClient
     }
 
     public ExtensionResponseFuture extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
+        Util.notNull(requestContext, "requestContext");
+        Util.notNull(aggregationTime, "aggregationTime");
+        Util.notNull(publicationTime, "publicationTime");
         requestContext = requestContext.getWithCredentials(getServiceCredentials());
         ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, aggregationTime, publicationTime);
         ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());
@@ -73,6 +76,7 @@ public abstract class AbstractHttpClient extends ConfigurationAwareSigningClient
     }
 
     public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
+        Util.notNull(requestContext, "requestContext");
         requestContext = requestContext.getWithCredentials(getServiceCredentials());
         ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext);
         Future<TLVElement> future = extend(new ByteArrayInputStream(request.toByteArray()));

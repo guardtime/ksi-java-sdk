@@ -23,7 +23,7 @@ import com.guardtime.ksi.pdu.PduVersion;
 import java.io.Closeable;
 
 /**
- * ConfigurationAwareClient is an interface that defines clients which connect to a service with same configuration every time
+ * ConfigurationAwareClient is a client which connects to a service with same configuration every time
  */
 public interface ConfigurationAwareClient extends Closeable {
     /**

@@ -36,16 +36,16 @@ public interface KSIExtenderClient extends Closeable {
     /**
      * Used to extend existing signatures.
      *
-     * @param requestContext  - instance of {@link KSIRequestContext}. May not be null.
-     * @param aggregationTime - aggregation time of the existing signature. May not be null.
-     * @param publicationTime - publication time to which the existing signature is to be extended. May not be null.
+     * @param requestContext  - instance of {@link KSIRequestContext}.
+     * @param aggregationTime - aggregation time of the existing signature.
+     * @param publicationTime - publication time to which the existing signature is to be extended.
      * @return instance of {@link ExtensionResponseFuture} containing calendar chains needed to extend the signature.
      */
     Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws
             KSIException;
 
     /**
-     * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
+     * @param requestContext - instance of {@link KSIRequestContext}.
      * @return {@link ExtenderConfiguration} one should rely on when using this client
      */
     ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException;

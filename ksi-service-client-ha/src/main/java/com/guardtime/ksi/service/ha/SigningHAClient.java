@@ -58,6 +58,7 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
     }
 
     public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
+        Util.notNull(requestContext, "requestContext");
         Collection<Callable<AggregatorConfiguration>> tasks = new ArrayList<Callable<AggregatorConfiguration>>();
         for (KSISigningClient client : getAllSubclients()) {
             tasks.add(new AggregatorConfigurationTask(requestContext, client));
@@ -98,7 +99,10 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
     }
 
     public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
-        final Long requestId = requestContext.getRequestId();
+        Util.notNull(requestContext, "requestContext");
+        Util.notNull(dataHash, "dataHash");
+        Util.notNull(level, "level");
+        Long requestId = requestContext.getRequestId();
         Collection<KSISigningClient> clients = prepareClients();
         final Collection<ServiceCallingTask<AggregationResponse>> tasks = new
                 ArrayList<ServiceCallingTask<AggregationResponse>>();

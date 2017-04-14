@@ -27,6 +27,7 @@ import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -54,6 +55,9 @@ public abstract class ConfigurationAwareSigningClient implements KSISigningClien
      * @throws KSIException
      */
     public AggregationResponseFuture sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
+        Util.notNull(requestContext, "requestContext");
+        Util.notNull(dataHash, "dataHash");
+        Util.notNull(level, "level");
         requestContext = requestContext.getWithCredentials(getServiceCredentials());
         Future<TLVElement> requestFuture = sign(new ByteArrayInputStream(pduFactory.createAggregationRequest(requestContext,
                 dataHash, level).toByteArray()));
@@ -63,6 +67,7 @@ public abstract class ConfigurationAwareSigningClient implements KSISigningClien
     protected abstract Future<TLVElement> sign(InputStream is) throws KSIClientException;
 
     public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
+        Util.notNull(requestContext, "requestContext");
         requestContext = requestContext.getWithCredentials(getServiceCredentials());
         AggregationRequest requestMessage = pduFactory.createAggregatorConfigurationRequest(requestContext);
         Future<TLVElement> future = sign(new ByteArrayInputStream(requestMessage.toByteArray()));

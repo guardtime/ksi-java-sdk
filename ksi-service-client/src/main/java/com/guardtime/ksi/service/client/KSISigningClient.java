@@ -37,9 +37,9 @@ public interface KSISigningClient extends Closeable {
     /**
      * Used to create new signature.
      *
-     * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
-     * @param dataHash - instance of {@link DataHash} to be signed. May not be null.
-     * @param level - level of the dataHash to be signed in the overall tree. May not be null.
+     * @param requestContext - instance of {@link KSIRequestContext}.
+     * @param dataHash - instance of {@link DataHash} to be signed.
+     * @param level - level of the dataHash to be signed in the overall tree.
      *
      * @return instance of {@link AggregationResponseFuture} containing Aggregation response data.
      * @throws KSIException
@@ -48,7 +48,7 @@ public interface KSISigningClient extends Closeable {
 
     /**
      *
-     * @param requestContext - instance of {@link KSIRequestContext}. May not be null.
+     * @param requestContext - instance of {@link KSIRequestContext}.
      * @return {@link AggregatorConfiguration} one should rely on when using this client
      * @throws KSIException
      */

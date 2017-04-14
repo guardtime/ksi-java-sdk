@@ -39,7 +39,7 @@ public class HAExtenderConfigurationTest {
     }
 
     @Test
-    public void testAllClientsActiveAnAllRequestsAllConfsEqual() {
+    public void testAllClientsHaveSameConf() {
         ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf1, subConf1), 3, 3);
         assertNull(configuration.getCalendarFirstTime());
         assertNull(configuration.getCalendarLastTime());
@@ -48,31 +48,31 @@ public class HAExtenderConfigurationTest {
     }
 
     @Test
-    public void testCalculatingMaxRequestsWhenLoadBalancing() {
+    public void testGetMaxRequestsWhenLoadBalancing() {
         assertEquals(new HAExtenderConfiguration(singletonList(subConf1), 3, 2).getMaximumRequests(), new Long(18));
         assertEquals(new HAExtenderConfiguration(singletonList(subConf1), 3, 1).getMaximumRequests(), new Long(36));
     }
 
     @Test
-    public void testMaxRequestsIsBasedOnMinimalSubconf() {
+    public void testGetMaxRequests() {
         ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getMaximumRequests(), new Long(11L));
     }
 
     @Test
-    public void testCalendarFirstTimeIsBasedOnSubconfLatestCalendarFirstTime() {
+    public void testGetCalendarFirstTime() {
         ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getCalendarFirstTime(), new Date(100));
     }
 
     @Test
-    public void testCalendarLastTimeIsBasedOnSubconfEarliestCalendarLastTime() {
+    public void testGetCalendarLastTime() {
         ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getCalendarLastTime().getTime(), new Date(200).getTime());
     }
 
     @Test
-    public void testParentsAreBasedOnLastNonNullSubConfParents() {
+    public void testGetParents() {
         ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getParents(), Arrays.asList("6", "7", "8"));
     }

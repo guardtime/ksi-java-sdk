@@ -44,7 +44,7 @@ public class HAAggregatorConfigurationTest {
     }
 
     @Test
-    public void testAllClientsActiveAnAllRequestsAllConfsEqual() {
+    public void testAllClientsHaveSameConf() {
         AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf1, subConf1), 3, 3);
         assertNull(configuration.getAggregationAlgorithm());
         assertEquals(configuration.getAggregationPeriod(), new Long(1000));
@@ -54,37 +54,37 @@ public class HAAggregatorConfigurationTest {
     }
 
     @Test
-    public void testCalculatingMaxRequestsWhenLoadBalancing() {
+    public void testGetMaxRequestsWhenLoadBalancing() {
         assertEquals(new HAAggregatorConfiguration(singletonList(subConf1), 3, 2).getMaximumRequests(), new Long(18));
         assertEquals(new HAAggregatorConfiguration(singletonList(subConf1), 3, 1).getMaximumRequests(), new Long(36));
     }
 
     @Test
-    public void testMaxRequestsIsBasedOnMinimalSubconf() {
+    public void testGetMaxRequests() {
         AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getMaximumRequests(), new Long(10L));
     }
 
     @Test
-    public void testAggregationPeriodIsBasedOnMaximalSubconf() {
+    public void testGetAggregationPeriod() {
         AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getAggregationPeriod(), new Long(1200L));
     }
 
     @Test
-    public void testMaximumLevelIsBasedOnMinimalSubconf() {
+    public void testGetMaximumLevel() {
         AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getMaximumLevel(), new Long(12L));
     }
 
     @Test
-    public void testParentsAreBasedOnLastNonNullSubConfParents() {
+    public void testGetParents() {
         AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getParents(), Arrays.asList("4", "5", "6"));
     }
 
     @Test
-    public void testAggregationAlgorithmIsBasedOnLastNonNullSubConfAggregationAlgorithm() {
+    public void testGetAggregationAlgorithm() {
         AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
         assertEquals(configuration.getAggregationAlgorithm(), SHA3_224);
     }

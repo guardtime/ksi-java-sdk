@@ -42,9 +42,9 @@ public class AbstractHAClientTest {
         new DummyHAClient(singletonList(mock(KSISigningClient.class)), 2);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize DummyHAClient with 0 or less subclients per selection")
-    public void testCallingServicesWhenThereAreNoServicesToCall() throws Exception {
-        DummyHAClient dummyHAClient = new DummyHAClient(singletonList(mock(KSISigningClient.class)), 0);
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize DummyHAClient with less than one subclient per selection")
+    public void testInititalizingWithNoClientsPerRequest() throws Exception {
+        new DummyHAClient(singletonList(mock(KSISigningClient.class)), 0);
     }
 
     @Test

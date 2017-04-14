@@ -76,7 +76,7 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
             clientsForRequest = subclients.size();
         }
         if (clientsForRequest <= 0) {
-            throw new IllegalArgumentException("Can not initialize " + implName + " with less than one subclients per selection");
+            throw new IllegalArgumentException("Can not initialize " + implName + " with less than one subclient per selection");
         }
         if (clientsForRequest > subclients.size()) {
             throw new IllegalArgumentException("Invalid input parameter. It is not possible to have more clients in one selection " +

@@ -69,7 +69,6 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
     public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
         Util.notNull(requestContext, "requestContext");
         Util.notNull(aggregationTime, "aggregationTime");
-        Util.notNull(publicationTime, "publicationTime");
         Long requestId = requestContext.getRequestId();
         Collection<KSIExtenderClient> clients = prepareClients();
         Collection<ServiceCallingTask<ExtensionResponse>> tasks = new ArrayList<ServiceCallingTask<ExtensionResponse>>();

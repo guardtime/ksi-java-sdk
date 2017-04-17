@@ -19,7 +19,7 @@
 
 package com.guardtime.ksi.blocksigner;
 
-import com.guardtime.ksi.KSISignatureFuture;
+import com.guardtime.ksi.SigningFuture;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
@@ -235,8 +235,8 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         DataHash dataHash = new DataHash(rootNode.getValue());
         KSIRequestContext requestContext = new KSIRequestContext(pduIdentifierProvider);
         Future<AggregationResponse> future = signingClient.sign(requestContext, dataHash, rootNode.getLevel());
-        KSISignatureFuture KSISignatureFuture = new KSISignatureFuture(future, new InMemoryKsiSignatureFactory(), dataHash);
-        return KSISignatureFuture.getResult();
+        SigningFuture SigningFuture = new SigningFuture(future, new InMemoryKsiSignatureFactory(), dataHash);
+        return SigningFuture.getResult();
     }
 
     private AggregationChainLink createLink(TreeNode node, TreeNode parent) throws KSIException {

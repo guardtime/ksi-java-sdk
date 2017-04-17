@@ -389,7 +389,7 @@ public final class KSIBuilder {
                 throw new KSIException("Invalid input parameter. Data hash must not be null");
             }
             Future<AggregationResponse> aggregationResponseFuture = signingClient.sign(new KSIRequestContext(pduIdentifierProvider), dataHash, DEFAULT_LEVEL);
-            return new KSISignatureFuture(aggregationResponseFuture, signatureFactory, dataHash);
+            return new SigningFuture(aggregationResponseFuture, signatureFactory, dataHash);
         }
 
         public Future<KSISignature> asyncSign(File file) throws KSIException {

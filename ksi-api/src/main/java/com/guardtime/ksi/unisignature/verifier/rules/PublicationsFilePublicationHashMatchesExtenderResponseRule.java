@@ -34,7 +34,7 @@ public class PublicationsFilePublicationHashMatchesExtenderResponseRule extends 
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         PublicationsFile publicationsFile = context.getPublicationsFile();
-        PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(context.getCalendarHashChain().getRegistrationTime());
+        PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(context.getCalendarHashChain().getAggregationTime());
         CalendarHashChain extendedCalendarHashChain = context.getExtendedCalendarHashChain(publicationRecord.getPublicationTime());
         if (!publicationRecord.getPublicationData().getPublicationDataHash().equals(extendedCalendarHashChain.getOutputHash())) {
             return VerificationResultCode.FAIL;

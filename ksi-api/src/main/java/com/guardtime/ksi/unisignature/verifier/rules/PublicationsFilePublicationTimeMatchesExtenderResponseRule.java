@@ -36,7 +36,7 @@ public class PublicationsFilePublicationTimeMatchesExtenderResponseRule extends 
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         PublicationsFile publicationsFile = context.getPublicationsFile();
-        PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(context.getCalendarHashChain().getRegistrationTime());
+        PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(context.getCalendarHashChain().getAggregationTime());
 
         KSISignature signature = context.getSignature();
         CalendarHashChain extendedCalendarHashChain = context.getExtendedCalendarHashChain(publicationRecord.getPublicationTime());
@@ -45,7 +45,7 @@ public class PublicationsFilePublicationTimeMatchesExtenderResponseRule extends 
             return VerificationResultCode.FAIL;
         }
         // calculate round time and check that it matches with aggregation hash chain aggregation time
-        if (!signature.getAggregationTime().equals(extendedCalendarHashChain.getRegistrationTime())) {
+        if (!signature.getAggregationTime().equals(extendedCalendarHashChain.getAggregationTime())) {
             return VerificationResultCode.FAIL;
         }
         return VerificationResultCode.OK;

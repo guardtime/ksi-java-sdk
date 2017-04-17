@@ -20,6 +20,9 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.unisignature.CalendarHashChain;
+import com.guardtime.ksi.unisignature.CalendarHashChainLink;
+import com.guardtime.ksi.unisignature.inmemory.InvalidCalendarHashChainException;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
@@ -27,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * This rule is used to verify that calendar hash chain registration time (calculated from the shape of the calendar
@@ -43,7 +48,7 @@ public class CalendarHashChainRegistrationTimeRule extends BaseRule {
         }
 
         Date aggregationTime = context.getCalendarHashChain().getAggregationTime();
-        Date registrationTime = context.getCalendarHashChain().getRegistrationTime();
+        Date registrationTime = calculateRegistrationTime(context.getCalendarHashChain());
         if (aggregationTime.equals(registrationTime)) {
             return VerificationResultCode.OK;
         }
@@ -53,6 +58,50 @@ public class CalendarHashChainRegistrationTimeRule extends BaseRule {
 
     public VerificationErrorCode getErrorCode() {
         return VerificationErrorCode.INT_05;
+    }
+
+    /**
+     * Calculates the time when the signature was registered in the KSI hash calendar.
+     */
+    private Date calculateRegistrationTime(CalendarHashChain calendarHashChain) throws InvalidCalendarHashChainException {
+        List<CalendarHashChainLink> chain = calendarHashChain.getChainLinks();
+        long r = calendarHashChain.getPublicationTime().getTime() / 1000; // publication time in seconds
+        long t = 0;
+        // iterate over the chain in reverse
+        ListIterator<CalendarHashChainLink> li = chain.listIterator(chain.size());
+        while (li.hasPrevious()) {
+            if (r <= 0) {
+                LOGGER.warn("Calendar hash chain shape is inconsistent with publication time");
+                r = 0;
+                return new Date(0);
+            }
+            CalendarHashChainLink link = li.previous();
+
+            if (!link.isRightLink()) {
+                r = highBit(r) - 1;
+            } else {
+                t = t + highBit(r);
+                r = r - highBit(r);
+            }
+        }
+
+        if (r != 0) {
+            LOGGER.warn("Calendar hash chain shape inconsistent with publication time");
+            t = 0;
+        }
+
+        return new Date(t*1000);
+    }
+    /**
+     * Returns the value of the highest 1-bit in r, which is also the highest integral power of 2 that is less than or
+     * equal to r, or 2^floor(log2(r)).
+     *
+     * @param r
+     *         input value
+     * @return value of the highest 1-bit in r
+     */
+    private long highBit(long r) {
+        return 1L << (63 - Long.numberOfLeadingZeros(r));
     }
 
 }

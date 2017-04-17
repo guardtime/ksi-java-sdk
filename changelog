@@ -1,3 +1,8 @@
+Version 4.10
+
+* BUGFIX: Removed registration time from KSISignature and CalendarHashChain.
+* BUGFIX: Removed addAggregationHashChain from KSISignature.
+
 Version 4.9
 
 2017-04-05 4.9.95

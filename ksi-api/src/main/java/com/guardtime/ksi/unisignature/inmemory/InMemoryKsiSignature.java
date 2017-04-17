@@ -162,11 +162,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
     }
 
     public Date getAggregationTime() {
-        return calendarChain == null ? getLastAggregationHashChain().getAggregationTime() : calendarChain.getRegistrationTime();
-    }
-
-    public Date getRegistrationTime() {
-        return calendarChain == null ? getLastAggregationHashChain().getAggregationTime() : calendarChain.getRegistrationTime();
+        return calendarChain == null ? getLastAggregationHashChain().getAggregationTime() : calendarChain.getAggregationTime();
     }
 
     public Date getPublicationTime() {
@@ -175,21 +171,6 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
 
     public AggregationHashChain[] getAggregationHashChains() {
         return aggregationChains.toArray(new AggregationHashChain[aggregationChains.size()]);
-    }
-
-    public void addAggregationHashChain(AggregationHashChain aggregationHashChain) throws KSIException {
-        if (aggregationHashChain == null) {
-            throw new NullPointerException("Aggregation hash chain must not be null");
-        }
-        InMemoryAggregationHashChain chain = new InMemoryAggregationHashChain(aggregationHashChain.getInputHash(),
-                aggregationHashChain.getAggregationTime(), new LinkedList(aggregationHashChain.getChainIndex()),
-                new LinkedList(aggregationHashChain.getChainLinks()), aggregationHashChain.getAggregationAlgorithm());
-
-        aggregationChains.add(chain);
-        this.aggregationChains = sortAggregationHashChains(aggregationChains);
-        calculateCalendarHashChainOutput();
-        this.identity = parseIdentity();
-        this.rootElement.addFirstChildElement(chain.getRootElement());
     }
 
     @Override

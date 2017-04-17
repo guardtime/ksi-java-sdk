@@ -62,11 +62,6 @@ public interface CalendarHashChain {
     Date getPublicationTime();
 
     /**
-     * Returns calculated time of the calendar hash chain
-     */
-    Date getRegistrationTime();
-
-    /**
      * Returns the left and right chain links
      */
     List<CalendarHashChainLink> getChainLinks();

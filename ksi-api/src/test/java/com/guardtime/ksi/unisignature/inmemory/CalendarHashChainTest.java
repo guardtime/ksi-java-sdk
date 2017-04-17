@@ -36,7 +36,7 @@ public class CalendarHashChainTest {
     public void testDecodeCalendarHashChain_Ok() throws Exception {
         InMemoryCalendarHashChain calendarHashChain = load(SIGNATURE_CALENDAR_HASH_CHAIN_OK);
         Assert.assertNotNull(calendarHashChain.getAggregationTime());
-        Assert.assertNotNull(calendarHashChain.getRegistrationTime());
+        Assert.assertNotNull(calendarHashChain.getAggregationTime());
         Assert.assertNotNull(calendarHashChain.getElementType(), String.valueOf(0x0802));
         Assert.assertEquals(calendarHashChain.getAggregationTime().getTime(), 1398153270000L);
     }
@@ -61,20 +61,10 @@ public class CalendarHashChainTest {
         load("calendar-hash-chain/calendar-hash-chain-no-links.tlv");
     }
 
-    @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain shape is inconsistent with publication time")
-    public void testDecodeCalendarHashChainContainingInvalidRegistrationTime_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("calendar-hash-chain/calendar-hash-chain-invalid-publication-time.tlv");
-    }
-
     @Test
     public void testGetRegistrationTimeFromCalendarHashChain_Ok() throws Exception {
         InMemoryCalendarHashChain calendarHashChain = load(SIGNATURE_CALENDAR_HASH_CHAIN_OK);
-        Assert.assertEquals(calendarHashChain.getRegistrationTime().getTime(), 1398153270000L);
-    }
-
-    @Test(expectedExceptions = InvalidCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Calendar hash chain shape inconsistent with publication time")
-    public void testDecodeCalendarHashChainContainingInvalidRegistrationTimeElement_ThrowsInvalidCalendarHashChainException() throws Exception {
-        load("calendar-hash-chain/calendar-hash-chain-invalid-publication-time2.tlv");
+        Assert.assertEquals(calendarHashChain.getAggregationTime().getTime(), 1398153270000L);
     }
 
     @Test

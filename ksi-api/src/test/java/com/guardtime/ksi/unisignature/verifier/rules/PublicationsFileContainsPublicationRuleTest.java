@@ -58,7 +58,7 @@ public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTes
     @Test
     public void testPublicationFileDoesNotContainPublication_Ok() throws Exception {
         CalendarHashChain mockedChain = Mockito.mock(CalendarHashChain.class);
-        Mockito.when(mockedChain.getRegistrationTime()).thenReturn(new Date());
+        Mockito.when(mockedChain.getAggregationTime()).thenReturn(new Date());
         Mockito.when(context.getCalendarHashChain()).thenReturn(mockedChain);
         Assert.assertEquals(rule.verify(context).getResultCode(), VerificationResultCode.NA);
     }

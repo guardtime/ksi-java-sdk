@@ -69,7 +69,7 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
 
     /**
      * If a load balancing strategy is used then client can actually send more requests per second than it could
-     * to any single gateway because load is distributed. This method adjusts the max requests accordingly.
+     * with single gateway because load is distributed. This method adjusts the max requests accordingly.
      */
     private Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long maxRequests) {
         if (maxRequests == null) {

@@ -63,6 +63,9 @@ public class InternalVerificationPolicy implements Policy {
 
         // verify document hash
         rules.add(new DocumentHashVerificationRule());
+
+        // verify level
+        rules.add(new InputHashLevelVerificationRule());
     }
 
     /**

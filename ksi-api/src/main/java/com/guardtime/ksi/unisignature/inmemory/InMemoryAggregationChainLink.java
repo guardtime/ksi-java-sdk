@@ -241,9 +241,6 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         throw new InvalidAggregationHashChainException("Sibling data not found");
     }
 
-    /**
-     * @return will return link level correction or 0 if level correction isn't present.
-     */
     public final Long getLevelCorrection() {
         return levelCorrection;
     }

@@ -37,6 +37,7 @@ public class VerificationContextBuilder {
     private boolean extendingAllowed;
     private KSIExtenderClient extenderClient;
     private DataHash documentHash;
+    private Long inputHashLevel;
 
     /**
      * Used to set the KSI signature that is verified.
@@ -112,6 +113,18 @@ public class VerificationContextBuilder {
     }
 
     /**
+     * Used to set the input level which was set when the signing took place. If present, then it will be verified.
+     *
+     * @param inputHashLevel
+     *          level which was set when the signing took place
+     * @return instance of {@link VerificationContextBuilder}
+     */
+    public VerificationContextBuilder setInputHashLevel(Long inputHashLevel) {
+        this.inputHashLevel = inputHashLevel;
+        return this;
+    }
+
+    /**
      * Builds the verification context.
      *
      * @return instance of verification context
@@ -128,7 +141,7 @@ public class VerificationContextBuilder {
         if (publicationsFile == null) {
             throw new KSIException("Failed to createSignature verification context. PublicationsFile must be present.");
         }
-        return new KSIVerificationContext(publicationsFile, signature, userPublication, extendingAllowed, extenderClient, documentHash);
+        return new KSIVerificationContext(publicationsFile, signature, userPublication, extendingAllowed, extenderClient, documentHash, inputHashLevel);
     }
 
 }

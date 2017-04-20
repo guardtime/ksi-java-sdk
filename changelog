@@ -1,3 +1,7 @@
+Version 4.11
+
+* IMPROVEMENT: User can now optionally verify if signatures hash level is at least as big as user expects. If it's not then error GEN-3 (Input hash level too large) is returned.
+
 Version 4.10
 
 * BUGFIX: Removed registration time from KSISignature and CalendarHashChain.

@@ -67,19 +67,19 @@ public abstract class AbstractHttpClient extends ConfigurationAwareSigningClient
     public ExtensionResponseFuture extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
         Util.notNull(requestContext, "requestContext");
         Util.notNull(aggregationTime, "aggregationTime");
-        requestContext = requestContext.getWithCredentials(getServiceCredentials());
-        ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, aggregationTime, publicationTime);
+        ServiceCredentials credentials = getServiceCredentials();
+        ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, credentials, aggregationTime, publicationTime);
         ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());
         HttpPostRequestFuture postRequestFuture = post(requestStream, settings.getExtendingUrl());
-        return new ExtensionResponseFuture(postRequestFuture, requestContext, pduFactory);
+        return new ExtensionResponseFuture(postRequestFuture, requestContext, credentials, pduFactory);
     }
 
     public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
         Util.notNull(requestContext, "requestContext");
-        requestContext = requestContext.getWithCredentials(getServiceCredentials());
-        ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext);
+        ServiceCredentials credentials = getServiceCredentials();
+        ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext, credentials);
         Future<TLVElement> future = extend(new ByteArrayInputStream(request.toByteArray()));
-        return pduFactory.readExtenderConfigurationResponse(requestContext, future.getResult());
+        return pduFactory.readExtenderConfigurationResponse(requestContext, credentials, future.getResult());
     }
 
     protected abstract Future<TLVElement> extend(InputStream request) throws KSIClientException;

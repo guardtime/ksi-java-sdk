@@ -21,6 +21,7 @@ package com.guardtime.ksi.pdu;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
 
 /**
@@ -33,12 +34,14 @@ public final class ExtensionResponseFuture implements Future<ExtensionResponse> 
     private final Future<TLVElement> future;
     private final KSIRequestContext context;
     private final PduFactory pduFactory;
+    private ServiceCredentials credentials;
 
     private ExtensionResponse extensionResponse;
 
-    public ExtensionResponseFuture(Future<TLVElement> future, KSIRequestContext context, PduFactory pduFactory) {
+    public ExtensionResponseFuture(Future<TLVElement> future, KSIRequestContext context, ServiceCredentials credentials, PduFactory pduFactory) {
         this.future = future;
         this.context = context;
+        this.credentials = credentials;
         this.pduFactory = pduFactory;
     }
 
@@ -46,7 +49,7 @@ public final class ExtensionResponseFuture implements Future<ExtensionResponse> 
         if (extensionResponse == null) {
             try {
                 TLVElement tlvElement = future.getResult();
-                extensionResponse = pduFactory.readExtensionResponse(context, tlvElement);
+                extensionResponse = pduFactory.readExtensionResponse(context, credentials, tlvElement);
             } catch (com.guardtime.ksi.tlv.TLVParserException e) {
                 throw new KSIProtocolException("Can't parse response message", e);
             }

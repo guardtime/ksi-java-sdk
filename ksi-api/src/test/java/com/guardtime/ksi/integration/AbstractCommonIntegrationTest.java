@@ -266,12 +266,12 @@ public abstract class AbstractCommonIntegrationTest {
         Mockito.when(mockedExtenderClient.extend(Mockito.any(KSIRequestContext.class), Mockito.any(Date.class), Mockito.any
                 (Date.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
-                KSIRequestContext requestContext = ((KSIRequestContext) invocationOnMock.getArguments()[0]).getWithCredentials
-                        (new KSIServiceCredentials("anon", "anon"));
+                KSIServiceCredentials credentials = new KSIServiceCredentials("anon", "anon");
+                KSIRequestContext requestContext = ((KSIRequestContext) invocationOnMock.getArguments()[0]);
                 Date aggregationTime = (Date) invocationOnMock.getArguments()[1];
                 Date publicationTime = (Date) invocationOnMock.getArguments()[2];
                 PduFactory pduFactory = new PduV1Factory();
-                ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, aggregationTime,
+                ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, credentials, aggregationTime,
                         publicationTime);
                 ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());
                 TLVElement tlvElement = TLVElement.create(Util.toByteArray(requestStream));
@@ -282,7 +282,7 @@ public abstract class AbstractCommonIntegrationTest {
                 payload.replace(payload.getFirstChildElement(CalendarHashChain.ELEMENT_TYPE), calendarChain);
                 responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(simpleHttpClient.getServiceCredentials()
                         .getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
-                return new ExtensionResponseFuture(mockedFuture, requestContext, pduFactory);
+                return new ExtensionResponseFuture(mockedFuture, requestContext, credentials, pduFactory);
             }
         });
     }

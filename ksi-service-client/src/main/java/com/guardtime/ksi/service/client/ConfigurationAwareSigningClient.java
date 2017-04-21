@@ -58,19 +58,18 @@ public abstract class ConfigurationAwareSigningClient implements KSISigningClien
         Util.notNull(requestContext, "requestContext");
         Util.notNull(dataHash, "dataHash");
         Util.notNull(level, "level");
-        requestContext = requestContext.getWithCredentials(getServiceCredentials());
-        Future<TLVElement> requestFuture = sign(new ByteArrayInputStream(pduFactory.createAggregationRequest(requestContext,
-                dataHash, level).toByteArray()));
-        return new AggregationResponseFuture(requestFuture, requestContext, pduFactory);
+        ServiceCredentials credentials = getServiceCredentials();
+        Future<TLVElement> requestFuture = sign(new ByteArrayInputStream(pduFactory.createAggregationRequest(requestContext, credentials, dataHash, level).toByteArray()));
+        return new AggregationResponseFuture(requestFuture, requestContext, credentials, pduFactory);
     }
 
     protected abstract Future<TLVElement> sign(InputStream is) throws KSIClientException;
 
     public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
         Util.notNull(requestContext, "requestContext");
-        requestContext = requestContext.getWithCredentials(getServiceCredentials());
-        AggregationRequest requestMessage = pduFactory.createAggregatorConfigurationRequest(requestContext);
+        ServiceCredentials credentials = getServiceCredentials();
+        AggregationRequest requestMessage = pduFactory.createAggregatorConfigurationRequest(requestContext, credentials);
         Future<TLVElement> future = sign(new ByteArrayInputStream(requestMessage.toByteArray()));
-        return pduFactory.readAggregatorConfigurationResponse(requestContext, future.getResult());
+        return pduFactory.readAggregatorConfigurationResponse(requestContext, credentials, future.getResult());
     }
 }

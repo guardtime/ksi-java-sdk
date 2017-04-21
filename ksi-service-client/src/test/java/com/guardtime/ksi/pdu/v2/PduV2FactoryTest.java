@@ -38,7 +38,7 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 public class PduV2FactoryTest {
 
     private static final long DEFAULT_LEVEL = 0L;
-    public static final KSIServiceCredentials CREDENTIALS = new KSIServiceCredentials("anon", "anon");
+    private static final KSIServiceCredentials CREDENTIALS = new KSIServiceCredentials("anon", "anon");
     private PduV2Factory pduFactory = new PduV2Factory();
     private DataHash dataHash;
     private KSIRequestContext requestContext;
@@ -47,141 +47,146 @@ public class PduV2FactoryTest {
     @BeforeMethod
     public void setUp() throws Exception {
         this.dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
-        this.requestContext = new KSIRequestContext(42275443333883166L, 42L, 42L).getWithCredentials(CREDENTIALS);
-        this.extensionContext = new KSIRequestContext(5546551786909961666L, 42L, 42L).getWithCredentials(CREDENTIALS);
+        this.requestContext = new KSIRequestContext(42275443333883166L, 42L, 42L);
+        this.extensionContext = new KSIRequestContext(5546551786909961666L, 42L, 42L);
     }
 
     @Test
     public void testCreateAggregationRequest_Ok() throws Exception {
-        AggregationRequest request = pduFactory.createAggregationRequest(requestContext, dataHash, DEFAULT_LEVEL);
+        AggregationRequest request = pduFactory.createAggregationRequest(requestContext, CREDENTIALS, dataHash, DEFAULT_LEVEL);
         Assert.assertNotNull(request);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KsiRequestContext can not be null")
     public void testCreateAggregationRequestWithoutContext_ThrowsNullPointerException() throws Exception {
-        pduFactory.createAggregationRequest(null, dataHash, DEFAULT_LEVEL);
+        pduFactory.createAggregationRequest(null, CREDENTIALS, dataHash, DEFAULT_LEVEL);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "ServiceCredentials can not be null")
+    public void testCreateAggregationRequestWithoutCredentials_ThrowsNullPointerException() throws Exception {
+        pduFactory.createAggregationRequest(requestContext, null, dataHash, DEFAULT_LEVEL);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "DataHash can not be null")
     public void testCreateAggregationRequestWithoutDataHash_ThrowsNullPointerException() throws Exception {
-        pduFactory.createAggregationRequest(requestContext, null, DEFAULT_LEVEL);
+        pduFactory.createAggregationRequest(requestContext, CREDENTIALS, null, DEFAULT_LEVEL);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Only non-negative integer values are allowed")
     public void testCreateAggregationRequestWithNegativeLevel_ThrowsNullPointerException() throws Exception {
-        pduFactory.createAggregationRequest(requestContext, dataHash, -42L);
+        pduFactory.createAggregationRequest(requestContext, CREDENTIALS, dataHash, -42L);
     }
 
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testAggregationResponseContainsInvalidMac_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-invalid-mac.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-invalid-mac.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Aggregation response payload with requestId 1 wasn't found")
     public void testAggregationResponseContainsInvalidRequestId_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(new KSIRequestContext(1L, 42L, 42L).getWithCredentials(CREDENTIALS), loadTlv("pdu/aggregation/aggregation-response-v2.tlv"));
+        pduFactory.readAggregationResponse(new KSIRequestContext(1L, 42L, 42L), CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid response message. Response message must contain at least one payload element")
     public void testAggregationResponseDoesNotContainResponseTlvTag_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-missing-payload.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-missing-payload.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: 'The request could not be authenticated'")
     public void testAggregationResponseContains03ErrorMessage_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-invalid-login-key.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-invalid-login-key.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: .*")
     public void testAggregationResponseContainsErrorMessageInside02Element_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(new KSIRequestContext(8530358545345979581L, 42L, 42L).getWithCredentials(CREDENTIALS), loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
+        pduFactory.readAggregationResponse(new KSIRequestContext(8530358545345979581L, 42L, 42L), CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator")
     public void testReadV2AggregationResponse() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("aggregation-203-error.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("aggregation-203-error.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is 0x101. Error message from server: 'this-error-should-be-thrown'")
     public void testReadV2AggregationResponseWithErrorPayloadAndMac_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-multi-payload-with-error-payload.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-multi-payload-with-error-payload.tlv"));
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=.* encountered")
     public void testReadV2AggregationResponseWithUnknownCriticalElement_ThrowsTLVParserException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-multi-payload-with-critical-unknown-element.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-multi-payload-with-critical-unknown-element.tlv"));
     }
 
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testReadV2AggregationResponseWithEditedFlagAndUnchangedMac_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-changed-flag-but-unchanged-hmac.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-changed-flag-but-unchanged-hmac.tlv"));
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid PDU header element. Expected element 0x01, got 0x.*")
     public void testReadV2AggregationResponseHeaderNotFirst_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-header-not-first.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-header-not-first.tlv"));
     }
 
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testExtensionResponseInvalidHMAC_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-invalid-mac.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-invalid-mac.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Extension response payload with requestId 5546551786909961666 wasn't found")
     public void testExtensionRequestIdsMismatch() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: 'The request could not be authenticated'")
     public void testExtensionResponseContains03ErrorMessage_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readExtensionResponse(requestContext, loadTlv("pdu/extension/extension-response-v2-invalid-login-key.tlv"));
+        pduFactory.readExtensionResponse(requestContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-invalid-login-key.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: 'The request contained invalid payload'")
     public void testExtensionResponseContains02ErrorMessage_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readExtensionResponse(new KSIRequestContext(98765L, 42L, 42L).getWithCredentials(CREDENTIALS), loadTlv("pdu/extension/extension-response-v2-with-error.tlv"));
+        pduFactory.readExtensionResponse(new KSIRequestContext(98765L, 42L, 42L), CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-with-error.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Invalid KSI response. Missing MAC.")
     public void testExtensionResponseWithoutMac_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-missing-mac.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-missing-mac.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender")
     public void testReadV2ExtensionResponse() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is 0x101. Error message from server: 'this-error-should-be-thrown'")
     public void testExtensionResponseWithErrorPayloadAndMac_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-multi-payload-with-error-payload.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-multi-payload-with-error-payload.tlv"));
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=.* encountered")
     public void testReadV2ExtensionResponseWithUnknownCriticalElement_ThrowsTLVParserException() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-with-unknown-critical-element.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-with-unknown-critical-element.tlv"));
     }
 
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testReadV2ExtensionResponseWithEditedFlagAndUnchangedMac_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-with-changed-flag-but-unchanged-mac.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-with-changed-flag-but-unchanged-mac.tlv"));
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid PDU header element. Expected element 0x01, got 0x.*")
     public void testReadV2ExtensionResponseHeaderNotFirst_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-header-not-first.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-header-not-first.tlv"));
     }
 
     @Test
     public void testReadV2ExtensionResponseContainingUnknownNonCriticalElement() throws Exception {
-        ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(8396215651691691389L, 42L, 42L).getWithCredentials(CREDENTIALS), loadTlv("pdu/extension/extension-response-v2-unknown-non-critical-element.tlv"));
+        ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(8396215651691691389L, 42L, 42L), CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-unknown-non-critical-element.tlv"));
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getCalendarHashChain());
     }
 
     @Test
     public void testCreateAggregationConfigurationRequest() throws Exception {
-        AggregationRequest request = pduFactory.createAggregatorConfigurationRequest(requestContext);
+        AggregationRequest request = pduFactory.createAggregatorConfigurationRequest(requestContext, CREDENTIALS);
         Assert.assertNotNull(request);
         TLVElement tlv = TLVElement.create(request.toByteArray());
         Assert.assertEquals(tlv.getType(), GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2);
@@ -189,7 +194,7 @@ public class PduV2FactoryTest {
     }
     @Test
     public void testAggregationConfigurationResponseParsingWithMultiplePayloadsV2() throws Exception {
-        AggregatorConfiguration cnf = pduFactory.readAggregatorConfigurationResponse(requestContext, loadTlv("pdu/aggregation/aggregator-response-with-conf-ack-and-signature.tlv"));
+        AggregatorConfiguration cnf = pduFactory.readAggregatorConfigurationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregator-response-with-conf-ack-and-signature.tlv"));
 
         Assert.assertEquals(cnf.getAggregationAlgorithm(), HashAlgorithm.SHA2_384);
         Assert.assertTrue(cnf.getAggregationPeriod().equals(12288L));
@@ -203,7 +208,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testAggregationResponseParsingWithMultipleConfsV2() throws Exception {
-        AggregatorConfiguration cnf = pduFactory.readAggregatorConfigurationResponse(requestContext, loadTlv("pdu/aggregation/aggregator-response-multiple-confs.tlv"));
+        AggregatorConfiguration cnf = pduFactory.readAggregatorConfigurationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregator-response-multiple-confs.tlv"));
 
         Assert.assertNotNull(cnf);
         Assert.assertEquals(cnf.getAggregationAlgorithm(), HashAlgorithm.RIPEMD_160);
@@ -218,7 +223,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testAggregationResponseParsingWithEmptyConfV2() throws Exception {
-        AggregatorConfiguration cnf = pduFactory.readAggregatorConfigurationResponse(requestContext, loadTlv("pdu/aggregation/aggregator-response-with-empty-conf.tlv"));
+        AggregatorConfiguration cnf = pduFactory.readAggregatorConfigurationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregator-response-with-empty-conf.tlv"));
 
         Assert.assertNotNull(cnf);
         Assert.assertNull(cnf.getAggregationAlgorithm());
@@ -230,7 +235,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testExtenderConfigurationResponseParsingWithMultiplePayloadsV2() throws Exception {
-        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, loadTlv("pdu/extension/extender-response-with-conf-and-calendar.tlv"));
+        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extender-response-with-conf-and-calendar.tlv"));
 
         Assert.assertTrue(cnf.getCalendarFirstTime().equals(new Date(5557150000L)));
         Assert.assertTrue(cnf.getCalendarLastTime().equals(new Date(1422630579000L)));
@@ -243,7 +248,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testExtenderResponseParsingWithMultipleConfsV2() throws Exception {
-        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, loadTlv("pdu/extension/extender-response-multiple-confs.tlv"));
+        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extender-response-multiple-confs.tlv"));
 
         Assert.assertNotNull(cnf);
         Assert.assertTrue(cnf.getCalendarFirstTime().equals(new Date(158000)));
@@ -257,7 +262,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testExtenderResponseParsingWithEmptyConfV2() throws Exception {
-        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, loadTlv("pdu/extension/extender-response-with-empty-conf.tlv"));
+        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extender-response-with-empty-conf.tlv"));
 
         Assert.assertNotNull(cnf);
         Assert.assertNull(cnf.getCalendarFirstTime());
@@ -268,12 +273,17 @@ public class PduV2FactoryTest {
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KsiRequestContext can not be null")
     public void testCreateAggregationConfigurationRequestWithoutContext() throws Exception {
-        pduFactory.createAggregatorConfigurationRequest(null);
+        pduFactory.createAggregatorConfigurationRequest(null, CREDENTIALS);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "ServiceCredentials can not be null")
+    public void testCreateAggregationConfigurationRequestWithoutCredentials() throws Exception {
+        pduFactory.createAggregatorConfigurationRequest(requestContext, null);
     }
 
     @Test
     public void testReadAggregatorConfigurationResponse() throws Exception {
-        AggregatorConfiguration response = pduFactory.readAggregatorConfigurationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-conf-response-ok.tlv"));
+        AggregatorConfiguration response = pduFactory.readAggregatorConfigurationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-conf-response-ok.tlv"));
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getAggregationAlgorithm());
         Assert.assertNotNull(response.getAggregationPeriod());
@@ -285,12 +295,12 @@ public class PduV2FactoryTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator")
     public void testReadV1AggregatorConfigurationResponse() throws Exception {
-        pduFactory.readAggregatorConfigurationResponse(requestContext, loadTlv("aggregation-203-error.tlv"));
+        pduFactory.readAggregatorConfigurationResponse(requestContext, CREDENTIALS, loadTlv("aggregation-203-error.tlv"));
     }
 
     @Test
     public void testCreateExtenderConfigurationRequest() throws Exception {
-        ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext);
+        ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext, CREDENTIALS);
         Assert.assertNotNull(request);
         TLVElement tlv = TLVElement.create(request.toByteArray());
         Assert.assertEquals(tlv.getType(), GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_REQUEST_PDU_V2);
@@ -299,17 +309,23 @@ public class PduV2FactoryTest {
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KsiRequestContext can not be null")
     public void testCreateExtenderConfigurationRequestWithoutContext() throws Exception {
-        pduFactory.createExtensionConfigurationRequest(null);
+        pduFactory.createExtensionConfigurationRequest(null, CREDENTIALS);
     }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "ServiceCredentials can not be null")
+    public void testCreateExtenderConfigurationRequestWithoutCredentials() throws Exception {
+        pduFactory.createExtensionConfigurationRequest(extensionContext, null);
+    }
+
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender")
     public void testReadV1ExtensionConfigurationResponse() throws Exception {
-        pduFactory.readExtenderConfigurationResponse(extensionContext, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
+        pduFactory.readExtenderConfigurationResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
     }
 
     @Test
     public void testReadExtenderConfigurationResponse() throws Exception {
-        ExtenderConfiguration response = pduFactory.readExtenderConfigurationResponse(requestContext, loadTlv("pdu/extension/extender-conf-response-ok.tlv"));
+        ExtenderConfiguration response = pduFactory.readExtenderConfigurationResponse(requestContext, CREDENTIALS, loadTlv("pdu/extension/extender-conf-response-ok.tlv"));
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getCalendarFirstTime());
         Assert.assertNotNull(response.getCalendarLastTime());

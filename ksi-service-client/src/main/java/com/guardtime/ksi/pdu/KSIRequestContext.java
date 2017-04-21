@@ -18,10 +18,6 @@
  */
 package com.guardtime.ksi.pdu;
 
-import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.util.Util;
-
-
 /**
  * Helper class for KSI request/response. This class holds additional data that
  * specific data like request identifier and login key.
@@ -32,15 +28,9 @@ public final class KSIRequestContext {
     private Long requestId;
     private Long instanceId;
     private Long messageId;
-    private ServiceCredentials credentials;
 
     public KSIRequestContext(PduIdentifierProvider pduIdentifierProvider) {
-        this(pduIdentifierProvider.nextRequestId(),  pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
-    }
-
-    private KSIRequestContext(ServiceCredentials credentials, Long requestId, Long instanceId, Long messageId) {
-        this(requestId, instanceId, messageId);
-        this.credentials = credentials;
+        this(pduIdentifierProvider.nextRequestId(), pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
     }
 
     public KSIRequestContext(Long requestId, Long instanceId, Long messageId) {
@@ -53,16 +43,6 @@ public final class KSIRequestContext {
         return requestId;
     }
 
-    public String getLoginId() {
-        Util.notNull(credentials, "KSIRequestContext.credentials");
-        return credentials.getLoginId();
-    }
-
-    public byte[] getLoginKey() {
-        Util.notNull(credentials, "KSIRequestContext.credentials");
-        return credentials.getLoginKey();
-    }
-
     public Long getInstanceId() {
         return instanceId;
     }
@@ -71,7 +51,4 @@ public final class KSIRequestContext {
         return messageId;
     }
 
-    public KSIRequestContext getWithCredentials(ServiceCredentials credentials) {
-        return new KSIRequestContext(credentials, requestId, instanceId, messageId);
-    }
 }

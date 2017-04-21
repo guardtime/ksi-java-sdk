@@ -21,6 +21,7 @@ package com.guardtime.ksi.pdu;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
 
 /**
@@ -33,12 +34,14 @@ public final class AggregationResponseFuture implements Future<AggregationRespon
     private Future<TLVElement> requestFuture;
     private KSIRequestContext requestContext;
     private PduFactory pduFactory;
+    private ServiceCredentials credentials;
 
     private AggregationResponse response;
 
-    public AggregationResponseFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, PduFactory pduFactory) {
+    public AggregationResponseFuture(Future<TLVElement> requestFuture, KSIRequestContext requestContext, ServiceCredentials credentials, PduFactory pduFactory) {
         this.requestFuture = requestFuture;
         this.requestContext = requestContext;
+        this.credentials = credentials;
         this.pduFactory = pduFactory;
     }
 
@@ -46,7 +49,7 @@ public final class AggregationResponseFuture implements Future<AggregationRespon
         try {
             if (response == null) {
                 TLVElement responseTlv = requestFuture.getResult();
-                response = pduFactory.readAggregationResponse(requestContext, responseTlv);
+                response = pduFactory.readAggregationResponse(requestContext, credentials, responseTlv);
             }
             return response;
         } catch (com.guardtime.ksi.tlv.TLVParserException e) {

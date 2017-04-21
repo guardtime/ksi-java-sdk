@@ -20,6 +20,7 @@ package com.guardtime.ksi.pdu.v1;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 
@@ -35,8 +36,8 @@ class AggregationResponseV1 extends AbstractKSIResponse<AggregationResponsePaylo
      * @param context     instance of {@link KSIRequestContext}. may not be null
      * @throws KSIException will be thrown when TLV message parsing fails
      */
-    public AggregationResponseV1(TLVElement rootElement, KSIRequestContext context) throws KSIException {
-        super(rootElement, context);
+    public AggregationResponseV1(TLVElement rootElement, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
+        super(rootElement, context, credentials);
     }
 
     @Override

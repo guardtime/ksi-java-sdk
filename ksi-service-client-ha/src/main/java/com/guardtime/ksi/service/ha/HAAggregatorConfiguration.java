@@ -23,6 +23,10 @@ import com.guardtime.ksi.pdu.AggregatorConfiguration;
 
 import java.util.List;
 
+import static com.guardtime.ksi.service.ha.HAConfUtil.adjustMaxRequests;
+import static com.guardtime.ksi.service.ha.HAConfUtil.isBigger;
+import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
+
 class HAAggregatorConfiguration implements AggregatorConfiguration {
 
     private Long maxRequests;
@@ -57,26 +61,6 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
             }
         }
         this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
-    }
-
-    private boolean isBigger(Long oldVal, Long newVal) {
-        return oldVal == null || (newVal != null && newVal > oldVal);
-    }
-
-    private boolean isSmaller(Long oldVal, Long newVal) {
-        return oldVal == null || (newVal != null && newVal < oldVal);
-    }
-
-    /**
-     * If a load balancing strategy is used then client can actually send more requests per second than it could
-     * with single gateway because load is distributed. This method adjusts the max requests accordingly.
-     */
-    private Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long maxRequests) {
-        if (maxRequests == null) {
-            return null;
-        }
-        double percentageOfClientsTakingRequest = ((double) totalNumberOfClients) / numberOfClientsInOneRound;
-        return (long) (maxRequests * percentageOfClientsTakingRequest);
     }
 
     public Long getMaximumLevel() {

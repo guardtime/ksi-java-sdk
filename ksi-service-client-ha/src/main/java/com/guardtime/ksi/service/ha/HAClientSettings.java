@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.settings;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.exceptions.KSIException;
 
@@ -33,11 +33,11 @@ public class HAClientSettings {
         this.extendingClientsForRequest = extendingClientsForRequest;
     }
 
-    public int getSigningClientsForRequest() {
+    public Integer getSigningClientsForRequest() {
         return signingClientsForRequest;
     }
 
-    public int getExtendingClientsForRequest() {
+    public Integer getExtendingClientsForRequest() {
         return extendingClientsForRequest;
     }
 

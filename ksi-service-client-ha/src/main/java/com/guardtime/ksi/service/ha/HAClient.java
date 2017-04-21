@@ -28,7 +28,6 @@ import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.ha.settings.HAClientSettings;
 
 import java.io.IOException;
 import java.util.Date;

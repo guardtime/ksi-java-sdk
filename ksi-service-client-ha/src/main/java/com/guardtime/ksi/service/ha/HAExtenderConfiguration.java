@@ -23,6 +23,10 @@ import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import java.util.Date;
 import java.util.List;
 
+import static com.guardtime.ksi.service.ha.HAConfUtil.isAfter;
+import static com.guardtime.ksi.service.ha.HAConfUtil.isBefore;
+import static com.guardtime.ksi.service.ha.HAConfUtil.isBigger;
+
 class HAExtenderConfiguration implements ExtenderConfiguration {
 
     private Long maxRequests;
@@ -53,18 +57,6 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
         }
 
         this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
-    }
-
-    private boolean isBigger(Long oldVal, Long newVal) {
-        return oldVal == null || (newVal != null && newVal < oldVal);
-    }
-
-    private boolean isAfter(Date oldVal, Date newVal) {
-        return oldVal == null || (newVal != null && newVal.after(oldVal));
-    }
-
-    private boolean isBefore(Date oldVal, Date newVal) {
-        return oldVal == null || (newVal != null && newVal.before(oldVal));
     }
 
     /**

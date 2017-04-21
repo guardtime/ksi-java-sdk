@@ -28,21 +28,25 @@ import org.testng.annotations.Test;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.mock;
 
 public class AbstractHAClientTest {
 
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. It is not " +
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. It " +
+            "is not " +
             "possible to have more clients in one selection than there are available clients")
     public void testActiveClientsPerRequestLargerThanClientsList() throws Exception {
         new DummyHAClient(singletonList(mock(KSISigningClient.class)), 2);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize DummyHAClient with less than one subclient per selection")
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize " +
+            "DummyHAClient with less than one subclient per selection")
     public void testInititalizingWithNoClientsPerRequest() throws Exception {
         new DummyHAClient(singletonList(mock(KSISigningClient.class)), 0);
     }
@@ -95,18 +99,29 @@ public class AbstractHAClientTest {
     public void testAllServiceCallsFail() throws Exception {
         DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)), null);
         List<ServiceCallingTask<Integer>> tasks = new ArrayList<ServiceCallingTask<Integer>>();
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 1")));
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 2")));
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 3")));
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 4")));
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 5")));
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 6")));
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 7")));
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 8")));
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 9")));
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 10")));
-        tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 11")));
-        haClient.callAnyService(tasks, 0L).getResult();
+        List<String> messages = Arrays.asList("Test failed. Task 1",
+                "Test failed. Task 2",
+                "Test failed. Task 3",
+                "Test failed. Task 4",
+                "Test failed. Task 5",
+                "Test failed. Task 6",
+                "Test failed. Task 7",
+                "Test failed. Task 8",
+                "Test failed. Task 9",
+                "Test failed. Task 10");
+        for (String message : messages) {
+            tasks.add(new DummyFailingTask(new RuntimeException(message)));
+        }
+        try {
+            haClient.callAnyService(tasks, 0L).getResult();
+        } catch (HASubclientsFailedException e) {
+            Map<String, Exception> subexceptions = e.getExceptions();
+            Assert.assertEquals(messages.size(), subexceptions.size(), "HASubclientsFailedException did not contain all expected subexceptions.");
+            for (Exception exception : subexceptions.values()) {
+                Assert.assertTrue(messages.contains(exception.getMessage()), "HASubclientsFailedException did not contain all expected subexceptions.");
+            }
+            throw e;
+        }
     }
 
     private static class DummyHAClient extends AbstractHAClient<DummyClient, Integer, Object> {

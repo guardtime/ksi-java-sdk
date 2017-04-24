@@ -29,28 +29,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * This is an abstract class for different types of High Availability clients. All of them have two common parts:
- * <ul>
- *     <li>They all have configurations to ask for and the way it's asked is the same although the configuration contents are not.</li>
- *     <li>All the HA services are invoked in the same principle: all subclients are invoked and the first successful one counts.
- *          If all of them fail then a combined exception is thrown.</li>
- * </ul>
+ * This is an abstract class for different types of High Availability clients. All of them have two common parts: <ul> <li>They
+ * all have configurations to ask for and the way it's asked is the same although the configuration contents are not.</li> <li>All
+ * the HA services are invoked in the same principle: all subclients are invoked and the first successful one counts. If all of
+ * them fail then a combined exception is thrown.</li> </ul>
  *
  * To avoid duplication common algorithmic parts are implemented in this abstract superclass and as concrete types are different,
  * they are represented as generics
  *
- * @param <CLIENT> Type of subclients we are dealing with. Can be for example {@link com.guardtime.ksi.service.client.KSISigningClient} or
- *                {@link com.guardtime.ksi.service.client.KSIExtenderClient}. Needs to be {@link Closeable} so that if HAClient is closed
- *                then all it's subclients can also be closed.
- * @param <SERVICE_RESPONSE> Type of response the CLIENT service call returns.
+ * @param <CLIENT>                  Type of subclients we are dealing with. Can be for example {@link
+ *                                  com.guardtime.ksi.service.client.KSISigningClient} or
+ *                                  {@link com.guardtime.ksi.service.client.KSIExtenderClient}.
+ *                                  Needs to be {@link Closeable} so that if HAClient is closed then all it's subclients can also
+ *                                  be closed.
+ * @param <SERVICE_RESPONSE>        Type of response the CLIENT service call returns.
  * @param <SERVICE_CONFIG_RESPONSE> Type of response the CLIENT configuration call returns.
  */
 abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERVICE_CONFIG_RESPONSE> implements Closeable {
@@ -59,13 +57,13 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
 
     private final RoundRobinSelectionMaker<CLIENT> clientsPicker;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
-    private final Map<Long, Map<String, Exception>> failedRequests = new ConcurrentHashMap<Long, Map<String, Exception>>();
 
     private final String implName;
 
     /**
-     * @param subclients List of all the subclients. Must contain at least one subclient.
-     * @param clientsForRequest Number of clients selected to serve any single request. If null then it's set equal to the size of subClients list
+     * @param subclients        List of all the subclients. Must contain at least one subclient.
+     * @param clientsForRequest Number of clients selected to serve any single request. If null then it's set equal to the size of
+     *                          subClients list
      */
     AbstractHAClient(List<CLIENT> subclients, Integer clientsForRequest) {
         this.implName = getClass().getSimpleName();
@@ -79,17 +77,18 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
             throw new IllegalArgumentException("Can not initialize " + implName + " with less than one subclient per selection");
         }
         if (clientsForRequest > subclients.size()) {
-            throw new IllegalArgumentException("Invalid input parameter. It is not possible to have more clients in one selection " +
+            throw new IllegalArgumentException("Invalid input parameter. It is not possible to have more clients in one " +
+                    "selection " +
                     "than there are available clients");
         }
         this.clientsPicker = new RoundRobinSelectionMaker<CLIENT>(subclients, clientsForRequest);
-        logger.info("Client initialized with %s subclients for any single request %s and %d total number of subclients", clientsForRequest, subclients.size());
+        logger.info("Client initialized with %s subclients for any single request %s and %d total number of subclients",
+                clientsForRequest, subclients.size());
     }
 
     /**
-     *
-     * @return Selection of clients for any single request. Selection is based on chosen load balancing algorithm and configuration
-     * @throws KSIClientException
+     * @return Selection of clients for any single request. Selection is based on chosen load balancing algorithm and
+     * configuration
      */
     Collection<CLIENT> prepareClients() throws KSIClientException {
         Collection<CLIENT> clients = clientsPicker.select();
@@ -101,12 +100,14 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
      * Invokes all configurationRequestTasks and waits for and returns aggregated configuration based on successful answers
      *
      * @param configurationRequestTasks List of configuration request task to invoke
-     * @return  Aggregated configuration based on the tasks that ended successfully
+     * @return Aggregated configuration based on the tasks that ended successfully
      * @throws KSIClientException If none of the tasks ended successfully.
      */
-    SERVICE_CONFIG_RESPONSE getConfiguration(Collection<Callable<SERVICE_CONFIG_RESPONSE>> configurationRequestTasks) throws KSIClientException {
+    SERVICE_CONFIG_RESPONSE getConfiguration(Collection<Callable<SERVICE_CONFIG_RESPONSE>> configurationRequestTasks) throws
+            KSIClientException {
         try {
-            List<java.util.concurrent.Future<SERVICE_CONFIG_RESPONSE>> configurationFutures = callAllServiceConfigurations(configurationRequestTasks);
+            List<java.util.concurrent.Future<SERVICE_CONFIG_RESPONSE>> configurationFutures = callAllServiceConfigurations
+                    (configurationRequestTasks);
             List<SERVICE_CONFIG_RESPONSE> configurations = new ArrayList<SERVICE_CONFIG_RESPONSE>();
             for (java.util.concurrent.Future<SERVICE_CONFIG_RESPONSE> configurationFuture : configurationFutures) {
                 try {
@@ -116,11 +117,13 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
                 }
             }
             if (configurations.isEmpty()) {
-                throw new KSIClientException(implName + " received no configuration responses to use for building the most optimal configuration");
+                throw new KSIClientException(implName + " received no configuration responses to use for building the most " +
+                        "optimal configuration");
             }
             if (!areAllConfsEqual(configurations)) {
                 logger.warn("Configurations gotten via " + implName + " from subclients differ from eachother. This could " +
-                        "mean that external services are configured wrong. All configurations: " + configurationsToString(configurations));
+                        "mean that external services are configured wrong. All configurations: " + configurationsToString
+                        (configurations));
             }
             return aggregateConfigurations(configurations);
         } catch (Exception e) {
@@ -147,12 +150,10 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
      * Invokes all service calling tasks and returns a future that eventually returns the result of first successful one.
      *
      * @param tasks List of service call tasks
-     * @param requestId ID of the request to keep track of requests
      * @return {@link ServiceCallFuture<SERVICE_RESPONSE>} that can be used to get the first successful service response
      */
-    ServiceCallFuture<SERVICE_RESPONSE> callAnyService(Collection<ServiceCallingTask<SERVICE_RESPONSE>> tasks, Long requestId) {
-        registerTasksExceptionHolders(tasks, requestId);
-        Future<SERVICE_RESPONSE> clientResponse = executorService.submit(new ServiceCallsTask(requestId, tasks));
+    ServiceCallFuture<SERVICE_RESPONSE> callAnyService(Collection<ServiceCallingTask<SERVICE_RESPONSE>> tasks) {
+        Future<SERVICE_RESPONSE> clientResponse = executorService.submit(new ServiceCallsTask(tasks));
         return new ServiceCallFuture<SERVICE_RESPONSE>(clientResponse);
     }
 
@@ -161,39 +162,10 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
      *
      * @param tasks Configuration asking tasks for different subclients.
      * @return {@link List<Future>} of all the subclients configurations
-     *
-     * @throws InterruptedException
      */
     List<Future<SERVICE_CONFIG_RESPONSE>> callAllServiceConfigurations(Collection<Callable<SERVICE_CONFIG_RESPONSE>> tasks)
             throws InterruptedException {
         return executorService.invokeAll(tasks);
-    }
-
-    /**
-     * All tasks contain exception holders to keep track which asynchronous service calls have failed. Those exception holders
-     * can be used to build combined exception if all the service calls fail. This method sets a common exception holder for
-     * all tasks meant for a single logical request.
-     */
-    private void registerTasksExceptionHolders(Collection<ServiceCallingTask<SERVICE_RESPONSE>> tasks, Long requestId) {
-        Map<String, Exception> exceptionHolder = registerSubclientsExceptionHolder(requestId);
-        for (ServiceCallingTask<SERVICE_RESPONSE> task : tasks) {
-            task.setExceptionHolder(exceptionHolder);
-        }
-    }
-
-    /**
-     * Registers and created a new exception holder for a logical request.
-     */
-    private Map<String, Exception> registerSubclientsExceptionHolder(Long id) {
-        failedRequests.put(id, new ConcurrentHashMap<String, Exception>());
-        return failedRequests.get(id);
-    }
-
-    /**
-     * Removed an exception holder from registry. Should be called if all subclients have finished.
-     */
-    private Map<String, Exception> deregisterSubclientsExceptionHolder(Long id) {
-        return failedRequests.remove(id);
     }
 
     /**
@@ -233,27 +205,14 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
      */
     private class ServiceCallsTask implements Callable<SERVICE_RESPONSE> {
 
-        private final Long requestId;
-        private final Collection<ServiceCallingTask<SERVICE_RESPONSE>>  serviceCallTasks;
+        private final Collection<ServiceCallingTask<SERVICE_RESPONSE>> serviceCallTasks;
 
-        ServiceCallsTask(Long requestId, Collection<ServiceCallingTask<SERVICE_RESPONSE>> serviceCallTasks) {
-            this.requestId = requestId;
+        ServiceCallsTask(Collection<ServiceCallingTask<SERVICE_RESPONSE>> serviceCallTasks) {
             this.serviceCallTasks = serviceCallTasks;
         }
 
         public SERVICE_RESPONSE call() throws Exception {
-            try {
-                SERVICE_RESPONSE clientResponse = executorService.invokeAny(serviceCallTasks);
-                deregisterSubclientsExceptionHolder(requestId);
-                return clientResponse;
-            } catch (Exception e) {
-                Map<String, Exception> subExceptions = deregisterSubclientsExceptionHolder(requestId);
-                if (subExceptions != null && !subExceptions.isEmpty()) {
-                    throw new HASubclientsFailedException("Invoking all subclients of " + implName + " failed.", subExceptions);
-                } else {
-                    throw new KSIClientException("Invoking " + implName + " failed", e);
-                }
-            }
+            return executorService.invokeAny(serviceCallTasks);
         }
     }
 }

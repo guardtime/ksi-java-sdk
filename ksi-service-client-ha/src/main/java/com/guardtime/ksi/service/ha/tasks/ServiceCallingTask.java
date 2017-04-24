@@ -24,14 +24,11 @@ import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 public abstract class ServiceCallingTask<T> implements Callable<T>{
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private Map<String, Exception> exceptionHolder;
 
     private final String clientKey;
     final KSIRequestContext requestContext;
@@ -41,17 +38,11 @@ public abstract class ServiceCallingTask<T> implements Callable<T>{
         this.requestContext = requestContext;
     }
 
-    public void setExceptionHolder(Map<String, Exception> exceptionRegistry) {
-        this.exceptionHolder = exceptionRegistry;
-    }
-
     public T call() throws Exception {
-        Util.notNull(exceptionHolder, "ExtendingTask.exceptionHolder");
         try {
             return completeTask();
         } catch (Exception e) {
             logger.error("Request sent via client " + clientKey + " failed", e);
-            exceptionHolder.put(clientKey, e);
             throw e;
         }
     }

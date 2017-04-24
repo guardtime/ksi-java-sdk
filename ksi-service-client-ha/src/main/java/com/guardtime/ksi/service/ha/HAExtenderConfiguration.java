@@ -23,9 +23,10 @@ import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import java.util.Date;
 import java.util.List;
 
+import static com.guardtime.ksi.service.ha.HAConfUtil.adjustMaxRequests;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isAfter;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isBefore;
-import static com.guardtime.ksi.service.ha.HAConfUtil.isBigger;
+import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
 
 class HAExtenderConfiguration implements ExtenderConfiguration {
 
@@ -42,7 +43,7 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
             Date confCalLastTime = conf.getCalendarLastTime();
             List<String> confParents = conf.getParents();
 
-            if (isBigger(maxRequests, confMaxRequests)) {
+            if (isSmaller(maxRequests, confMaxRequests)) {
                 maxRequests = confMaxRequests;
             }
             if (isAfter(calFirstTime, confCalFirstTime)) {
@@ -57,18 +58,6 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
         }
 
         this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
-    }
-
-    /**
-     * If a load balancing strategy is used then client can actually send more requests per second than it could
-     * to any single gateway because load is distributed. This method adjusts the max requests accordingly.
-     */
-    private Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long maxRequests) {
-        if (maxRequests == null) {
-            return null;
-        }
-        double percentageOfClientsTakingRequest = ((double) totalNumberOfClients) / numberOfClientsInOneRound;
-        return (long) (maxRequests * percentageOfClientsTakingRequest);
     }
 
     public Long getMaximumRequests() {

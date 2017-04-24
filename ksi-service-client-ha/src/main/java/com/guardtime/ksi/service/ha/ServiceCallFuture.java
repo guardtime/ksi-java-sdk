@@ -20,6 +20,7 @@ package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.client.KSIClientException;
 
 class ServiceCallFuture<T> implements Future<T> {
 
@@ -35,7 +36,7 @@ class ServiceCallFuture<T> implements Future<T> {
                 try {
                     this.result = serviceCallFuture.get();
                 } catch (Exception e) {
-                    throw ksiException(e);
+                    throw new KSIClientException("All subclients of HAClient failed", e);
                 }
             }
             return result;
@@ -43,25 +44,5 @@ class ServiceCallFuture<T> implements Future<T> {
 
     public boolean isFinished() {
         return result != null;
-    }
-
-    private KSIException ksiException(Throwable t) {
-        // To get rid of pointless layers of concurrency related exceptions
-        KSIException ksiException = getKSIExceptionFromCause(t);
-        if (ksiException == null) {
-            return new KSIException("Service call failed", t);
-        } else {
-            return ksiException;
-        }
-    }
-
-    private KSIException getKSIExceptionFromCause(Throwable t) {
-        if (t == null) {
-            return null;
-        } else if (t instanceof KSIException) {
-            return (KSIException) t;
-        } else {
-            return getKSIExceptionFromCause(t.getCause());
-        }
     }
 }

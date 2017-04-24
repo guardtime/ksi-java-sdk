@@ -102,13 +102,12 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
         Util.notNull(requestContext, "requestContext");
         Util.notNull(dataHash, "dataHash");
         Util.notNull(level, "level");
-        Long requestId = requestContext.getRequestId();
         Collection<KSISigningClient> clients = prepareClients();
         final Collection<ServiceCallingTask<AggregationResponse>> tasks = new
                 ArrayList<ServiceCallingTask<AggregationResponse>>();
         for (KSISigningClient client : clients) {
             tasks.add(new SigningTask(client, requestContext, dataHash, level));
         }
-        return callAnyService(tasks, requestId);
+        return callAnyService(tasks);
     }
 }

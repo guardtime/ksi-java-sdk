@@ -20,6 +20,7 @@ package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
 import org.testng.Assert;
@@ -28,10 +29,8 @@ import org.testng.annotations.Test;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.mock;
@@ -68,7 +67,7 @@ public class AbstractHAClientTest {
             tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 10")));
             tasks.add(new DumbTask(777));
             tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 11")));
-            Integer result = haClient.callAnyService(tasks, 0L).getResult();
+            Integer result = haClient.callAnyService(tasks).getResult();
             Assert.assertEquals(new Integer(777), result);
         }
     }
@@ -90,38 +89,19 @@ public class AbstractHAClientTest {
             tasks.add(new DummySlowTask(10));
             tasks.add(new DumbTask(777));
             tasks.add(new DummySlowTask(11));
-            Integer result = haClient.callAnyService(tasks, 0L).getResult();
+            Integer result = haClient.callAnyService(tasks).getResult();
             Assert.assertEquals(new Integer(777), result);
         }
     }
 
-    @Test(expectedExceptions = HASubclientsFailedException.class)
+    @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "All subclients of HAClient failed")
     public void testAllServiceCallsFail() throws Exception {
         DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)), null);
         List<ServiceCallingTask<Integer>> tasks = new ArrayList<ServiceCallingTask<Integer>>();
-        List<String> messages = Arrays.asList("Test failed. Task 1",
-                "Test failed. Task 2",
-                "Test failed. Task 3",
-                "Test failed. Task 4",
-                "Test failed. Task 5",
-                "Test failed. Task 6",
-                "Test failed. Task 7",
-                "Test failed. Task 8",
-                "Test failed. Task 9",
-                "Test failed. Task 10");
-        for (String message : messages) {
-            tasks.add(new DummyFailingTask(new RuntimeException(message)));
+        for (int i = 1; i <= 10; i++) {
+            tasks.add(new DummyFailingTask(new RuntimeException(String.format("Task %d failed", i))));
         }
-        try {
-            haClient.callAnyService(tasks, 0L).getResult();
-        } catch (HASubclientsFailedException e) {
-            Map<String, Exception> subexceptions = e.getExceptions();
-            Assert.assertEquals(messages.size(), subexceptions.size(), "HASubclientsFailedException did not contain all expected subexceptions.");
-            for (Exception exception : subexceptions.values()) {
-                Assert.assertTrue(messages.contains(exception.getMessage()), "HASubclientsFailedException did not contain all expected subexceptions.");
-            }
-            throw e;
-        }
+        haClient.callAnyService(tasks).getResult();
     }
 
     private static class DummyHAClient extends AbstractHAClient<DummyClient, Integer, Object> {

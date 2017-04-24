@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.selectionmaker;
+package com.guardtime.ksi.service.ha;
 
 import org.testng.annotations.Test;
 

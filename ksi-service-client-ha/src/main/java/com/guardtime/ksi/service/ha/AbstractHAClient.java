@@ -19,7 +19,6 @@
 package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.service.client.KSIClientException;
-import com.guardtime.ksi.service.ha.selectionmaker.RoundRobinSelectionMaker;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

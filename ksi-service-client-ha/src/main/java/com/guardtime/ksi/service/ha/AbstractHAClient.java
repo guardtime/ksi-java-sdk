@@ -127,7 +127,7 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
             }
             return aggregateConfigurations(configurations);
         } catch (Exception e) {
-            throw new KSIClientException("Asking extender configurations failed", e);
+            throw new KSIClientException("Asking configurations via " + implName + " failed", e);
         }
     }
 

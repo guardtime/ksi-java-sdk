@@ -18,10 +18,10 @@
  */
 package com.guardtime.ksi.service.ha.tasks;
 
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSISigningClient;
 
 public class SigningTask extends ServiceCallingTask<AggregationResponse> {
@@ -31,13 +31,17 @@ public class SigningTask extends ServiceCallingTask<AggregationResponse> {
     private Long level;
 
     public SigningTask(KSISigningClient client, KSIRequestContext requestContext, DataHash dataHash, Long level) {
-        super(createClientKey(client), requestContext);
+        super(requestContext);
         this.client = client;
         this.dataHash = dataHash;
         this.level = level;
     }
 
-    public AggregationResponse completeTask() throws KSIException {
-        return client.sign(requestContext, dataHash, level).getResult();
+    public AggregationResponse call() throws KSIClientException {
+        try {
+            return client.sign(requestContext, dataHash, level).getResult();
+        } catch (Exception e) {
+            throw new KSIClientException("Signing via client '" + client + "' failed", e);
+        }
     }
 }

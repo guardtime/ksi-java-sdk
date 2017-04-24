@@ -18,10 +18,11 @@
  */
 package com.guardtime.ksi.service.ha.tasks;
 
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
+
 import java.util.Date;
 
 public class ExtendingTask extends ServiceCallingTask<ExtensionResponse> {
@@ -31,14 +32,17 @@ public class ExtendingTask extends ServiceCallingTask<ExtensionResponse> {
     private Date publicationTime;
 
     public ExtendingTask(KSIExtenderClient client, KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) {
-        super(createClientKey(client), requestContext);
+        super(requestContext);
         this.client = client;
         this.aggregationTime = aggregationTime;
         this.publicationTime = publicationTime;
     }
 
-
-    public ExtensionResponse completeTask() throws KSIException {
-        return client.extend(requestContext, aggregationTime, publicationTime).getResult();
+    public ExtensionResponse call() throws KSIClientException {
+        try {
+            return client.extend(requestContext, aggregationTime, publicationTime).getResult();
+        } catch (Exception e) {
+            throw new KSIClientException("Extending via client '" + client + "' failed", e);
+        }
     }
 }

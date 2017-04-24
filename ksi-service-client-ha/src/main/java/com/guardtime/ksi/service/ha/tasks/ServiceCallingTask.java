@@ -18,38 +18,19 @@
  */
 package com.guardtime.ksi.service.ha.tasks;
 
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.guardtime.ksi.service.client.KSIClientException;
 
 import java.util.concurrent.Callable;
 
-public abstract class ServiceCallingTask<T> implements Callable<T>{
+public abstract class ServiceCallingTask<T> implements Callable<T> {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private final String clientKey;
     final KSIRequestContext requestContext;
 
-    public ServiceCallingTask(String clientKey, KSIRequestContext requestContext) {
-        this.clientKey = clientKey;
+    public ServiceCallingTask(KSIRequestContext requestContext) {
         this.requestContext = requestContext;
     }
 
-    public T call() throws Exception {
-        try {
-            return completeTask();
-        } catch (Exception e) {
-            logger.error("Request sent via client " + clientKey + " failed", e);
-            throw e;
-        }
-    }
+    public abstract T call() throws KSIClientException;
 
-    protected abstract T completeTask() throws KSIException;
-
-    protected static String createClientKey(Object client) {
-        return "#" + Util.nextLong() + ": " + client.toString();
-    }
 }

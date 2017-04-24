@@ -105,7 +105,7 @@ public class AbstractHAClientTest {
     }
 
     private static class DummyHAClient extends AbstractHAClient<DummyClient, Integer, Object> {
-        public DummyHAClient(List subclients, Integer clientsForRequest) throws KSIException {
+        DummyHAClient(List subclients, Integer clientsForRequest) throws KSIException {
             super(subclients, clientsForRequest);
         }
 
@@ -124,15 +124,15 @@ public class AbstractHAClientTest {
 
     private static class DumbTask extends ServiceCallingTask<Integer> {
 
-        protected final int x;
+        final int x;
 
         DumbTask(int x) {
-            super(ServiceCallingTask.createClientKey("test"), new KSIRequestContext(0L, 0L, 0L));
+            super(new KSIRequestContext(0L, 0L, 0L));
             this.x = x;
         }
 
 
-        protected Integer completeTask() throws KSIException {
+        public Integer call() throws KSIClientException {
             return x;
         }
     }
@@ -146,7 +146,7 @@ public class AbstractHAClientTest {
             this.e = e;
         }
 
-        public Integer completeTask() {
+        public Integer call() {
             throw e;
         }
     }
@@ -157,7 +157,7 @@ public class AbstractHAClientTest {
             super(x);
         }
 
-        public Integer completeTask() {
+        public Integer call() {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {

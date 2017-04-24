@@ -40,17 +40,17 @@ import static com.guardtime.ksi.TestUtil.loadSignature;
 public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = VALID_SIGNATURES)
-    public void testValidSignatures(DataHolderForIntegrationTests testData) throws Exception {
+    public void testValidSignatures(IntegrationTestDataHolder testData) throws Exception {
         testExecution(testData);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = INVALID_SIGNATURES)
-    public void testInvalidSignatures(DataHolderForIntegrationTests testData) throws Exception {
+    public void testInvalidSignatures(IntegrationTestDataHolder testData) throws Exception {
         testExecution(testData);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = POLICY_VERIFICATION_SIGNATURES)
-    public void testPolicyVerificationSignatures(DataHolderForIntegrationTests testData) throws Exception {
+    public void testPolicyVerificationSignatures(IntegrationTestDataHolder testData) throws Exception {
         testExecution(testData);
     }
 

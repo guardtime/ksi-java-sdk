@@ -72,7 +72,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-public class DataHolderForIntegrationTests {
+public class IntegrationTestDataHolder {
 
     private String testFile;
     private final IntegrationTestAction action;
@@ -94,7 +94,7 @@ public class DataHolderForIntegrationTests {
     private final HttpClientSettings settings;
     private KSIExtenderClient httpClient;
 
-    public DataHolderForIntegrationTests(String testFilePath, String[] inputData, KSIExtenderClient httpClient) throws KSIException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+    public IntegrationTestDataHolder(String testFilePath, String[] inputData, KSIExtenderClient httpClient) throws KSIException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         notNull(inputData, "Input data");
         for (int i = 0; i < inputData.length; i++) {
             inputData[i] = inputData[i].trim();

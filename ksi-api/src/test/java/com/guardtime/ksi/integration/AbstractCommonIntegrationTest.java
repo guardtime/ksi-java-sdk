@@ -258,7 +258,7 @@ public abstract class AbstractCommonIntegrationTest {
 
             for (int i = 0; i < linesCount; i++) {
                 try{
-                    data[i] = new Object[]{new DataHolderForIntegrationTests(path, lines.get(i).split(";"), httpClient)};
+                    data[i] = new Object[]{new IntegrationTestDataHolder(path, lines.get(i).split(";"), httpClient)};
                 } catch (Exception e){
                     logger.warn("Error while parsing the following line: '" + lines.get(i) + "' from file: " + fileName);
                     throw e;
@@ -273,7 +273,7 @@ public abstract class AbstractCommonIntegrationTest {
 
     }
 
-    protected void testExecution(DataHolderForIntegrationTests testData) throws Exception {
+    protected void testExecution(IntegrationTestDataHolder testData) throws Exception {
         KSISignature signature = null;
         KSI ksi = testData.getKsi();
 

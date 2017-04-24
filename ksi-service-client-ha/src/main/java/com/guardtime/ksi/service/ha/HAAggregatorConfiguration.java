@@ -27,6 +27,9 @@ import static com.guardtime.ksi.service.ha.HAConfUtil.adjustMaxRequests;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isBigger;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
 
+/**
+ * Aggregated configuration based on multiple configurations and HAClient settings.
+ */
 class HAAggregatorConfiguration implements AggregatorConfiguration {
 
     private Long maxRequests;
@@ -35,6 +38,14 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
     private HashAlgorithm aggregationAlgorithm;
     private Long maxLevel;
 
+    /**
+     * @param confs
+     *          All the configurations that were received from subclients
+     * @param totalClients
+     *          Number of clients that were asked for configuration
+     * @param clientsInRound
+     *          Number of clients picked by load-balancer for each request
+     */
     HAAggregatorConfiguration(List<AggregatorConfiguration> confs, int totalClients, int clientsInRound) {
         for (AggregatorConfiguration conf : confs) {
 
@@ -63,22 +74,41 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
         this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
     }
 
+    /**
+     * @return Smallest maximum level of all the subconfigurations.
+     */
     public Long getMaximumLevel() {
         return maxLevel;
     }
 
+    /**
+     * @return Random aggregation algorithm of all the subconfigurations. Non-null values are preferred.
+     */
     public HashAlgorithm getAggregationAlgorithm() {
         return aggregationAlgorithm;
     }
 
+    /**
+     * @return Biggest aggregation period of all the subconfigurations.
+     */
     public Long getAggregationPeriod() {
         return aggregationPeriod;
     }
 
+    /**
+     * Maximum requests depends on two things. First subconfigurations smallest maxRequests is found and then it's adjusted by
+     * the load-balancing factor.
+     *
+     * Example: If smallest maxRequests is 4 and there are 3 aggregators in total and each request is sent to 2 aggregators in
+     * parallel then maxRequests is Math.floor((4*3)/2)=6.
+     */
     public Long getMaximumRequests() {
         return maxRequests;
     }
 
+    /**
+     * @return Random parents set of all the subconfigurations. Non-null values are preferred.
+     */
     public List<String> getParents() {
         return parents;
     }

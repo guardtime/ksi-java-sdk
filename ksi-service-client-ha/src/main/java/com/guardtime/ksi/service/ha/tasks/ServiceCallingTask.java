@@ -23,10 +23,20 @@ import com.guardtime.ksi.service.client.KSIClientException;
 
 import java.util.concurrent.Callable;
 
+/**
+ * Task for doing a service call.
+ *
+ * @param <T>
+ *          Service call response type.
+ */
 public abstract class ServiceCallingTask<T> implements Callable<T> {
 
     final KSIRequestContext requestContext;
 
+    /**
+     * @param requestContext
+     *          {@link KSIRequestContext} for the service call.
+     */
     public ServiceCallingTask(KSIRequestContext requestContext) {
         this.requestContext = requestContext;
     }

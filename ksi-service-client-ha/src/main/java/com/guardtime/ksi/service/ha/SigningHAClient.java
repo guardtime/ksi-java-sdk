@@ -44,19 +44,67 @@ import java.util.concurrent.Callable;
  * parameters like maximum requests in a second take account that there are multiple clients and if load balancing is enabled
  * between those clients then those parameters are adjusted accordingly. This means that the user of the API can rely on this
  * configuration without worrying if load balancing is actually configured or not.
+ *
+ * Load-balancing is only applied to signing requests. It is not applied to configuration requests.
  */
 public class SigningHAClient extends AbstractHAClient<KSISigningClient, AggregationResponse, AggregatorConfiguration>
         implements KSISigningClient {
 
-    public SigningHAClient(List<KSISigningClient> subclients) throws KSIException {
-        this(subclients, null);
+    /**
+     * Used to initialize SigningHAClient in full high availability mode (load-balancing turned off).
+     *
+     * @param signingClients
+     *          List of subclients to send the signing requests.
+     */
+    public SigningHAClient(List<KSISigningClient> signingClients) {
+        this(signingClients, null);
     }
 
-    public SigningHAClient(List<KSISigningClient> signingClients, Integer signingClientsForRequest) throws
-            KSIException {
-        super(signingClients, signingClientsForRequest);
+    /**
+     * Used to initialize SigningHAClient with load balancing enabled.
+     *
+     * @param signingClients
+     *          List of subclients to send the signing requests.
+     * @param clientsForRequest
+     *          Determines to how many clients any single request is sent in parallel. If that number is smaller than size of
+     *          signingClients, then Round-robin algorithm is used to load-balance between different requests. If it's set to
+     *          null then SigningHAClient is initialized in full high availability mode (load-balancing turned off).
+     *
+     */
+    public SigningHAClient(List<KSISigningClient> signingClients, Integer clientsForRequest) {
+        super(signingClients, clientsForRequest);
     }
 
+    /**
+     * Does a non-blocking signing request. Picks clients to send the request, based on the configuration and sends the request
+     * to all of them in parallel. First successful response is used, others are cancelled. Request fails only if all the
+     * subclients fail.
+     *
+     * @see KSISigningClient#sign(KSIRequestContext, DataHash, Long)
+     */
+    public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
+        Util.notNull(requestContext, "requestContext");
+        Util.notNull(dataHash, "dataHash");
+        Util.notNull(level, "level");
+        Collection<KSISigningClient> clients = prepareClients();
+        final Collection<ServiceCallingTask<AggregationResponse>> tasks = new
+                ArrayList<ServiceCallingTask<AggregationResponse>>();
+        for (KSISigningClient client : clients) {
+            tasks.add(new SigningTask(client, requestContext, dataHash, level));
+        }
+        return callAnyService(tasks);
+    }
+
+    /**
+     * Used to get an aggregated configuration composed of subclients configurations. Load-balancing does not apply here.
+     * Configuration requests are sent to all the subclients.
+     *
+     * @see HAAggregatorConfiguration
+     *
+     * @param requestContext - instance of {@link KSIRequestContext}.
+     * @return Aggregated aggregators configuration.
+     * @throws KSIException if all the subclients fail
+     */
     public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
         Util.notNull(requestContext, "requestContext");
         Collection<Callable<AggregatorConfiguration>> tasks = new ArrayList<Callable<AggregatorConfiguration>>();
@@ -96,18 +144,5 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
 
     protected AggregatorConfiguration aggregateConfigurations(List<AggregatorConfiguration> configurations) {
         return new HAAggregatorConfiguration(configurations, getAllSubclients().size(), getRequestClientselectionSize());
-    }
-
-    public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
-        Util.notNull(requestContext, "requestContext");
-        Util.notNull(dataHash, "dataHash");
-        Util.notNull(level, "level");
-        Collection<KSISigningClient> clients = prepareClients();
-        final Collection<ServiceCallingTask<AggregationResponse>> tasks = new
-                ArrayList<ServiceCallingTask<AggregationResponse>>();
-        for (KSISigningClient client : clients) {
-            tasks.add(new SigningTask(client, requestContext, dataHash, level));
-        }
-        return callAnyService(tasks);
     }
 }

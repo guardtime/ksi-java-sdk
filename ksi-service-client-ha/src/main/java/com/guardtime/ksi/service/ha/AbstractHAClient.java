@@ -63,7 +63,8 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
     /**
      * @param subclients        List of all the subclients. Must contain at least one subclient.
      * @param clientsForRequest Number of clients selected to serve any single request. If null then it's set equal to the size of
-     *                          subClients list
+     *                          subClients list which means that no load-balancing is done and HAClient will work in full high
+     *                          availability mode.
      */
     AbstractHAClient(List<CLIENT> subclients, Integer clientsForRequest) {
         this.implName = getClass().getSimpleName();

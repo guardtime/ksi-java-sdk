@@ -45,27 +45,38 @@ import java.util.concurrent.Callable;
  */
 public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, ExtensionResponse, ExtenderConfiguration> implements KSIExtenderClient {
 
-    public ExtenderHAClient(List<KSIExtenderClient> subclients) throws KSIException {
-        this(subclients, null);
+    /**
+     * Used to initialize ExtenderHAClient in full high availability mode (load-balancing turned off).
+     *
+     * @param extenderClients
+     *          List of subclients to send the extending requests.
+     */
+    public ExtenderHAClient(List<KSIExtenderClient> extenderClients) throws KSIException {
+        this(extenderClients, null);
     }
 
-    public ExtenderHAClient(List<KSIExtenderClient> subclients, Integer clientsForRequest) throws KSIException {
-        super(subclients, clientsForRequest);
+    /**
+     * Used to initialize ExtenderHAClient with load balancing enabled.
+     *
+     * @param extenderClients
+     *          List of subclients to send the extending requests.
+     * @param clientsForRequest
+     *          Determines to how many clients any single request is sent in parallel. If that number is smaller than size of
+     *          extenderClients, then Round-robin algorithm is used to load-balance between different requests. If it's set to
+     *          null then ExtenderHAClient is initialized in full high availability mode (load-balancing turned off).
+     *
+     */
+    public ExtenderHAClient(List<KSIExtenderClient> extenderClients, Integer clientsForRequest) {
+        super(extenderClients, clientsForRequest);
     }
 
-    protected ExtenderConfiguration aggregateConfigurations(List<ExtenderConfiguration> configurations) {
-        return new HAExtenderConfiguration(configurations, getAllSubclients().size(), getRequestClientselectionSize());
-    }
-
-    public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
-        Util.notNull(requestContext, "requestContext");
-        Collection<Callable<ExtenderConfiguration>> tasks = new ArrayList<Callable<ExtenderConfiguration>>();
-        for (KSIExtenderClient client : getAllSubclients()) {
-            tasks.add(new ExtenderConfigurationTask(requestContext, client));
-        }
-        return getConfiguration(tasks);
-    }
-
+    /**
+     * Does a non-blocking extending request. Picks clients to send the request, based on the configuration and sends the request
+     * to all of them in parallel. First successful response is used, others are cancelled. Request fails only if all the
+     * subclients fail.
+     *
+     * @see KSIExtenderClient#extend(KSIRequestContext, Date, Date)
+     */
     public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
         Util.notNull(requestContext, "requestContext");
         Util.notNull(aggregationTime, "aggregationTime");
@@ -75,6 +86,30 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
             tasks.add(new ExtendingTask(client, requestContext, aggregationTime, publicationTime));
         }
         return callAnyService(tasks);
+    }
+
+    /**
+     * Used to get an aggregated configuration composed of subclients configurations. Load-balancing does not apply here.
+     * Configuration requests are sent to all the subclients.
+     *
+     * @see HAExtenderConfiguration
+     *
+     * @param requestContext
+     *                       Instance of {@link KSIRequestContext}.
+     * @return Aggregated extenders configuration.
+     * @throws KSIException if all the subclients fail.
+     */
+    public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
+        Util.notNull(requestContext, "requestContext");
+        Collection<Callable<ExtenderConfiguration>> tasks = new ArrayList<Callable<ExtenderConfiguration>>();
+        for (KSIExtenderClient client : getAllSubclients()) {
+            tasks.add(new ExtenderConfigurationTask(requestContext, client));
+        }
+        return getConfiguration(tasks);
+    }
+
+    protected ExtenderConfiguration aggregateConfigurations(List<ExtenderConfiguration> configurations) {
+        return new HAExtenderConfiguration(configurations, getAllSubclients().size(), getRequestClientselectionSize());
     }
 
     protected boolean configurationsEqual(ExtenderConfiguration c1, ExtenderConfiguration c2) {

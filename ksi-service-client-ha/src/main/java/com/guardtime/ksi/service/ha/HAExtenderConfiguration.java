@@ -28,6 +28,9 @@ import static com.guardtime.ksi.service.ha.HAConfUtil.isAfter;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isBefore;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
 
+/**
+ * Aggregated configuration based on multiple configurations and HAClient settings.
+ */
 class HAExtenderConfiguration implements ExtenderConfiguration {
 
     private Long maxRequests;
@@ -35,6 +38,14 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
     private Date calFirstTime;
     private Date calLastTime;
 
+    /**
+     * @param confs
+     *          All the configurations that were received from subclients
+     * @param totalClients
+     *          Number of clients that were asked for configuration
+     * @param clientsInRound
+     *          Number of clients picked by load-balancer for each request
+     */
     HAExtenderConfiguration(List<ExtenderConfiguration> confs, int totalClients, int clientsInRound) {
         for (ExtenderConfiguration conf : confs) {
 
@@ -60,18 +71,34 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
         this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
     }
 
+    /**
+     * Maximum requests depends on two things. First subconfigurations smallest maxRequests is found and then it's adjusted by
+     * the load-balancing factor.
+     *
+     * Example: If smallest maxRequests is 4 and there are 3 extenders in total and each request is sent to 2 extenders in
+     * parallel then maxRequests is Math.floor((4*3)/2)=6.
+     */
     public Long getMaximumRequests() {
         return maxRequests;
     }
 
+    /**
+     * @return Random parents set of all the subconfigurations. Non-null values are preferred.
+     */
     public List<String> getParents() {
         return parents;
     }
 
+    /**
+     * @return Latest calendarFirstTime of all the subconfigurations.
+     */
     public Date getCalendarFirstTime() {
         return calFirstTime;
     }
 
+    /**
+     * @return Earliest calendarLastTime of all the subconfigurations.
+     */
     public Date getCalendarLastTime() {
         return calLastTime;
     }

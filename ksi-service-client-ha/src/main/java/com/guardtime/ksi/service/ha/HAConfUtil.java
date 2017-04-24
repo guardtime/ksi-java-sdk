@@ -2,21 +2,36 @@ package com.guardtime.ksi.service.ha;
 
 import java.util.Date;
 
-public class HAConfUtil {
+/**
+ * Set of different utility methods used by HAClient
+ */
+class HAConfUtil {
 
-    public static boolean isBigger(Long a, Long b) {
+    /**
+     * Is value of b bigger than value of a. Returns true always if value of a is null.
+     */
+    static boolean isBigger(Long a, Long b) {
         return a == null || (b != null && b > a);
     }
 
-    public static boolean isSmaller(Long a, Long b) {
+    /**
+     * Is value of b smaller than value of a. Returns true always if value of a is null.
+     */
+    static boolean isSmaller(Long a, Long b) {
         return a == null || (b != null && b < a);
     }
 
-    public static boolean isAfter(Date a, Date b) {
+    /**
+     * Is value of b after value of a. Returns true always if value of a is null.
+     */
+    static boolean isAfter(Date a, Date b) {
         return a == null || (b != null && b.after(a));
     }
 
-    public static boolean isBefore(Date a, Date b) {
+    /**
+     * Is value of b before value of a. Returns true always if value of a is null.
+     */
+    static boolean isBefore(Date a, Date b) {
         return a == null || (b != null && b.before(a));
     }
 
@@ -24,7 +39,7 @@ public class HAConfUtil {
      * If a load balancing strategy is used then client can actually send more requests per second than it could
      * with single gateway because load is distributed. This method adjusts the max requests accordingly.
      */
-    public static Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long maxRequests) {
+    static Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long maxRequests) {
         if (maxRequests == null) {
             return null;
         }

@@ -31,6 +31,12 @@ public class RoundRobinSelectionMaker<T> {
     private final int selectionSize;
     private int cue = 0;
 
+    /**
+     * @param objects
+     *          List of objects to select from
+     * @param selectionSize
+     *          Size of the subset to make in one selection.
+     */
     public RoundRobinSelectionMaker(List<T> objects, int selectionSize) {
         this.objects = objects;
         this.selectionSize = selectionSize;

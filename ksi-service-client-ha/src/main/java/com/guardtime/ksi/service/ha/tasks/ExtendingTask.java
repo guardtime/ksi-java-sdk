@@ -25,12 +25,25 @@ import com.guardtime.ksi.service.client.KSIExtenderClient;
 
 import java.util.Date;
 
+/**
+ * Task for doing an extension request.
+ */
 public class ExtendingTask extends ServiceCallingTask<ExtensionResponse> {
 
     private final KSIExtenderClient client;
     private Date aggregationTime;
     private Date publicationTime;
 
+    /**
+     * @param client
+     *          {@link KSIExtenderClient} used for the extension request.
+     * @param requestContext
+     *          {@link KSIRequestContext} for the extension request.
+     * @param aggregationTime
+     *          Aggregation time of the signature to be extended.
+     * @param publicationTime
+     *          Publication time until which the signature is to be extended.
+     */
     public ExtendingTask(KSIExtenderClient client, KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) {
         super(requestContext);
         this.client = client;

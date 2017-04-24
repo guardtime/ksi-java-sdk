@@ -24,12 +24,25 @@ import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSISigningClient;
 
+/**
+ * Task for doing a signing request.
+ */
 public class SigningTask extends ServiceCallingTask<AggregationResponse> {
 
     private final KSISigningClient client;
     private DataHash dataHash;
     private Long level;
 
+    /**
+     * @param client
+     *          {@link KSISigningClient} used for the extension request.
+     * @param requestContext
+     *          {@link KSIRequestContext} for the extension request.
+     * @param dataHash
+     *          {@link DataHash} of the data to be signed.
+     * @param level
+     *          Level of the hash to be signed.
+     */
     public SigningTask(KSISigningClient client, KSIRequestContext requestContext, DataHash dataHash, Long level) {
         super(requestContext);
         this.client = client;

@@ -18,25 +18,35 @@
  */
 package com.guardtime.ksi.service.ha;
 
-import com.guardtime.ksi.exceptions.KSIException;
-
 /**
- * Settings for the HAClient.
+ * Settings for the HAClient. Can be used to set the balance between load-balancing and high availability.
  */
 public class HAClientSettings {
 
     private final Integer signingClientsForRequest;
     private final Integer extendingClientsForRequest;
 
-    public HAClientSettings(Integer signingClientsForRequest, Integer extendingClientsForRequest) throws KSIException {
+    /**
+     * @param signingClientsForRequest
+     *          To how many subclients any single signing request is sent in parallel.  If null then it can assumed that all the requests is sent to all the subclients.
+     * @param extendingClientsForRequest
+     *          To how many subclients any single extending request is sent in parallel. If null then it can assumed that all the requests is sent to all the subclients.
+     */
+    public HAClientSettings(Integer signingClientsForRequest, Integer extendingClientsForRequest) {
         this.signingClientsForRequest = signingClientsForRequest;
         this.extendingClientsForRequest = extendingClientsForRequest;
     }
 
+    /**
+     * @return Number of subclients that any single signing request is sent in parallel. If null then it can assumed that all the requests is sent to all the subclients.
+     */
     public Integer getSigningClientsForRequest() {
         return signingClientsForRequest;
     }
 
+    /**
+     * @return Number of subclients that any single extending request is sent in parallel. If null then it can assumed that all the requests is sent to all the subclients.
+     */
     public Integer getExtendingClientsForRequest() {
         return extendingClientsForRequest;
     }

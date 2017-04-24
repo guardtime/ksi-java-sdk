@@ -32,14 +32,14 @@ class ServiceCallFuture<T> implements Future<T> {
     }
 
     public T getResult() throws KSIException {
-            if (result == null) {
-                try {
-                    this.result = serviceCallFuture.get();
-                } catch (Exception e) {
-                    throw new KSIClientException("All subclients of HAClient failed", e);
-                }
+        if (result == null) {
+            try {
+                this.result = serviceCallFuture.get();
+            } catch (Exception e) {
+                throw new KSIClientException("All subclients of HAClient failed", e);
             }
-            return result;
+        }
+        return result;
     }
 
     public boolean isFinished() {

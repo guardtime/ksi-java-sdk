@@ -24,11 +24,20 @@ import com.guardtime.ksi.service.client.KSIExtenderClient;
 
 import java.util.concurrent.Callable;
 
+/**
+ * Task for asking extenders configuration.
+ */
 public class ExtenderConfigurationTask implements Callable<ExtenderConfiguration> {
 
     private final KSIRequestContext context;
     private final KSIExtenderClient client;
 
+    /**
+     * @param context
+     *          {@link KSIRequestContext} for the configuration asking request.
+     * @param client
+     *          {@link KSIExtenderClient} which's configuration is to be asked.
+     */
     public ExtenderConfigurationTask(KSIRequestContext context, KSIExtenderClient client) {
         this.context = context;
         this.client = client;

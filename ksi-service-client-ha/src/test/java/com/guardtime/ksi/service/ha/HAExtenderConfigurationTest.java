@@ -29,7 +29,7 @@ public class HAExtenderConfigurationTest {
         when(subConf2.getCalendarFirstTime()).thenReturn(new Date(100));
         when(subConf2.getCalendarLastTime()).thenReturn(new Date(200));
         when(subConf2.getMaximumRequests()).thenReturn(11L);
-        when(subConf2.getParents()).thenReturn(Arrays.asList("2", "3", "4"));
+        when(subConf2.getParents()).thenReturn(Arrays.asList("2", "3", "4", "5"));
 
         subConf3 = mock(ExtenderConfiguration.class);
         when(subConf3.getCalendarFirstTime()).thenReturn(new Date(50));
@@ -74,7 +74,7 @@ public class HAExtenderConfigurationTest {
     @Test
     public void testGetParents() {
         ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
-        assertEquals(configuration.getParents(), Arrays.asList("6", "7", "8"));
+        assertEquals(configuration.getParents(), Arrays.asList("2", "3", "4", "5"));
     }
 
 }

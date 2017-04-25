@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.guardtime.ksi.service.ha.HAConfUtil.adjustMaxRequests;
+import static com.guardtime.ksi.service.ha.HAConfUtil.hasMoreContents;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isAfter;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isBefore;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
@@ -63,11 +64,10 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
             if (isBefore(calLastTime, confCalLastTime)) {
                 calLastTime = confCalLastTime;
             }
-            if (confParents != null) {
+            if (hasMoreContents(parents, confParents)) {
                 parents = confParents;
             }
         }
-
         this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
     }
 
@@ -83,7 +83,7 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
     }
 
     /**
-     * @return Random parents set of all the subconfigurations. Non-null values are preferred.
+     * @return Largest set of parents.
      */
     public List<String> getParents() {
         return parents;

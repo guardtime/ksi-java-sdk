@@ -33,7 +33,7 @@ public class HAAggregatorConfigurationTest {
         when(subConf2.getAggregationPeriod()).thenReturn(800L);
         when(subConf2.getMaximumLevel()).thenReturn(17L);
         when(subConf2.getMaximumRequests()).thenReturn(10L);
-        when(subConf2.getParents()).thenReturn(Arrays.asList("2", "3", "4"));
+        when(subConf2.getParents()).thenReturn(Arrays.asList("2", "3", "4", "5"));
 
         subConf3 = mock(AggregatorConfiguration.class);
         when(subConf3.getAggregationAlgorithm()).thenReturn(SHA3_224);
@@ -80,7 +80,7 @@ public class HAAggregatorConfigurationTest {
     @Test
     public void testGetParents() {
         AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3), 3, 3);
-        assertEquals(configuration.getParents(), Arrays.asList("4", "5", "6"));
+        assertEquals(configuration.getParents(), Arrays.asList("2", "3", "4", "5"));
     }
 
     @Test

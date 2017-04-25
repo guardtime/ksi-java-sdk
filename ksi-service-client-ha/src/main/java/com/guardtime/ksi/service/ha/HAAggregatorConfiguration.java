@@ -24,6 +24,7 @@ import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import java.util.List;
 
 import static com.guardtime.ksi.service.ha.HAConfUtil.adjustMaxRequests;
+import static com.guardtime.ksi.service.ha.HAConfUtil.hasMoreContents;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isBigger;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
 
@@ -67,7 +68,7 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
             if (confAggrAlgorithm != null) {
                 aggregationAlgorithm = confAggrAlgorithm;
             }
-            if (confParents != null) {
+            if (hasMoreContents(parents, confParents)) {
                 parents = confParents;
             }
         }
@@ -107,7 +108,7 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
     }
 
     /**
-     * @return Random parents set of all the subconfigurations. Non-null values are preferred.
+     * @return Largest set of parents.
      */
     public List<String> getParents() {
         return parents;

@@ -44,15 +44,4 @@ class HAConfUtil {
         return (b != null && a == null) || (b != null && b.size() > a.size());
     }
 
-    /**
-     * If a load balancing strategy is used then client can actually send more requests per second than it could
-     * with single gateway because load is distributed. This method adjusts the max requests accordingly.
-     */
-    static Long adjustMaxRequests(int totalNumberOfClients, int numberOfClientsInOneRound, Long maxRequests) {
-        if (maxRequests == null) {
-            return null;
-        }
-        double percentageOfClientsTakingRequest = ((double) totalNumberOfClients) / numberOfClientsInOneRound;
-        return (long) (maxRequests * percentageOfClientsTakingRequest);
-    }
 }

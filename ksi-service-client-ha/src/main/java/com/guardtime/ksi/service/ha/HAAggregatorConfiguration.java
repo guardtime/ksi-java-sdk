@@ -23,7 +23,6 @@ import com.guardtime.ksi.pdu.AggregatorConfiguration;
 
 import java.util.List;
 
-import static com.guardtime.ksi.service.ha.HAConfUtil.adjustMaxRequests;
 import static com.guardtime.ksi.service.ha.HAConfUtil.hasMoreContents;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isBigger;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
@@ -42,12 +41,8 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
     /**
      * @param confs
      *          All the configurations that were received from subclients
-     * @param totalClients
-     *          Number of clients that were asked for configuration
-     * @param clientsInRound
-     *          Number of clients picked by load-balancer for each request
      */
-    HAAggregatorConfiguration(List<AggregatorConfiguration> confs, int totalClients, int clientsInRound) {
+    HAAggregatorConfiguration(List<AggregatorConfiguration> confs) {
         for (AggregatorConfiguration conf : confs) {
 
             Long confMaxRequests = conf.getMaximumRequests();
@@ -72,7 +67,6 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
                 parents = confParents;
             }
         }
-        this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
     }
 
     /**
@@ -97,11 +91,7 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
     }
 
     /**
-     * Maximum requests depends on two things. First subconfigurations smallest maxRequests is found and then it's adjusted by
-     * the load-balancing factor.
-     *
-     * Example: If smallest maxRequests is 4 and there are 3 aggregators in total and each request is sent to 2 aggregators in
-     * parallel then maxRequests is Math.floor((4*3)/2)=6.
+     * @return Smallest maxRequests of all subconfigurations.
      */
     public Long getMaximumRequests() {
         return maxRequests;

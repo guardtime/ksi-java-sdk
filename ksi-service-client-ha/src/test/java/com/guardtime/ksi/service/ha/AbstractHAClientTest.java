@@ -32,28 +32,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.mock;
 
 public class AbstractHAClientTest {
 
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. It " +
-            "is not " +
-            "possible to have more clients in one selection than there are available clients")
-    public void testActiveClientsPerRequestLargerThanClientsList() throws Exception {
-        new DummyHAClient(singletonList(mock(KSISigningClient.class)), 2);
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize " +
-            "DummyHAClient with less than one subclient per selection")
-    public void testInititalizingWithNoClientsPerRequest() throws Exception {
-        new DummyHAClient(singletonList(mock(KSISigningClient.class)), 0);
-    }
-
     @Test
     public void testIfOneServiceCallInSelectionSucceeds() throws Exception {
         for (int i = 0; i < 100; i++) {
-            DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)), null);
+            DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)));
             List<ServiceCallingTask<Integer>> tasks = new ArrayList<ServiceCallingTask<Integer>>();
             tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 1")));
             tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 2")));
@@ -75,7 +61,7 @@ public class AbstractHAClientTest {
     @Test
     public void testAllButOneServiceCallInSelectionIsSlow() throws Exception {
         for (int i = 0; i < 100; i++) {
-            DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)), null);
+            DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)));
             List<ServiceCallingTask<Integer>> tasks = new ArrayList<ServiceCallingTask<Integer>>();
             tasks.add(new DummySlowTask(1));
             tasks.add(new DummySlowTask(2));
@@ -96,7 +82,7 @@ public class AbstractHAClientTest {
 
     @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "All subclients of HAClient failed")
     public void testAllServiceCallsFail() throws Exception {
-        DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)), null);
+        DummyHAClient haClient = new DummyHAClient(Collections.singletonList(mock(KSISigningClient.class)));
         List<ServiceCallingTask<Integer>> tasks = new ArrayList<ServiceCallingTask<Integer>>();
         for (int i = 1; i <= 10; i++) {
             tasks.add(new DummyFailingTask(new RuntimeException(String.format("Task %d failed", i))));
@@ -105,8 +91,8 @@ public class AbstractHAClientTest {
     }
 
     private static class DummyHAClient extends AbstractHAClient<DummyClient, Integer, Object> {
-        DummyHAClient(List subclients, Integer clientsForRequest) throws KSIException {
-            super(subclients, clientsForRequest);
+        DummyHAClient(List subclients) throws KSIException {
+            super(subclients);
         }
 
         protected boolean configurationsEqual(Object c1, Object c2) {

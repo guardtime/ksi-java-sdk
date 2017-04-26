@@ -36,43 +36,23 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * KSI Signing Client which combines other clients to achieve high availability and load balancing.
+ * KSI Signing Client which combines other clients to achieve redundancy.
  *
  * NB! It is highly recommended that all the aggregator configurations would be in sync with each other (except credentials).
  * If that is not the case then SigningHAClient will log a warning but it will still work. If user asks for configuration from the
- * SigningHAClient it will use the most conservative configuration of sub clients to compose aggregated configuration. Some
- * parameters like maximum requests in a second take account that there are multiple clients and if load balancing is enabled
- * between those clients then those parameters are adjusted accordingly. This means that the user of the API can rely on this
- * configuration without worrying if load balancing is actually configured or not.
- *
- * Load-balancing is only applied to signing requests. It is not applied to configuration requests.
+ * SigningHAClient it will use the most conservative configuration of sub clients to compose aggregated configuration.
  */
 public class SigningHAClient extends AbstractHAClient<KSISigningClient, AggregationResponse, AggregatorConfiguration>
         implements KSISigningClient {
 
     /**
-     * Used to initialize SigningHAClient in full high availability mode (load-balancing turned off).
+     * Used to initialize SigningHAClient.
      *
      * @param signingClients
      *          List of subclients to send the signing requests.
      */
     public SigningHAClient(List<KSISigningClient> signingClients) {
-        this(signingClients, null);
-    }
-
-    /**
-     * Used to initialize SigningHAClient with load balancing enabled.
-     *
-     * @param signingClients
-     *          List of subclients to send the signing requests.
-     * @param clientsForRequest
-     *          Determines to how many clients any single request is sent in parallel. If that number is smaller than size of
-     *          signingClients, then Round-robin algorithm is used to load-balance between different requests. If it's set to
-     *          null then SigningHAClient is initialized in full high availability mode (load-balancing turned off).
-     *
-     */
-    public SigningHAClient(List<KSISigningClient> signingClients, Integer clientsForRequest) {
-        super(signingClients, clientsForRequest);
+        super(signingClients);
     }
 
     /**
@@ -86,9 +66,8 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
         Util.notNull(requestContext, "requestContext");
         Util.notNull(dataHash, "dataHash");
         Util.notNull(level, "level");
-        Collection<KSISigningClient> clients = prepareClients();
-        final Collection<ServiceCallingTask<AggregationResponse>> tasks = new
-                ArrayList<ServiceCallingTask<AggregationResponse>>();
+        Collection<KSISigningClient> clients = getSubclients();
+        final Collection<ServiceCallingTask<AggregationResponse>> tasks = new ArrayList<ServiceCallingTask<AggregationResponse>>(clients.size());
         for (KSISigningClient client : clients) {
             tasks.add(new SigningTask(client, requestContext, dataHash, level));
         }
@@ -96,7 +75,7 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
     }
 
     /**
-     * Used to get an aggregated configuration composed of subclients configurations. Load-balancing does not apply here.
+     * Used to get an aggregated configuration composed of subclients configurations.
      * Configuration requests are sent to all the subclients.
      *
      * @see HAAggregatorConfiguration
@@ -108,7 +87,7 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
     public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
         Util.notNull(requestContext, "requestContext");
         Collection<Callable<AggregatorConfiguration>> tasks = new ArrayList<Callable<AggregatorConfiguration>>();
-        for (KSISigningClient client : getAllSubclients()) {
+        for (KSISigningClient client : getSubclients()) {
             tasks.add(new AggregatorConfigurationTask(requestContext, client));
         }
         return getConfiguration(tasks);
@@ -143,6 +122,6 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
     }
 
     protected AggregatorConfiguration aggregateConfigurations(List<AggregatorConfiguration> configurations) {
-        return new HAAggregatorConfiguration(configurations, getAllSubclients().size(), getRequestClientselectionSize());
+        return new HAAggregatorConfiguration(configurations);
     }
 }

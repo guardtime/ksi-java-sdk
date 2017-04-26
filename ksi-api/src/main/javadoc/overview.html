@@ -123,7 +123,7 @@ The following clients are currently implemented:
         <em>TCPClient</em> - uses TCP protocol. NB! Only signing is supported!
     </li>
     <li>
-        <em>HAClient</em> - Combines one to many KSISigningClients and one to many KSIExtenderClients and load-balances between them. NB! Only signing and extending is supported!
+        <em>HAClient</em> - Combines one to many KSISigningClients and one to many KSIExtenderClients to achieve redundancy. NB! Only signing and extending is supported!
     </li>
 </ul>
 Method <em>setPublicationsFilePkiTrustStore(trustStore)</em> from <em>com.guardtime.ksi.KSIBuilder</em> class can be
@@ -285,17 +285,8 @@ Alternatively the <i>HTTPConnectionParameters</i> class can be used to configure
 <b>NB! When the proxy server uses username/password for authentication then the <i>HTTPConnectionParameters</i> class must be used to configure proxy.</b>
 
 <h2>HAClient Configuration</h2>
-More redundant and highly available connection to gateway can be achieved using HAClient. HAClient combines multiple other clients and does two things:
-<ul>
-    <li>
-        It uses Round-robin algorithm to load-balance between given clients between consequent requests.
-    </li>
-    <li>
-        Depending on settings it sends requests from 1 to many given clients in parallel and gives back the first successful one.
-    </li>
-</ul>
-
-Former can be beneficial to not overburden any single gateway and latter to achieve redundancy.
+More redundant connection to gateway can be achieved using HAClient.
+HAClient combines multiple other clients, sends requests to all the given clients in parallel and gives back the first successful one.
 
 <ul>
     <li>

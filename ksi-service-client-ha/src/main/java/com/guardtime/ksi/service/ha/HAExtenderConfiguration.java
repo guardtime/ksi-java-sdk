@@ -23,7 +23,6 @@ import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import java.util.Date;
 import java.util.List;
 
-import static com.guardtime.ksi.service.ha.HAConfUtil.adjustMaxRequests;
 import static com.guardtime.ksi.service.ha.HAConfUtil.hasMoreContents;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isAfter;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isBefore;
@@ -42,12 +41,8 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
     /**
      * @param confs
      *          All the configurations that were received from subclients
-     * @param totalClients
-     *          Number of clients that were asked for configuration
-     * @param clientsInRound
-     *          Number of clients picked by load-balancer for each request
      */
-    HAExtenderConfiguration(List<ExtenderConfiguration> confs, int totalClients, int clientsInRound) {
+    HAExtenderConfiguration(List<ExtenderConfiguration> confs) {
         for (ExtenderConfiguration conf : confs) {
 
             Long confMaxRequests = conf.getMaximumRequests();
@@ -68,15 +63,10 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
                 parents = confParents;
             }
         }
-        this.maxRequests = adjustMaxRequests(totalClients, clientsInRound, maxRequests);
     }
 
     /**
-     * Maximum requests depends on two things. First subconfigurations smallest maxRequests is found and then it's adjusted by
-     * the load-balancing factor.
-     *
-     * Example: If smallest maxRequests is 4 and there are 3 extenders in total and each request is sent to 2 extenders in
-     * parallel then maxRequests is Math.floor((4*3)/2)=6.
+     * @return Smallest maxRequests of all subconfigurations.
      */
     public Long getMaximumRequests() {
         return maxRequests;

@@ -17,6 +17,6 @@
  * reserves and retains all trademark rights.
  */
 /**
- * High-Availability Client. Can be used for high-availability and load-balancing purposes.
+ * High Availability client - KSI client which combines other clients to achieve redundancy.
  */
 package com.guardtime.ksi.service.ha;

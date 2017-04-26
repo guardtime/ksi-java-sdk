@@ -36,38 +36,24 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * KSI Extender Client which combines other clients to achieve high availability and load balancing.
+ * KSI Extender Client which combines other clients to achieve redundancy.
  *
- * NB! It is highly recommended that all the extender configurations would be in sync with each other (except credentials). If that is not the case then ExtenderHAClient will log a warning but it will still work.
- * If user asks for configuration from the ExtenderHAClient it will use the most conservative configuration of sub clients to compose aggregated configuration. Some parameters like maximum requests in a second take
- * account that there are multiple clients and if load balancing is enabled between those clients then those parameters are adjusted accordingly. This means that the user of the API can rely on this configuration
- * without worrying if load balancing is actually configured or not.
+ * NB! It is highly recommended that all the extender configurations would be in sync with each other (except credentials).
+ * If that is not the case then ExtenderHAClient will log a warning but it will still work.
+ * If user asks for configuration from the ExtenderHAClient it will use the most conservative configuration of sub clients to
+ * compose aggregated configuration.d
  */
 public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, ExtensionResponse, ExtenderConfiguration> implements KSIExtenderClient {
 
     /**
-     * Used to initialize ExtenderHAClient in full high availability mode (load-balancing turned off).
+     * Used to initialize ExtenderHAClient.
      *
      * @param extenderClients
      *          List of subclients to send the extending requests.
-     */
-    public ExtenderHAClient(List<KSIExtenderClient> extenderClients) throws KSIException {
-        this(extenderClients, null);
-    }
-
-    /**
-     * Used to initialize ExtenderHAClient with load balancing enabled.
-     *
-     * @param extenderClients
-     *          List of subclients to send the extending requests.
-     * @param clientsForRequest
-     *          Determines to how many clients any single request is sent in parallel. If that number is smaller than size of
-     *          extenderClients, then Round-robin algorithm is used to load-balance between different requests. If it's set to
-     *          null then ExtenderHAClient is initialized in full high availability mode (load-balancing turned off).
      *
      */
-    public ExtenderHAClient(List<KSIExtenderClient> extenderClients, Integer clientsForRequest) {
-        super(extenderClients, clientsForRequest);
+    public ExtenderHAClient(List<KSIExtenderClient> extenderClients) {
+        super(extenderClients);
     }
 
     /**
@@ -80,8 +66,8 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
     public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
         Util.notNull(requestContext, "requestContext");
         Util.notNull(aggregationTime, "aggregationTime");
-        Collection<KSIExtenderClient> clients = prepareClients();
-        Collection<ServiceCallingTask<ExtensionResponse>> tasks = new ArrayList<ServiceCallingTask<ExtensionResponse>>();
+        Collection<KSIExtenderClient> clients = getSubclients();
+        Collection<ServiceCallingTask<ExtensionResponse>> tasks = new ArrayList<ServiceCallingTask<ExtensionResponse>>(clients.size());
         for (KSIExtenderClient client : clients) {
             tasks.add(new ExtendingTask(client, requestContext, aggregationTime, publicationTime));
         }
@@ -89,7 +75,7 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
     }
 
     /**
-     * Used to get an aggregated configuration composed of subclients configurations. Load-balancing does not apply here.
+     * Used to get an aggregated configuration composed of subclients configurations.
      * Configuration requests are sent to all the subclients.
      *
      * @see HAExtenderConfiguration
@@ -102,14 +88,14 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
     public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
         Util.notNull(requestContext, "requestContext");
         Collection<Callable<ExtenderConfiguration>> tasks = new ArrayList<Callable<ExtenderConfiguration>>();
-        for (KSIExtenderClient client : getAllSubclients()) {
+        for (KSIExtenderClient client : getSubclients()) {
             tasks.add(new ExtenderConfigurationTask(requestContext, client));
         }
         return getConfiguration(tasks);
     }
 
     protected ExtenderConfiguration aggregateConfigurations(List<ExtenderConfiguration> configurations) {
-        return new HAExtenderConfiguration(configurations, getAllSubclients().size(), getRequestClientselectionSize());
+        return new HAExtenderConfiguration(configurations);
     }
 
     protected boolean configurationsEqual(ExtenderConfiguration c1, ExtenderConfiguration c2) {

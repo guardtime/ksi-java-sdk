@@ -41,7 +41,7 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
     private final ExtenderHAClient extenderHAClient;
 
     /**
-     * Used to initialize HAClient in full high availability mode (load-balancing turned off).
+     * Used to initialize HAClient.
      *
      * @param signingClients
      *          List of {@link KSISigningClient}s HAClient can use.
@@ -52,31 +52,8 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
      * @see ExtenderHAClient#ExtenderHAClient(List)
      */
     public HAClient(List<KSISigningClient> signingClients, List<KSIExtenderClient> extenderClients) {
-        this(signingClients, extenderClients, null);
-    }
-
-    /**
-     * Used to initialize HAClient in full HA mode (load-balancing turned off).
-     *
-     * @param signingClients
-     *          List of {@link KSISigningClient}s HAClient can use.
-     * @param extenderClients
-     *          List of {@link KSIExtenderClient}s HAClient can use.
-     * @param settings
-     *          Can be used to configure the balance between load-balancing and high availability. HAClient is activated in full
-     *          high availability mode if setting is null.
-     *
-     * @see SigningHAClient#SigningHAClient(List, Integer)
-     * @see ExtenderHAClient#ExtenderHAClient(List, Integer)
-     */
-    public HAClient(List<KSISigningClient> signingClients, List<KSIExtenderClient> extenderClients, HAClientSettings settings) {
-        if (settings == null) {
-            settings = new HAClientSettings(
-                    signingClients == null ? 0 : signingClients.size(),
-                    extenderClients == null ? 0 : extenderClients.size());
-        }
-        this.signingHAClient = new SigningHAClient(signingClients, settings.getSigningClientsForRequest());
-        this.extenderHAClient = new ExtenderHAClient(extenderClients, settings.getExtendingClientsForRequest());
+        this.signingHAClient = new SigningHAClient(signingClients);
+        this.extenderHAClient = new ExtenderHAClient(extenderClients);
     }
 
     /**

@@ -14,7 +14,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>KSI Service High Availability Client</name>
-    <description>Client for Java SDK that can be used to combine multiple other clients for high availability and load balancing purposes.</description>
+    <description>Client for Java SDK that can be used to achieve redundancu.</description>
 
     <licenses>
         <license>

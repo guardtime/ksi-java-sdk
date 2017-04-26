@@ -54,46 +54,18 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final RoundRobinSelectionMaker<CLIENT> clientsPicker;
+    private final Collection<CLIENT> subclients;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
-
-    private final String implName;
 
     /**
      * @param subclients        List of all the subclients. Must contain at least one subclient.
-     * @param clientsForRequest Number of clients selected to serve any single request. If null then it's set equal to the size of
-     *                          subClients list which means that no load-balancing is done and HAClient will work in full high
-     *                          availability mode.
      */
-    AbstractHAClient(List<CLIENT> subclients, Integer clientsForRequest) {
-        this.implName = getClass().getSimpleName();
+    AbstractHAClient(Collection<CLIENT> subclients) {
         if (subclients == null || subclients.isEmpty()) {
-            throw new IllegalArgumentException("Can not initialize " + implName + "without any subclients");
+            throw new IllegalArgumentException("Can not initialize " + getClass() + "without any subclients");
         }
-        if (clientsForRequest == null) {
-            clientsForRequest = subclients.size();
-        }
-        if (clientsForRequest <= 0) {
-            throw new IllegalArgumentException("Can not initialize " + implName + " with less than one subclient per selection");
-        }
-        if (clientsForRequest > subclients.size()) {
-            throw new IllegalArgumentException("Invalid input parameter. It is not possible to have more clients in one " +
-                    "selection " +
-                    "than there are available clients");
-        }
-        this.clientsPicker = new RoundRobinSelectionMaker<CLIENT>(subclients, clientsForRequest);
-        logger.info("Client initialized with {} subclients for any single request and {} total number of subclients",
-                clientsForRequest, subclients.size());
-    }
-
-    /**
-     * @return Selection of clients for any single request. Selection is based on chosen load balancing algorithm and
-     * configuration
-     */
-    Collection<CLIENT> prepareClients() throws KSIClientException {
-        Collection<CLIENT> clients = clientsPicker.select();
-        logger.debug("ksiClientsPicker picked clients: {}", clients);
-        return clients;
+        this.subclients = subclients;
+        logger.info("Client initialized with {} subclients.", subclients.size());
     }
 
     /**
@@ -113,21 +85,20 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
                 try {
                     configurations.add(configurationFuture.get());
                 } catch (Exception e) {
-                    logger.warn("Asking configuration from " + implName + " clients subclient failed", e);
+                    logger.warn("Asking configuration from subclient failed", e);
                 }
             }
             if (configurations.isEmpty()) {
-                throw new KSIClientException(implName + " received no configuration responses to use for building the most " +
+                throw new KSIClientException(getClass() + " received no configuration responses to use for building the most " +
                         "optimal configuration");
             }
             if (!areAllConfsEqual(configurations)) {
-                logger.warn("Configurations gotten via " + implName + " from subclients differ from eachother. This could " +
-                        "mean that external services are configured wrong. All configurations: " + configurationsToString
-                        (configurations));
+                logger.warn("Configurations gotten from subclients differ from eachother. This could " +
+                        "mean that external services are configured wrong. All configurations: " + configurationsToString(configurations));
             }
             return aggregateConfigurations(configurations);
         } catch (Exception e) {
-            throw new KSIClientException("Asking configurations via " + implName + " failed", e);
+            throw new KSIClientException("Asking configurations via " + getClass() + " failed", e);
         }
     }
 
@@ -172,7 +143,7 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
      * Closes all the subclients. Does not fail to close next in line if closing previous one fails.
      */
     public void close() {
-        for (Closeable client : clientsPicker.getAll()) {
+        for (CLIENT client : subclients) {
             try {
                 client.close();
             } catch (IOException e) {
@@ -184,20 +155,13 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
     /**
      * @return All the available clients tha the HAClient was configured with
      */
-    Collection<CLIENT> getAllSubclients() {
-        return clientsPicker.getAll();
-    }
-
-    /**
-     * @return Number of clients returned by client picking algorithm for any single request
-     */
-    int getRequestClientselectionSize() {
-        return clientsPicker.selectionSize();
+    Collection<CLIENT> getSubclients() {
+        return subclients;
     }
 
     @Override
     public String toString() {
-        return implName + "{LB Strategy=" + clientsPicker + "}";
+        return getClass() + "{subclients=" + subclients + "}";
     }
 
     /**

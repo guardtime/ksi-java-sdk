@@ -68,7 +68,7 @@ public class AbstractHAClientTest {
             tasks.add(new DumbTask(777));
             tasks.add(new DummyFailingTask(new RuntimeException("Test failed. Task 11")));
             Integer result = haClient.callAnyService(tasks).getResult();
-            Assert.assertEquals(new Integer(777), result);
+            Assert.assertEquals(result, new Integer(777));
         }
     }
 
@@ -90,7 +90,7 @@ public class AbstractHAClientTest {
             tasks.add(new DumbTask(777));
             tasks.add(new DummySlowTask(11));
             Integer result = haClient.callAnyService(tasks).getResult();
-            Assert.assertEquals(new Integer(777), result);
+            Assert.assertEquals(result, new Integer(777));
         }
     }
 

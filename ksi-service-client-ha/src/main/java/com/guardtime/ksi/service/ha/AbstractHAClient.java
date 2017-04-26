@@ -82,7 +82,7 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
                     "than there are available clients");
         }
         this.clientsPicker = new RoundRobinSelectionMaker<CLIENT>(subclients, clientsForRequest);
-        logger.info("Client initialized with %s subclients for any single request %s and %d total number of subclients",
+        logger.info("Client initialized with {} subclients for any single request and {} total number of subclients",
                 clientsForRequest, subclients.size());
     }
 
@@ -106,10 +106,10 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
     SERVICE_CONFIG_RESPONSE getConfiguration(Collection<Callable<SERVICE_CONFIG_RESPONSE>> configurationRequestTasks) throws
             KSIClientException {
         try {
-            List<java.util.concurrent.Future<SERVICE_CONFIG_RESPONSE>> configurationFutures = callAllServiceConfigurations
+            List<Future<SERVICE_CONFIG_RESPONSE>> configurationFutures = callAllServiceConfigurations
                     (configurationRequestTasks);
             List<SERVICE_CONFIG_RESPONSE> configurations = new ArrayList<SERVICE_CONFIG_RESPONSE>();
-            for (java.util.concurrent.Future<SERVICE_CONFIG_RESPONSE> configurationFuture : configurationFutures) {
+            for (Future<SERVICE_CONFIG_RESPONSE> configurationFuture : configurationFutures) {
                 try {
                     configurations.add(configurationFuture.get());
                 } catch (Exception e) {

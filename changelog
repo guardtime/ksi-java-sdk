@@ -5,6 +5,8 @@ Version 4.10
 * IMPROVEMENT: Removed VerificationContext.setPduVersion(PduVersion) as PDU version is decided in the client now.
 * IMPROVEMENT: KSISigningClient and KSIExtenderClient are not aware of external service settings like credentials and PDU version anymore.
 * FEATURE: HAClient (High-availability client) is a client that combines multiple KSISigningClients and KSIExtenderClients to achieve redundancy.
+* BUGFIX: RFC3161 record index rule code error code and messages corrected.
+* IMPROVEMENT: Renewed and cleaned test resources and improved test coverage.
 * BUGFIX: Removed registration time from KSISignature and CalendarHashChain.
 * BUGFIX: Removed addAggregationHashChain from KSISignature.
 

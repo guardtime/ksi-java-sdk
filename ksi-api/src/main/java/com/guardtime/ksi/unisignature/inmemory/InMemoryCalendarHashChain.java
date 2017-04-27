@@ -30,7 +30,6 @@ import com.guardtime.ksi.unisignature.CalendarHashChainLink;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Calendar hash chains are represented by `calendar chain' structures that consist of: <ul> <li>index fields:

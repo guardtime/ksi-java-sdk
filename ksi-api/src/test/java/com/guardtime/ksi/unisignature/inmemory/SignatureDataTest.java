@@ -24,12 +24,17 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.CALENDAR_AUTH_SIGNATURE_DATA_NO_CERT_ID;
+import static com.guardtime.ksi.Resources.CALENDAR_AUTH_SIGNATURE_DATA_NO_REPO_URI;
+import static com.guardtime.ksi.Resources.CALENDAR_AUTH_SIGNATURE_DATA_NO_SIGNATURE_TYPE;
+import static com.guardtime.ksi.Resources.CALENDAR_AUTH_SIGNATURE_DATA_NO_SIGNATURE_VALUE;
+import static com.guardtime.ksi.Resources.CALENDAR_AUTH_SIGNATURE_DATA_OK;
 
 public class SignatureDataTest {
 
     @Test
     public void testReadSignatureData_Ok() throws Exception {
-        InMemorySignatureData data = load("signature-data/signature-data-ok.tlv");
+        InMemorySignatureData data = load(CALENDAR_AUTH_SIGNATURE_DATA_OK);
         Assert.assertEquals(data.getElementType(), SignatureData.ELEMENT_TYPE);
         Assert.assertNotNull(data.getSignatureType());
         Assert.assertNotNull(data.getSignatureValue());
@@ -39,22 +44,22 @@ public class SignatureDataTest {
 
     @Test(expectedExceptions = InvalidSignatureDataException.class, expectedExceptionsMessageRegExp = "Signature data signature type can not be null")
     public void testReadSignatureDataWithoutSignatureType_ThrowsInvalidSignatureDataException() throws Exception {
-        load("signature-data/signature-data-without-signature-type.tlv");
+        load(CALENDAR_AUTH_SIGNATURE_DATA_NO_SIGNATURE_TYPE);
     }
 
     @Test(expectedExceptions = InvalidSignatureDataException.class, expectedExceptionsMessageRegExp = "Signature data signature value can not be null")
     public void testReadSignatureDataWithoutSignatureValue_ThrowsInvalidSignatureDataException() throws Exception {
-        load("signature-data/signature-data-without-signature-value.tlv");
+        load(CALENDAR_AUTH_SIGNATURE_DATA_NO_SIGNATURE_VALUE);
     }
 
     @Test(expectedExceptions = InvalidSignatureDataException.class, expectedExceptionsMessageRegExp = "Signature data certificate id can not be null")
     public void testReadSignatureDataWithoutCertificateId_ThrowsInvalidSignatureDataException() throws Exception {
-        load("signature-data/signature-data-without-certificate-id.tlv");
+        load(CALENDAR_AUTH_SIGNATURE_DATA_NO_CERT_ID);
     }
 
     @Test
     public void testReadSignatureDataWithCertificateRepositoryUri_Ok() throws Exception {
-        InMemorySignatureData data = load("signature-data/signature-data-with-repository-uri.tlv");
+        InMemorySignatureData data = load(CALENDAR_AUTH_SIGNATURE_DATA_NO_REPO_URI);
         Assert.assertNotNull(data.getCertificateRepositoryUri());
         Assert.assertEquals(data.getCertificateRepositoryUri(), "http://localhost/rep_uri");
     }

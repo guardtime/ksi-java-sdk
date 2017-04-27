@@ -32,15 +32,15 @@ import java.io.InputStream;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.PUBLICATION_DATA_OK;
 
 public class PublicationDataTest {
 
-    public static final String FILE_PUBLICATION_DATA_OK = "publication-data/publication-data-ok.tlv";
     public static final String PUBLICATION_STRING = "AAAAAA-CTJR3I-AANBWU-RY76YF-7TH2M5-KGEZVA-WLLRGD-3GKYBG-AM5WWV-4MCLSP-XPRDDI-UFMHBA";
 
     @Test
     public void testDecodePublicationData_Ok() throws Exception {
-        PublicationData publication = load(TestUtil.load(FILE_PUBLICATION_DATA_OK));
+        PublicationData publication = load(TestUtil.load(PUBLICATION_DATA_OK));
         Assert.assertNotNull(publication);
         Assert.assertNotNull(publication.getPublicationTime());
         Assert.assertNotNull(publication.getPublicationDataHash());

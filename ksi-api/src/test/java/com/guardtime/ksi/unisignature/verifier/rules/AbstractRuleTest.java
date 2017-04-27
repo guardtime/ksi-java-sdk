@@ -29,18 +29,16 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import org.mockito.Mockito;
 
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+
 public abstract class AbstractRuleTest {
 
-    protected static final String SIGNATURE_WITH_RFC3161_RECORD_INVALID_AGGREGATION_TIME = "signature/signature-with-rfc3161-record-invalid-aggregation-time.ksig";
-    protected static final String SIGNATURE_WITH_RFC3161_RECORD_INVALID_CHAIN_INDEX = "signature/signature-with-rfc3161-record-invalid-chain-index.ksig";
-    protected static final String SIGNATURE_WITH_RFC3161_RECORD = "signature/signature-with-rfc3161-record-ok.ksig";
-
     protected VerificationContext build(KSISignature signature) throws Exception {
-        return build(signature, null, TestUtil.loadPublicationsFile("publications.tlv"), null);
+        return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null);
     }
 
     protected VerificationContext build(KSISignature signature, PublicationData publication) throws Exception {
-        return build(signature, null, TestUtil.loadPublicationsFile("publications.tlv"), publication);
+        return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), publication);
     }
 
     protected VerificationContext build(KSISignature signature, PublicationsFile trustStore) throws Exception {
@@ -48,7 +46,7 @@ public abstract class AbstractRuleTest {
     }
 
     protected VerificationContext build(KSISignature signature, DataHash documentHash) throws Exception {
-        return build(signature, documentHash, TestUtil.loadPublicationsFile("publications.tlv"), null);
+        return build(signature, documentHash, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null);
     }
 
     protected VerificationContext build(KSISignature signature, DataHash documentHash, PublicationsFile trustStore, PublicationData publication) throws Exception {

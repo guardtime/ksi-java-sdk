@@ -22,18 +22,17 @@ package com.guardtime.ksi.publication.inmemory;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.CERTIFICATE_RECORD_MISSING_CERT;
+import static com.guardtime.ksi.Resources.CERTIFICATE_RECORD_MISSING_CERT_ID;
+import static com.guardtime.ksi.Resources.CERTIFICATE_RECORD_OK;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 public class InMemoryCertificateRecordTest {
 
-    private static final String TEST_FILE_CERTIFICATE_RECORD = "certificate-record/certificate-record-ok.tlv";
-    private static final String TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE_ID = "certificate-record/certificate-record-missing-certificate-id.tlv";
-    private static final String TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE = "certificate-record/certificate-record-missing-certificate.tlv";
-
     @Test
     public void testDecodeCertificateRecord_Ok() throws Exception {
-        InMemoryCertificateRecord certificateRecord = load(TEST_FILE_CERTIFICATE_RECORD);
+        InMemoryCertificateRecord certificateRecord = load(CERTIFICATE_RECORD_OK);
         assertNotNull(certificateRecord.getCertificate());
         assertNotNull(certificateRecord.getCertificateId());
         assertEquals(certificateRecord.getCertificateId(), new byte[]{1, 2, 3, 4});
@@ -42,12 +41,12 @@ public class InMemoryCertificateRecordTest {
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Certificate Id can not be null")
     public void testDecodeCertificateRecordWithoutCertificateId_ThrowsInvalidPublicationsFileException() throws Exception {
-        load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE_ID);
+        load(CERTIFICATE_RECORD_MISSING_CERT_ID);
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Certificate can not be null")
     public void testDecodeCertificateRecordWithoutCertificate_ThrowsInvalidPublicationsFileException() throws Exception {
-        load(TEST_FILE_CERTIFICATE_RECORD_MISSING_CERTIFICATE);
+        load(CERTIFICATE_RECORD_MISSING_CERT);
     }
 
     private InMemoryCertificateRecord load(String file) throws Exception {

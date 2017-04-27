@@ -31,19 +31,19 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.PUBLICATION_RECORD_IN_FILE_OK;
+import static com.guardtime.ksi.Resources.PUBLICATION_RECORD_WITH_REF_AND_REPO_URI_IN_FILE_OK;
 import static java.util.Arrays.asList;
 
 public class PublicationsFilePublicationRecordTest {
 
-    private static final String TEST_FILE_PUBLICATION_RECORD_PUBFILE_OK = "publication-record/publication-record-pubfile-ok.tlv";
-    private static final String TEST_FILE_PUBLICATION_RECORD_PUBFILE2_OK = "publication-record/publication-record-pubfile2-ok.tlv";
     private static final String PUBLICATION_STRING = "AAAAAA-CTJR3I-AANBWU-RY76YF-7TH2M5-KGEZVA-WLLRGD-3GKYBG-AM5WWV-4MCLSP-XPRDDI-UFMHBA";
     private static final int ELEMENT_TAG_PUBLICATION_REFERENCE = 0x09;
     private static final int ELEMENT_TAG_PUBLICATION_REPOSITORY_URI = 0x0A;
 
     @Test
     public void testDecodePublicationFileRecord_Ok() throws Exception {
-        PublicationsFilePublicationRecord publicationRecord = load(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_PUBFILE_OK));
+        PublicationsFilePublicationRecord publicationRecord = load(TestUtil.load(PUBLICATION_RECORD_IN_FILE_OK));
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationData().getPublicationTime());
         Assert.assertEquals(publicationRecord.getPublicationData().getPublicationDataHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -53,7 +53,7 @@ public class PublicationsFilePublicationRecordTest {
 
     @Test
     public void testDecodePublicationsFilePublicationRecordWithReferencesAndRepositoryURI_Ok() throws Exception {
-        PublicationsFilePublicationRecord publicationRecord = load(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_PUBFILE2_OK));
+        PublicationsFilePublicationRecord publicationRecord = load(TestUtil.load(PUBLICATION_RECORD_WITH_REF_AND_REPO_URI_IN_FILE_OK));
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationData().getPublicationTime());
         Assert.assertEquals(publicationRecord.getPublicationData().getPublicationDataHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));

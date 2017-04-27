@@ -73,11 +73,15 @@ abstract class AbstractKSIResponse<T extends PduResponsePayloadV1> extends TLVSt
      *         - instance of {@link TLVElement}. may not be null.
      * @param context
      *         - instance of {@link KSIRequestContext}. may not be null
+     * @param credentials
+     *         - credentials of the gateway. may not be null
      * @throws KSIProtocolException
      *         - will be thrown when TLV message parsing fails
      */
     public AbstractKSIResponse(TLVElement rootElement, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
         super(rootElement);
+        Util.notNull(credentials, "AbstractKSIResponse.serviceCredentials");
+        Util.notNull(context, "AbstractKSIResponse.ksiRequestContext");
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Incoming response message: {}", rootElement);
         }

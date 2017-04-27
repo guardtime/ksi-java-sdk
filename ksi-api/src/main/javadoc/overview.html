@@ -263,20 +263,20 @@ The following code can be used to verify signature:
 By adding the following JVM arguments to Java, KSI SDK will use the proxy to create HTTP requests.
 <ul>
     <li>
-        http.proxyHost=MY_PROXY_URL_OR_IP
+        http.proxyHost=PROXY_URL_OR_IP
     </li>
     <li>
-        http.proxyPort=MY_PROXY_PORT
+        http.proxyPort=PROXY_PORT
     </li>
 </ul>
 Alternatively the <i>HTTPConnectionParameters</i> class can be used to configure HTTP proxy. The following code creates the
 <i>SimpleHttpClient</i> using the proxy with given configuration.
 <pre><code>
-    KSIServiceCredentials credentials = new KSIServiceCredentials("anon", "anon");
-    HttpClientSettings settings = new HttpClientSettings("my_signing_url", "my_extending_url",
-    "my_publications_file_url", credentials);
+    KSIServiceCredentials credentials = new KSIServiceCredentials("user", "key");
+    HttpClientSettings settings = new HttpClientSettings("signing_url", "extending_url",
+    "publications_file_url", credentials);
     HTTPConnectionParameters parameters = new HTTPConnectionParameters();
-    parameters.setProxyUrl(new URL("my_proxy_url"));
+    parameters.setProxyUrl(new URL("proxy_url"));
     parameters.setProxyUser("proxy_username");
     parameters.setProxyPassword("proxy_password");
     settings.setParameters(parameters);
@@ -290,20 +290,20 @@ HAClient combines multiple other clients, sends requests to all the given client
 
 <ul>
     <li>
-        http.proxyHost=MY_PROXY_URL_OR_IP
+        http.proxyHost=PROXY_URL_OR_IP
     </li>
     <li>
-        http.proxyPort=MY_PROXY_PORT
+        http.proxyPort=PROXY_PORT
     </li>
 </ul>
 Alternatively the <i>HTTPConnectionParameters</i> class can be used to configure HTTP proxy. The following code creates the
 <i>SimpleHttpClient</i> using the proxy with given configuration.
 <pre><code>
-    KSIServiceCredentials credentials = new KSIServiceCredentials("anon", "anon");
-    HttpClientSettings settings = new HttpClientSettings("my_signing_url", "my_extending_url",
-    "my_publications_file_url", credentials);
+    KSIServiceCredentials credentials = new KSIServiceCredentials("user", "key");
+    HttpClientSettings settings = new HttpClientSettings("signing_url", "extending_url",
+    "publications_file_url", credentials);
     HTTPConnectionParameters parameters = new HTTPConnectionParameters();
-    parameters.setProxyUrl(new URL("my_proxy_url"));
+    parameters.setProxyUrl(new URL("proxy_url"));
     parameters.setProxyUser("proxy_username");
     parameters.setProxyPassword("proxy_password");
     settings.setParameters(parameters);

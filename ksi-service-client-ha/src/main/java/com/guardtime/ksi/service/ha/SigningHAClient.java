@@ -56,9 +56,8 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
     }
 
     /**
-     * Does a non-blocking signing request. Picks clients to send the request, based on the configuration and sends the request
-     * to all of them in parallel. First successful response is used, others are cancelled. Request fails only if all the
-     * subclients fail.
+     * Does a non-blocking signing request. Sends the request to all the subclients in parallel. First successful response is
+     * used, others are cancelled. Request fails only if all the subclients fail.
      *
      * @see KSISigningClient#sign(KSIRequestContext, DataHash, Long)
      */

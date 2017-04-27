@@ -104,29 +104,29 @@ public class IntegrationTestDataHolder {
         extenderClient = httpClient;
 
         notEmpty(inputData[0], "Test file");
-        if (testFilePath != null && !testFilePath.trim().isEmpty()) {
+        if (testFilePath != null && !(testFilePath.trim().length() == 0)) {
             testFile = testFilePath + inputData[0];
-            responseFile = inputData[12].isEmpty() ? null : testFilePath + inputData[12];
-            publicationsFile = inputData[13].isEmpty() ? null : testFilePath + inputData[13];
+            responseFile = inputData[12].length() == 0 ? null : testFilePath + inputData[12];
+            publicationsFile = inputData[13].length() == 0 ? null : testFilePath + inputData[13];
         } else {
             testFile = inputData[0];
-            responseFile = inputData[12].isEmpty() ? null : inputData[12];
-            publicationsFile = inputData[13].isEmpty() ? null : inputData[13];
+            responseFile = inputData[12].length() == 0 ? null : inputData[12];
+            publicationsFile = inputData[13].length() == 0 ? null : inputData[13];
         }
 
         notEmpty(inputData[1], "Action");
         action = IntegrationTestAction.getByName(inputData[1]);
 
         errorCode = getErrorCodeByName(inputData[2]);
-        errorMessage = inputData[3].isEmpty() ? null : inputData[3];
-        inputHash = inputData[4].isEmpty() ? null : new DataHash(Base16.decode(inputData[4]));
-        chcInputHash = inputData[5].isEmpty() ? null : new DataHash(Base16.decode(inputData[5]));
-        chchOutputHash = inputData[6].isEmpty() ? null : new DataHash(Base16.decode(inputData[6]));
-        registrationTime = inputData[7].isEmpty() ? null : new Date(Long.decode(inputData[7]) * 1000L);
-        aggregationTime = inputData[8].isEmpty() ? null : new Date(Long.decode(inputData[8]) * 1000L);
-        publicationTime = inputData[9].isEmpty() ? null : new Date(Long.decode(inputData[9]) * 1000L);
-        userPublication = inputData[10].isEmpty() ? null : new PublicationData(inputData[10]);
-        extendingPermitted = inputData[11].isEmpty() ? false : Boolean.valueOf(inputData[11]);
+        errorMessage = inputData[3].length() == 0 ? null : inputData[3];
+        inputHash = inputData[4].length() == 0 ? null : new DataHash(Base16.decode(inputData[4]));
+        chcInputHash = inputData[5].length() == 0 ? null : new DataHash(Base16.decode(inputData[5]));
+        chchOutputHash = inputData[6].length() == 0 ? null : new DataHash(Base16.decode(inputData[6]));
+        registrationTime = inputData[7].length() == 0 ? null : new Date(Long.decode(inputData[7]) * 1000L);
+        aggregationTime = inputData[8].length() == 0 ? null : new Date(Long.decode(inputData[8]) * 1000L);
+        publicationTime = inputData[9].length() == 0 ? null : new Date(Long.decode(inputData[9]) * 1000L);
+        userPublication = inputData[10].length() == 0 ? null : new PublicationData(inputData[10]);
+        extendingPermitted = inputData[11].length() == 0 ? false : Boolean.valueOf(inputData[11]);
 
         this.settings = loadHTTPSettings();
         buildKsi();
@@ -203,7 +203,7 @@ public class IntegrationTestDataHolder {
     }
 
     private void notEmpty(String object, String name) {
-        if (object.trim().isEmpty()) {
+        if (object.trim().length() == 0) {
             throw new IllegalArgumentException(name + " is empty.");
         }
     }

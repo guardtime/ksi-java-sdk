@@ -89,11 +89,10 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
                 }
             }
             if (configurations.isEmpty()) {
-                throw new KSIClientException(getClass() + " received no configuration responses to use for building the most " +
-                        "optimal configuration");
+                throw new KSIClientException(getClass() + " received no configuration responses.");
             }
             if (!areAllConfsEqual(configurations)) {
-                logger.warn("Configurations gotten from subclients differ from eachother. This could " +
+                logger.warn("Received configurations from subclients differ from each other. This could " +
                         "mean that external services are configured wrong. All configurations: " + configurationsToString(configurations));
             }
             return aggregateConfigurations(configurations);

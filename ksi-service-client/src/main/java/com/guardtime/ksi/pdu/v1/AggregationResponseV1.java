@@ -34,6 +34,7 @@ class AggregationResponseV1 extends AbstractKSIResponse<AggregationResponsePaylo
      *
      * @param rootElement instance of{@link TLVElement}
      * @param context     instance of {@link KSIRequestContext}. may not be null
+     * @param credentials credentials of the gateway. may not be null
      * @throws KSIException will be thrown when TLV message parsing fails
      */
     public AggregationResponseV1(TLVElement rootElement, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {

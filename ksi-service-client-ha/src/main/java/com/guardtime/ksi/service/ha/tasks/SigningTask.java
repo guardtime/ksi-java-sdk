@@ -35,9 +35,9 @@ public class SigningTask extends ServiceCallingTask<AggregationResponse> {
 
     /**
      * @param client
-     *          {@link KSISigningClient} used for the extension request.
+     *          {@link KSISigningClient} used for the signing request.
      * @param requestContext
-     *          {@link KSIRequestContext} for the extension request.
+     *          {@link KSIRequestContext} for the signing request.
      * @param dataHash
      *          {@link DataHash} of the data to be signed.
      * @param level

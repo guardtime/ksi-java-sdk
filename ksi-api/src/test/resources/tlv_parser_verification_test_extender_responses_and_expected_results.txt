@@ -1,9 +1,0 @@
-#Response file location with full path(later on changed for signature within test);pass signature internal verification;pass signature verification with OK results;verification error code (" " if none);expected exception class (" " if none);expected exception message (" " if none)
-tlv-parsing-signatures/extension-response-for-ok-sig-2014-06-2-extra-critical-element.ksig;true;false;;KSIProtocolException;parse response message
-tlv-parsing-signatures/extension-response-for-ok-sig-2014-06-2-extra-critical-main-with-critical-tlv.ksig;false;false;;MultipleTLVElementException;Message outer most layer consists of more than one TLV elements.
-tlv-parsing-signatures/extension-response-for-ok-sig-2014-06-2-extra-critical-main-with-non-critical-tlv.ksig;false;false;;MultipleTLVElementException;Message outer most layer consists of more than one TLV elements.
-tlv-parsing-signatures/extension-response-for-ok-sig-2014-06-2-extra-element.ksig;true;false;CAL_01;;
-tlv-parsing-signatures/extension-response-for-ok-sig-2014-06-2-extra-main-with-critical-tlv.ksig;false;false;;MultipleTLVElementException;Message outer most layer consists of more than one TLV elements.
-tlv-parsing-signatures/extension-response-for-ok-sig-2014-06-2-extra-main-with-non-critical-tlv.ksig;false;false;;MultipleTLVElementException;Message outer most layer consists of more than one TLV elements.
-calendar-based-verification/extension-response-from-538C3A47-to-54162C00-for-ok-sig-2014-06-2-extended-wrong-aggregation-time.tlv;true;false;CAL_03;;
-calendar-based-verification/extension-response-from-538C3A47-to-54162C00-for-ok-sig-2014-06-2-extended-wrong-input-hash.tlv;true;false;CAL_01;;

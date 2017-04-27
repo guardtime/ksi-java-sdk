@@ -19,6 +19,7 @@
 
 package com.guardtime.ksi.unisignature.verifier.rules;
 
+import com.guardtime.ksi.Resources;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
@@ -32,6 +33,8 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+
 public class UserProvidedPublicationExtendedSignatureInputHashRuleTest extends AbstractRuleTest {
 
     private Rule rule = new UserProvidedPublicationExtendedSignatureInputHashRule();
@@ -39,7 +42,7 @@ public class UserProvidedPublicationExtendedSignatureInputHashRuleTest extends A
 
     @BeforeMethod
     public void setUp() throws Exception {
-        KSISignature sig = TestUtil.loadSignature("ok-sig-2014-04-30.1-extended.ksig");
+        KSISignature sig = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         this.mockedVerificationContext = Mockito.mock(VerificationContext.class);
         Mockito.when(mockedVerificationContext.getSignature()).thenReturn(sig);
         Mockito.when(mockedVerificationContext.getUserProvidedPublication()).thenReturn(sig.getPublicationRecord().getPublicationData());
@@ -48,14 +51,15 @@ public class UserProvidedPublicationExtendedSignatureInputHashRuleTest extends A
 
     @Test
     public void testVerifyExtendedCalendarChainInputHashMatchesWithUserProvidedPublication_Ok() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("ok-sig-2014-04-30.1-extended.ksig").getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testVerifyExtendedCalendarChainInputHashDoesNotMatchesWithUserProvidedPublication_Ok() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig").getCalendarHashChain());
+
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(Resources.RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_03);

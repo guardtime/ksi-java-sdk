@@ -23,28 +23,31 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_AUTH_NO_PUBLICATION_DATA;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_AUTH_NO_SIGNATURE_DATA;
 
 public class CalendarAuthenticationRecordTest {
 
     @Test
     public void testDecodeCalendarAuthenticationRecord_Ok() throws Exception {
-        InMemoryCalendarAuthenticationRecord record = load("calendar-authentication-record/calendar-authentication-record-ok.tlv");
+        InMemoryCalendarAuthenticationRecord record = load(SIGNATURE_2017_03_14);
         Assert.assertNotNull(record.getPublicationData());
         Assert.assertNotNull(record.getSignatureData());
     }
 
     @Test(expectedExceptions = InvalidCalendarAuthenticationRecordException.class, expectedExceptionsMessageRegExp = "Calendar authentication does not contain publication data")
     public void testDecodeCalendarAuthenticationRecordWithoutPublicationData_ThrowsInvalidCalendarAuthenticationRecordException() throws Exception {
-        load("calendar-authentication-record/calendar-authentication-record-without-publication-data.tlv");
+        load(SIGNATURE_CALENDAR_AUTH_NO_PUBLICATION_DATA);
     }
 
     @Test(expectedExceptions = InvalidCalendarAuthenticationRecordException.class, expectedExceptionsMessageRegExp = "Calendar authentication record does not contain signature data")
     public void testDecodeCalendarAuthenticationRecordWithoutSignatureData_ThrowsInvalidCalendarAuthenticationRecordException() throws Exception {
-        load("calendar-authentication-record/calendar-authentication-record-without-signature-data.tlv");
+        load(SIGNATURE_CALENDAR_AUTH_NO_SIGNATURE_DATA);
     }
 
     private InMemoryCalendarAuthenticationRecord load(String file) throws Exception {
-        return new InMemoryCalendarAuthenticationRecord(loadTlv(file));
+        return new InMemoryCalendarAuthenticationRecord(loadTlv(file).getFirstChildElement(InMemoryCalendarAuthenticationRecord.ELEMENT_TYPE));
     }
 
 }

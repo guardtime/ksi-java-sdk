@@ -32,6 +32,9 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION;
+
 public class ExtendedSignatureCalendarChainAggregationTimeRuleTest extends AbstractRuleTest {
 
     private Rule rule = new ExtendedSignatureCalendarChainAggregationTimeRule();
@@ -39,7 +42,7 @@ public class ExtendedSignatureCalendarChainAggregationTimeRuleTest extends Abstr
 
     @BeforeMethod
     public void setUp() throws Exception {
-        KSISignature sig = TestUtil.loadSignature("ok-sig-2014-04-30.1-extended.ksig");
+        KSISignature sig = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         this.mockedVerificationContext = Mockito.mock(VerificationContext.class);
         Mockito.when(mockedVerificationContext.getSignature()).thenReturn(sig);
         Mockito.when(mockedVerificationContext.getUserProvidedPublication()).thenReturn(sig.getPublicationRecord().getPublicationData());
@@ -48,14 +51,14 @@ public class ExtendedSignatureCalendarChainAggregationTimeRuleTest extends Abstr
 
     @Test
     public void testVerifyExtendedCalendarChainAggregationTimeMatchesWithInitialSignature_Ok() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("ok-sig-2014-04-30.1-extended.ksig").getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testVerifyExtendedCalendarChainAggregationTimeDoesNotMatchWithInitialSignature_Ok() throws Exception {
-        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig").getCalendarHashChain());
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION).getCalendarHashChain());
         RuleResult result = rule.verify(mockedVerificationContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.CAL_03);

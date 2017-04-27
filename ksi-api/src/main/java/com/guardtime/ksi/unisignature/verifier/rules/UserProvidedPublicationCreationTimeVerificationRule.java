@@ -34,7 +34,7 @@ public class UserProvidedPublicationCreationTimeVerificationRule extends BaseRul
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         Date registrationTime = context.getCalendarHashChain().getAggregationTime();
         Date userPublicationTime = context.getUserProvidedPublication().getPublicationTime();
-        if (!registrationTime.before(userPublicationTime)) {
+        if (registrationTime.after(userPublicationTime)) {
             return VerificationResultCode.NA;
         }
         return VerificationResultCode.OK;

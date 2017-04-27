@@ -27,12 +27,17 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_TIME;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_NO_ALGORITHM;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INDEX;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INPUT_HASH;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_OK;
 
 public class AggregationHashChainTest {
 
     @Test
     public void testDecodeAggregationHashChain_Ok() throws Exception {
-        InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
+        InMemoryAggregationHashChain chain = load(SIGNATURE_AGGREGATION_HASH_CHAIN_OK);
         Assert.assertEquals(chain.getElementType(), InMemoryAggregationHashChain.ELEMENT_TYPE);
         Assert.assertNotNull(chain.getAggregationTime());
         Assert.assertEquals(chain.getAggregationTime().getTime(), 1395317319000L);
@@ -45,27 +50,27 @@ public class AggregationHashChainTest {
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation time can not be null")
     public void testDecodeAggregationHashChainWithoutAggregationTime_ThrowsInvalidAggregationHashChainException() throws Exception {
-        load("aggregation-hash-chain/aggregation-chain-aggregation-time-missing.tlv");
+        load(SIGNATURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_TIME);
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain index list can not be empty")
     public void testDecodeAggregationHashChainWithoutChainIndex_ThrowsInvalidAggregationHashChainException() throws Exception {
-        load("aggregation-hash-chain/aggregation-chain-no-indexes.tlv");
+        load(SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INDEX);
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain input hash can not be empty")
     public void testDecodeAggregationHashChainWithoutInputHash_ThrowsInvalidAggregationHashChainException() throws Exception {
-        load("aggregation-hash-chain/aggregation-chain-input-hash-missing.tlv");
+        load(SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INPUT_HASH);
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Aggregation chain aggregation algorithm id can no be null")
     public void testDecodeAggregationHashChainWithoutAggregationAlgorithm_ThrowsInvalidAggregationHashChainException() throws Exception {
-        load("aggregation-hash-chain/aggregation-chain-algorithm-missing.tlv");
+        load(SIGNATURE_AGGREGATION_HASH_CHAIN_NO_ALGORITHM);
     }
 
     @Test
     public void testCalculateAggregationChainHash_Ok() throws Exception {
-        InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
+        InMemoryAggregationHashChain chain = load(SIGNATURE_AGGREGATION_HASH_CHAIN_OK);
         ChainResult chainHash = chain.calculateOutputHash(0L);
         Assert.assertNotNull(chainHash);
         Assert.assertEquals(chainHash.getLevel(), 116L);
@@ -74,12 +79,11 @@ public class AggregationHashChainTest {
 
     @Test
     public void testGetChainIdentityFromAggregationHashChain_Ok() throws Exception {
-        InMemoryAggregationHashChain chain = load("aggregation/aggregation-hash-chain-ok.tlv");
+        InMemoryAggregationHashChain chain = load(SIGNATURE_AGGREGATION_HASH_CHAIN_OK);
         Assert.assertEquals(chain.getChainIdentity(" :: "), "GT :: testA :: B :: A");
     }
 
     private InMemoryAggregationHashChain load(String file) throws Exception {
-        return new InMemoryAggregationHashChain(loadTlv(file));
+        return new InMemoryAggregationHashChain(loadTlv(file).getFirstChildElement(InMemoryAggregationHashChain.ELEMENT_TYPE));
     }
-
 }

@@ -266,7 +266,7 @@ public class TLVElementTest {
         TLVElement.create(new byte[]{0x0, 2, 0x0});
     }
 
-    @Test(expectedExceptions = MultipleTLVElementException.class, expectedExceptionsMessageRegExp = "Message outer most layer consists of more than one TLV elements.")
+    @Test(expectedExceptions = MultipleTLVElementException.class, expectedExceptionsMessageRegExp = "Message outermost layer consists of more than one TLV elements.")
     public void TestCreateTlvElementFromNokBytes_ExpectedMultipleTlvElementException() throws Exception {
         TLVElement.create(new byte[]{0, 0, 0});
     }

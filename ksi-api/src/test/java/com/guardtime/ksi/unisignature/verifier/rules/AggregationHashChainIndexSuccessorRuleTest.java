@@ -26,27 +26,31 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_INVALID_CHAIN_INDEX;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_ONE_CHAIN_MISSING;
+
 public class AggregationHashChainIndexSuccessorRuleTest extends AbstractRuleTest {
 
     private AggregationHashChainIndexSuccessorRule rule = new AggregationHashChainIndexSuccessorRule();
 
     @Test
     public void testSignatureWithInvalidAggregationChainIndexValue() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-invalid-aggregation-chain-index-value.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_AGGREGATION_HASH_CHAIN_INVALID_CHAIN_INDEX)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_12);
     }
 
     @Test
     public void testSignatureWithMissingOneAggregationChain() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-missing-one-aggregation-chain.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_AGGREGATION_HASH_CHAIN_ONE_CHAIN_MISSING)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_12);
     }
 
     @Test
     public void testValidSignature_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertNull(result.getErrorCode());
     }

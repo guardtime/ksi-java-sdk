@@ -30,15 +30,14 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.PUBLICATION_RECORD_IN_SIGNATURE_OK;
+import static com.guardtime.ksi.Resources.PUBLICATION_RECORD_WITH_REF_AND_REPO_URI_IN_SIGNATURE_OK;
 
 public class InMemorySignaturePublicationRecordTest {
 
-    private static final String TEST_FILE_PUBLICATION_RECORD_SIGNATURE_OK = "publication-record/publication-record-signature-ok.tlv";
-    private static final String TEST_FILE_PUBLICATION_RECORD_SIGNATURE2_OK = "publication-record/publication-record-signature2-ok.tlv";
-
     @Test
     public void testDecodeInMemorySignaturePublicationRecord_Ok() throws Exception {
-        InMemorySignaturePublicationRecord publicationRecord = load(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_SIGNATURE_OK));
+        InMemorySignaturePublicationRecord publicationRecord = load(TestUtil.load(PUBLICATION_RECORD_IN_SIGNATURE_OK));
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationData().getPublicationTime());
         Assert.assertEquals(publicationRecord.getPublicationData().getPublicationDataHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -48,7 +47,7 @@ public class InMemorySignaturePublicationRecordTest {
 
     @Test
     public void testDecodeInMemorySignaturePublicationRecordWithReferencesAndRepositoryURI_Ok() throws Exception {
-        InMemorySignaturePublicationRecord publicationRecord = load(TestUtil.load(TEST_FILE_PUBLICATION_RECORD_SIGNATURE2_OK));
+        InMemorySignaturePublicationRecord publicationRecord = load(TestUtil.load(PUBLICATION_RECORD_WITH_REF_AND_REPO_URI_IN_SIGNATURE_OK));
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationData().getPublicationTime());
         Assert.assertEquals(publicationRecord.getPublicationData().getPublicationDataHash(), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));

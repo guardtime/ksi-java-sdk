@@ -33,10 +33,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This rule checks that: <ul> <li>the extended calendar hash chain contains the same count of right links</li> <li>the
- * extended calendar hash chain right links are equal to the not extended calendar hash chain right links</li> </ul>
+ * This rule checks that: <ul> <li>the extended calendar hash chain contains the same count of right
+ * links</li> <li>the extended calendar hash chain right links are equal to the not extended
+ * calendar hash chain right links</li> </ul>
  */
 public class ExtendedSignatureCalendarHashChainRightLinksMatchesRule extends BaseRule {
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtendedSignatureCalendarHashChainRightLinksMatchesRule.class);
 

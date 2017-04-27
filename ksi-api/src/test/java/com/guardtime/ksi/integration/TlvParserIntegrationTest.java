@@ -30,7 +30,6 @@ import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
-import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.util.Util;
 
@@ -71,42 +70,37 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithUnknownCriticalElementInExtenderResponse() throws Exception {
-        String testFile = EXTENDER_RESPONSE_WITH_CRITICAL_ELEMENT;
         String exceptionMessage = "parse response message";
         Class exceptionClass = KSIProtocolException.class;
-        testExtenderResponses(testFile, exceptionClass, exceptionMessage);
+        testExtenderResponses(EXTENDER_RESPONSE_WITH_CRITICAL_ELEMENT, exceptionClass, exceptionMessage);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithExtraCriticalPduInExtenderResponse() throws Exception {
-        String testFile = EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS;
         String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
         Class exceptionClass = MultipleTLVElementException.class;
-        testExtenderResponses(testFile, exceptionClass, exceptionMessage);
+        testExtenderResponses(EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS, exceptionClass, exceptionMessage);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithExtraCriticalPduWithNonCriticalElementsInExtenderResponse() throws Exception {
-        String testFile = EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS;
         String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
         Class exceptionClass = MultipleTLVElementException.class;
-        testExtenderResponses(testFile, exceptionClass, exceptionMessage);
+        testExtenderResponses(EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS, exceptionClass, exceptionMessage);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithExtraNonCiriticalCriticalPduInExtenderResponse() throws Exception {
-        String testFile = EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS;
         String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
         Class exceptionClass = MultipleTLVElementException.class;
-        testExtenderResponses(testFile, exceptionClass, exceptionMessage);
+        testExtenderResponses(EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS, exceptionClass, exceptionMessage);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithExtraNonCriticalPduWithNonCriticalElementsInExtenderResponse() throws Exception {
-        String testFile = EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS;
         String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
         Class exceptionClass = MultipleTLVElementException.class;
-        testExtenderResponses(testFile, exceptionClass, exceptionMessage);
+        testExtenderResponses(EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS, exceptionClass, exceptionMessage);
     }
 
     private void testExtenderResponses(String testFile, Class exceptionClass, String message) throws Exception {

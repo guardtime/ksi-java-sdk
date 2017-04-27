@@ -19,31 +19,8 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
-import com.guardtime.ksi.KSI;
-import com.guardtime.ksi.KSIBuilder;
-import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.publication.PublicationsFile;
-import com.guardtime.ksi.publication.inmemory.CertificateNotFoundException;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
-import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.verifier.RuleResult;
-import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
-import com.guardtime.ksi.unisignature.verifier.VerificationResult;
-import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
-import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecordExistenceRule;
-import com.guardtime.ksi.unisignature.verifier.rules.Rule;
-import org.mockito.Mockito;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.security.cert.CertSelector;
-import java.security.cert.Certificate;
-import java.security.cert.X509Certificate;
-import java.util.Map;
 
 public class KeyBasedVerificationPolicyTest {
 

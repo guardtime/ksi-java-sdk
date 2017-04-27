@@ -22,7 +22,6 @@ import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD2;
 import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
-import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 public class PublicationsFileIntegrationTest extends AbstractCommonIntegrationTest {
 

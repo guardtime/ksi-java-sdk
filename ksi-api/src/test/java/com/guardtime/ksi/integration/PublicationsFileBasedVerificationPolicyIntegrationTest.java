@@ -21,9 +21,7 @@ package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
-import com.guardtime.ksi.publication.inmemory.InvalidPublicationsFileException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.trust.CryptoException;
 import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.unisignature.KSISignature;

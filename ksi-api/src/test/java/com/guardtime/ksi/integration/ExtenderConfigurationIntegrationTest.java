@@ -19,17 +19,12 @@
 
 package com.guardtime.ksi.integration;
 
-import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
-import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.v2.PduV2Factory;
-import com.guardtime.ksi.service.client.KSIServiceCredentials;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Date;
 
 public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 

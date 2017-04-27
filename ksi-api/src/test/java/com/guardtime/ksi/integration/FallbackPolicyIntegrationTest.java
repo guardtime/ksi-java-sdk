@@ -19,7 +19,6 @@
 
 package com.guardtime.ksi.integration;
 
-import com.guardtime.ksi.Resources;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;

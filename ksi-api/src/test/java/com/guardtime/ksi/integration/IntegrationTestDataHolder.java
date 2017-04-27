@@ -25,7 +25,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
-import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.pdu.v2.PduV2Factory;
 import com.guardtime.ksi.publication.PublicationData;
@@ -33,13 +32,11 @@ import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpPostRequestFuture;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.trust.JKSTrustStore;
-import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.verifier.AlwaysSuccessfulPolicy;
@@ -48,14 +45,12 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStoreException;
@@ -67,10 +62,6 @@ import static com.guardtime.ksi.CommonTestUtil.load;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.createCertSelector;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.createKeyStore;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadHTTPSettings;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 public class IntegrationTestDataHolder {
 
@@ -94,7 +85,7 @@ public class IntegrationTestDataHolder {
     private final HttpClientSettings settings;
     private KSIExtenderClient httpClient;
 
-    public IntegrationTestDataHolder(String testFilePath, String[] inputData, KSIExtenderClient httpClient) throws KSIException, CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+    public IntegrationTestDataHolder(String testFilePath, String[] inputData, KSIExtenderClient httpClient) throws Exception {
         notNull(inputData, "Input data");
         for (int i = 0; i < inputData.length; i++) {
             inputData[i] = inputData[i].trim();
@@ -181,7 +172,6 @@ public class IntegrationTestDataHolder {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
                 InputStream input = (InputStream) invocationOnMock.getArguments()[0];
                 TLVElement tlvElement = TLVElement.create(Util.toByteArray(input));
-                ByteOutputStream bos = new ByteOutputStream();
                 responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong());
 
                 responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(responseTLV, responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(), settings.getCredentials().getLoginKey()));

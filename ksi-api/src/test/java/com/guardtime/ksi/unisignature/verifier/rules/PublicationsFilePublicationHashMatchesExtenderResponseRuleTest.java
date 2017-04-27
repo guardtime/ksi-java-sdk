@@ -19,7 +19,6 @@
 
 package com.guardtime.ksi.unisignature.verifier.rules;
 
-import com.guardtime.ksi.Resources;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;

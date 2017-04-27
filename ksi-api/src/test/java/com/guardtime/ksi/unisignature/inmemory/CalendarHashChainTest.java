@@ -26,8 +26,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
-import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_FUTURE;
-import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_PAST;
 import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_NO_INPUT_HASH;
 import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_NO_LINK;
 import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_HASH_CHAIN_NO_PUBLICATION_TIME;

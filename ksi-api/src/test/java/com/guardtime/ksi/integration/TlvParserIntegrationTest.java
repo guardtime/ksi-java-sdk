@@ -77,28 +77,28 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithExtraCriticalPduInExtenderResponse() throws Exception {
-        String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
+        String exceptionMessage = "Message outermost layer consists of more than one TLV elements.";
         Class exceptionClass = MultipleTLVElementException.class;
         testExtenderResponses(EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS, exceptionClass, exceptionMessage);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithExtraCriticalPduWithNonCriticalElementsInExtenderResponse() throws Exception {
-        String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
+        String exceptionMessage = "Message outermost layer consists of more than one TLV elements.";
         Class exceptionClass = MultipleTLVElementException.class;
         testExtenderResponses(EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS, exceptionClass, exceptionMessage);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithExtraNonCiriticalCriticalPduInExtenderResponse() throws Exception {
-        String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
+        String exceptionMessage = "Message outermost layer consists of more than one TLV elements.";
         Class exceptionClass = MultipleTLVElementException.class;
         testExtenderResponses(EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS, exceptionClass, exceptionMessage);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithExtraNonCriticalPduWithNonCriticalElementsInExtenderResponse() throws Exception {
-        String exceptionMessage = "Message outer most layer consists of more than one TLV elements.";
+        String exceptionMessage = "Message outermost layer consists of more than one TLV elements.";
         Class exceptionClass = MultipleTLVElementException.class;
         testExtenderResponses(EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS, exceptionClass, exceptionMessage);
     }

@@ -57,6 +57,7 @@ import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_
 import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS;
 import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS;
 import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_NON_CRITICAL_ELEMENT;
+import static com.guardtime.ksi.Resources.EXTENSION_RESPONSE_DUMMY;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
@@ -133,8 +134,7 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
         KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
-        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes
-                ("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
+        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes(EXTENSION_RESPONSE_DUMMY));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
         final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
 

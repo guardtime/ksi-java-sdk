@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
- * Dummy KSI Client all of which's calls idle for one minute and then fail.
+ * Dummy KSI Client all of which's calls idle for ten seconds and then fail.
  */
 public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
     

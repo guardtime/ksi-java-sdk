@@ -19,7 +19,23 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
-import com.guardtime.ksi.unisignature.verifier.rules.*;
+import com.guardtime.ksi.unisignature.verifier.rules.AggregationChainInputHashVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashChainConsistencyRule;
+import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashChainIndexConsistencyRule;
+import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashChainIndexSuccessorRule;
+import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashChainLinkMetadataRule;
+import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashChainTimeConsistencyRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecordAggregationHashRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecordAggregationTimeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAggregationTimeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainInputHashVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainRegistrationTimeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.DocumentHashVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161RecordIndexRule;
+import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161RecordTimeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.Rule;
+import com.guardtime.ksi.unisignature.verifier.rules.SignaturePublicationRecordPublicationHashRule;
+import com.guardtime.ksi.unisignature.verifier.rules.SignaturePublicationRecordPublicationTimeRule;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,10 +58,10 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new Rfc3161RecordIndexRule());
 
         // verify aggregation hash chains
+        rules.add(new AggregationHashChainIndexSuccessorRule());
         rules.add(new AggregationHashChainLinkMetadataRule());
         rules.add(new AggregationHashChainConsistencyRule());
         rules.add(new AggregationHashChainTimeConsistencyRule());
-        rules.add(new AggregationHashChainIndexSuccessorRule());
         rules.add(new AggregationHashChainIndexConsistencyRule());
 
         // verify calendar hash chain (if present)

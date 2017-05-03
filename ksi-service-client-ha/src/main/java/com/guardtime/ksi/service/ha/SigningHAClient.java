@@ -22,11 +22,9 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.tasks.AggregatorConfigurationTask;
-import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
 import com.guardtime.ksi.service.ha.tasks.SigningTask;
 import com.guardtime.ksi.util.Util;
 
@@ -59,16 +57,15 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
      * Does a non-blocking signing request. Sends the request to all the subclients in parallel. First successful response is
      * used, others are cancelled. Request fails only if all the subclients fail.
      *
-     * @see KSISigningClient#sign(KSIRequestContext, DataHash, Long)
+     * @see KSISigningClient#sign(DataHash, Long)
      */
-    public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
-        Util.notNull(requestContext, "requestContext");
+    public Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException {
         Util.notNull(dataHash, "dataHash");
         Util.notNull(level, "level");
         Collection<KSISigningClient> clients = getSubclients();
-        final Collection<ServiceCallingTask<AggregationResponse>> tasks = new ArrayList<ServiceCallingTask<AggregationResponse>>(clients.size());
+        final Collection<Callable<AggregationResponse>> tasks = new ArrayList<Callable<AggregationResponse>>(clients.size());
         for (KSISigningClient client : clients) {
-            tasks.add(new SigningTask(client, requestContext, dataHash, level));
+            tasks.add(new SigningTask(client, dataHash, level));
         }
         return callAnyService(tasks);
     }
@@ -79,15 +76,13 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
      *
      * @see HAAggregatorConfiguration
      *
-     * @param requestContext - instance of {@link KSIRequestContext}.
      * @return Aggregated aggregators configuration.
      * @throws KSIException if all the subclients fail
      */
-    public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
-        Util.notNull(requestContext, "requestContext");
+    public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
         Collection<Callable<AggregatorConfiguration>> tasks = new ArrayList<Callable<AggregatorConfiguration>>();
         for (KSISigningClient client : getSubclients()) {
-            tasks.add(new AggregatorConfigurationTask(requestContext, client));
+            tasks.add(new AggregatorConfigurationTask(client));
         }
         return getConfiguration(tasks);
     }

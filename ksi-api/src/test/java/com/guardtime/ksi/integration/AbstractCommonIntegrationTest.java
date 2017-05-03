@@ -89,9 +89,6 @@ public abstract class AbstractCommonIntegrationTest {
             new HttpClientSettings("http://.", "http://.", "http://.", new KSIServiceCredentials(".", "."));
     protected static String javaKeyStorePath = null;
 
-    public static final String PUIBLICATION_STRING_2014_05_15 =
-            "AAAAAA-CTOQBY-AAMJYH-XZPM6T-UO6U6V-2WJMHQ-EJMVXR-JEAGID-2OY7P5-XFFKYI-QIF2LG-YOV7SO";
-
     protected KSI ksi;
     protected SimpleHttpClient simpleHttpClient;
 
@@ -302,7 +299,7 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     protected void testExecution(IntegrationTestDataHolder testData) throws Exception {
-        KSISignature signature = null;
+        KSISignature signature;
         KSI ksi = testData.getKsi();
 
         if (testData.getAction().equals(IntegrationTestAction.NOT_IMPLEMENTED)) {

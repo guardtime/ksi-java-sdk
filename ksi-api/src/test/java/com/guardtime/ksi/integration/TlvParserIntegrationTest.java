@@ -25,6 +25,7 @@ import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.RequestContextFactory;
 import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
@@ -138,13 +139,13 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
         final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
 
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(KSIRequestContext.class), Mockito.any(Date.class), Mockito.any
+        Mockito.when(mockedExtenderClient.extend(Mockito.any(Date.class), Mockito.any
                 (Date.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
                 KSIServiceCredentials credentials = new KSIServiceCredentials("anon", "anon");
-                KSIRequestContext requestContext = ((KSIRequestContext) invocationOnMock.getArguments()[0]);
-                Date aggregationTime = (Date) invocationOnMock.getArguments()[1];
-                Date publicationTime = (Date) invocationOnMock.getArguments()[2];
+                KSIRequestContext requestContext = RequestContextFactory.DEFAULT_FACTORY.createContext();
+                Date aggregationTime = (Date) invocationOnMock.getArguments()[0];
+                Date publicationTime = (Date) invocationOnMock.getArguments()[1];
                 PduFactory pduFactory = new PduV1Factory();
                 ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, credentials, aggregationTime,
                         publicationTime);

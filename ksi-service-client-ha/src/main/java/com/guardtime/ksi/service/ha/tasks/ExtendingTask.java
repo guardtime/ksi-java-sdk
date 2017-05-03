@@ -19,16 +19,16 @@
 package com.guardtime.ksi.service.ha.tasks;
 
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 
 import java.util.Date;
+import java.util.concurrent.Callable;
 
 /**
  * Task for doing an extension request.
  */
-public class ExtendingTask extends ServiceCallingTask<ExtensionResponse> {
+public class ExtendingTask implements Callable<ExtensionResponse> {
 
     private final KSIExtenderClient client;
     private Date aggregationTime;
@@ -37,15 +37,12 @@ public class ExtendingTask extends ServiceCallingTask<ExtensionResponse> {
     /**
      * @param client
      *          {@link KSIExtenderClient} used for the extension request.
-     * @param requestContext
-     *          {@link KSIRequestContext} for the extension request.
      * @param aggregationTime
      *          Aggregation time of the signature to be extended.
      * @param publicationTime
      *          Publication time until which the signature is to be extended.
      */
-    public ExtendingTask(KSIExtenderClient client, KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) {
-        super(requestContext);
+    public ExtendingTask(KSIExtenderClient client, Date aggregationTime, Date publicationTime) {
         this.client = client;
         this.aggregationTime = aggregationTime;
         this.publicationTime = publicationTime;
@@ -53,7 +50,7 @@ public class ExtendingTask extends ServiceCallingTask<ExtensionResponse> {
 
     public ExtensionResponse call() throws KSIClientException {
         try {
-            return client.extend(requestContext, aggregationTime, publicationTime).getResult();
+            return client.extend(aggregationTime, publicationTime).getResult();
         } catch (Exception e) {
             throw new KSIClientException("Extending via client '" + client + "' failed", e);
         }

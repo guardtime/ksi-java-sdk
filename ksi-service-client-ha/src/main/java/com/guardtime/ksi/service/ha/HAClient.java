@@ -57,32 +57,31 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
     }
 
     /**
-     * @see SigningHAClient#sign(KSIRequestContext, DataHash, Long)
+     * @see SigningHAClient#sign(DataHash, Long)
      */
-    public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
-        return signingHAClient.sign(requestContext, dataHash, level);
+    public Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException {
+        return signingHAClient.sign(dataHash, level);
     }
 
     /**
-     * @see ExtenderHAClient#extend(KSIRequestContext, Date, Date)
+     * @see ExtenderHAClient#extend(Date, Date)
      */
-    public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime)
-            throws KSIException {
-        return extenderHAClient.extend(requestContext, aggregationTime, publicationTime);
+    public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException {
+        return extenderHAClient.extend(aggregationTime, publicationTime);
     }
 
     /**
-     * @see SigningHAClient#getAggregatorConfiguration(KSIRequestContext)
+     * @see SigningHAClient#getAggregatorConfiguration()
      */
-    public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
-        return signingHAClient.getAggregatorConfiguration(requestContext);
+    public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
+        return signingHAClient.getAggregatorConfiguration();
     }
 
     /**
-     * @see ExtenderHAClient#getExtenderConfiguration(KSIRequestContext)
+     * @see ExtenderHAClient#getExtenderConfiguration()
      */
-    public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
-        return extenderHAClient.getExtenderConfiguration(requestContext);
+    public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
+        return extenderHAClient.getExtenderConfiguration();
     }
 
     /**

@@ -19,6 +19,10 @@
 package com.guardtime.ksi.service.client.http;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.AggregationResponseFuture;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
@@ -26,9 +30,8 @@ import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.PduFactoryProvider;
 import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.pdu.RequestContextFactory;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.ConfigurationAwareClient;
-import com.guardtime.ksi.service.client.ConfigurationAwareSigningClient;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
@@ -45,27 +48,50 @@ import java.util.Date;
 /**
  * Common class for all KSI HTTP clients
  */
-public abstract class AbstractHttpClient extends ConfigurationAwareSigningClient implements ConfigurationAwareClient, KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
+public abstract class AbstractHttpClient implements KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
 
     public static final String HEADER_APPLICATION_KSI_REQUEST = "application/ksi-request";
     public static final String HEADER_NAME_CONTENT_TYPE = "Content-Type";
 
     protected AbstractHttpClientSettings settings;
-    protected final PduFactory pduFactory;
+    private PduFactory pduFactory;
+    private RequestContextFactory requestContextFactory = RequestContextFactory.DEFAULT_FACTORY;
 
     public AbstractHttpClient(AbstractHttpClientSettings settings) {
-        super(PduFactoryProvider.get(exceptionIfNull(settings).getPduVersion()));
+        Util.notNull(settings, "HttpClient.settings");
         this.pduFactory = PduFactoryProvider.get(settings.getPduVersion());
         this.settings = settings;
     }
 
-    private static AbstractHttpClientSettings exceptionIfNull(AbstractHttpClientSettings settings) {
-        Util.notNull(settings, "HttpClient.settings");
-        return settings;
+    /**
+     * Creates the PDU for signing request with correct aggregator login information and PDU version and sends it to gateway.
+     * Parses the response PDU.
+     *
+     * @param dataHash - instance of {@link DataHash} to be signed. May not be null.
+     * @param level - level of the dataHash to be signed in the overall tree. May not be null.
+     *
+     * @return {@link AggregationResponseFuture}
+     * @throws KSIException
+     */
+    public AggregationResponseFuture sign(DataHash dataHash, Long level) throws KSIException {
+        Util.notNull(dataHash, "dataHash");
+        Util.notNull(level, "level");
+        KSIRequestContext requestContext = requestContextFactory.createContext();
+        ServiceCredentials credentials = getServiceCredentials();
+        Future<TLVElement> requestFuture = sign(new ByteArrayInputStream(pduFactory.createAggregationRequest(requestContext, credentials, dataHash, level).toByteArray()));
+        return new AggregationResponseFuture(requestFuture, requestContext, credentials, pduFactory);
     }
 
-    public ExtensionResponseFuture extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
-        Util.notNull(requestContext, "requestContext");
+    public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
+        KSIRequestContext requestContext = requestContextFactory.createContext();
+        ServiceCredentials credentials = getServiceCredentials();
+        AggregationRequest requestMessage = pduFactory.createAggregatorConfigurationRequest(requestContext, credentials);
+        Future<TLVElement> future = sign(new ByteArrayInputStream(requestMessage.toByteArray()));
+        return pduFactory.readAggregatorConfigurationResponse(requestContext, credentials, future.getResult());
+    }
+
+    public ExtensionResponseFuture extend(Date aggregationTime, Date publicationTime) throws KSIException {
+        KSIRequestContext requestContext = requestContextFactory.createContext();
         Util.notNull(aggregationTime, "aggregationTime");
         ServiceCredentials credentials = getServiceCredentials();
         ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, credentials, aggregationTime, publicationTime);
@@ -74,8 +100,8 @@ public abstract class AbstractHttpClient extends ConfigurationAwareSigningClient
         return new ExtensionResponseFuture(postRequestFuture, requestContext, credentials, pduFactory);
     }
 
-    public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
-        Util.notNull(requestContext, "requestContext");
+    public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
+        KSIRequestContext requestContext = requestContextFactory.createContext();
         ServiceCredentials credentials = getServiceCredentials();
         ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext, credentials);
         Future<TLVElement> future = extend(new ByteArrayInputStream(request.toByteArray()));

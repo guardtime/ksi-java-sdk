@@ -30,6 +30,7 @@ import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.RequestContextFactory;
 import com.guardtime.ksi.pdu.v2.PduV2Factory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -87,7 +88,6 @@ public class IntegrationTestDataHolder {
     private KSIExtenderClient extenderClient;
     private KSI ksi;
     private final HttpClientSettings settings;
-    private KSIExtenderClient httpClient;
 
     public IntegrationTestDataHolder(String testFilePath, String[] inputData, KSIExtenderClient httpClient) throws Exception {
         notNull(inputData, "Input data");
@@ -169,23 +169,23 @@ public class IntegrationTestDataHolder {
         final TLVElement responseTLV = TLVElement.create(IOUtils.toByteArray(load(responseFile)));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
 
-        Mockito.when(mockClient.extend(Mockito.any(KSIRequestContext.class), Mockito.any(Date.class), Mockito.any
+        Mockito.when(mockClient.extend(Mockito.any(Date.class), Mockito.any
                 (Date.class))).then(new Answer<Future>() {
             public Future<ExtensionResponse> answer(InvocationOnMock invocationOnMock) throws Throwable {
                 KSIServiceCredentials credentials = new KSIServiceCredentials("anon", "anon");
-                KSIRequestContext requestContext = ((KSIRequestContext) invocationOnMock.getArguments()[0]);
-                Date aggregationTime = (Date) invocationOnMock.getArguments()[1];
-                Date publicationTime = (Date) invocationOnMock.getArguments()[2];
+                Date aggregationTime = (Date) invocationOnMock.getArguments()[0];
+                Date publicationTime = (Date) invocationOnMock.getArguments()[1];
 
                 PduFactory factory = new PduV2Factory();
-                ExtensionRequest request = factory.createExtensionRequest(requestContext, credentials, aggregationTime, publicationTime);
+                KSIRequestContext context = RequestContextFactory.DEFAULT_FACTORY.createContext();
+                ExtensionRequest request = factory.createExtensionRequest(context, credentials, aggregationTime, publicationTime);
                 ByteArrayInputStream bais = new ByteArrayInputStream(request.toByteArray());
                 TLVElement requestElement = TLVElement.create(Util.toByteArray(bais));
 
                 responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x01).setLongContent(requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong());
 
                 responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(responseTLV, responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(), settings.getCredentials().getLoginKey()));
-                return new ExtensionResponseFuture(mockedFuture, requestContext, credentials, factory);
+                return new ExtensionResponseFuture(mockedFuture, context, credentials, factory);
             }
         });
         return mockClient;

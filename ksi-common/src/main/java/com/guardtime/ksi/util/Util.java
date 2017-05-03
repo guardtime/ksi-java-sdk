@@ -660,4 +660,13 @@ public final class Util {
     private Util() {
     }
 
+    public static String exceptionSummary(Throwable t) {
+        String message = t.getMessage();
+        Throwable cause = t.getCause();
+        if (cause == null) {
+            return message;
+        }
+        return String.format("%s (Cause: %s)", message, exceptionSummary(cause));
+    }
+
 }

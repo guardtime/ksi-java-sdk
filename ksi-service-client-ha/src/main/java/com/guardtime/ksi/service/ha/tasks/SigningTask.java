@@ -20,14 +20,15 @@ package com.guardtime.ksi.service.ha.tasks;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSISigningClient;
+
+import java.util.concurrent.Callable;
 
 /**
  * Task for doing a signing request.
  */
-public class SigningTask extends ServiceCallingTask<AggregationResponse> {
+public class SigningTask implements Callable<AggregationResponse> {
 
     private final KSISigningClient client;
     private DataHash dataHash;
@@ -36,15 +37,12 @@ public class SigningTask extends ServiceCallingTask<AggregationResponse> {
     /**
      * @param client
      *          {@link KSISigningClient} used for the signing request.
-     * @param requestContext
-     *          {@link KSIRequestContext} for the signing request.
      * @param dataHash
      *          {@link DataHash} of the data to be signed.
      * @param level
      *          Level of the hash to be signed.
      */
-    public SigningTask(KSISigningClient client, KSIRequestContext requestContext, DataHash dataHash, Long level) {
-        super(requestContext);
+    public SigningTask(KSISigningClient client, DataHash dataHash, Long level) {
         this.client = client;
         this.dataHash = dataHash;
         this.level = level;
@@ -52,7 +50,7 @@ public class SigningTask extends ServiceCallingTask<AggregationResponse> {
 
     public AggregationResponse call() throws KSIClientException {
         try {
-            return client.sign(requestContext, dataHash, level).getResult();
+            return client.sign(dataHash, level).getResult();
         } catch (Exception e) {
             throw new KSIClientException("Signing via client '" + client + "' failed", e);
         }

@@ -22,8 +22,6 @@ package com.guardtime.ksi.unisignature.verifier;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.PduIdentifiers;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -38,7 +36,6 @@ import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.RFC3161Record;
-import com.guardtime.ksi.util.Util;
 
 import java.security.cert.Certificate;
 import java.util.Date;
@@ -148,8 +145,7 @@ final class KSIVerificationContext implements VerificationContext {
     }
 
     private CalendarHashChain extend(Date publicationTime) throws KSIException {
-        KSIRequestContext context = new KSIRequestContext(Util.nextLong(), PduIdentifiers.getInstanceId(), PduIdentifiers.getInstanceId());
-        Future<ExtensionResponse> extenderFuture = extenderClient.extend(context, getSignature().getAggregationTime(), publicationTime);
+        Future<ExtensionResponse> extenderFuture = extenderClient.extend(getSignature().getAggregationTime(), publicationTime);
         ExtensionResponse extensionResponse = extenderFuture.getResult();
         try {
             return signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());

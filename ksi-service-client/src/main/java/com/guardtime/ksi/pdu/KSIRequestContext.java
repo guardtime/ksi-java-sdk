@@ -29,10 +29,6 @@ public final class KSIRequestContext {
     private Long instanceId;
     private Long messageId;
 
-    public KSIRequestContext(PduIdentifierProvider pduIdentifierProvider) {
-        this(pduIdentifierProvider.nextRequestId(), pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());
-    }
-
     public KSIRequestContext(Long requestId, Long instanceId, Long messageId) {
         this.requestId = requestId;
         this.instanceId = instanceId;

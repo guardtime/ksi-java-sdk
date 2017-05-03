@@ -28,7 +28,6 @@ import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
@@ -388,7 +387,7 @@ public final class KSIBuilder {
             if (dataHash == null) {
                 throw new KSIException("Invalid input parameter. Data hash must not be null");
             }
-            Future<AggregationResponse> aggregationResponseFuture = signingClient.sign(new KSIRequestContext(pduIdentifierProvider), dataHash, DEFAULT_LEVEL);
+            Future<AggregationResponse> aggregationResponseFuture = signingClient.sign(dataHash, DEFAULT_LEVEL);
             return new SigningFuture(aggregationResponseFuture, signatureFactory, dataHash);
         }
 
@@ -411,7 +410,7 @@ public final class KSIBuilder {
         }
 
         public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
-            return signingClient.getAggregatorConfiguration(new KSIRequestContext(pduIdentifierProvider));
+            return signingClient.getAggregatorConfiguration();
         }
 
         public KSISignature extend(KSISignature signature) throws KSIException {
@@ -445,13 +444,12 @@ public final class KSIBuilder {
             if (signature.getAggregationTime().after(publicationRecord.getPublicationTime())) {
                 throw new KSIException("Publication is before signature");
             }
-            Future<ExtensionResponse> extenderFuture = extenderClient.extend(new KSIRequestContext(pduIdentifierProvider), signature.getAggregationTime(),
-                    publicationRecord.getPublicationTime());
+            Future<ExtensionResponse> extenderFuture = extenderClient.extend(signature.getAggregationTime(), publicationRecord.getPublicationTime());
             return new ExtensionFuture(extenderFuture, publicationRecord, signature, signatureComponentFactory, signatureFactory);
         }
 
         public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
-            return extenderClient.getExtenderConfiguration(new KSIRequestContext(pduIdentifierProvider));
+            return extenderClient.getExtenderConfiguration();
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {

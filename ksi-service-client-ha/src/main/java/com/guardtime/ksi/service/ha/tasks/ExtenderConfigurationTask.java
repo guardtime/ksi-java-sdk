@@ -19,7 +19,6 @@
 package com.guardtime.ksi.service.ha.tasks;
 
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 
 import java.util.concurrent.Callable;
@@ -29,21 +28,17 @@ import java.util.concurrent.Callable;
  */
 public class ExtenderConfigurationTask implements Callable<ExtenderConfiguration> {
 
-    private final KSIRequestContext context;
     private final KSIExtenderClient client;
 
     /**
-     * @param context
-     *          {@link KSIRequestContext} for the configuration asking request.
      * @param client
      *          {@link KSIExtenderClient} which's configuration is to be asked.
      */
-    public ExtenderConfigurationTask(KSIRequestContext context, KSIExtenderClient client) {
-        this.context = context;
+    public ExtenderConfigurationTask(KSIExtenderClient client) {
         this.client = client;
     }
 
     public ExtenderConfiguration call() throws Exception {
-        return client.getExtenderConfiguration(context);
+        return client.getExtenderConfiguration();
     }
 }

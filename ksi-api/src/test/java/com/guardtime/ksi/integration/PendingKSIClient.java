@@ -6,7 +6,6 @@ import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -20,22 +19,22 @@ import java.util.Date;
  */
 public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
     
-    public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime)
+    public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime)
             throws KSIException {
         sleep1M();
         throw new KSIClientException("Failure!");
     }
 
-    public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
+    public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
         throw new KSIClientException("Failure!");
     }
     
-    public Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException {
+    public Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException {
         sleep1M();
         throw new KSIClientException("Failure!");
     }
 
-    public AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException {
+    public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
         throw new KSIClientException("Failure!");
     }
 

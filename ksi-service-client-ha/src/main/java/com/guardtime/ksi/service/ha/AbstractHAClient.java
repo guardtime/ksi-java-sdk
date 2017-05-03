@@ -19,7 +19,7 @@
 package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.service.client.KSIClientException;
-import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
+import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,17 +75,19 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
      * @return Aggregated configuration based on the tasks that ended successfully
      * @throws KSIClientException If none of the tasks ended successfully.
      */
-    SERVICE_CONFIG_RESPONSE getConfiguration(Collection<Callable<SERVICE_CONFIG_RESPONSE>> configurationRequestTasks) throws
-            KSIClientException {
+    SERVICE_CONFIG_RESPONSE getConfiguration(Collection<Callable<SERVICE_CONFIG_RESPONSE>> configurationRequestTasks) throws KSIClientException {
         try {
-            List<Future<SERVICE_CONFIG_RESPONSE>> configurationFutures = callAllServiceConfigurations
-                    (configurationRequestTasks);
+            List<Future<SERVICE_CONFIG_RESPONSE>> configurationFutures = executorService.invokeAll(configurationRequestTasks);
             List<SERVICE_CONFIG_RESPONSE> configurations = new ArrayList<SERVICE_CONFIG_RESPONSE>();
             for (Future<SERVICE_CONFIG_RESPONSE> configurationFuture : configurationFutures) {
                 try {
                     configurations.add(configurationFuture.get());
                 } catch (Exception e) {
-                    logger.warn("Asking configuration from subclient failed", e);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Asking configuration from subclient failed.", e);
+                    } else  {
+                        logger.warn("Asking configuration from subclient failed. Subclient description: '{}' Reason: '{}'", Util.exceptionSummary(e));
+                    }
                 }
             }
             if (configurations.isEmpty()) {
@@ -122,20 +124,9 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
      * @param tasks List of service call tasks
      * @return {@link ServiceCallFuture<SERVICE_RESPONSE>} that can be used to get the first successful service response
      */
-    ServiceCallFuture<SERVICE_RESPONSE> callAnyService(Collection<ServiceCallingTask<SERVICE_RESPONSE>> tasks) {
+    ServiceCallFuture<SERVICE_RESPONSE> callAnyService(Collection<Callable<SERVICE_RESPONSE>> tasks) {
         Future<SERVICE_RESPONSE> clientResponse = executorService.submit(new ServiceCallsTask(tasks));
         return new ServiceCallFuture<SERVICE_RESPONSE>(clientResponse);
-    }
-
-    /**
-     * Invokes the tasks that ask for all the subclients configurations.
-     *
-     * @param tasks Configuration asking tasks for different subclients.
-     * @return {@link List<Future>} of all the subclients configurations
-     */
-    List<Future<SERVICE_CONFIG_RESPONSE>> callAllServiceConfigurations(Collection<Callable<SERVICE_CONFIG_RESPONSE>> tasks)
-            throws InterruptedException {
-        return executorService.invokeAll(tasks);
     }
 
     /**
@@ -168,9 +159,9 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
      */
     private class ServiceCallsTask implements Callable<SERVICE_RESPONSE> {
 
-        private final Collection<ServiceCallingTask<SERVICE_RESPONSE>> serviceCallTasks;
+        private final Collection<Callable<SERVICE_RESPONSE>> serviceCallTasks;
 
-        ServiceCallsTask(Collection<ServiceCallingTask<SERVICE_RESPONSE>> serviceCallTasks) {
+        ServiceCallsTask(Collection<Callable<SERVICE_RESPONSE>> serviceCallTasks) {
             this.serviceCallTasks = serviceCallTasks;
         }
 

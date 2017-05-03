@@ -18,13 +18,22 @@
  */
 package com.guardtime.ksi.service.tcp;
 
+import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.AggregationResponseFuture;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.PduFactoryProvider;
 import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.pdu.RequestContextFactory;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.ConfigurationAwareSigningClient;
 import com.guardtime.ksi.service.client.KSIClientException;
+import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.util.Util;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -32,6 +41,7 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
@@ -41,7 +51,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * KSI TCP client for signing.
  */
-public class TCPClient extends ConfigurationAwareSigningClient {
+public class TCPClient implements KSISigningClient {
 
     private static final Logger logger = LoggerFactory.getLogger(TCPClient.class);
 
@@ -49,13 +59,42 @@ public class TCPClient extends ConfigurationAwareSigningClient {
     private ExecutorService executorService;
     private TCPClientSettings tcpClientSettings;
     private NioSocketConnector connector;
+    private PduFactory pduFactory;
+    private RequestContextFactory requestContextFactory = RequestContextFactory.DEFAULT_FACTORY;
 
     public TCPClient(TCPClientSettings tcpClientSettings) {
-        super(PduFactoryProvider.get(tcpClientSettings.getPduVersion()));
+        this.pduFactory = PduFactoryProvider.get(tcpClientSettings.getPduVersion());
         this.tcpClientSettings = tcpClientSettings;
         this.connector = createConnector();
         executorService = Executors.newCachedThreadPool();
         ((ThreadPoolExecutor) executorService).setMaximumPoolSize(tcpClientSettings.getTcpTransactionThreadPoolSize());
+    }
+
+    /**
+     * Creates the PDU for signing request with correct aggregator login information and PDU version and sends it to gateway.
+     * Parses the response PDU.
+     *
+     * @param dataHash - instance of {@link DataHash} to be signed. May not be null.
+     * @param level - level of the dataHash to be signed in the overall tree. May not be null.
+     *
+     * @return {@link AggregationResponseFuture}
+     * @throws KSIException
+     */
+    public AggregationResponseFuture sign(DataHash dataHash, Long level) throws KSIException {
+        Util.notNull(dataHash, "dataHash");
+        Util.notNull(level, "level");
+        KSIRequestContext requestContext = requestContextFactory.createContext();
+        ServiceCredentials credentials = getServiceCredentials();
+        Future<TLVElement> requestFuture = sign(new ByteArrayInputStream(pduFactory.createAggregationRequest(requestContext, credentials, dataHash, level).toByteArray()));
+        return new AggregationResponseFuture(requestFuture, requestContext, credentials, pduFactory);
+    }
+
+    public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
+        KSIRequestContext requestContext = requestContextFactory.createContext();
+        ServiceCredentials credentials = getServiceCredentials();
+        AggregationRequest requestMessage = pduFactory.createAggregatorConfigurationRequest(requestContext, credentials);
+        Future<TLVElement> future = sign(new ByteArrayInputStream(requestMessage.toByteArray()));
+        return pduFactory.readAggregatorConfigurationResponse(requestContext, credentials, future.getResult());
     }
 
     protected Future<TLVElement> sign(InputStream request) throws KSIClientException {

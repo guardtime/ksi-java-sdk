@@ -24,7 +24,6 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregationResponseFuture;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 
 import java.io.Closeable;
@@ -37,20 +36,18 @@ public interface KSISigningClient extends Closeable {
     /**
      * Used to create new signature.
      *
-     * @param requestContext - instance of {@link KSIRequestContext}.
      * @param dataHash - instance of {@link DataHash} to be signed.
      * @param level - level of the dataHash to be signed in the overall tree.
      *
      * @return instance of {@link AggregationResponseFuture} containing Aggregation response data.
      * @throws KSIException
      */
-    Future<AggregationResponse> sign(KSIRequestContext requestContext, DataHash dataHash, Long level) throws KSIException;
+    Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException;
 
     /**
      *
-     * @param requestContext - instance of {@link KSIRequestContext}.
      * @return {@link AggregatorConfiguration} one should rely on when using this client
      * @throws KSIException
      */
-    AggregatorConfiguration getAggregatorConfiguration(KSIRequestContext requestContext) throws KSIException;
+    AggregatorConfiguration getAggregatorConfiguration() throws KSIException;
 }

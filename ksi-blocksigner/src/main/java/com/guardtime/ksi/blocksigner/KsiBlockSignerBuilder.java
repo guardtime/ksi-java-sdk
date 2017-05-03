@@ -20,12 +20,6 @@
 package com.guardtime.ksi.blocksigner;
 
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
-import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.PduIdentifierProvider;
-import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.pdu.v1.PduV1Factory;
-import com.guardtime.ksi.pdu.v2.PduV2Factory;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
@@ -41,8 +35,6 @@ public class KsiBlockSignerBuilder {
     private KSISigningClient signingClient;
     private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
     private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
-    private PduFactory pduFactory = new PduV1Factory();
-    private PduIdentifierProvider pduIdentifierProvider = new DefaultPduIdentifierProvider();
     private int maxTreeHeight = KsiBlockSigner.MAXIMUM_LEVEL;
 
     public KsiBlockSignerBuilder setKsiSigningClient(KSISigningClient signingClient) {
@@ -63,20 +55,6 @@ public class KsiBlockSignerBuilder {
         return this;
     }
 
-    public KsiBlockSignerBuilder setPduVersion(PduVersion pduVersion) {
-        notNull(pduVersion, "PDU version");
-        if (PduVersion.V2.equals(pduVersion)) {
-            this.pduFactory = new PduV2Factory();
-        }
-        return this;
-    }
-
-    public KsiBlockSignerBuilder setPduIdentifierProvider(PduIdentifierProvider pduIdentifierProvider) {
-        notNull(pduIdentifierProvider, "PDU identifier provider");
-        this.pduIdentifierProvider = pduIdentifierProvider;
-        return this;
-    }
-
     public KsiBlockSignerBuilder setMaxTreeHeight(Integer maxTreeHeight) {
         notNull(maxTreeHeight, "Maximum aggregation tree height");
         this.maxTreeHeight = maxTreeHeight;
@@ -84,6 +62,6 @@ public class KsiBlockSignerBuilder {
     }
 
     public KsiBlockSigner build() {
-        return new KsiBlockSigner(signingClient, pduFactory, pduIdentifierProvider, signatureFactory, algorithm, maxTreeHeight);
+        return new KsiBlockSigner(signingClient, signatureFactory, algorithm, maxTreeHeight);
     }
 }

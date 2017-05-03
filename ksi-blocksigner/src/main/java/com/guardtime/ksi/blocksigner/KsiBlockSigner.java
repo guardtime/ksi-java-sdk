@@ -25,7 +25,6 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.*;
-import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.tree.HashTreeBuilder;
@@ -85,8 +84,6 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     private final HashTreeBuilder treeBuilder;
 
     private final KSISigningClient signingClient;
-    private PduFactory pduFactory = new PduV1Factory();
-    private PduIdentifierProvider pduIdentifierProvider = new DefaultPduIdentifierProvider();
 
     private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
@@ -127,16 +124,8 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         this.signatureFactory = signatureFactory;
     }
 
-    KsiBlockSigner(KSISigningClient signingClient, PduFactory pduFactory, PduIdentifierProvider pduIdentifierProvider,
-                   KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
+    KsiBlockSigner(KSISigningClient signingClient, KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight) {
         this(signingClient, signatureFactory, algorithm);
-        this.pduFactory = pduFactory;
-        this.pduIdentifierProvider = pduIdentifierProvider;
-    }
-
-    KsiBlockSigner(KSISigningClient signingClient, PduFactory pduFactory, PduIdentifierProvider pduIdentifierProvider,
-            KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight) {
-        this(signingClient, pduFactory, pduIdentifierProvider, signatureFactory, algorithm);
         this.maxTreeHeight = maxTreeHeight;
     }
 
@@ -233,8 +222,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private KSISignature signRootNode(TreeNode rootNode) throws KSIException {
         DataHash dataHash = new DataHash(rootNode.getValue());
-        KSIRequestContext requestContext = new KSIRequestContext(pduIdentifierProvider);
-        Future<AggregationResponse> future = signingClient.sign(requestContext, dataHash, rootNode.getLevel());
+        Future<AggregationResponse> future = signingClient.sign(dataHash, rootNode.getLevel());
         SigningFuture SigningFuture = new SigningFuture(future, new InMemoryKsiSignatureFactory(), dataHash);
         return SigningFuture.getResult();
     }

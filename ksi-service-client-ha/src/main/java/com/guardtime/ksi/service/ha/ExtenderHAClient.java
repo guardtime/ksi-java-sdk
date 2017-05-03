@@ -21,12 +21,10 @@ package com.guardtime.ksi.service.ha;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.ha.tasks.ExtenderConfigurationTask;
 import com.guardtime.ksi.service.ha.tasks.ExtendingTask;
-import com.guardtime.ksi.service.ha.tasks.ServiceCallingTask;
 import com.guardtime.ksi.util.Util;
 
 import java.util.ArrayList;
@@ -60,15 +58,14 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
      * Does a non-blocking extending request. Sends the request to all the subclients in parallel. First successful response is
      * used, others are cancelled. Request fails only if all the subclients fail.
      *
-     * @see KSIExtenderClient#extend(KSIRequestContext, Date, Date)
+     * @see KSIExtenderClient#extend(Date, Date)
      */
-    public Future<ExtensionResponse> extend(KSIRequestContext requestContext, Date aggregationTime, Date publicationTime) throws KSIException {
-        Util.notNull(requestContext, "requestContext");
+    public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException {
         Util.notNull(aggregationTime, "aggregationTime");
         Collection<KSIExtenderClient> clients = getSubclients();
-        Collection<ServiceCallingTask<ExtensionResponse>> tasks = new ArrayList<ServiceCallingTask<ExtensionResponse>>(clients.size());
+        Collection<Callable<ExtensionResponse>> tasks = new ArrayList<Callable<ExtensionResponse>>(clients.size());
         for (KSIExtenderClient client : clients) {
-            tasks.add(new ExtendingTask(client, requestContext, aggregationTime, publicationTime));
+            tasks.add(new ExtendingTask(client, aggregationTime, publicationTime));
         }
         return callAnyService(tasks);
     }
@@ -79,16 +76,13 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
      *
      * @see HAExtenderConfiguration
      *
-     * @param requestContext
-     *                       Instance of {@link KSIRequestContext}.
      * @return Aggregated extenders configuration.
      * @throws KSIException if all the subclients fail.
      */
-    public ExtenderConfiguration getExtenderConfiguration(KSIRequestContext requestContext) throws KSIException {
-        Util.notNull(requestContext, "requestContext");
+    public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
         Collection<Callable<ExtenderConfiguration>> tasks = new ArrayList<Callable<ExtenderConfiguration>>();
         for (KSIExtenderClient client : getSubclients()) {
-            tasks.add(new ExtenderConfigurationTask(requestContext, client));
+            tasks.add(new ExtenderConfigurationTask(client));
         }
         return getConfiguration(tasks);
     }

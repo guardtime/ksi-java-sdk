@@ -19,7 +19,6 @@
 package com.guardtime.ksi.service.ha.tasks;
 
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.client.KSISigningClient;
 
 import java.util.concurrent.Callable;
@@ -28,22 +27,17 @@ import java.util.concurrent.Callable;
  * Task for asking aggregators configuration.
  */
 public class AggregatorConfigurationTask implements Callable<AggregatorConfiguration> {
-    private final KSIRequestContext context;
     private final KSISigningClient client;
-
     /**
-     * @param context
-     *          {@link KSIRequestContext} for the configuration asking request.
      * @param client
      *          {@link KSISigningClient} which's configuration is to be asked.
      */
-    public AggregatorConfigurationTask(KSIRequestContext context, KSISigningClient client) {
-        this.context = context;
+    public AggregatorConfigurationTask(KSISigningClient client) {
         this.client = client;
     }
 
     public AggregatorConfiguration call() throws Exception {
-        return client.getAggregatorConfiguration(context);
+        return client.getAggregatorConfiguration();
     }
 
 }

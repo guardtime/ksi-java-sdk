@@ -73,13 +73,13 @@ public class HAExtenderConfigurationTest {
     @Test
     public void testGetCalendarFirstTime() {
         ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3));
-        assertEquals(configuration.getCalendarFirstTime(), new Date(100));
+        assertEquals(configuration.getCalendarFirstTime(), new Date(50));
     }
 
     @Test
     public void testGetCalendarLastTime() {
         ExtenderConfiguration configuration = new HAExtenderConfiguration(Arrays.asList(subConf1, subConf2, subConf3));
-        assertEquals(configuration.getCalendarLastTime().getTime(), new Date(200).getTime());
+        assertEquals(configuration.getCalendarLastTime().getTime(), new Date(300).getTime());
     }
 
     @Test

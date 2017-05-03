@@ -53,10 +53,10 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
             if (isSmaller(maxRequests, confMaxRequests)) {
                 maxRequests = confMaxRequests;
             }
-            if (isAfter(calFirstTime, confCalFirstTime)) {
+            if (isBefore(calFirstTime, confCalFirstTime)) {
                 calFirstTime = confCalFirstTime;
             }
-            if (isBefore(calLastTime, confCalLastTime)) {
+            if (isAfter(calLastTime, confCalLastTime)) {
                 calLastTime = confCalLastTime;
             }
             if (hasMoreContents(parents, confParents)) {
@@ -80,14 +80,14 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
     }
 
     /**
-     * @return Latest calendarFirstTime of all the subconfigurations.
+     * @return Earliest calendarFirstTime of all the subconfigurations.
      */
     public Date getCalendarFirstTime() {
         return calFirstTime;
     }
 
     /**
-     * @return Earliest calendarLastTime of all the subconfigurations.
+     * @return Latest calendarLastTime of all the subconfigurations.
      */
     public Date getCalendarLastTime() {
         return calLastTime;

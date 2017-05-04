@@ -18,8 +18,8 @@
  */
 package com.guardtime.ksi.service.ha;
 
+import com.guardtime.ksi.pdu.SubclientConfiguration;
 import com.guardtime.ksi.service.client.KSIClientException;
-import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,19 +75,15 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
      * @return Aggregated configuration based on the tasks that ended successfully
      * @throws KSIClientException If none of the tasks ended successfully.
      */
-    SERVICE_CONFIG_RESPONSE getConfiguration(Collection<Callable<SERVICE_CONFIG_RESPONSE>> configurationRequestTasks) throws KSIClientException {
+    SERVICE_CONFIG_RESPONSE getConfiguration(Collection<Callable<SubclientConfiguration<SERVICE_CONFIG_RESPONSE>>> configurationRequestTasks) throws KSIClientException {
         try {
-            List<Future<SERVICE_CONFIG_RESPONSE>> configurationFutures = executorService.invokeAll(configurationRequestTasks);
-            List<SERVICE_CONFIG_RESPONSE> configurations = new ArrayList<SERVICE_CONFIG_RESPONSE>();
-            for (Future<SERVICE_CONFIG_RESPONSE> configurationFuture : configurationFutures) {
+            List<Future<SubclientConfiguration<SERVICE_CONFIG_RESPONSE>>> configurationFutures = executorService.invokeAll(configurationRequestTasks);
+            List<SubclientConfiguration<SERVICE_CONFIG_RESPONSE>> configurations = new ArrayList<SubclientConfiguration<SERVICE_CONFIG_RESPONSE>>();
+            for (Future<SubclientConfiguration<SERVICE_CONFIG_RESPONSE>> configurationFuture : configurationFutures) {
                 try {
                     configurations.add(configurationFuture.get());
                 } catch (Exception e) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Asking configuration from subclient failed.", e);
-                    } else  {
-                        logger.warn("Asking configuration from subclient failed. Subclient description: '{}' Reason: '{}'", Util.exceptionSummary(e));
-                    }
+                    logger.debug("Asking configuration from subclient failed so that the failure could not be handled.", e);
                 }
             }
             if (configurations.isEmpty()) {
@@ -103,7 +99,13 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
         }
     }
 
-    private boolean areAllConfsEqual(List<SERVICE_CONFIG_RESPONSE> configurations) {
+    private boolean areAllConfsEqual(List<SubclientConfiguration<SERVICE_CONFIG_RESPONSE>> configurationResponses) {
+        List<SERVICE_CONFIG_RESPONSE> configurations = new ArrayList<SERVICE_CONFIG_RESPONSE>();
+        for (SubclientConfiguration<SERVICE_CONFIG_RESPONSE> response : configurationResponses) {
+            if (response.isSucceeded()) {
+                configurations.add(response.getConfiguration());
+            }
+        }
         for (int i = 1; i < configurations.size(); i++) {
             if (!configurationsEqual(configurations.get(i - 1), configurations.get(i))) {
                 return false;
@@ -114,9 +116,9 @@ abstract class AbstractHAClient<CLIENT extends Closeable, SERVICE_RESPONSE, SERV
 
     protected abstract boolean configurationsEqual(SERVICE_CONFIG_RESPONSE c1, SERVICE_CONFIG_RESPONSE c2);
 
-    protected abstract String configurationsToString(List<SERVICE_CONFIG_RESPONSE> configurations);
+    protected abstract String configurationsToString(List<SubclientConfiguration<SERVICE_CONFIG_RESPONSE>> configurations);
 
-    protected abstract SERVICE_CONFIG_RESPONSE aggregateConfigurations(List<SERVICE_CONFIG_RESPONSE> configurations);
+    protected abstract SERVICE_CONFIG_RESPONSE aggregateConfigurations(List<SubclientConfiguration<SERVICE_CONFIG_RESPONSE>> configurations);
 
     /**
      * Invokes all service calling tasks and returns a future that eventually returns the result of first successful one.

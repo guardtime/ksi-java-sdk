@@ -19,6 +19,7 @@
 package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.SubclientConfiguration;
 
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,7 @@ import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
  */
 class HAExtenderConfiguration implements ExtenderConfiguration {
 
+    private List<SubclientConfiguration<ExtenderConfiguration>> subclientConfigurations;
     private Long maxRequests;
     private List<String> parents;
     private Date calFirstTime;
@@ -42,25 +44,28 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
      * @param confs
      *          All the configurations that were received from subclients
      */
-    HAExtenderConfiguration(List<ExtenderConfiguration> confs) {
-        for (ExtenderConfiguration conf : confs) {
+    HAExtenderConfiguration(List<SubclientConfiguration<ExtenderConfiguration>> confs) {
+        this.subclientConfigurations = confs;
+        for (SubclientConfiguration<ExtenderConfiguration> confRequest : confs) {
+            if (confRequest.isSucceeded()) {
+                ExtenderConfiguration conf = confRequest.getConfiguration();
+                Long confMaxRequests = conf.getMaximumRequests();
+                Date confCalFirstTime = conf.getCalendarFirstTime();
+                Date confCalLastTime = conf.getCalendarLastTime();
+                List<String> confParents = conf.getParents();
 
-            Long confMaxRequests = conf.getMaximumRequests();
-            Date confCalFirstTime = conf.getCalendarFirstTime();
-            Date confCalLastTime = conf.getCalendarLastTime();
-            List<String> confParents = conf.getParents();
-
-            if (isSmaller(maxRequests, confMaxRequests)) {
-                maxRequests = confMaxRequests;
-            }
-            if (isBefore(calFirstTime, confCalFirstTime)) {
-                calFirstTime = confCalFirstTime;
-            }
-            if (isAfter(calLastTime, confCalLastTime)) {
-                calLastTime = confCalLastTime;
-            }
-            if (hasMoreContents(parents, confParents)) {
-                parents = confParents;
+                if (isSmaller(maxRequests, confMaxRequests)) {
+                    maxRequests = confMaxRequests;
+                }
+                if (isAfter(calFirstTime, confCalFirstTime)) {
+                    calFirstTime = confCalFirstTime;
+                }
+                if (isBefore(calLastTime, confCalLastTime)) {
+                    calLastTime = confCalLastTime;
+                }
+                if (hasMoreContents(parents, confParents)) {
+                    parents = confParents;
+                }
             }
         }
     }
@@ -91,5 +96,12 @@ class HAExtenderConfiguration implements ExtenderConfiguration {
      */
     public Date getCalendarLastTime() {
         return calLastTime;
+    }
+
+    /**
+     * @return List of all subclients configuration request results.
+     */
+    public List<SubclientConfiguration<ExtenderConfiguration>> getSubConfigurations() {
+        return subclientConfigurations;
     }
 }

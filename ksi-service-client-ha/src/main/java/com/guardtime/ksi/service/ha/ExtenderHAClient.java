@@ -21,6 +21,7 @@ package com.guardtime.ksi.service.ha;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.SubclientConfiguration;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.ha.tasks.ExtenderConfigurationTask;
@@ -80,16 +81,17 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
      * @throws KSIException if all the subclients fail.
      */
     public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
-        Collection<Callable<ExtenderConfiguration>> tasks = new ArrayList<Callable<ExtenderConfiguration>>();
+        Collection<Callable<SubclientConfiguration<ExtenderConfiguration>>> tasks = new ArrayList<Callable<SubclientConfiguration<ExtenderConfiguration>>>();
         for (KSIExtenderClient client : getSubclients()) {
             tasks.add(new ExtenderConfigurationTask(client));
         }
         return getConfiguration(tasks);
     }
 
-    protected ExtenderConfiguration aggregateConfigurations(List<ExtenderConfiguration> configurations) {
+    protected ExtenderConfiguration aggregateConfigurations(List<SubclientConfiguration<ExtenderConfiguration>> configurations) {
         return new HAExtenderConfiguration(configurations);
     }
+
 
     protected boolean configurationsEqual(ExtenderConfiguration c1, ExtenderConfiguration c2) {
         return Util.equals(c1.getMaximumRequests(), c2.getMaximumRequests()) &&
@@ -98,20 +100,42 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
                 Util.equalsIgnoreOrder(c1.getParents(), c2.getParents());
     }
 
-    protected String configurationsToString(List<ExtenderConfiguration> configurations) {
+    protected String configurationsToString(List<SubclientConfiguration<ExtenderConfiguration>> configurations) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < configurations.size(); i++) {
-            ExtenderConfiguration conf = configurations.get(i);
-            sb.append(String.format("ExtenderConfiguration{" +
-                    "maximumRequests='%s'," +
-                    "parents='%s'," +
-                    "calendarFirstTime='%s'," +
-                    "calendarLastTime='%s'" +
-                    "}", conf.getMaximumRequests(), conf.getParents(), conf.getCalendarFirstTime(), conf.getCalendarLastTime()));
+            SubclientConfiguration<ExtenderConfiguration> response = configurations.get(i);
+            String subclientKey = response.getSubclientKey();
+            if (response.isSucceeded()) {
+                sb.append(successResponseToString(subclientKey, response.getConfiguration()));
+            } else {
+                sb.append(failedResponseToString(subclientKey, response.getRequestFailureCause()));
+            }
             if (i != configurations.size() - 1) {
                 sb.append(",");
             }
         }
         return sb.toString();
+    }
+
+    private String successResponseToString(String clientId, ExtenderConfiguration conf) {
+        return  String.format("ExtenderConfiguration{" +
+                "extenderId='%s'," +
+                "maximumRequests='%s'," +
+                "parents='%s'," +
+                "calendarFirstTime='%s'," +
+                "calendarLastTime='%s'" +
+                "}",
+                clientId,
+                conf.getMaximumRequests(),
+                conf.getParents(),
+                conf.getCalendarFirstTime(),
+                conf.getCalendarLastTime());
+    }
+
+    private String failedResponseToString(String clientId, Throwable t) {
+        return String.format("successResponseToString{" +
+                "extenderId='%s'," +
+                "failureCause='%s'" +
+                "}", clientId, Util.getStacktrace(t));
     }
 }

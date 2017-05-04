@@ -45,4 +45,10 @@ public interface ExtenderConfiguration {
      * Return the aggregation time of the oldest calendar record the extender has
      */
     Date getCalendarLastTime();
+
+    /**
+     * Returned list is empty if this configuration belongs to a client that connects directly to a single extender. Otherwise it
+     * contains ExtenderConfigurations of all the subclients.
+     */
+    List<SubclientConfiguration<ExtenderConfiguration>> getSubConfigurations();
 }

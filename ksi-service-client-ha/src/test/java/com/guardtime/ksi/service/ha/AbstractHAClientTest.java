@@ -19,6 +19,7 @@
 package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.SubclientConfiguration;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import org.testng.Assert;
@@ -98,11 +99,11 @@ public class AbstractHAClientTest {
             return c1.equals(c2);
         }
 
-        protected String configurationsToString(List<Object> configurations) {
+        protected String configurationsToString(List<SubclientConfiguration<Object>> configurations) {
             return configurations.toString();
         }
 
-        protected Object aggregateConfigurations(List<Object> configurations) {
+        protected SubclientConfiguration<Object> aggregateConfigurations(List<SubclientConfiguration<Object>> configurations) {
             return configurations.get(0);
         }
     }

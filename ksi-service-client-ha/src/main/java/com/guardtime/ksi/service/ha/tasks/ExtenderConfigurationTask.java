@@ -19,14 +19,19 @@
 package com.guardtime.ksi.service.ha.tasks;
 
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.SubclientConfiguration;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Callable;
 
 /**
  * Task for asking extenders configuration.
  */
-public class ExtenderConfigurationTask implements Callable<ExtenderConfiguration> {
+public class ExtenderConfigurationTask implements Callable<SubclientConfiguration<ExtenderConfiguration>> {
+
+    private static final Logger logger = LoggerFactory.getLogger(ExtenderConfigurationTask.class);
 
     private final KSIExtenderClient client;
 
@@ -38,7 +43,12 @@ public class ExtenderConfigurationTask implements Callable<ExtenderConfiguration
         this.client = client;
     }
 
-    public ExtenderConfiguration call() throws Exception {
-        return client.getExtenderConfiguration();
+    public SubclientConfiguration<ExtenderConfiguration> call() {
+        try {
+            return new SubclientConfiguration<ExtenderConfiguration>(client.toString(), client.getExtenderConfiguration());
+        } catch (Exception e) {
+            logger.warn("Asking configuration from subclient '" + client + "' failed", e);
+            return new SubclientConfiguration<ExtenderConfiguration>(client.toString(), e);
+        }
     }
 }

@@ -21,11 +21,13 @@ package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.SubclientConfiguration;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -89,6 +91,10 @@ public class AggregatorConfigurationPayload extends TLVStructure implements Aggr
 
     public List<String> getParents() {
         return parentUris;
+    }
+
+    public List<SubclientConfiguration<AggregatorConfiguration>> getSubConfigurations() {
+        return Collections.emptyList();
     }
 
     public int getElementType() {

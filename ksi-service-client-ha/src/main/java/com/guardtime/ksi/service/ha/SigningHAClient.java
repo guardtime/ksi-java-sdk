@@ -22,6 +22,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.SubclientConfiguration;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.tasks.AggregatorConfigurationTask;
@@ -80,7 +81,7 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
      * @throws KSIException if all the subclients fail
      */
     public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
-        Collection<Callable<AggregatorConfiguration>> tasks = new ArrayList<Callable<AggregatorConfiguration>>();
+        Collection<Callable<SubclientConfiguration<AggregatorConfiguration>>> tasks = new ArrayList<Callable<SubclientConfiguration<AggregatorConfiguration>>>();
         for (KSISigningClient client : getSubclients()) {
             tasks.add(new AggregatorConfigurationTask(client));
         }
@@ -95,19 +96,16 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
                 Util.equalsIgnoreOrder(c1.getParents(), c2.getParents());
     }
 
-
-    protected String configurationsToString(List<AggregatorConfiguration> configurations) {
+    protected String configurationsToString(List<SubclientConfiguration<AggregatorConfiguration>> configurations) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < configurations.size(); i++) {
-            AggregatorConfiguration conf = configurations.get(i);
-            sb.append(String.format("AggregatorConfiguration{" +
-                    "maximumRequests='%s'," +
-                    "parents='%s'," +
-                    "maxLevel='%s'," +
-                    "aggregationAlgorithm='%s'," +
-                    "aggregationPeriod='%s'" +
-                    "}", conf.getMaximumRequests(), conf.getParents(), conf.getMaximumLevel(), conf.getAggregationAlgorithm(),
-                    conf.getAggregationPeriod()));
+            SubclientConfiguration<AggregatorConfiguration> response = configurations.get(i);
+            String subclientKey = response.getSubclientKey();
+            if (response.isSucceeded()) {
+                sb.append(successResponseToString(subclientKey, response.getConfiguration()));
+            } else {
+                sb.append(failedResponseToString(subclientKey, response.getRequestFailureCause()));
+            }
             if (i != configurations.size() - 1) {
                 sb.append(",");
             }
@@ -115,7 +113,31 @@ public class SigningHAClient extends AbstractHAClient<KSISigningClient, Aggregat
         return sb.toString();
     }
 
-    protected AggregatorConfiguration aggregateConfigurations(List<AggregatorConfiguration> configurations) {
+    private String successResponseToString(String clientId, AggregatorConfiguration conf) {
+        return String.format("AggregatorConfiguration{" +
+                "aggregatorId='%s'," +
+                "maximumRequests='%s'," +
+                "parents='%s'," +
+                "maxLevel='%s'," +
+                "aggregationAlgorithm='%s'," +
+                "aggregationPeriod='%s'" +
+                "}",
+                clientId,
+                conf.getMaximumRequests(),
+                conf.getParents(),
+                conf.getMaximumLevel(),
+                conf.getAggregationAlgorithm(),
+                conf.getAggregationPeriod());
+    }
+
+    private String failedResponseToString(String clientId, Throwable t) {
+        return String.format("AggregatorConfiguration{" +
+                        "aggregatorId='%s'," +
+                        "failureCause='%s'" +
+                        "}", clientId, Util.getStacktrace(t));
+    }
+
+    protected AggregatorConfiguration aggregateConfigurations(List<SubclientConfiguration<AggregatorConfiguration>> configurations) {
         return new HAAggregatorConfiguration(configurations);
     }
 }

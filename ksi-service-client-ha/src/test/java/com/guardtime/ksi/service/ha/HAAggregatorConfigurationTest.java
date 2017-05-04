@@ -19,10 +19,12 @@
 package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.SubclientConfiguration;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static com.guardtime.ksi.hashing.HashAlgorithm.SHA2_256;
 import static com.guardtime.ksi.hashing.HashAlgorithm.SHA3_224;
@@ -32,32 +34,35 @@ import static org.testng.Assert.*;
 
 public class HAAggregatorConfigurationTest {
 
-    private AggregatorConfiguration subConf1;
-    private AggregatorConfiguration subConf2;
-    private AggregatorConfiguration subConf3;
+    private SubclientConfiguration<AggregatorConfiguration> subConf1;
+    private SubclientConfiguration<AggregatorConfiguration> subConf2;
+    private SubclientConfiguration<AggregatorConfiguration> subConf3;
 
     @BeforeMethod
     public void setUp() {
-        subConf1 = mock(AggregatorConfiguration.class);
-        when(subConf1.getAggregationAlgorithm()).thenReturn(null);
-        when(subConf1.getAggregationPeriod()).thenReturn(1000L);
-        when(subConf1.getMaximumLevel()).thenReturn(15L);
-        when(subConf1.getMaximumRequests()).thenReturn(12L);
-        when(subConf1.getParents()).thenReturn(null);
+        AggregatorConfiguration sc1 = mock(AggregatorConfiguration.class);
+        when(sc1.getAggregationAlgorithm()).thenReturn(null);
+        when(sc1.getAggregationPeriod()).thenReturn(1000L);
+        when(sc1.getMaximumLevel()).thenReturn(15L);
+        when(sc1.getMaximumRequests()).thenReturn(12L);
+        when(sc1.getParents()).thenReturn(null);
+        subConf1 = new SubclientConfiguration<AggregatorConfiguration>("sc1", sc1);
 
-        subConf2 = mock(AggregatorConfiguration.class);
-        when(subConf2.getAggregationAlgorithm()).thenReturn(SHA2_256);
-        when(subConf2.getAggregationPeriod()).thenReturn(800L);
-        when(subConf2.getMaximumLevel()).thenReturn(17L);
-        when(subConf2.getMaximumRequests()).thenReturn(10L);
-        when(subConf2.getParents()).thenReturn(Arrays.asList("2", "3", "4", "5"));
+        AggregatorConfiguration sc2 = mock(AggregatorConfiguration.class);
+        when(sc2.getAggregationAlgorithm()).thenReturn(SHA2_256);
+        when(sc2.getAggregationPeriod()).thenReturn(800L);
+        when(sc2.getMaximumLevel()).thenReturn(17L);
+        when(sc2.getMaximumRequests()).thenReturn(10L);
+        when(sc2.getParents()).thenReturn(Arrays.asList("2", "3", "4", "5"));
+        subConf2 = new SubclientConfiguration<AggregatorConfiguration>("sc2", sc2);
 
-        subConf3 = mock(AggregatorConfiguration.class);
-        when(subConf3.getAggregationAlgorithm()).thenReturn(SHA3_224);
-        when(subConf3.getAggregationPeriod()).thenReturn(1200L);
-        when(subConf3.getMaximumLevel()).thenReturn(12L);
-        when(subConf3.getMaximumRequests()).thenReturn(19L);
-        when(subConf3.getParents()).thenReturn(Arrays.asList("4", "5", "6"));
+        AggregatorConfiguration sc3 = mock(AggregatorConfiguration.class);
+        when(sc3.getAggregationAlgorithm()).thenReturn(SHA3_224);
+        when(sc3.getAggregationPeriod()).thenReturn(1200L);
+        when(sc3.getMaximumLevel()).thenReturn(12L);
+        when(sc3.getMaximumRequests()).thenReturn(19L);
+        when(sc3.getParents()).thenReturn(Arrays.asList("4", "5", "6"));
+        subConf3 = new SubclientConfiguration<AggregatorConfiguration>("sc3", sc3);
     }
 
     @Test
@@ -98,5 +103,12 @@ public class HAAggregatorConfigurationTest {
     public void testGetAggregationAlgorithm() {
         AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3));
         assertEquals(configuration.getAggregationAlgorithm(), SHA3_224);
+    }
+
+    @Test
+    public void testGetSubconfigurations() {
+        AggregatorConfiguration configuration = new HAAggregatorConfiguration(Arrays.asList(subConf1, subConf2, subConf3));
+        List<SubclientConfiguration<AggregatorConfiguration>> subConfigurations = configuration.getSubConfigurations();
+        assertEquals(subConfigurations.size(), 3);
     }
 }

@@ -20,6 +20,7 @@ package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.SubclientConfiguration;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
  */
 class HAAggregatorConfiguration implements AggregatorConfiguration {
 
+    private List<SubclientConfiguration<AggregatorConfiguration>> subclientConfigurations;
     private Long maxRequests;
     private List<String> parents;
     private Long aggregationPeriod;
@@ -42,29 +44,32 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
      * @param confs
      *          All the configurations that were received from subclients
      */
-    HAAggregatorConfiguration(List<AggregatorConfiguration> confs) {
-        for (AggregatorConfiguration conf : confs) {
+    HAAggregatorConfiguration(List<SubclientConfiguration<AggregatorConfiguration>> confs) {
+        this.subclientConfigurations = confs;
+        for (SubclientConfiguration<AggregatorConfiguration> confRequest : confs) {
+            if (confRequest.isSucceeded()) {
+                AggregatorConfiguration conf = confRequest.getConfiguration();
+                Long confMaxRequests = conf.getMaximumRequests();
+                Long confAggregationPeriod = conf.getAggregationPeriod();
+                Long confMaxLevel = conf.getMaximumLevel();
+                HashAlgorithm confAggrAlgorithm = conf.getAggregationAlgorithm();
+                List<String> confParents = conf.getParents();
 
-            Long confMaxRequests = conf.getMaximumRequests();
-            Long confAggregationPeriod = conf.getAggregationPeriod();
-            Long confMaxLevel = conf.getMaximumLevel();
-            HashAlgorithm confAggrAlgorithm = conf.getAggregationAlgorithm();
-            List<String> confParents = conf.getParents();
-
-            if (isSmaller(maxRequests, confMaxRequests)) {
-                maxRequests = confMaxRequests;
-            }
-            if (isBigger(aggregationPeriod, confAggregationPeriod)) {
-                aggregationPeriod = confAggregationPeriod;
-            }
-            if (isSmaller(maxLevel, confMaxLevel)) {
-                maxLevel = confMaxLevel;
-            }
-            if (confAggrAlgorithm != null) {
-                aggregationAlgorithm = confAggrAlgorithm;
-            }
-            if (hasMoreContents(parents, confParents)) {
-                parents = confParents;
+                if (isSmaller(maxRequests, confMaxRequests)) {
+                    maxRequests = confMaxRequests;
+                }
+                if (isBigger(aggregationPeriod, confAggregationPeriod)) {
+                    aggregationPeriod = confAggregationPeriod;
+                }
+                if (isSmaller(maxLevel, confMaxLevel)) {
+                    maxLevel = confMaxLevel;
+                }
+                if (confAggrAlgorithm != null) {
+                    aggregationAlgorithm = confAggrAlgorithm;
+                }
+                if (hasMoreContents(parents, confParents)) {
+                    parents = confParents;
+                }
             }
         }
     }
@@ -102,6 +107,13 @@ class HAAggregatorConfiguration implements AggregatorConfiguration {
      */
     public List<String> getParents() {
         return parents;
+    }
+
+    /**
+     * @return List of all subclients configuration request results.
+     */
+    public List<SubclientConfiguration<AggregatorConfiguration>> getSubConfigurations() {
+        return subclientConfigurations;
     }
 
 }

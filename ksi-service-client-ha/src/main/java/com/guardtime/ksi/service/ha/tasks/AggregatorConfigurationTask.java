@@ -19,14 +19,20 @@
 package com.guardtime.ksi.service.ha.tasks;
 
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.SubclientConfiguration;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Callable;
 
 /**
  * Task for asking aggregators configuration.
  */
-public class AggregatorConfigurationTask implements Callable<AggregatorConfiguration> {
+public class AggregatorConfigurationTask implements Callable<SubclientConfiguration<AggregatorConfiguration>> {
+
+    private static final Logger logger = LoggerFactory.getLogger(AggregatorConfiguration.class);
+
     private final KSISigningClient client;
     /**
      * @param client
@@ -36,8 +42,13 @@ public class AggregatorConfigurationTask implements Callable<AggregatorConfigura
         this.client = client;
     }
 
-    public AggregatorConfiguration call() throws Exception {
-        return client.getAggregatorConfiguration();
+    public SubclientConfiguration<AggregatorConfiguration> call() throws Exception {
+        try {
+            return new SubclientConfiguration<AggregatorConfiguration>(client.toString(), client.getAggregatorConfiguration());
+        } catch (Exception e) {
+            logger.warn("Asking configuration from subclient '" + client + "' failed", e);
+            return new SubclientConfiguration<AggregatorConfiguration>(client.toString(), e);
+        }
     }
 
 }

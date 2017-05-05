@@ -29,6 +29,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.SIGNATURE_LEVEL_10_ROOT;
+import static com.guardtime.ksi.Resources.SIGNATURE_RFC_AGGR_CHAIN_LEVEL_CHANGED;
 
 public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
@@ -70,7 +71,7 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
     @Test
     public void testRfc3161SignatureProvidedLevel0() throws Exception {
-        KSISignature signature = TestUtil.loadSignature(Resources.RFC3161_SIGNATURE);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_RFC_AGGR_CHAIN_LEVEL_CHANGED);
         RuleResult result = rule.verify(build(signature, 0L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
@@ -79,7 +80,7 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
     @Test
     public void testRfc3161SignatureProvidedLevel1() throws Exception {
-        KSISignature signature = TestUtil.loadSignature(Resources.RFC3161_SIGNATURE);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_RFC_AGGR_CHAIN_LEVEL_CHANGED);
         RuleResult result = rule.verify(build(signature, 1L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);

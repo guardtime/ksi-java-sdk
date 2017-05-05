@@ -26,6 +26,8 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -35,18 +37,26 @@ import java.util.List;
  */
 public class InputHashLevelVerificationRule extends BaseRule {
 
+    private static final Logger logger = LoggerFactory.getLogger(InputHashLevelVerificationRule.class);
+
     VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         Long userSuppliedLevel = context.getInputHashLevel();
         if (userSuppliedLevel == null) {
             return VerificationResultCode.OK;
         }
-        KSISignature signature = context.getSignature();
+        Long levelCorrection = getLevelCorrection(context.getSignature());
+        return userSuppliedLevel <= levelCorrection ? VerificationResultCode.OK : VerificationResultCode.FAIL;
+    }
+
+    private Long getLevelCorrection(KSISignature signature) {
+        if (signature.getRfc3161Record() != null) {
+            return 0L;
+        }
         AggregationHashChain[] aggregationHashChains = signature.getAggregationHashChains();
         AggregationHashChain firstChain = aggregationHashChains[0];
         List<AggregationChainLink> chainLinks = firstChain.getChainLinks();
         AggregationChainLink firstLink = chainLinks.get(0);
-        Long levelCorrection = firstLink.getLevelCorrection();
-        return userSuppliedLevel <= levelCorrection ? VerificationResultCode.OK : VerificationResultCode.FAIL;
+        return firstLink.getLevelCorrection();
     }
 
     VerificationErrorCode getErrorCode() {

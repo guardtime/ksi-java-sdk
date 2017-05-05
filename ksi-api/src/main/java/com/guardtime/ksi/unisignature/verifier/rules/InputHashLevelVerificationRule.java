@@ -26,8 +26,6 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -36,8 +34,6 @@ import java.util.List;
  * link's level corrector value.
  */
 public class InputHashLevelVerificationRule extends BaseRule {
-
-    private static final Logger logger = LoggerFactory.getLogger(InputHashLevelVerificationRule.class);
 
     VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         Long userSuppliedLevel = context.getInputHashLevel();

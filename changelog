@@ -4,6 +4,8 @@ Version 4.11
 
 Version 4.10
 
+* BUGFIX: RFC3161 record index rule code error code and messages corrected.
+* IMPROVEMENT: Renewed and cleaned test resources and improved test coverage.
 * BUGFIX: Removed registration time from KSISignature and CalendarHashChain.
 * BUGFIX: Removed addAggregationHashChain from KSISignature.
 

@@ -20,21 +20,23 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
+import static com.guardtime.ksi.Resources.SIGNATURE_LEVEL_10_ROOT;
 
-    private static final String TEST_SIGNATURE = "ok-level10-root.ksig";
+public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
     private Rule rule = new InputHashLevelVerificationRule();
 
     @Test
     public void testLevelNotProvided() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(TEST_SIGNATURE)));
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_LEVEL_10_ROOT);
+        RuleResult result = rule.verify(build(signature));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertNull(result.getErrorCode());
@@ -42,7 +44,8 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
     @Test
     public void testProvidedLevelSmaller() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(TEST_SIGNATURE), 9L));
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_LEVEL_10_ROOT);
+        RuleResult result = rule.verify(build(signature, 9L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertNull(result.getErrorCode());
@@ -50,7 +53,7 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
     @Test
     public void testProvidedLevelEqual() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(TEST_SIGNATURE), 10L));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_LEVEL_10_ROOT), 10L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertNull(result.getErrorCode());
@@ -58,7 +61,7 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
     @Test
     public void testProvidedLevelBigger() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(TEST_SIGNATURE), 11L));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_LEVEL_10_ROOT), 11L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_3);

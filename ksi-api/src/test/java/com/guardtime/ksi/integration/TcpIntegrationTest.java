@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.guardtime.ksi.Resources.INPUT_FILE;
+
 public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
 
     private static final String KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER = "ksiInvalidCredentialsTCPDataProvider";
@@ -113,8 +115,9 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     private VerificationResult signAndVerify(HashAlgorithm algorithm) throws Exception {
-        KSISignature sig = ksi.sign(getFileHash(INPUT_FILE, algorithm));
-        return ksi.verify(TestUtil.buildContext(sig, ksi, httpClient, getFileHash(INPUT_FILE, algorithm)), new KeyBasedVerificationPolicy());
+        DataHash fileHash = getFileHash(INPUT_FILE, algorithm);
+        KSISignature sig = ksi.sign(fileHash);
+        return ksi.verify(TestUtil.buildContext(sig, ksi, httpClient, fileHash), new KeyBasedVerificationPolicy());
     }
 
     @DataProvider(name = VALID_HASH_ALGORITHMS_DATA_PROVIDER)

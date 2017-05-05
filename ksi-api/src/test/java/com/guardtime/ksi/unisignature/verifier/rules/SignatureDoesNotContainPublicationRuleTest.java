@@ -24,6 +24,9 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+
 public class SignatureDoesNotContainPublicationRuleTest extends AbstractRuleTest {
 
     private SignatureDoesNotContainPublicationRule rule = new SignatureDoesNotContainPublicationRule();
@@ -31,12 +34,12 @@ public class SignatureDoesNotContainPublicationRuleTest extends AbstractRuleTest
 
     @Test
     public void testSignatureWithPublicationRecordReturnsNaStatus_Ok() throws Exception {
-        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig"))).getResultCode(), VerificationResultCode.NA);
+        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14))).getResultCode(), VerificationResultCode.NA);
     }
 
     @Test
     public void testSignatureWithoutPublicationRecordReturnsOkStatus_Ok() throws Exception {
-        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig"))).getResultCode(), VerificationResultCode.OK);
+        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14))).getResultCode(), VerificationResultCode.OK);
     }
 
 }

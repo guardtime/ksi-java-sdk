@@ -20,35 +20,43 @@ package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.SignaturePublicationRecord;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testExtendToNearest_OK() throws Exception {
-        KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_2014_06_02));
+        KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_2017_03_14));
         Assert.assertTrue(extendedSignature.isExtended(), "Signature extension failed.");
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignature_OK() throws Exception {
-        KSISignature signature = loadSignature(SIGNATURE_2014_06_02);
+        KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
         signature = ksi.extend(signature);
         Assert.assertTrue(signature.isExtended(), "Signature extension failed.");
 
@@ -58,8 +66,8 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testExtendWithPublicationsFile_OK() throws Exception {
-        KSISignature signature = loadSignature(SIGNATURE_2014_06_02);
-        PublicationsFile publicationsFile = TestUtil.loadPublicationsFile("publication-2015-09-15.tlv");
+        KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
+        PublicationsFile publicationsFile = TestUtil.loadPublicationsFile(PUBLICATIONS_FILE);
         PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(signature.getPublicationTime());
         KSISignature extendedSignature = ksi.extend(signature, publicationRecord);
         Assert.assertTrue(extendedSignature.isExtended());
@@ -67,17 +75,17 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testExtendToUserPublicationString_OK() throws Exception {
-        PublicationData publicationData_2016_07_12 = new PublicationData("AAAAAA-CXQQZQ-AAPGJF-HGNMUN-DXEIQW-NJZZOE-J76OK4-BV3FKY-AEAWIP-KSPZPW-EJKVAI-JPOOR7");
-        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(publicationData_2016_07_12);
-        KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_2014_06_02), publicationRecord);
+
+        SignaturePublicationRecord publicationRecord = loadSignature(EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord();
+        KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_2017_03_14), publicationRecord);
         Assert.assertTrue(extendedSignature.isExtended(), "Signature extension failed");
-        VerificationResult result = ksi.verify(extendedSignature, new UserProvidedPublicationBasedVerificationPolicy(), publicationData_2016_07_12);
+        VerificationResult result = ksi.verify(extendedSignature, new UserProvidedPublicationBasedVerificationPolicy(), publicationRecord.getPublicationData());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureAfterWrithingToAndReadingFromStream_OK() throws Exception {
-        KSISignature signature = loadSignature(SIGNATURE_2014_06_02);
+        KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
         signature = ksi.extend(signature);
         Assert.assertTrue(signature.isExtended(), "Signature extension failed.");
 
@@ -91,15 +99,15 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
     public void testExtendPublicationBeforeSignature_NOK() throws Exception {
-        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(PUIBLICATION_STRING_2014_05_15));
-        ksi.extend(loadSignature(SIGNATURE_2014_06_02), publicationRecord);
+        KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
+        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(new Date(signature.getAggregationTime().getTime()-1000000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        ksi.extend(signature, publicationRecord);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testExtendSignatureFromAnotherCore_NOK() throws Exception {
-        String publicationStringFromAnotherCore = "AAAAAA-CXQQZQ-AAOSZH-ONCB4K-TFGPBW-R6S6TF-6EW4DU-4QMP7X-GI2VCO-TNGAZM-EV6AZR-464IOA";
-        KSISignature signature = loadSignature(SIGNATURE_2014_06_02);
-        PublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData(publicationStringFromAnotherCore));
+        KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
+        PublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData(new Date(signature.getPublicationTime().getTime()+100000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
         try {
             ksi.extend(signature, record);
             Assert.assertTrue(false, "Extended signature internal verification had to fail.");

@@ -36,31 +36,33 @@ import org.testng.annotations.Test;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static org.testng.Assert.assertNotNull;
 
 public class KSIIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test
     public void testReadUniSignatureFromFile_OK() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.loadFile("ok-sig-2014-04-30.1.ksig"));
+        KSISignature signature = ksi.read(TestUtil.loadFile(SIGNATURE_2017_03_14));
         assertNotNull(signature);
     }
 
     @Test
     public void testReadUniSignatureFromByteArray_OK() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.loadBytes("ok-sig-2014-04-30.1.ksig"));
+        KSISignature signature = ksi.read(TestUtil.loadBytes(SIGNATURE_2017_03_14));
         assertNotNull(signature);
     }
 
     @Test
     public void testReadUniSignatureFromInputStream_OK() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-04-30.1.ksig"));
+        KSISignature signature = ksi.read(TestUtil.load(SIGNATURE_2017_03_14));
         assertNotNull(signature);
     }
 
     @Test
     public void testWriteUniSignatureToOutputStream_OK() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-04-30.1.ksig"));
+        KSISignature signature = ksi.read(TestUtil.load(SIGNATURE_2017_03_14));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         signature.writeTo(output);
         Assert.assertEquals(signature, ksi.read(output.toByteArray()));
@@ -68,31 +70,31 @@ public class KSIIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test
     public void testVerifySignatureWithoutContext_OK() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-04-30.1.ksig"));
+        KSISignature signature = ksi.read(TestUtil.load(SIGNATURE_2017_03_14));
         VerificationResult result = ksi.verify(signature, new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test
     public void testVerifySignatureWithFileDataHashWithoutContext_OK() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-04-30.1.ksig"));
+        KSISignature signature = ksi.read(TestUtil.load(SIGNATURE_2017_03_14));
         VerificationResult result = ksi.verify(signature, new KeyBasedVerificationPolicy(), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D")));
         Assert.assertTrue(result.isOk());
     }
 
     @Test
     public void testVerifyExtendedSignatureWithoutContext_OK() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-06-2-extended.ksig"));
+        KSISignature signature = ksi.read(TestUtil.load(EXTENDED_SIGNATURE_2017_03_14));
         VerificationResult result = ksi.verify(signature, new PublicationsFileBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test
     public void testVerifyExtendedSignatureWithFileHashAndPublicationDataAndWithoutContext_OK() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.load("ok-sig-2014-06-2-extended.ksig"));
+        KSISignature signature = ksi.read(TestUtil.load(EXTENDED_SIGNATURE_2017_03_14));
         PublicationData publicationData = new PublicationData(new Date(1410739200000L), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("C1679EDC2E2A23D1BA9B4F49845C7607AEEF48AD1A344A1572A70907A86FF040")));
         DataHash documentHash = new DataHash(HashAlgorithm.SHA2_256, Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D"));
-        VerificationResult result = ksi.verify(signature, new PublicationsFileBasedVerificationPolicy(), documentHash, publicationData);
+        VerificationResult result = ksi.verify(signature, new PublicationsFileBasedVerificationPolicy(), documentHash);
         Assert.assertTrue(result.isOk());
     }
 

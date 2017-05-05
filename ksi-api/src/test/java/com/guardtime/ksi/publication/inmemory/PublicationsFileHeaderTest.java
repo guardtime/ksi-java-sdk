@@ -25,12 +25,15 @@ import org.testng.annotations.Test;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_HEADER_NO_CREATION_TIME;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_HEADER_OK;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_HEADER_VERSION_MISSING;
 
 public class PublicationsFileHeaderTest {
 
     @Test
     public void testDecodePublicationFileHeader_Ok() throws Exception {
-        PublicationsFileHeader header = load("publications-file/publications-file-header-ok.tlv");
+        PublicationsFileHeader header = load(PUBLICATIONS_FILE_HEADER_OK);
         Assert.assertEquals(header.getVersion().longValue(), 2L);
         Assert.assertEquals(header.getCreationTime(), new Date(123456000L));
         Assert.assertEquals(header.getRepositoryUri(), "repository");
@@ -38,12 +41,12 @@ public class PublicationsFileHeaderTest {
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Publications file header version element must be present")
     public void testDecodePublicationsFileHeaderWithoutVersion_ThrowsInvalidPublicationsFileException() throws Exception {
-        load("publications-file/publications-file-header-version-missing.tlv");
+        load(PUBLICATIONS_FILE_HEADER_VERSION_MISSING);
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Publications file header creation time element must be present")
     public void testDecodePublicationFileHeaderWithoutCreationTime_ThrowsInvalidPublicationsFileException() throws Exception {
-        load("publications-file/publications-file-header-creation-time-missing.tlv");
+        load(PUBLICATIONS_FILE_HEADER_NO_CREATION_TIME);
     }
 
     private PublicationsFileHeader load(String file) throws Exception {

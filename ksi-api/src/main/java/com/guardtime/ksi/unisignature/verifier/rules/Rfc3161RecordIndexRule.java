@@ -59,6 +59,6 @@ public class Rfc3161RecordIndexRule extends BaseRule {
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.INT_10;
+        return VerificationErrorCode.INT_12;
     }
 }

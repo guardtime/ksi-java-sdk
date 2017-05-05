@@ -26,25 +26,29 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_PUBLICATION_RECORD_INVALID_PUBLICATION_TIME;
+
 public class SignaturePublicationRecordPublicationTimeRuleTest extends AbstractRuleTest {
 
     private SignaturePublicationRecordPublicationTimeRule rule = new SignaturePublicationRecordPublicationTimeRule();
 
     @Test
     public void testPublicationRecordPublicationDataHashEqualsToCalendarHashChainOutputHash_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testThatRuleReturnsStatusOkWhenPublicationRecordIsMissing_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testPublicationRecordPublicationDataHashDoesNotEqualsToCalendarHashChainOutputHash_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-invalid-publication-record-publication-data-time.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_PUBLICATION_RECORD_INVALID_PUBLICATION_TIME)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_07);
     }

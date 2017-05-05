@@ -30,8 +30,8 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import java.util.List;
 
 /**
- * This rule is used to verify if signatures level is at least as big as user expects it to be.
- * If expected input hash level isn't provided the status {@link VerificationResultCode#OK} will be returned.
+ * This rule verifies that user provided input hash level is less than or equal to first aggregation hash chain's first
+ * link's level corrector value.
  */
 public class InputHashLevelVerificationRule extends BaseRule {
 

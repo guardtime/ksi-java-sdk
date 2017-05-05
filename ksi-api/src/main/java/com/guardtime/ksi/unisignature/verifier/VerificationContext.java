@@ -72,7 +72,7 @@ public interface VerificationContext {
     DataHash getDocumentHash();
 
     /**
-     * Returns the input hash level provided bu the user. Returns null when user did not provide it.
+     * Returns the input hash level provided by the user. Returns null if not provided.
      */
     Long getInputHashLevel();
 

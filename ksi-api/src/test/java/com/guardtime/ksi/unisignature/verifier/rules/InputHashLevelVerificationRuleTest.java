@@ -19,6 +19,7 @@
 
 package com.guardtime.ksi.unisignature.verifier.rules;
 
+import com.guardtime.ksi.Resources;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
@@ -62,6 +63,24 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
     @Test
     public void testProvidedLevelBigger() throws Exception {
         RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_LEVEL_10_ROOT), 11L));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_3);
+    }
+
+    @Test
+    public void testRfc3161SignatureProvidedLevel0() throws Exception {
+        KSISignature signature = TestUtil.loadSignature(Resources.RFC3161_SIGNATURE);
+        RuleResult result = rule.verify(build(signature, 0L));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
+        Assert.assertNull(result.getErrorCode());
+    }
+
+    @Test
+    public void testRfc3161SignatureProvidedLevel1() throws Exception {
+        KSISignature signature = TestUtil.loadSignature(Resources.RFC3161_SIGNATURE);
+        RuleResult result = rule.verify(build(signature, 1L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_3);

@@ -113,10 +113,9 @@ public class VerificationContextBuilder {
     }
 
     /**
-     * Used to set the input level which was set when the signing took place. If present, then it will be verified.
+     * Used to set the input hash level.
      *
      * @param inputHashLevel
-     *          level which was set when the signing took place
      * @return instance of {@link VerificationContextBuilder}
      */
     public VerificationContextBuilder setInputHashLevel(Long inputHashLevel) {

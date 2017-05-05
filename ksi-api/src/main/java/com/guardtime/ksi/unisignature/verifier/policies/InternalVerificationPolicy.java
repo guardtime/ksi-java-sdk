@@ -61,11 +61,11 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new SignaturePublicationRecordPublicationHashRule());
         rules.add(new SignaturePublicationRecordPublicationTimeRule());
 
-        // verify document hash
-        rules.add(new DocumentHashVerificationRule());
-
         // verify level
         rules.add(new InputHashLevelVerificationRule());
+
+        // verify document hash
+        rules.add(new DocumentHashVerificationRule());
     }
 
     /**

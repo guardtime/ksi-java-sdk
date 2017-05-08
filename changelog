@@ -4,6 +4,7 @@ Version 4.10
 * IMPROVEMENT: Renewed and cleaned test resources and improved test coverage.
 * BUGFIX: Removed registration time from KSISignature and CalendarHashChain.
 * BUGFIX: Removed addAggregationHashChain from KSISignature.
+* IMPROVEMENT: Chain index continuation check
 
 Version 4.9
 

@@ -39,9 +39,9 @@ public class KSIServiceCredentials implements ServiceCredentials {
     private HashAlgorithm hmacAlgorithm = HashAlgorithm.SHA2_256;
 
     /**
-     * Create service credentials.
+     * Create service credentials. Default HMAC algorithm (SHA-256) will be used.
      *
-     * String values will be converted to bytes using UTF-8 encoding, if this is
+     * Parameter loginKey will be converted to bytes using UTF-8 encoding, if this is
      * not desired, use other constructor.
      *
      * @param loginId
@@ -54,8 +54,25 @@ public class KSIServiceCredentials implements ServiceCredentials {
     }
 
     /**
+     * Create service credentials. Default HMAC algorithm (SHA-256) will be used.
+     *
+     * Parameter loginKey will be converted to bytes using UTF-8 encoding, if this is
+     * not desired, use other constructor.
+     *
+     * @param loginId
+     *            login ID
+     * @param loginKey
+     *            login Key
+     * @param hmacAlgorithm
+     *            HMAC algorithm of incoming messages
+     */
+    public KSIServiceCredentials(String loginId, String loginKey, HashAlgorithm hmacAlgorithm) {
+        this(loginId, toBytes(loginKey), hmacAlgorithm);
+    }
+
+    /**
     *
-    * Create service credentials.
+    * Create service credentials. Default HMAC algorithm (SHA-256) will be used.
     *
     * @param loginId
     *            login ID

@@ -14,7 +14,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>KSI Service High Availability Client</name>
-    <description>Client for Java SDK that can be used to achieve redundancu.</description>
+    <description>Client for Java SDK that can be used to achieve redundancy.</description>
 
     <licenses>
         <license>

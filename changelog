@@ -1,7 +1,7 @@
 Version 4.10
 
-* IMPROVEMENT: Removed KSISigningClient.sign(InputStream) and provided an alternative KSISigningClient.sign(KSIRequestContext, DataHash, Long).
-* IMPROVEMENT: Removed KSIExtenderClient.extend(InputStream) and provided an alternative KSIExtenderClient.extend(KSIRequestContext, Date, Date).
+* IMPROVEMENT: Removed KSISigningClient.sign(InputStream) and provided an alternative KSISigningClient.sign(DataHash, Long).
+* IMPROVEMENT: Removed KSIExtenderClient.extend(InputStream) and provided an alternative KSIExtenderClient.extend(Date, Date).
 * IMPROVEMENT: Removed VerificationContext.setPduVersion(PduVersion) as PDU version is decided in the client now.
 * IMPROVEMENT: KSISigningClient and KSIExtenderClient are not aware of external service settings like credentials and PDU version anymore.
 * FEATURE: HAClient (High-availability client) is a client that combines multiple KSISigningClients and KSIExtenderClients to achieve redundancy.

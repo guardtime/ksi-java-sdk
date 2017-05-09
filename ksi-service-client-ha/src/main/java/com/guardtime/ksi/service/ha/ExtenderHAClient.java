@@ -40,7 +40,7 @@ import java.util.concurrent.Callable;
  * NB! It is highly recommended that all the extender configurations would be in sync with each other (except credentials).
  * If that is not the case then ExtenderHAClient will log a warning but it will still work.
  * If user asks for configuration from the ExtenderHAClient it will use the most conservative configuration of sub clients to
- * compose aggregated configuration.d
+ * compose aggregated configuration.
  */
 public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, ExtensionResponse, ExtenderConfiguration> implements KSIExtenderClient {
 

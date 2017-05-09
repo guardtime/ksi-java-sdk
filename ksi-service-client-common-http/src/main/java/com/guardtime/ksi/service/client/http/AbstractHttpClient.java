@@ -91,8 +91,8 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
     }
 
     public ExtensionResponseFuture extend(Date aggregationTime, Date publicationTime) throws KSIException {
-        KSIRequestContext requestContext = requestContextFactory.createContext();
         Util.notNull(aggregationTime, "aggregationTime");
+        KSIRequestContext requestContext = requestContextFactory.createContext();
         ServiceCredentials credentials = getServiceCredentials();
         ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, credentials, aggregationTime, publicationTime);
         ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());

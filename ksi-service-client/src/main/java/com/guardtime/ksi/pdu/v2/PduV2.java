@@ -21,6 +21,7 @@ package com.guardtime.ksi.pdu.v2;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.service.KSIProtocolException;
@@ -79,9 +80,9 @@ abstract class PduV2 extends TLVStructure {
     /**
      * Constructor for reading a response PDU message
      */
-    public PduV2(TLVElement rootElement, byte[] loginKey) throws KSIException {
+    public PduV2(TLVElement rootElement, KSIRequestContext context) throws KSIException {
         super(rootElement);
-        readMac(rootElement, loginKey);
+        readMac(rootElement, context);
         readHeader(rootElement);
         readPayloads(rootElement);
         if (payloads.isEmpty()) {
@@ -177,11 +178,11 @@ abstract class PduV2 extends TLVStructure {
         return Arrays.contains(getSupportedPayloadTypes(), type);
     }
 
-    private void readMac(TLVElement rootElement, byte[] loginKey) throws KSIException {
+    private void readMac(TLVElement rootElement, KSIRequestContext context) throws KSIException {
         TLVElement lastChild = rootElement.getLastChildElement();
         if (lastChild != null && lastChild.getType() == MessageMac.ELEMENT_TYPE) {
             this.mac = new MessageMac(lastChild);
-            verifyMac(loginKey);
+            verifyMac(context);
         } else {
             TLVElement errorElement = rootElement.getFirstChildElement(getErrorPayloadType());
             if (errorElement != null) {
@@ -192,9 +193,13 @@ abstract class PduV2 extends TLVStructure {
         }
     }
 
-    private void verifyMac(byte[] loginKey) throws KSIException {
+    private void verifyMac(KSIRequestContext context) throws KSIException {
         DataHash macValue = mac.getMac();
-        DataHash messageMac = calculateMac(macValue.getAlgorithm(), loginKey);
+        if (macValue.getAlgorithm() != context.getHmacAlgorithm()) {
+            throw new KSIException(
+                    "HMAC algorithm mismatch. Expected " + context.getHmacAlgorithm().getName() + ", received " + macValue.getAlgorithm().getName());
+        }
+        DataHash messageMac = calculateMac(macValue.getAlgorithm(), context.getLoginKey());
         if (!macValue.equals(messageMac)) {
             throw new InvalidMessageAuthenticationCodeException("Invalid MAC code. Expected " + macValue + ", calculated " + messageMac);
         }

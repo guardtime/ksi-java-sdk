@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.pdu;
 
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 
 
@@ -59,6 +60,10 @@ public final class KSIRequestContext {
 
     public byte[] getLoginKey() {
         return credentials.getLoginKey();
+    }
+
+    public HashAlgorithm getHmacAlgorithm() {
+        return credentials.getHmacAlgorithm();
     }
 
     public Long getInstanceId() {

@@ -18,9 +18,15 @@
  */
 package com.guardtime.ksi.pdu.v2;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.ExtensionRequest;
+import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
@@ -28,7 +34,7 @@ import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.Date;
@@ -44,7 +50,7 @@ public class PduV2FactoryTest {
     private KSIRequestContext requestContext;
     private KSIRequestContext extensionContext;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
         this.dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
         this.requestContext = new KSIRequestContext(CREDENTIALS, 42275443333883166L, 42L, 42L);
@@ -122,6 +128,18 @@ public class PduV2FactoryTest {
         pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v2-header-not-first.tlv"));
     }
 
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "HMAC algorithm mismatch. Expected SHA-512, received SHA-256")
+    public void testReadV2AggregationResponseHMACAlgorithm_ThrowsKSIException() throws Exception {
+        KSIRequestContext extensionContext = new KSIRequestContext(new KSIServiceCredentials("anon", "anon".getBytes("UTF-8"), HashAlgorithm.SHA2_512), 42275443333883166L, 42L, 42L);
+        pduFactory.readAggregationResponse(extensionContext, loadTlv("pdu/aggregation/aggregation-response-v2.tlv"));
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "HMAC algorithm mismatch. Expected SHA-512, received SHA-256")
+    public void testExtensionResponseInvalidHMACAlgorithm_ThrowsKSIException() throws Exception {
+        KSIRequestContext extensionContext = new KSIRequestContext(new KSIServiceCredentials("anon", "anon".getBytes("UTF-8"), HashAlgorithm.SHA2_512), 5546551786909961666L, 42L, 42L);
+        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2.tlv"));
+    }
+
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testExtensionResponseInvalidHMAC_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-invalid-mac.tlv"));
@@ -174,7 +192,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testReadV2ExtensionResponseContainingUnknownNonCriticalElement() throws Exception {
-        ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 8396215651691691389L, 42L, 42L), loadTlv("pdu/extension/extension-response-v2-unknown-non-critical-element.tlv"));
+        ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon".getBytes("UTF-8"), HashAlgorithm.SHA2_512), 8396215651691691389L, 42L, 42L), loadTlv("pdu/extension/extension-response-v2-unknown-non-critical-element.tlv"));
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getCalendarHashChain());
     }

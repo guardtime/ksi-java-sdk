@@ -19,6 +19,8 @@
 
 package com.guardtime.ksi.service.client;
 
+import com.guardtime.ksi.hashing.HashAlgorithm;
+
 /**
  * KSI service credentials for HMAC authentication.
  */
@@ -33,5 +35,10 @@ public interface ServiceCredentials {
      * Returns ksi login key
      */
     byte[] getLoginKey();
+
+    /**
+     * Return the algorithm for verifying the HMAC of incoming messages
+     */
+    HashAlgorithm getHmacAlgorithm();
 
 }

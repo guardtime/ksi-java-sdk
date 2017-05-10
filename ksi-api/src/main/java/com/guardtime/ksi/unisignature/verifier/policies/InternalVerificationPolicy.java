@@ -31,6 +31,7 @@ import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAggregatio
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainInputHashVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainRegistrationTimeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.DocumentHashVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.InputHashLevelVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161RecordIndexRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161RecordTimeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
@@ -76,6 +77,9 @@ public class InternalVerificationPolicy implements Policy {
         // verify publication record (if present)
         rules.add(new SignaturePublicationRecordPublicationHashRule());
         rules.add(new SignaturePublicationRecordPublicationTimeRule());
+
+        // verify level
+        rules.add(new InputHashLevelVerificationRule());
 
         // verify document hash
         rules.add(new DocumentHashVerificationRule());

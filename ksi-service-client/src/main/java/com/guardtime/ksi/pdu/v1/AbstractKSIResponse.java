@@ -25,7 +25,7 @@ import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
-import com.guardtime.ksi.service.*;
+import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
@@ -109,7 +109,7 @@ abstract class AbstractKSIResponse<T extends PduResponsePayloadV1> extends TLVSt
         if (mac == null) {
             throw new KSIProtocolException("Invalid response message. Response message mac tag is required");
         }
-        validateMac(context.getLoginKey());
+        validateMac(context.getLoginKey(), context.getHmacAlgorithm());
         if (response == null) {
             throw new KSIProtocolException("Response message does not contain response payload element");
         }
@@ -120,7 +120,6 @@ abstract class AbstractKSIResponse<T extends PduResponsePayloadV1> extends TLVSt
         if (response.getError() != null && response.getError() > 0) {
             throw new KSIProtocolException(response.getError(), response.getErrorMessage());
         }
-
     }
 
     protected abstract T parse(TLVElement element) throws KSIException;
@@ -134,14 +133,20 @@ abstract class AbstractKSIResponse<T extends PduResponsePayloadV1> extends TLVSt
      *
      * @param key
      *         - key to be used to calculate MAC code
+     * @param hmacAlgorithm
+     *         - algorithm for verifying the HMAC of incoming messages
      * @throws KSIException
      *         will be thrown when MAC code doesn't validate
      */
-    private void validateMac(byte[] key) throws KSIException {
+    private void validateMac(byte[] key, HashAlgorithm hmacAlgorithm) throws KSIException {
         try {
+            HashAlgorithm receivedHmacAlgorithm = mac.getAlgorithm();
+            if (receivedHmacAlgorithm != hmacAlgorithm) {
+                throw new KSIException(
+                        "HMAC algorithm mismatch. Expected " + hmacAlgorithm.getName() + ", received " + receivedHmacAlgorithm.getName());
+            }
             // calculate and set the MAC value
-            HashAlgorithm algorithm = mac.getAlgorithm();
-            DataHash macValue = new DataHash(algorithm, Util.calculateHMAC(getContent(), key, algorithm.getName()));
+            DataHash macValue = new DataHash(hmacAlgorithm, Util.calculateHMAC(getContent(), key, hmacAlgorithm.getName()));
             if (!mac.equals(macValue)) {
                 throw new InvalidMessageAuthenticationCodeException("Invalid MAC code. Expected " + mac + ", calculated " + macValue);
             }

@@ -4,6 +4,7 @@ Version 4.10
 * IMPROVEMENT: Renewed and cleaned test resources and improved test coverage.
 * BUGFIX: Removed registration time from KSISignature and CalendarHashChain.
 * BUGFIX: Removed addAggregationHashChain from KSISignature.
+* IMPROVEMENT: HMAC algorithm of incoming messages
 * IMPROVEMENT: Now possible to verify input hash level, default value is 0, GEN-3 is returned in case of error.
 
 Version 4.9

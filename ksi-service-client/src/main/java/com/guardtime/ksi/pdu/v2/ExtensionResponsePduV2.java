@@ -28,7 +28,7 @@ class ExtensionResponsePduV2 extends PduV2 {
     private static final int[] SUPPORTED_PAYLOAD_TYPES = new int[]{0x02, 0x03, 0x04};
 
     public ExtensionResponsePduV2(TLVElement rootElement, KSIRequestContext context) throws KSIException {
-        super(rootElement, context.getLoginKey());
+        super(rootElement, context);
     }
 
     @Override

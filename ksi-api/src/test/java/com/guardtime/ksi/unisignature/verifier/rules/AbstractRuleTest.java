@@ -34,26 +34,30 @@ import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 public abstract class AbstractRuleTest {
 
     protected VerificationContext build(KSISignature signature) throws Exception {
-        return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null);
+        return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null, null);
     }
 
     protected VerificationContext build(KSISignature signature, PublicationData publication) throws Exception {
-        return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), publication);
+        return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), publication, null);
     }
 
     protected VerificationContext build(KSISignature signature, PublicationsFile trustStore) throws Exception {
-        return build(signature, null, trustStore, null);
+        return build(signature, null, trustStore, null, null);
     }
 
     protected VerificationContext build(KSISignature signature, DataHash documentHash) throws Exception {
-        return build(signature, documentHash, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null);
+        return build(signature, documentHash, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null, null);
     }
 
-    protected VerificationContext build(KSISignature signature, DataHash documentHash, PublicationsFile trustStore, PublicationData publication) throws Exception {
+    protected VerificationContext build(KSISignature signature, Long level) throws Exception {
+        return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null, level);
+    }
+
+    protected VerificationContext build(KSISignature signature, DataHash documentHash, PublicationsFile trustStore, PublicationData publication, Long level) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
         builder.setPublicationsFile(trustStore).setExtenderClient(mockedExtenderClient).setUserPublication(publication);
-        return builder.setSignature(signature).setDocumentHash(documentHash).createVerificationContext();
+        return builder.setSignature(signature).setDocumentHash(documentHash).setInputHashLevel(level).createVerificationContext();
     }
 
 

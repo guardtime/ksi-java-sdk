@@ -53,6 +53,7 @@ final class KSIVerificationContext implements VerificationContext {
     private KSIExtenderClient extenderClient;
     private boolean extendingAllowed;
     private DataHash documentHash;
+    private Long inputHashLevel;
     private Map<Date, CalendarHashChain> extendedSignatures = new HashMap<Date, CalendarHashChain>();
     private CalendarHashChain calendarExtendedToHead;
 
@@ -60,13 +61,14 @@ final class KSIVerificationContext implements VerificationContext {
     private KSISignatureComponentFactory signatureComponentFactory;
 
     KSIVerificationContext(PublicationsFile publicationsFile, KSISignature signature, PublicationData userPublication,
-                           boolean extendingAllowed, KSIExtenderClient extenderClient, DataHash documentHash) {
+                           boolean extendingAllowed, KSIExtenderClient extenderClient, DataHash documentHash, Long inputHashLevel) {
         this.publicationsFile = publicationsFile;
         this.signature = signature;
         this.userPublication = userPublication;
         this.extendingAllowed = extendingAllowed;
         this.extenderClient = extenderClient;
         this.documentHash = documentHash;
+        this.inputHashLevel = inputHashLevel;
     }
 
     public void setPduFactory(PduFactory pduFactory) {
@@ -137,6 +139,10 @@ final class KSIVerificationContext implements VerificationContext {
 
     public DataHash getDocumentHash() {
         return documentHash;
+    }
+
+    public Long getInputHashLevel() {
+        return inputHashLevel;
     }
 
     public boolean isExtendingAllowed() {

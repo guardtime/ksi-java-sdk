@@ -72,6 +72,11 @@ public interface VerificationContext {
     DataHash getDocumentHash();
 
     /**
+     * Returns the input hash level provided by the user. Returns null if not provided.
+     */
+    Long getInputHashLevel();
+
+    /**
      * True when extending is allowed when using {@link com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy}
      * or {@link com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy}
      */

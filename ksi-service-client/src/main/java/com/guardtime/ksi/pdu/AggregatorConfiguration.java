@@ -54,9 +54,4 @@ public interface AggregatorConfiguration {
      */
     List<String> getParents();
 
-    /**
-     * Returned list is empty if this configuration belongs to a client that connects directly to a single aggregator. Otherwise
-     * it contains AggregatorConfigurations of all the subclients.
-     */
-    List<SubclientConfiguration<AggregatorConfiguration>> getSubConfigurations();
 }

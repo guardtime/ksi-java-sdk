@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -16,34 +16,16 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-
-package com.guardtime.ksi.pdu;
-
-import java.util.Date;
-import java.util.List;
+package com.guardtime.ksi.service.ha;
 
 /**
- * Interface for extender configuration.
+ * Listener to call every time subclients configuration is updated.
  */
-public interface ExtenderConfiguration {
-    /**
-     * Returns the maximum number of requests the client is allowed to send within one second
-     */
-    Long getMaximumRequests();
+interface SubconfUpdateListener {
 
     /**
-     * Returns a list of parent server URI-s
+     * This methods implementation should start the consolidated configurations recalculation process.
      */
-    List<String> getParents();
-
-    /**
-     * Returns the aggregation time of the newest calendar record the extender has.
-     */
-    Date getCalendarFirstTime();
-
-    /**
-     * Return the aggregation time of the oldest calendar record the extender has
-     */
-    Date getCalendarLastTime();
+    void updated();
 
 }

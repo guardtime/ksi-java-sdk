@@ -1,7 +1,6 @@
 package com.guardtime.ksi.service.ha;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Set of different utility methods used by HAClient
@@ -34,14 +33,6 @@ class HAConfUtil {
      */
     static boolean isBefore(Date a, Date b) {
         return a == null || (b != null && b.before(a));
-    }
-
-
-    /**
-     * Does list b contain more stuff than list a.
-     */
-    static boolean hasMoreContents(List<?> a, List<?> b) {
-        return (b != null && a == null) || (b != null && b.size() > a.size());
     }
 
 }

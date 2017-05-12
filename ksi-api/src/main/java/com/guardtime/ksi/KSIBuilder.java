@@ -24,9 +24,7 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationResponse;
-import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
-import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.publication.PublicationData;
@@ -320,7 +318,6 @@ public final class KSIBuilder {
 
         private final KSISignatureFactory signatureFactory;
         private final KSISignatureComponentFactory signatureComponentFactory;
-        private final PduIdentifierProvider pduIdentifierProvider;
         private final HashAlgorithm defaultHashAlgorithm;
         private final KSISigningClient signingClient;
         private final KSIExtenderClient extenderClient;
@@ -336,7 +333,6 @@ public final class KSIBuilder {
             this.signingClient = signingClient;
             this.extenderClient = extenderClient;
             this.publicationsFileAdapter = publicationsFileAdapter;
-            this.pduIdentifierProvider = pduIdentifierProvider;
         }
 
         public KSISignature read(InputStream input) throws KSIException {
@@ -409,10 +405,6 @@ public final class KSIBuilder {
             return asyncSign(hasher.getHash());
         }
 
-        public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
-            return signingClient.getAggregatorConfiguration();
-        }
-
         public KSISignature extend(KSISignature signature) throws KSIException {
             Future<KSISignature> future = asyncExtend(signature);
             return future.getResult();
@@ -446,10 +438,6 @@ public final class KSIBuilder {
             }
             Future<ExtensionResponse> extenderFuture = extenderClient.extend(signature.getAggregationTime(), publicationRecord.getPublicationTime());
             return new ExtensionFuture(extenderFuture, publicationRecord, signature, signatureComponentFactory, signatureFactory);
-        }
-
-        public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
-            return extenderClient.getExtenderConfiguration();
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {
@@ -486,6 +474,14 @@ public final class KSIBuilder {
 
         public PublicationsFile getPublicationsFile() throws KSIException {
             return publicationsFileAdapter.getPublicationsFile();
+        }
+
+        public KSISigningClient getSigningClient() {
+            return signingClient;
+        }
+
+        public KSIExtenderClient getExtenderClient() {
+            return extenderClient;
         }
 
         public void close() throws IOException {

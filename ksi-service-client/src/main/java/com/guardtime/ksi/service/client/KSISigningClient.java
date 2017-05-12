@@ -27,6 +27,7 @@ import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.service.Future;
 
 import java.io.Closeable;
+import java.util.List;
 
 /**
  * KSI client for signing service
@@ -45,9 +46,21 @@ public interface KSISigningClient extends Closeable {
     Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException;
 
     /**
-     *
-     * @return {@link AggregatorConfiguration} one should rely on when using this client
-     * @throws KSIException
+     * If the implementation combines multiple clients then this method can be used to get those subclients. If the implementation
+     * is a client that directly connects to a single gateway then it will return an empty list.
      */
-    AggregatorConfiguration getAggregatorConfiguration() throws KSIException;
+    List<KSISigningClient> getSubSigningClients();
+
+    /**
+     * Registeres a new {@link ConfigurationListener<AggregatorConfiguration>} for the client. Each time client's configuration is
+     * updated, this listener is called.
+     */
+    void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener);
+
+    /**
+     * Makes the client ask for configuration update. On completion of the update config registered {@link ConfigurationListener}s
+     * are called
+     */
+    void updateAggregationConfiguration() throws KSIException;
+
 }

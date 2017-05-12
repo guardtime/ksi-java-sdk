@@ -24,10 +24,10 @@ import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.client.ConfigurationListener;
 
 import java.util.Date;
 import java.util.List;
@@ -71,23 +71,53 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
     }
 
     /**
-     * @see SigningHAClient#getAggregatorConfiguration()
+     * @see SigningHAClient#getSubSigningClients()
      */
-    public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
-        return signingHAClient.getAggregatorConfiguration();
+    public List<KSISigningClient> getSubSigningClients() {
+        return signingHAClient.getSubSigningClients();
     }
 
     /**
-     * @see ExtenderHAClient#getExtenderConfiguration()
+     * @see SigningHAClient#registerAggregatorConfigurationListener(ConfigurationListener)
      */
-    public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
-        return extenderHAClient.getExtenderConfiguration();
+    public void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener) {
+        signingHAClient.registerAggregatorConfigurationListener(listener);
     }
+
+    /**
+     * @see SigningHAClient#updateAggregationConfiguration()
+     */
+    public void updateAggregationConfiguration() throws KSIException {
+        signingHAClient.updateAggregationConfiguration();
+    }
+
+    /**
+     * @see ExtenderHAClient#registerExtenderConfigurationListener(ConfigurationListener)
+     */
+    public void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener) {
+        extenderHAClient.registerExtenderConfigurationListener(listener);
+    }
+
+    /**
+     * @see SigningHAClient#updateAggregationConfiguration()
+     */
+    public void updateExtenderConfiguration() throws KSIException {
+        signingHAClient.updateAggregationConfiguration();
+    }
+
+    /**
+     * @see ExtenderHAClient#getSubExtenderClients()
+     */
+    public List<KSIExtenderClient> getSubExtenderClients() {
+        return extenderHAClient.getSubExtenderClients();
+    }
+
 
     /**
      * Closes signingHaClient and extenderHaClient
      *
-     * @see AbstractHAClient#close()
+     * @see SigningHAClient#close()
+     * @see ExtenderHAClient#close()
      */
     public void close() {
         signingHAClient.close();

@@ -21,38 +21,118 @@ package com.guardtime.ksi.service.ha;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.SubclientConfiguration;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.ha.tasks.ExtenderConfigurationTask;
 import com.guardtime.ksi.service.ha.tasks.ExtendingTask;
+import com.guardtime.ksi.service.ha.tasks.ServiceCallsTask;
 import com.guardtime.ksi.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * KSI Extender Client which combines other clients to achieve redundancy.
  *
- * NB! It is highly recommended that all the extender configurations would be in sync with each other (except credentials).
- * If that is not the case then ExtenderHAClient will log a warning but it will still work.
- * If user asks for configuration from the ExtenderHAClient it will use the most conservative configuration of sub clients to
- * compose aggregated configuration.
+ * NB! It is highly recommended that all the extender configurations would be in sync with each other (except credentials),
+ * but if this is not the case then the configurations will be consolidated in an optimistic manner which means that if a
+ * configuration parameter would improve how user can consume the service then it's preferred in the consolidated configuration.
  */
-public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, ExtensionResponse, ExtenderConfiguration> implements KSIExtenderClient {
+public class ExtenderHAClient implements KSIExtenderClient {
+
+    private static final Logger logger = LoggerFactory.getLogger(ExtenderHAClient.class);
+
+    private final List<KSIExtenderClient> subclients;
+
+    private final List<ConfigurationListener<ExtenderConfiguration>> consolidatedConfListeners = new ArrayList<ConfigurationListener<ExtenderConfiguration>>();
+    private final List<SubClientConfListener<ExtenderConfiguration>> subClientConfListeners = new ArrayList<SubClientConfListener<ExtenderConfiguration>>();
+    private ExtenderHAClientConfiguration lastConsolidatedConfiguration;
+
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     /**
      * Used to initialize ExtenderHAClient.
      *
      * @param extenderClients
-     *          List of subclients to send the extending requests.
+     *          List of subclients to send the extending requests. May not be empty or null. May not contain more than 3 subclients.
      *
      */
     public ExtenderHAClient(List<KSIExtenderClient> extenderClients) {
-        super(extenderClients);
+        if (extenderClients == null || extenderClients.isEmpty()) {
+            throw new IllegalArgumentException("Can not initialize without any subclients");
+        }
+        if (extenderClients.size() > 3) {
+            throw new IllegalArgumentException("ExtenderHAClient can not be initialized with more than 3 subclients");
+        }
+        this.subclients = Collections.unmodifiableList(extenderClients);
+        for (KSIExtenderClient extenderClient : subclients) {
+            SubClientConfListener<ExtenderConfiguration> listener = new SubClientConfListener<ExtenderConfiguration>(
+                    extenderClient.toString(), new SubconfUpdateListener() {
+                public void updated() {
+                    recalculateConfiguration();
+                }
+            });
+            extenderClient.registerExtenderConfigurationListener(listener);
+            subClientConfListeners.add(listener);
+        }
+    }
+
+    private void recalculateConfiguration() {
+        ExtenderHAClientConfiguration newConsolidatedConfiguration = null;
+        boolean hasAnySubconfs = false;
+        for (SubClientConfListener<ExtenderConfiguration> clientConfListener : subClientConfListeners) {
+            if (clientConfListener.isAccountedFor()) {
+                newConsolidatedConfiguration = consolidate(clientConfListener.getLastConfiguration(),
+                        newConsolidatedConfiguration);
+                hasAnySubconfs = true;
+            }
+        }
+        ExtenderHAClientConfiguration oldConsolidatedConfiguration = lastConsolidatedConfiguration;
+        lastConsolidatedConfiguration = newConsolidatedConfiguration;
+        if (!Util.equals(newConsolidatedConfiguration, oldConsolidatedConfiguration)) {
+            logger.info("ExtenderHaClients configuration has changed compared to it's last known state. Old configuration: {}. " +
+                    "New configuration: {}.", oldConsolidatedConfiguration, newConsolidatedConfiguration);
+            for (ConfigurationListener<ExtenderConfiguration> listener : consolidatedConfListeners) {
+                listener.updated(newConsolidatedConfiguration);
+            }
+        }
+        if (!hasAnySubconfs) {
+            confRecalculationFailed();
+        }
+    }
+
+    private void confRecalculationFailed() {
+        try {
+            throw new KSIClientException("ExtenderHAClient has no active subconfigurations to base it's consolitated configuration on.");
+        } catch (KSIClientException e) {
+            logger.error("Configuration recalculation failed.", e);
+            for (ConfigurationListener<ExtenderConfiguration> listener : consolidatedConfListeners) {
+                listener.updateFailed(e);
+            }
+        }
+    }
+
+    private ExtenderHAClientConfiguration consolidate(ExtenderConfiguration c1, ExtenderConfiguration c2) {
+        if (c1 == null) {
+            if (c2 != null) {
+                return new ExtenderHAClientConfiguration(c2);
+            }
+            return null;
+        }
+        if (c2 == null) {
+            return new ExtenderHAClientConfiguration(c1);
+        }
+        return new ExtenderHAClientConfiguration(c1, c2);
     }
 
     /**
@@ -63,79 +143,51 @@ public class ExtenderHAClient extends AbstractHAClient<KSIExtenderClient, Extens
      */
     public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException {
         Util.notNull(aggregationTime, "aggregationTime");
-        Collection<KSIExtenderClient> clients = getSubclients();
+        Collection<KSIExtenderClient> clients = subclients;
         Collection<Callable<ExtensionResponse>> tasks = new ArrayList<Callable<ExtensionResponse>>(clients.size());
         for (KSIExtenderClient client : clients) {
             tasks.add(new ExtendingTask(client, aggregationTime, publicationTime));
         }
-        return callAnyService(tasks);
+        return new ServiceCallFuture<ExtensionResponse>(
+                executorService.submit(new ServiceCallsTask<ExtensionResponse>(executorService, tasks))
+        );
     }
 
     /**
-     * Used to get an aggregated configuration composed of subclients configurations.
-     * Configuration requests are sent to all the subclients.
-     *
-     * @see HAExtenderConfiguration
-     *
-     * @return Aggregated extenders configuration.
-     * @throws KSIException if all the subclients fail.
+     * @return List of extender clients this extender client composes of.
      */
-    public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
-        Collection<Callable<SubclientConfiguration<ExtenderConfiguration>>> tasks = new ArrayList<Callable<SubclientConfiguration<ExtenderConfiguration>>>();
-        for (KSIExtenderClient client : getSubclients()) {
-            tasks.add(new ExtenderConfigurationTask(client));
+    public List<KSIExtenderClient> getSubExtenderClients() {
+        return subclients;
+    }
+
+    /**
+     * Registers configuration listeners that will be called if this ExtenderHAClients configuration changes. They will not be
+     * called if subclients configuration changes in a way that does not change the consolidated configuration. To get detailed
+     * info about subclients configurations one should register their own listeners directly on subclients.
+     *
+     * @param listener May not be null.
+     */
+    public void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener) {
+        Util.notNull(listener, "ExtenderHAClient consolidated configuration listener");
+        consolidatedConfListeners.add(listener);
+    }
+
+    public void updateExtenderConfiguration() throws KSIException {
+        for (KSIExtenderClient subclient : subclients) {
+            subclient.updateExtenderConfiguration();
         }
-        return getConfiguration(tasks);
     }
 
-    protected ExtenderConfiguration aggregateConfigurations(List<SubclientConfiguration<ExtenderConfiguration>> configurations) {
-        return new HAExtenderConfiguration(configurations);
-    }
-
-
-    protected boolean configurationsEqual(ExtenderConfiguration c1, ExtenderConfiguration c2) {
-        return Util.equals(c1.getMaximumRequests(), c2.getMaximumRequests()) &&
-                Util.equals(c1.getCalendarFirstTime(), c2.getCalendarFirstTime()) &&
-                Util.equals(c1.getCalendarLastTime(), c2.getCalendarLastTime()) &&
-                Util.equalsIgnoreOrder(c1.getParents(), c2.getParents());
-    }
-
-    protected String configurationsToString(List<SubclientConfiguration<ExtenderConfiguration>> configurations) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < configurations.size(); i++) {
-            SubclientConfiguration<ExtenderConfiguration> response = configurations.get(i);
-            String subclientKey = response.getSubclientKey();
-            if (response.isSucceeded()) {
-                sb.append(successResponseToString(subclientKey, response.getConfiguration()));
-            } else {
-                sb.append(failedResponseToString(subclientKey, response.getRequestFailureCause()));
-            }
-            if (i != configurations.size() - 1) {
-                sb.append(",");
+    /**
+     * Closes all the subclients.
+     */
+    public void close() {
+        for (KSIExtenderClient client : subclients) {
+            try {
+                client.close();
+            } catch (IOException e) {
+                logger.error("Failed to close subclient", e);
             }
         }
-        return sb.toString();
-    }
-
-    private String successResponseToString(String clientId, ExtenderConfiguration conf) {
-        return  String.format("ExtenderConfiguration{" +
-                "extenderId='%s'," +
-                "maximumRequests='%s'," +
-                "parents='%s'," +
-                "calendarFirstTime='%s'," +
-                "calendarLastTime='%s'" +
-                "}",
-                clientId,
-                conf.getMaximumRequests(),
-                conf.getParents(),
-                conf.getCalendarFirstTime(),
-                conf.getCalendarLastTime());
-    }
-
-    private String failedResponseToString(String clientId, Throwable t) {
-        return String.format("successResponseToString{" +
-                "extenderId='%s'," +
-                "failureCause='%s'" +
-                "}", clientId, Util.getStacktrace(t));
     }
 }

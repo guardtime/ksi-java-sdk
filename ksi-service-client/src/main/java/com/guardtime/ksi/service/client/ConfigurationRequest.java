@@ -16,34 +16,12 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+package com.guardtime.ksi.service.client;
 
-package com.guardtime.ksi.pdu;
+import com.guardtime.ksi.exceptions.KSIException;
 
-import java.util.Date;
-import java.util.List;
+public interface ConfigurationRequest<T> {
 
-/**
- * Interface for extender configuration.
- */
-public interface ExtenderConfiguration {
-    /**
-     * Returns the maximum number of requests the client is allowed to send within one second
-     */
-    Long getMaximumRequests();
-
-    /**
-     * Returns a list of parent server URI-s
-     */
-    List<String> getParents();
-
-    /**
-     * Returns the aggregation time of the newest calendar record the extender has.
-     */
-    Date getCalendarFirstTime();
-
-    /**
-     * Return the aggregation time of the oldest calendar record the extender has
-     */
-    Date getCalendarLastTime();
+    T invoke() throws KSIException;
 
 }

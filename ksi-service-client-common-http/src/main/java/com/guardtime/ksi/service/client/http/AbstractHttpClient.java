@@ -32,18 +32,23 @@ import com.guardtime.ksi.pdu.PduFactoryProvider;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.pdu.RequestContextFactory;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.client.ConfigurationHandler;
+import com.guardtime.ksi.service.client.ConfigurationRequest;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
+import com.guardtime.ksi.service.client.ConfigurationListener;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Common class for all KSI HTTP clients
@@ -56,6 +61,8 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
     protected AbstractHttpClientSettings settings;
     private PduFactory pduFactory;
     private RequestContextFactory requestContextFactory = RequestContextFactory.DEFAULT_FACTORY;
+    private ConfigurationHandler<AggregatorConfiguration> aggregatorConfHandler = new ConfigurationHandler<AggregatorConfiguration>();
+    private ConfigurationHandler<ExtenderConfiguration> extenderConfHandler = new ConfigurationHandler<ExtenderConfiguration>();
 
     public AbstractHttpClient(AbstractHttpClientSettings settings) {
         Util.notNull(settings, "HttpClient.settings");
@@ -82,7 +89,7 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
         return new AggregationResponseFuture(requestFuture, requestContext, credentials, pduFactory);
     }
 
-    public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
+    private AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
         KSIRequestContext requestContext = requestContextFactory.createContext();
         ServiceCredentials credentials = getServiceCredentials();
         AggregationRequest requestMessage = pduFactory.createAggregatorConfigurationRequest(requestContext, credentials);
@@ -100,7 +107,7 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
         return new ExtensionResponseFuture(postRequestFuture, requestContext, credentials, pduFactory);
     }
 
-    public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
+    private ExtenderConfiguration getExtenderConfiguration() throws KSIException {
         KSIRequestContext requestContext = requestContextFactory.createContext();
         ServiceCredentials credentials = getServiceCredentials();
         ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext, credentials);
@@ -124,4 +131,41 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
         return settings.getPduVersion();
     }
 
+    /**
+     * Since this client does not have any subclients, it will always return an empty list.
+     */
+    public List<KSISigningClient> getSubSigningClients() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Since this client does not have any subclients, it will always return an empty list.
+     */
+    public List<KSIExtenderClient> getSubExtenderClients() {
+        return Collections.emptyList();
+    }
+
+    public void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener) {
+        aggregatorConfHandler.registerListener(listener);
+    }
+
+    public void updateAggregationConfiguration() throws KSIException {
+        aggregatorConfHandler.doConfigurationUpdate(new ConfigurationRequest<AggregatorConfiguration>() {
+            public AggregatorConfiguration invoke() throws KSIException {
+                return getAggregatorConfiguration();
+            }
+        });
+    }
+
+    public void updateExtenderConfiguration() throws KSIException {
+        extenderConfHandler.doConfigurationUpdate(new ConfigurationRequest<ExtenderConfiguration>() {
+            public ExtenderConfiguration invoke() throws KSIException {
+                return getExtenderConfiguration();
+            }
+        });
+    }
+
+    public void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener) {
+        extenderConfHandler.registerListener(listener);
+    }
 }

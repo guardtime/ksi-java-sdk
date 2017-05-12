@@ -20,12 +20,10 @@
 package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
-import com.guardtime.ksi.pdu.SubclientConfiguration;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,10 +84,6 @@ public class ExtenderConfigurationPayload extends TLVStructure implements Extend
 
     public int getElementType() {
         return 0x04;
-    }
-
-    public List<SubclientConfiguration<ExtenderConfiguration>> getSubConfigurations() {
-        return Collections.emptyList();
     }
 
 }

@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.tcp;
 
+import com.guardtime.ksi.concurrency.DefaultExecutorServiceProvider;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationRequest;
@@ -49,8 +50,6 @@ import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * KSI TCP client for signing.
@@ -65,14 +64,20 @@ public class TCPClient implements KSISigningClient {
     private NioSocketConnector connector;
     private PduFactory pduFactory;
     private RequestContextFactory requestContextFactory = RequestContextFactory.DEFAULT_FACTORY;
-    private ConfigurationHandler<AggregatorConfiguration> aggregatorConfHandler = new ConfigurationHandler<AggregatorConfiguration>();
+    private ConfigurationHandler<AggregatorConfiguration> aggregatorConfHandler;
 
     public TCPClient(TCPClientSettings tcpClientSettings) {
+        this(tcpClientSettings, DefaultExecutorServiceProvider.getExecutorService());
+    }
+
+    public TCPClient(TCPClientSettings tcpClientSettings, ExecutorService executorService) {
+        Util.notNull(tcpClientSettings, "TCPClientSettings.tcpClientSettings");
+        Util.notNull(executorService, "TCPClientSettings.executorService");
         this.pduFactory = PduFactoryProvider.get(tcpClientSettings.getPduVersion());
         this.tcpClientSettings = tcpClientSettings;
         this.connector = createConnector();
-        executorService = Executors.newCachedThreadPool();
-        ((ThreadPoolExecutor) executorService).setMaximumPoolSize(tcpClientSettings.getTcpTransactionThreadPoolSize());
+        this.executorService = executorService;
+        aggregatorConfHandler = new ConfigurationHandler<AggregatorConfiguration>(executorService);
     }
 
     /**

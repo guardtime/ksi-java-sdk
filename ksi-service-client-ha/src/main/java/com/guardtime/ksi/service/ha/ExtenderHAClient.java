@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.ha;
 
+import com.guardtime.ksi.concurrency.DefaultExecutorServiceProvider;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
@@ -39,7 +40,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * KSI Extender Client which combines other clients to achieve redundancy.
@@ -58,16 +58,19 @@ public class ExtenderHAClient implements KSIExtenderClient {
     private final List<SubClientConfListener<ExtenderConfiguration>> subClientConfListeners = new ArrayList<SubClientConfListener<ExtenderConfiguration>>();
     private ExtenderHAClientConfiguration lastConsolidatedConfiguration;
 
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    private final ExecutorService executorService;
 
     /**
-     * Used to initialize ExtenderHAClient.
+     * Used to initialize ExtenderHAClient with a custom {@link ExecutorService}.
      *
      * @param extenderClients
      *          List of subclients to send the extending requests. May not be empty or null. May not contain more than 3 subclients.
-     *
+     * @param executorService
+     *          {@link ExecutorService} used for asynchronous tasks. May not be null.
      */
-    public ExtenderHAClient(List<KSIExtenderClient> extenderClients) {
+    public ExtenderHAClient(List<KSIExtenderClient> extenderClients, ExecutorService executorService) {
+        Util.notNull(executorService, "ExtenderHAClient.executorService");
+        this.executorService = executorService;
         if (extenderClients == null || extenderClients.isEmpty()) {
             throw new IllegalArgumentException("Can not initialize without any subclients");
         }
@@ -85,6 +88,17 @@ public class ExtenderHAClient implements KSIExtenderClient {
             extenderClient.registerExtenderConfigurationListener(listener);
             subClientConfListeners.add(listener);
         }
+    }
+
+    /**
+     * Used to initialize ExtenderHAClient.
+     *
+     * @param extenderClients
+     *          List of subclients to send the extending requests. May not be empty or null. May not contain more than 3 subclients.
+     *
+     */
+    public ExtenderHAClient(List<KSIExtenderClient> extenderClients) {
+        this(extenderClients, DefaultExecutorServiceProvider.getExecutorService());
     }
 
     private void recalculateConfiguration() {

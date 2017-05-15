@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Helper for handling asynchronous configuration requests and keeping track that registered listeners would be appropriately
@@ -39,7 +38,16 @@ public class ConfigurationHandler<T> {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationHandler.class);
 
     private List<ConfigurationListener<T>> listeners = new ArrayList<ConfigurationListener<T>>();
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    private final ExecutorService executorService;
+
+    /**
+     * Can be used to initialize ConfigurationHandler with a custom {@link ExecutorService}
+     * @param executorService
+     *          {@link ExecutorService} that this configuration handler should use
+     */
+    public ConfigurationHandler(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     /**
      * For registering a new listener.
@@ -92,4 +100,5 @@ public class ConfigurationHandler<T> {
             }
         }
     }
+
 }

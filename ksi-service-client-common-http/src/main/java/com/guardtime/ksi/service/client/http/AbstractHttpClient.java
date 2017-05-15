@@ -49,6 +49,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Common class for all KSI HTTP clients
@@ -58,14 +59,17 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
     public static final String HEADER_APPLICATION_KSI_REQUEST = "application/ksi-request";
     public static final String HEADER_NAME_CONTENT_TYPE = "Content-Type";
 
-    protected AbstractHttpClientSettings settings;
-    private PduFactory pduFactory;
-    private RequestContextFactory requestContextFactory = RequestContextFactory.DEFAULT_FACTORY;
-    private ConfigurationHandler<AggregatorConfiguration> aggregatorConfHandler = new ConfigurationHandler<AggregatorConfiguration>();
-    private ConfigurationHandler<ExtenderConfiguration> extenderConfHandler = new ConfigurationHandler<ExtenderConfiguration>();
+    protected final AbstractHttpClientSettings settings;
+    private final PduFactory pduFactory;
+    private final RequestContextFactory requestContextFactory = RequestContextFactory.DEFAULT_FACTORY;
+    private final ConfigurationHandler<AggregatorConfiguration> aggregatorConfHandler;
+    private final ConfigurationHandler<ExtenderConfiguration> extenderConfHandler;
 
-    public AbstractHttpClient(AbstractHttpClientSettings settings) {
+    public AbstractHttpClient(AbstractHttpClientSettings settings, ExecutorService executorService) {
+        Util.notNull(executorService, "HttpClient.executorService");
         Util.notNull(settings, "HttpClient.settings");
+        this.aggregatorConfHandler = new ConfigurationHandler<AggregatorConfiguration>(executorService);
+        this.extenderConfHandler = new ConfigurationHandler<ExtenderConfiguration>(executorService);
         this.pduFactory = PduFactoryProvider.get(settings.getPduVersion());
         this.settings = settings;
     }

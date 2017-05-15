@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.http.simple;
 
+import com.guardtime.ksi.concurrency.DefaultExecutorServiceProvider;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Simple HTTP client
@@ -38,7 +40,11 @@ import java.net.*;
 public class SimpleHttpClient extends AbstractHttpClient implements KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
 
     public SimpleHttpClient(AbstractHttpClientSettings settings) {
-        super(settings);
+        this(settings, DefaultExecutorServiceProvider.getExecutorService());
+    }
+
+    public SimpleHttpClient(AbstractHttpClientSettings settings, ExecutorService executorService) {
+        super(settings, executorService);
     }
 
     public SimpleHttpPostRequestFuture sign(InputStream request) throws KSIClientException {
@@ -107,11 +113,11 @@ public class SimpleHttpClient extends AbstractHttpClient implements KSISigningCl
         return ((HttpURLConnection) connection);
     }
 
-    public void close() {
-    }
-
     @Override
     public String toString() {
         return "SimpleHttpClient{Gateway='" + settings.getSigningUrl() + "', Extender='" + settings.getExtendingUrl() + "', Publications='" + settings.getPublicationsFileUrl() + "', LoginID='" + getServiceCredentials().getLoginId() + "', PDUVersion='" + getPduVersion() + "'}";
+    }
+
+    public void close() {
     }
 }

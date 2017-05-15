@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.ha;
 
+import com.guardtime.ksi.concurrency.DefaultExecutorServiceProvider;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
@@ -39,7 +40,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * KSI Signing Client which combines other clients to achieve redundancy.
@@ -54,7 +54,7 @@ public class SigningHAClient implements KSISigningClient {
 
     private final List<KSISigningClient> subclients;
 
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    private final ExecutorService executorService;
 
     private final Object confRecalculationLock = new Object();
 
@@ -68,6 +68,21 @@ public class SigningHAClient implements KSISigningClient {
      * @param signingClients List of subclients to send the signing requests. May not be empty or null. May not contain more than 3 subclients.
      */
     public SigningHAClient(List<KSISigningClient> signingClients) {
+        this(signingClients, DefaultExecutorServiceProvider.getExecutorService());
+    }
+
+
+    /**
+     * Used to initialize SigningHAClient with custom {@link ExecutorService}.
+     *
+     * @param signingClients
+     *          List of subclients to send the signing requests. May not be empty or null. May not contain more than 3 subclients.
+     * @param executorService
+     *          {@link ExecutorService} used for asynchronous tasks. May not be null.
+     */
+    public SigningHAClient(List<KSISigningClient> signingClients, ExecutorService executorService) {
+        Util.notNull(executorService, "SigningHAClient.executorService");
+        this.executorService = executorService;
         if (signingClients == null || signingClients.isEmpty()) {
             throw new IllegalArgumentException("Can not initialize without any subclients");
         }

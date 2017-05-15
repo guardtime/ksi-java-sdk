@@ -145,13 +145,12 @@ public abstract class AbstractCommonIntegrationTest {
         Properties prop = new Properties();
         prop.load(load(PROPERTIES_INTEGRATION_TEST));
         String signerIP = prop.getProperty("tcp.signerIP");
-        int tcpThreadPoolSize = Integer.parseInt(prop.getProperty("tcp.maxParallelTransactions"));
         int signerPort = Integer.parseInt(prop.getProperty("tcp.signerPort"));
         int tcpTransactionTimeoutSec = Integer.parseInt(prop.getProperty("tcp.transactionTimeoutSec"));
         String loginId = prop.getProperty("tcp.loginId");
         String loginKey = prop.getProperty("tcp.loginKey");
         ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
-        return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec, tcpThreadPoolSize,
+        return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec,
                 serviceCredentials);
     }
 

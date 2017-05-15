@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.ha;
 
+import com.guardtime.ksi.concurrency.DefaultExecutorServiceProvider;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
@@ -293,8 +294,8 @@ public class HAClientTest {
 
     private static class DummyClient implements KSISigningClient, KSIExtenderClient {
 
-        private final ConfigurationHandler<AggregatorConfiguration> aggrConfHandler = new ConfigurationHandler<AggregatorConfiguration>();
-        private final ConfigurationHandler<ExtenderConfiguration> extenderConfHandler = new ConfigurationHandler<ExtenderConfiguration>();
+        private final ConfigurationHandler<AggregatorConfiguration> aggrConfHandler = new ConfigurationHandler<AggregatorConfiguration>(DefaultExecutorServiceProvider.getExecutorService());
+        private final ConfigurationHandler<ExtenderConfiguration> extenderConfHandler = new ConfigurationHandler<ExtenderConfiguration>(DefaultExecutorServiceProvider.getExecutorService());
 
         private final Long maxRequests;
 

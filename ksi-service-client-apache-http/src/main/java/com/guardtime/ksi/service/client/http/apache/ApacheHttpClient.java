@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.client.http.apache;
 
+import com.guardtime.ksi.concurrency.DefaultExecutorServiceProvider;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
@@ -48,6 +49,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
@@ -76,7 +78,23 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
      *         - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
      */
     public ApacheHttpClient(AbstractHttpClientSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
-        super(settings);
+        this(settings, asyncConfiguration, DefaultExecutorServiceProvider.getExecutorService());
+    }
+
+    /**
+     * Constructs ApacheHttpClient with configuration values passed in and a custom {@link ExecutorService}.
+     *
+     * @param settings
+     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     * @param asyncConfiguration
+     *         - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
+     * @param executorService
+     *         - Custom {@link ExecutorService}. Only used for configuration requests. Apache HTTP Client will still make its
+     *           own thread pool.
+     */
+    public ApacheHttpClient(AbstractHttpClientSettings settings, ApacheHttpClientConfiguration asyncConfiguration,
+                            ExecutorService executorService) {
+        super(settings, executorService);
         this.apacheClient = createClient(settings, asyncConfiguration);
     }
 

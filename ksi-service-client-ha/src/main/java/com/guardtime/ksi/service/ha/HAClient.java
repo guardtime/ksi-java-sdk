@@ -31,6 +31,7 @@ import com.guardtime.ksi.service.client.ConfigurationListener;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Combines {@link SigningHAClient} and {@link ExtenderHAClient}
@@ -54,6 +55,24 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
     public HAClient(List<KSISigningClient> signingClients, List<KSIExtenderClient> extenderClients) {
         this.signingHAClient = new SigningHAClient(signingClients);
         this.extenderHAClient = new ExtenderHAClient(extenderClients);
+    }
+
+    /**
+     * Used to initialize HAClient with custom {@link ExecutorService}.
+     *
+     * @param signingClients
+     *          List of {@link KSISigningClient}s HAClient can use.
+     * @param extenderClients
+     *          List of {@link KSIExtenderClient}s HAClient can use.
+     * @param executorService
+     *          {@link ExecutorService} used for signing and extension requests.
+     *
+     * @see SigningHAClient#SigningHAClient(List, ExecutorService)
+     * @see ExtenderHAClient#ExtenderHAClient(List, ExecutorService)
+     */
+    public HAClient(List<KSISigningClient> signingClients, List<KSIExtenderClient> extenderClients, ExecutorService executorService) {
+        this.signingHAClient = new SigningHAClient(signingClients, executorService);
+        this.extenderHAClient = new ExtenderHAClient(extenderClients, executorService);
     }
 
     /**

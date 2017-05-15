@@ -56,6 +56,8 @@ public class SigningHAClient implements KSISigningClient {
 
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
+    private final Object confRecalculationLock = new Object();
+
     private final List<ConfigurationListener<AggregatorConfiguration>> consolidatedConfListeners = new ArrayList<ConfigurationListener<AggregatorConfiguration>>();
     private final List<SubClientConfListener<AggregatorConfiguration>> subClientConfListeners = new ArrayList<SubClientConfListener<AggregatorConfiguration>>();
     private SigningHAClientConfiguration lastConsolidatedConfiguration;
@@ -129,18 +131,22 @@ public class SigningHAClient implements KSISigningClient {
     }
 
     private void recalculateConfiguration() {
-        SigningHAClientConfiguration newConsolidatedConfiguration = null;
         boolean hasAnySubconfs = false;
-        for (SubClientConfListener<AggregatorConfiguration> clientConfListener : subClientConfListeners) {
-            if (clientConfListener.isAccountedFor()) {
-                newConsolidatedConfiguration = consolidate(clientConfListener.getLastConfiguration(),
-                        newConsolidatedConfiguration);
-                hasAnySubconfs = true;
-            }
-        }
+        SigningHAClientConfiguration newConsolidatedConfiguration = null;
         SigningHAClientConfiguration oldConsolidatedConfiguration = lastConsolidatedConfiguration;
-        lastConsolidatedConfiguration = newConsolidatedConfiguration;
-        if (!Util.equals(newConsolidatedConfiguration, oldConsolidatedConfiguration)) {
+        boolean listenersNeedUpdate;
+        synchronized (confRecalculationLock) {
+            for (SubClientConfListener<AggregatorConfiguration> clientConfListener : subClientConfListeners) {
+                if (clientConfListener.isAccountedFor()) {
+                    newConsolidatedConfiguration = consolidate(clientConfListener.getLastConfiguration(),
+                            newConsolidatedConfiguration);
+                    hasAnySubconfs = true;
+                }
+            }
+            lastConsolidatedConfiguration = newConsolidatedConfiguration;
+            listenersNeedUpdate = !Util.equals(newConsolidatedConfiguration, oldConsolidatedConfiguration);
+        }
+        if (listenersNeedUpdate) {
             logger.info("SigningHaClients configuration has changed compared to it's last known state. Old configuration: {}. " +
                     "New configuration: {}.", oldConsolidatedConfiguration, newConsolidatedConfiguration);
             for (ConfigurationListener<AggregatorConfiguration> listener : consolidatedConfListeners) {

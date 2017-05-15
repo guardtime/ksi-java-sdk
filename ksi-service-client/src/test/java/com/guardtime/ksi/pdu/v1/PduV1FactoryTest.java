@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.pdu.v1;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
@@ -25,8 +26,9 @@ import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
@@ -40,7 +42,7 @@ public class PduV1FactoryTest {
     private DataHash dataHash;
     private KSIRequestContext requestContext;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
         this.dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
         this.requestContext = new KSIRequestContext(42275443333883166L, 42L, 42L);
@@ -98,6 +100,12 @@ public class PduV1FactoryTest {
         pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v1-202-error.tlv"));
     }
 
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "HMAC algorithm mismatch. Expected SHA-512, received SHA-256")
+    public void testAggregationResponseContainsAnotherMacAlgorithm_ThrowsKSIException() throws Exception {
+        ServiceCredentials credentials = new KSIServiceCredentials("anon", "anon".getBytes("UTF-8"), HashAlgorithm.SHA2_512);
+        pduFactory.readAggregationResponse(requestContext, credentials, loadTlv("pdu/aggregation/aggregation-response-v1.tlv"));
+    }
+
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v2 response to PDU v1 request. Configure the SDK to use PDU v2 format for the given Aggregator")
     public void testReadV2AggregationResponse() throws Exception {
         pduFactory.readAggregationResponse(extensionContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
@@ -106,6 +114,12 @@ public class PduV1FactoryTest {
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testExtensionResponseInvalidHMAC_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-invalid-hmac.tlv"));
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "HMAC algorithm mismatch. Expected SHA-512, received SHA-256")
+    public void testExtensionResponseContainsAnotherMacAlgorithm_ThrowsKSIException() throws Exception {
+        ServiceCredentials credentials = new KSIServiceCredentials("anon", "anon".getBytes("UTF-8"), HashAlgorithm.SHA2_512);
+        pduFactory.readExtensionResponse(extensionContext, credentials, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*request IDs do not match, sent \\'[0-9]+\\' received \\'4321\\'")

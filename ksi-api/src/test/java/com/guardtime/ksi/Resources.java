@@ -136,6 +136,9 @@ public class Resources {
     public static final String SIGNATURE_PUBLICATION_RECORD_INVALID_PUBLICATION_TIME =  INVALID_SIGNATURES_PUBLICATION_RECORD + "invalid-signature-pub-rec-pub-time-future-value.tlv";
     public static final String SIGNATURE_WITH_CAL_AUTH_AND_PUB_REC = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-cal-aut-present-pub-rec-present.tlv";
     public static final String SIGNATURE_PUBLICATION_RECORD_BUT_NO_CALENDAR = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-missing-pub-rec-present.tlv";
+    // Root signature
+    public static final String SIGNATURE_LEVEL_10_ROOT =  VALID_SIGNATURES + "ok-level10-root.ksig";
+    public static final String SIGNATURE_RFC_AGGR_CHAIN_LEVEL_CHANGED =  VALID_SIGNATURES + "rfc_signature_changed_aggr_chain_level.ksi";
 
     /**
      * Signature components

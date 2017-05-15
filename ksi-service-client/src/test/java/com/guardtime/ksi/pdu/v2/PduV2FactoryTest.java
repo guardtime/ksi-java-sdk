@@ -18,17 +18,24 @@
  */
 package com.guardtime.ksi.pdu.v2;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.ExtensionRequest;
+import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.Date;
@@ -44,7 +51,7 @@ public class PduV2FactoryTest {
     private KSIRequestContext requestContext;
     private KSIRequestContext extensionContext;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
         this.dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
         this.requestContext = new KSIRequestContext(42275443333883166L, 42L, 42L);
@@ -127,6 +134,18 @@ public class PduV2FactoryTest {
         pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-header-not-first.tlv"));
     }
 
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "HMAC algorithm mismatch. Expected SHA-512, received SHA-256")
+    public void testReadV2AggregationResponseHMACAlgorithm_ThrowsKSIException() throws Exception {
+        ServiceCredentials extensionCredentials = new KSIServiceCredentials("anon", "anon".getBytes("UTF-8"), HashAlgorithm.SHA2_512);
+        pduFactory.readAggregationResponse(requestContext, extensionCredentials, loadTlv("pdu/aggregation/aggregation-response-v2.tlv"));
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "HMAC algorithm mismatch. Expected SHA-512, received SHA-256")
+    public void testExtensionResponseInvalidHMACAlgorithm_ThrowsKSIException() throws Exception {
+        ServiceCredentials extensionCredentials = new KSIServiceCredentials("anon", "anon".getBytes("UTF-8"), HashAlgorithm.SHA2_512);
+        pduFactory.readExtensionResponse(extensionContext, extensionCredentials, loadTlv("pdu/extension/extension-response-v2.tlv"));
+    }
+
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testExtensionResponseInvalidHMAC_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-invalid-mac.tlv"));
@@ -179,7 +198,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testReadV2ExtensionResponseContainingUnknownNonCriticalElement() throws Exception {
-        ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(8396215651691691389L, 42L, 42L), CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-unknown-non-critical-element.tlv"));
+        ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(8396215651691691389L, 42L, 42L), new KSIServiceCredentials("anon", "anon".getBytes("UTF-8"), HashAlgorithm.SHA2_512), loadTlv("pdu/extension/extension-response-v2-unknown-non-critical-element.tlv"));
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getCalendarHashChain());
     }
@@ -235,7 +254,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testExtenderConfigurationResponseParsingWithMultiplePayloadsV2() throws Exception {
-        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extender-response-with-conf-and-calendar.tlv"));
+        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(CREDENTIALS, loadTlv("pdu/extension/extender-response-with-conf-and-calendar.tlv"));
 
         Assert.assertTrue(cnf.getCalendarFirstTime().equals(new Date(5557150000L)));
         Assert.assertTrue(cnf.getCalendarLastTime().equals(new Date(1422630579000L)));
@@ -248,7 +267,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testExtenderResponseParsingWithMultipleConfsV2() throws Exception {
-        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extender-response-multiple-confs.tlv"));
+        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(CREDENTIALS, loadTlv("pdu/extension/extender-response-multiple-confs.tlv"));
 
         Assert.assertNotNull(cnf);
         Assert.assertTrue(cnf.getCalendarFirstTime().equals(new Date(158000)));
@@ -262,7 +281,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testExtenderResponseParsingWithEmptyConfV2() throws Exception {
-        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extender-response-with-empty-conf.tlv"));
+        ExtenderConfiguration cnf = pduFactory.readExtenderConfigurationResponse(CREDENTIALS, loadTlv("pdu/extension/extender-response-with-empty-conf.tlv"));
 
         Assert.assertNotNull(cnf);
         Assert.assertNull(cnf.getCalendarFirstTime());
@@ -320,12 +339,12 @@ public class PduV2FactoryTest {
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender")
     public void testReadV1ExtensionConfigurationResponse() throws Exception {
-        pduFactory.readExtenderConfigurationResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
+        pduFactory.readExtenderConfigurationResponse(CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
     }
 
     @Test
     public void testReadExtenderConfigurationResponse() throws Exception {
-        ExtenderConfiguration response = pduFactory.readExtenderConfigurationResponse(requestContext, CREDENTIALS, loadTlv("pdu/extension/extender-conf-response-ok.tlv"));
+        ExtenderConfiguration response = pduFactory.readExtenderConfigurationResponse(CREDENTIALS, loadTlv("pdu/extension/extender-conf-response-ok.tlv"));
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getCalendarFirstTime());
         Assert.assertNotNull(response.getCalendarLastTime());

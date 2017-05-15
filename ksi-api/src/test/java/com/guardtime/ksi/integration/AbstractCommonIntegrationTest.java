@@ -45,7 +45,6 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -67,10 +66,10 @@ import java.util.List;
 import java.util.Properties;
 
 import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE;
+import static com.guardtime.ksi.CommonTestUtil.load;
+import static com.guardtime.ksi.CommonTestUtil.loadFile;
 import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE_PASSWORD;
 import static com.guardtime.ksi.Resources.PROPERTIES_INTEGRATION_TEST;
-import static com.guardtime.ksi.TestUtil.load;
-import static com.guardtime.ksi.TestUtil.loadFile;
 
 public abstract class AbstractCommonIntegrationTest {
 
@@ -272,7 +271,7 @@ public abstract class AbstractCommonIntegrationTest {
             ArrayList<String> lines = new ArrayList<String>();
             String line;
             while ((line = fileReader.readLine()) != null) {
-                if (!line.startsWith("#") && line.trim().length() > 16 && !line.contains(IntegrationTestAction.NOT_IMPLEMENTED.getName())) {
+                if (!line.startsWith("#") && line.trim().length() > 17 && !line.contains(IntegrationTestAction.NOT_IMPLEMENTED.getName())) {
                     line = line.replace(";", "; ");
                     lines.add(line);
                 }

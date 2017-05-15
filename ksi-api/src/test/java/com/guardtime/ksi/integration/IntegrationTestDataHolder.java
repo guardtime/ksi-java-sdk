@@ -50,7 +50,6 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
-
 import org.apache.commons.io.IOUtils;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -74,6 +73,7 @@ public class IntegrationTestDataHolder {
     private final IntegrationTestAction action;
     private final VerificationErrorCode errorCode;
     private final String errorMessage;
+    private final long inputHashLevel;
     private final DataHash inputHash;
     private final DataHash chcInputHash;
     private final DataHash chchOutputHash;
@@ -101,12 +101,12 @@ public class IntegrationTestDataHolder {
         notEmpty(inputData[0], "Test file");
         if (testFilePath != null && !(testFilePath.trim().length() == 0)) {
             testFile = testFilePath + inputData[0];
-            responseFile = inputData[12].length() == 0 ? null : testFilePath + inputData[12];
-            publicationsFile = inputData[13].length() == 0 ? null : testFilePath + inputData[13];
+            responseFile = inputData[13].length() == 0 ? null : testFilePath + inputData[13];
+            publicationsFile = inputData[14].length() == 0 ? null : testFilePath + inputData[14];
         } else {
             testFile = inputData[0];
-            responseFile = inputData[12].length() == 0 ? null : inputData[12];
-            publicationsFile = inputData[13].length() == 0 ? null : inputData[13];
+            responseFile = inputData[13].length() == 0 ? null : inputData[13];
+            publicationsFile = inputData[14].length() == 0 ? null : inputData[14];
         }
 
         notEmpty(inputData[1], "Action");
@@ -114,14 +114,15 @@ public class IntegrationTestDataHolder {
 
         errorCode = getErrorCodeByName(inputData[2]);
         errorMessage = inputData[3].length() == 0 ? null : inputData[3];
-        inputHash = inputData[4].length() == 0 ? null : new DataHash(Base16.decode(inputData[4]));
-        chcInputHash = inputData[5].length() == 0 ? null : new DataHash(Base16.decode(inputData[5]));
-        chchOutputHash = inputData[6].length() == 0 ? null : new DataHash(Base16.decode(inputData[6]));
-        registrationTime = inputData[7].length() == 0 ? null : new Date(Long.decode(inputData[7]) * 1000L);
-        aggregationTime = inputData[8].length() == 0 ? null : new Date(Long.decode(inputData[8]) * 1000L);
-        publicationTime = inputData[9].length() == 0 ? null : new Date(Long.decode(inputData[9]) * 1000L);
-        userPublication = inputData[10].length() == 0 ? null : new PublicationData(inputData[10]);
-        extendingPermitted = inputData[11].length() == 0 ? false : Boolean.valueOf(inputData[11]);
+        inputHashLevel = inputData[4].length() == 0 ? 0 : Long.decode(inputData[4]);
+        inputHash = inputData[5].length() == 0 ? null : new DataHash(Base16.decode(inputData[5]));
+        chcInputHash = inputData[6].length() == 0 ? null : new DataHash(Base16.decode(inputData[6]));
+        chchOutputHash = inputData[7].length() == 0 ? null : new DataHash(Base16.decode(inputData[7]));
+        registrationTime = inputData[8].length() == 0 ? null : new Date(Long.decode(inputData[8]) * 1000L);
+        aggregationTime = inputData[9].length() == 0 ? null : new Date(Long.decode(inputData[9]) * 1000L);
+        publicationTime = inputData[10].length() == 0 ? null : new Date(Long.decode(inputData[10]) * 1000L);
+        userPublication = inputData[11].length() == 0 ? null : new PublicationData(inputData[11]);
+        extendingPermitted = inputData[12].length() == 0 ? false : Boolean.valueOf(inputData[12]);
 
         this.settings = loadHTTPSettings();
         buildKsi();

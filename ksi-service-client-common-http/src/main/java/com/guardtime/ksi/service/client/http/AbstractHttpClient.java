@@ -112,7 +112,7 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
         ServiceCredentials credentials = getServiceCredentials();
         ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext, credentials);
         Future<TLVElement> future = extend(new ByteArrayInputStream(request.toByteArray()));
-        return pduFactory.readExtenderConfigurationResponse(requestContext, credentials, future.getResult());
+        return pduFactory.readExtenderConfigurationResponse(credentials, future.getResult());
     }
 
     protected abstract Future<TLVElement> extend(InputStream request) throws KSIClientException;

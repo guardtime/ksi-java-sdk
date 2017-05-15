@@ -59,5 +59,5 @@ public interface PduFactory {
      */
     ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext requestContext, ServiceCredentials credentials) throws KSIException;
 
-    ExtenderConfiguration readExtenderConfigurationResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException;
+    ExtenderConfiguration readExtenderConfigurationResponse(ServiceCredentials credentials, TLVElement input) throws KSIException;
 }

@@ -19,6 +19,7 @@
 package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 
@@ -26,8 +27,8 @@ class ExtensionResponsePduV2 extends PduV2 {
 
     private static final int[] SUPPORTED_PAYLOAD_TYPES = new int[]{0x02, 0x03, 0x04};
 
-    public ExtensionResponsePduV2(TLVElement rootElement, byte[] loginKey) throws KSIException {
-        super(rootElement, loginKey);
+    public ExtensionResponsePduV2(TLVElement rootElement, ServiceCredentials credentials) throws KSIException {
+        super(rootElement, credentials);
     }
 
     @Override

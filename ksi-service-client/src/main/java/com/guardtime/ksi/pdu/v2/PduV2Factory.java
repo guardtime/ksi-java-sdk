@@ -53,12 +53,12 @@ public class PduV2Factory implements PduFactory {
     }
 
     public AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException {
-        List<TLVElement> payloads = getAggregatorPayloadElements(context, credentials, input, ELEMENT_TYPE_CONFIGURATION);
+        List<TLVElement> payloads = getAggregatorPayloadElements(credentials, input, ELEMENT_TYPE_CONFIGURATION);
         return new AggregatorConfigurationPayload(payloads.get(0));
     }
 
     public AggregationResponse readAggregationResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException {
-        List<TLVElement> payloads = getAggregatorPayloadElements(context, credentials, input, AggregationResponsePayloadV2.ELEMENT_TYPE);
+        List<TLVElement> payloads = getAggregatorPayloadElements(credentials, input, AggregationResponsePayloadV2.ELEMENT_TYPE);
 
         TLVElement responsePayload = getPayload(payloads, context.getRequestId());
         if (responsePayload == null) {
@@ -86,7 +86,7 @@ public class PduV2Factory implements PduFactory {
     }
 
     public ExtensionResponse readExtensionResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException {
-        List<TLVElement> payloads = getExtenderPayloadElements(context, input, ExtensionResponsePayloadV2.ELEMENT_TYPE, credentials.getLoginKey());
+        List<TLVElement> payloads = getExtenderPayloadElements(credentials, input, ExtensionResponsePayloadV2.ELEMENT_TYPE);
 
         TLVElement responsePayload = getPayload(payloads, context.getRequestId());
         if (responsePayload == null) {
@@ -96,8 +96,8 @@ public class PduV2Factory implements PduFactory {
         return new ExtensionResponsePayloadV2(responsePayload);
     }
 
-    public ExtenderConfiguration readExtenderConfigurationResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException {
-        List<TLVElement> payloads = getExtenderPayloadElements(context, input, ELEMENT_TYPE_CONFIGURATION, credentials.getLoginKey());
+    public ExtenderConfiguration readExtenderConfigurationResponse(ServiceCredentials credentials, TLVElement input) throws KSIException {
+        List<TLVElement> payloads = getExtenderPayloadElements(credentials, input, ELEMENT_TYPE_CONFIGURATION);
         return new ExtenderConfigurationPayload(payloads.get(0));
     }
 
@@ -114,13 +114,13 @@ public class PduV2Factory implements PduFactory {
         return responsePayload;
     }
 
-    private List<TLVElement> getAggregatorPayloadElements(KSIRequestContext context, ServiceCredentials credentials, TLVElement input, int payloadType) throws KSIException {
-        Util.notNull(context, "KsiRequestContext");
+    private List<TLVElement> getAggregatorPayloadElements(ServiceCredentials credentials, TLVElement input, int payloadType) throws KSIException {
+        Util.notNull(credentials, "ServiceCredentials");
         Util.notNull(input, "Input TLV");
         if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_PDU_V1) {
             throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator");
         }
-        AggregationResponsePduV2 aggregationResponsePdu = new AggregationResponsePduV2(input, context, credentials);
+        AggregationResponsePduV2 aggregationResponsePdu = new AggregationResponsePduV2(input, credentials);
         List<TLVElement> payloads = aggregationResponsePdu.getPayloads(payloadType);
 
         if (payloads.isEmpty()) {
@@ -129,13 +129,13 @@ public class PduV2Factory implements PduFactory {
         return payloads;
     }
 
-    private List<TLVElement> getExtenderPayloadElements(KSIRequestContext context, TLVElement input, int payloadType, byte[] loginKey) throws KSIException {
-        Util.notNull(context, "KsiRequestContext");
+    private List<TLVElement> getExtenderPayloadElements(ServiceCredentials credentials, TLVElement input, int payloadType) throws KSIException {
+        Util.notNull(credentials, "ServiceCredentials");
         Util.notNull(input, "Input TLV");
         if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_PDU_V1) {
             throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender");
         }
-        ExtensionResponsePduV2 pdu = new ExtensionResponsePduV2(input, loginKey);
+        ExtensionResponsePduV2 pdu = new ExtensionResponsePduV2(input, credentials);
         List<TLVElement> payloads = pdu.getPayloads(payloadType);
 
         if (payloads.isEmpty()) {

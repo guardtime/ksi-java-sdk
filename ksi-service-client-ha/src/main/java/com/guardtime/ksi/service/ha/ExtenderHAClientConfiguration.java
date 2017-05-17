@@ -112,14 +112,12 @@ class ExtenderHAClientConfiguration implements ExtenderConfiguration {
 
     private boolean isCalFirstTimeSane(Date calFirstTime, Date calLastTime) {
         return (calFirstTime == null && calLastTime == null) ||
-                (calFirstTime != null && calLastTime != null && calFirstTime.after(JAN_01_2006_00_00_00) &&
-                        (calFirstTime.equals(calLastTime) || calFirstTime.before(calLastTime)));
+                (calFirstTime != null && calLastTime != null && calFirstTime.after(JAN_01_2006_00_00_00) && !calFirstTime.after(calLastTime));
     }
 
     private boolean isCalLastTimeSane(Date calLastTime, Date calFirstTime) {
         return (calFirstTime == null && calLastTime == null) ||
-                (calFirstTime != null && calLastTime != null && calLastTime.after(JAN_01_2006_00_00_00) &&
-                        (calLastTime.equals(calFirstTime) || calLastTime.after(calFirstTime)));
+                (calFirstTime != null && calLastTime != null && calLastTime.after(JAN_01_2006_00_00_00) && !calLastTime.before(calFirstTime));
     }
 
     @Override

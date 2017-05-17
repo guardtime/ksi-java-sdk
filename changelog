@@ -4,7 +4,7 @@ Version 5.0
 * IMPROVEMENT: Removed KSIExtenderClient.extend(InputStream) and provided an alternative KSIExtenderClient.extend(Date, Date).
 * IMPROVEMENT: Removed VerificationContext.setPduVersion(PduVersion) as PDU version is decided in the client now.
 * IMPROVEMENT: KSISigningClient and KSIExtenderClient do not give out external service settings like credentials and PDU version anymore.
-* IMPROVEMENT: Not possible to ask for aggregator or extender configuration from instance of KSI directly anymore. Callback based asynchronous configuration asking implemented directly to KSISigningClient and KSIExtenderClients different implementations.
+* IMPROVEMENT: Configuration request from KSI instance has been removed. Callback based asynchronous configuration asking implemented to all the KSISigningClients and KSIExtenderClients.
 * FEATURE: HAClient (High-availability client) is a client that combines multiple KSISigningClients and KSIExtenderClients to achieve redundancy.
 * BUGFIX: RFC3161 record index rule code error code and messages corrected.
 * IMPROVEMENT: Renewed and cleaned test resources and improved test coverage.
@@ -13,7 +13,7 @@ Version 5.0
 * IMPROVEMENT: Chain index continuation check
 * IMPROVEMENT: HMAC algorithm of incoming messages
 * IMPROVEMENT: Now possible to verify input hash level, default value is 0, GEN-3 is returned in case of error.
-* IMPROVEMENT: Not possible to set TCPClients default threadpool size directly anymore. Instead possible to initialize TCPClient with custom ExecutorService.
+* IMPROVEMENT: TCPClients default threadpool size is now configurable through TCPClient initialization with custom ExecutorService.
 
 Version 4.9
 

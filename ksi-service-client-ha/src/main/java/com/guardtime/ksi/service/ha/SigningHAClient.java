@@ -139,7 +139,7 @@ public class SigningHAClient implements KSISigningClient {
         consolidatedConfListeners.add(listener);
     }
 
-    public void updateAggregationConfiguration() throws KSIException {
+    public void updateAggregationConfiguration() {
         for (KSISigningClient subclient : subclients) {
             subclient.updateAggregationConfiguration();
         }

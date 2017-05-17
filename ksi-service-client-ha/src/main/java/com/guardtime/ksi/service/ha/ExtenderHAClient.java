@@ -186,7 +186,7 @@ public class ExtenderHAClient implements KSIExtenderClient {
         consolidatedConfListeners.add(listener);
     }
 
-    public void updateExtenderConfiguration() throws KSIException {
+    public void updateExtenderConfiguration() {
         for (KSIExtenderClient subclient : subclients) {
             subclient.updateExtenderConfiguration();
         }

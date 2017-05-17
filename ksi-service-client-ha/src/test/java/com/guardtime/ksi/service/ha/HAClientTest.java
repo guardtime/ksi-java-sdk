@@ -315,7 +315,7 @@ public class HAClientTest {
             extenderConfHandler.registerListener(listener);
         }
 
-        public void updateExtenderConfiguration() throws KSIException {
+        public void updateExtenderConfiguration() {
             extenderConfHandler.doConfigurationUpdate(new ConfigurationRequest<ExtenderConfiguration>() {
                 public ExtenderConfiguration invoke() throws KSIException {
                     ExtenderConfiguration confMock = Mockito.mock(ExtenderConfiguration.class);
@@ -338,7 +338,7 @@ public class HAClientTest {
             aggrConfHandler.registerListener(listener);
         }
 
-        public void updateAggregationConfiguration() throws KSIException {
+        public void updateAggregationConfiguration() {
             aggrConfHandler.doConfigurationUpdate(new ConfigurationRequest<AggregatorConfiguration>() {
                 public AggregatorConfiguration invoke() throws KSIException {
                     AggregatorConfiguration confMock = Mockito.mock(AggregatorConfiguration.class);

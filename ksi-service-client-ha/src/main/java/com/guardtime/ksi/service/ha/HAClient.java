@@ -106,7 +106,7 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
     /**
      * @see SigningHAClient#updateAggregationConfiguration()
      */
-    public void updateAggregationConfiguration() throws KSIException {
+    public void updateAggregationConfiguration() {
         signingHAClient.updateAggregationConfiguration();
     }
 
@@ -120,7 +120,7 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
     /**
      * @see SigningHAClient#updateAggregationConfiguration()
      */
-    public void updateExtenderConfiguration() throws KSIException {
+    public void updateExtenderConfiguration() {
         signingHAClient.updateAggregationConfiguration();
     }
 

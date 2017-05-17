@@ -153,7 +153,7 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
         aggregatorConfHandler.registerListener(listener);
     }
 
-    public void updateAggregationConfiguration() throws KSIException {
+    public void updateAggregationConfiguration() {
         aggregatorConfHandler.doConfigurationUpdate(new ConfigurationRequest<AggregatorConfiguration>() {
             public AggregatorConfiguration invoke() throws KSIException {
                 return getAggregatorConfiguration();
@@ -161,7 +161,7 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
         });
     }
 
-    public void updateExtenderConfiguration() throws KSIException {
+    public void updateExtenderConfiguration() {
         extenderConfHandler.doConfigurationUpdate(new ConfigurationRequest<ExtenderConfiguration>() {
             public ExtenderConfiguration invoke() throws KSIException {
                 return getExtenderConfiguration();

@@ -114,8 +114,8 @@ public class ExtenderHAClient implements KSIExtenderClient {
         ExtenderHAClientConfiguration oldConsolidatedConfiguration = lastConsolidatedConfiguration;
         lastConsolidatedConfiguration = newConsolidatedConfiguration;
         if (!Util.equals(newConsolidatedConfiguration, oldConsolidatedConfiguration)) {
-            logger.info("ExtenderHaClients configuration has changed compared to it's last known state. Old configuration: {}. " +
-                    "New configuration: {}.", oldConsolidatedConfiguration, newConsolidatedConfiguration);
+            logger.info("ExtenderHaClients configuration changed. Old configuration: {}. New configuration: {}.",
+                    oldConsolidatedConfiguration, newConsolidatedConfiguration);
             for (ConfigurationListener<ExtenderConfiguration> listener : consolidatedConfListeners) {
                 listener.updated(newConsolidatedConfiguration);
             }

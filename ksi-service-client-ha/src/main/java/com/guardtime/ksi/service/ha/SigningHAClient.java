@@ -162,8 +162,8 @@ public class SigningHAClient implements KSISigningClient {
             listenersNeedUpdate = !Util.equals(newConsolidatedConfiguration, oldConsolidatedConfiguration);
         }
         if (listenersNeedUpdate) {
-            logger.info("SigningHaClients configuration has changed compared to it's last known state. Old configuration: {}. " +
-                    "New configuration: {}.", oldConsolidatedConfiguration, newConsolidatedConfiguration);
+            logger.info("SigningHaClients configuration changed. Old configuration: {}. New configuration: {}.",
+                    oldConsolidatedConfiguration, newConsolidatedConfiguration);
             for (ConfigurationListener<AggregatorConfiguration> listener : consolidatedConfListeners) {
                 listener.updated(newConsolidatedConfiguration);
             }

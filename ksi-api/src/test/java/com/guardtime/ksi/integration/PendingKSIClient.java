@@ -58,9 +58,7 @@ public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
         throw new RuntimeException("Failure!");
     }
 
-
     public void registerAggregatorConfigurationListener(ConfigurationListener listener) {
-        throw new RuntimeException("Failure!");
     }
 
     public void sendExtenderConfigurationRequest() {
@@ -68,7 +66,6 @@ public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
     }
 
     public void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener) {
-        throw new RuntimeException("Failure!");
     }
 
     public List<KSIExtenderClient> getSubExtenderClients() {

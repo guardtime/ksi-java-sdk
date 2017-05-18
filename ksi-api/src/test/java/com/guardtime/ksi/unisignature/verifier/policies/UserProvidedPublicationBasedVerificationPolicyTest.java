@@ -19,11 +19,11 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class UserProvidedPublicationBasedVerificationPolicyTest {
-
     @Test
     public void testCreateNewUserProvidedPublicationBasedVerificationPolicy_Ok() throws Exception {
         UserProvidedPublicationBasedVerificationPolicy policy = new UserProvidedPublicationBasedVerificationPolicy();

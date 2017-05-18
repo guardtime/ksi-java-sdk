@@ -20,7 +20,6 @@ package com.guardtime.ksi.pdu.v1;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregationRequest;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -31,12 +30,12 @@ import com.guardtime.ksi.tlv.TLVParserException;
  */
 class AggregationRequestV1 extends AbstractKSIRequest<AggregationRequestPayloadV1> implements AggregationRequest {
 
-    public AggregationRequestV1(PduMessageHeader header, AggregationRequestPayloadV1 payload, KSIRequestContext requestContext) throws KSIException {
-        super(header, payload, requestContext.getLoginKey());
+    public AggregationRequestV1(PduMessageHeader header, AggregationRequestPayloadV1 payload, byte[] loginKey) throws KSIException {
+        super(header, payload, loginKey);
     }
 
-    public AggregationRequestV1(TLVElement element, KSIRequestContext requestContext) throws KSIException {
-        super(element, requestContext.getLoginKey());
+    public AggregationRequestV1(TLVElement element, byte[] loginKey) throws KSIException {
+        super(element, loginKey);
     }
 
     @Override

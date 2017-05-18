@@ -16,27 +16,80 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-
 package com.guardtime.ksi.integration;
 
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 
+import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 
 public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
-    @Test
-    public void testExtenderConfigurationRequestV2() throws Exception {
-        ExtenderConfiguration response = ksiV2.getExtenderConfiguration();
-        Assert.assertNotNull(response);
+    private SimpleHttpClient simpleHttpClientV2;
+
+    @BeforeMethod
+    public void setUp() throws Exception {
+        super.setUp();
+        simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
-    public void testExtenderConfigurationRequestV1() throws Exception {
-        ksi.getExtenderConfiguration();
+    @Test
+    public void testAggregationConfigurationRequestV2() throws Exception {
+        final AsyncContext ac = new AsyncContext();
+
+        simpleHttpClientV2.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
+            public void updated(ExtenderConfiguration aggregatorConfiguration) {
+                try {
+                    Assert.assertNotNull(aggregatorConfiguration);
+                    ac.succeed();
+                } catch (AssertionError e) {
+                    ac.fail(e);
+                }
+            }
+
+            public void updateFailed(Throwable t) {
+                try {
+                    Assert.fail("Configuration update failed", t);
+                } catch (AssertionError e) {
+                    ac.fail(e);
+                }
+            }
+        });
+        simpleHttpClientV2.sendExtenderConfigurationRequest();
+        ac.await();
+    }
+
+    @Test
+    public void testAggregationConfigurationRequestV1() throws Exception {
+        final AsyncContext ac = new AsyncContext();
+        simpleHttpClient.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
+            public void updated(ExtenderConfiguration aggregatorConfiguration) {
+                try {
+                    Assert.fail("Configuration request was not supposed to succeed because of PDU V1, but it did.");
+                } catch (AssertionError e) {
+                    ac.fail(e);
+                }
+            }
+
+            public void updateFailed(Throwable t) {
+                try {
+                    if ("Not supported. Configure the SDK to use PDU v2 format.".equals(t.getMessage())) {
+                        ac.succeed();
+                    } else {
+                        Assert.fail("Configuration update failed for unexpected reason", t);
+                    }
+                } catch (AssertionError e) {
+                    ac.fail(e);
+                }
+            }
+        });
+        simpleHttpClient.sendExtenderConfigurationRequest();
+
+        ac.await();
     }
 
 }

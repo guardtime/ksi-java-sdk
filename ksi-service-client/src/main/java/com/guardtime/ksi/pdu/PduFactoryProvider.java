@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -16,30 +16,27 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-
 package com.guardtime.ksi.pdu;
 
-import com.guardtime.ksi.util.Util;
+import com.guardtime.ksi.pdu.v1.PduV1Factory;
+import com.guardtime.ksi.pdu.v2.PduV2Factory;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * PDU request identifiers.
- */
-public final class PduIdentifiers {
+public final class PduFactoryProvider {
 
-    private static final long INSTANCE_ID = Util.nextLong();
-    private static AtomicLong messageId = new AtomicLong();
+    private static final Map<PduVersion, PduFactory> pduFactories = new HashMap<PduVersion, PduFactory>();
 
-    private PduIdentifiers() {
+    static {
+        pduFactories.put(PduVersion.V1, new PduV1Factory());
+        pduFactories.put(PduVersion.V2, new PduV2Factory());
     }
 
-    public static final long nextMessageId() {
-        return messageId.incrementAndGet();
+    public static PduFactory get(PduVersion pduVersion) {
+        if (!pduFactories.containsKey(pduVersion)) {
+            throw new IllegalArgumentException("Invalid PDU version '" + pduVersion + "'. Allowed values are V1 and V2");
+        }
+        return pduFactories.get(pduVersion);
     }
-
-    public static long getInstanceId() {
-        return INSTANCE_ID;
-    }
-
 }

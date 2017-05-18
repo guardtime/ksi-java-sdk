@@ -22,14 +22,13 @@ package com.guardtime.ksi;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.AggregatorConfiguration;
-import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
+import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
@@ -111,18 +110,6 @@ public interface KSI extends Closeable {
      *         when error occurs (e.g when communication with KSI service fails)
      */
     KSISignature sign(byte[] bytes) throws KSIException;
-
-    /**
-     * GetAggregatorConfiguration method is used to ask aggregation configuration from KSI gateway/aggregator.Only supported
-     * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
-     */
-    AggregatorConfiguration getAggregatorConfiguration() throws KSIException;
-
-    /**
-     * GetExtenderConfiguration method is used to ask extender configuration from KSI gateway/aggregator. Only supported
-     * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
-     */
-    ExtenderConfiguration getExtenderConfiguration() throws KSIException;
 
     /**
      * This method is used to sign data hash asynchronously. Use method {@link Future#getResult()} to get keyless
@@ -295,4 +282,15 @@ public interface KSI extends Closeable {
      */
     PublicationsFile getPublicationsFile() throws KSIException;
 
+    /**
+     * This method is used to get the signing client that the SDK was initialized with. One could use the signing client to get
+     * access to its configuration for example.
+     */
+    KSISigningClient getSigningClient();
+
+    /**
+     * This method is used to get the extender client that the SDK was initialized with. One could use the extender client to get
+     * access to its configuration for example.
+     */
+    KSIExtenderClient getExtenderClient();
 }

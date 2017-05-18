@@ -21,14 +21,19 @@ package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
-import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.AggregationHashChain;
+import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
+import com.guardtime.ksi.unisignature.CalendarHashChain;
+import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
+import com.guardtime.ksi.unisignature.KSISignatureFactory;
+import com.guardtime.ksi.unisignature.RFC3161Record;
 import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
@@ -55,11 +60,10 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     private boolean verifySignatures = false;
 
     private KSISignatureVerifier verifier = new KSISignatureVerifier();
-    private PduFactory pduFactory;
     private KSISignatureComponentFactory signatureComponentFactory;
 
     public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter,
-                                       KSIExtenderClient extenderClient, boolean extendingAllowed, PduFactory pduFactory,
+                                       KSIExtenderClient extenderClient, boolean extendingAllowed,
                                        KSISignatureComponentFactory signatureComponentFactory) {
         Util.notNull(policy, "Signature verification policy");
         Util.notNull(publicationsFileClientAdapter, "Publications file client adapter");
@@ -69,7 +73,6 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         this.extenderClient = extenderClient;
         this.extendingAllowed = extendingAllowed;
         this.verifySignatures = true;
-        this.pduFactory = pduFactory;
         this.signatureComponentFactory = signatureComponentFactory;
     }
 
@@ -128,7 +131,6 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
             }
             VerificationContext context = builder.createVerificationContext();
             context.setKsiSignatureComponentFactory(signatureComponentFactory);
-            context.setPduFactory(pduFactory);
             VerificationResult result = verifier.verify(context, policy);
             if (!result.isOk()) {
                 throw new InvalidSignatureContentException(signature, result);

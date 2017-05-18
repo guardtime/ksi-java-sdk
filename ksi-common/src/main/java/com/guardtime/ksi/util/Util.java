@@ -24,12 +24,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Collection;
 import java.util.Random;
 import java.util.zip.CRC32;
 
@@ -634,9 +637,38 @@ public final class Util {
     }
 
     /**
+     * Checks if two objects are equal. It's safe to pass null objects.
+     * @param o1 first input object
+     * @param o2 second input object
+     * @return true if both inputs are null or equal to each other
+     */
+    public static boolean equals(Object o1, Object o2) {
+        return (o1 == null && o2 == null) || (o1 != null && o2 != null && o1.equals(o2));
+    }
+
+    /**
+     * Checks if two collections are equal ignoring the order of components. It's safe to pass collections that might be null.
+     * @param c1 first collection
+     * @param c2 second collection
+     * @return true if both lists are null or if they have exactly the same components.
+     */
+    public static boolean equalsIgnoreOrder(Collection<?> c1, Collection<?> c2) {
+        return (c1 == null && c2 == null) || (c1 != null && c2 != null  && c1.size() == c2.size() && c1.containsAll(c2) && c2.containsAll(c1));
+    }
+
+    /**
+     * For getting the stacktrace of a throwable as a string.
+     */
+    public static String getStacktrace(Throwable t) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
+        return sw.toString();
+    }
+
+    /**
      * This class should not be instantiated.
      */
     private Util() {
     }
-
 }

@@ -27,8 +27,8 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.SIGNATURE_LEVEL_10_ROOT;
-import static com.guardtime.ksi.Resources.SIGNATURE_RFC_AGGR_CHAIN_LEVEL_CHANGED;
+import static com.guardtime.ksi.Resources.SIGNATURE_INPUT_HASH_LEVEL_5;
+import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
 
 public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
@@ -36,7 +36,7 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
     @Test
     public void testLevelNotProvided() throws Exception {
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_LEVEL_10_ROOT);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_INPUT_HASH_LEVEL_5);
         RuleResult result = rule.verify(build(signature));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
@@ -45,8 +45,8 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
     @Test
     public void testProvidedLevelSmaller() throws Exception {
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_LEVEL_10_ROOT);
-        RuleResult result = rule.verify(build(signature, 9L));
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_INPUT_HASH_LEVEL_5);
+        RuleResult result = rule.verify(build(signature, 4L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertNull(result.getErrorCode());
@@ -54,7 +54,7 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
     @Test
     public void testProvidedLevelEqual() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_LEVEL_10_ROOT), 10L));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_INPUT_HASH_LEVEL_5), 5L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertNull(result.getErrorCode());
@@ -62,15 +62,15 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 
     @Test
     public void testProvidedLevelBigger() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_LEVEL_10_ROOT), 11L));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_INPUT_HASH_LEVEL_5), 11L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_3);
     }
 
     @Test
-    public void testRfc3161SignatureProvidedLevel0() throws Exception {
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_RFC_AGGR_CHAIN_LEVEL_CHANGED);
+    public void testRfc3161SignatureProvidedLevelZero() throws Exception {
+        KSISignature signature = TestUtil.loadSignature(RFC3161_SIGNATURE);
         RuleResult result = rule.verify(build(signature, 0L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
@@ -78,8 +78,8 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
     }
 
     @Test
-    public void testRfc3161SignatureProvidedLevel1() throws Exception {
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_RFC_AGGR_CHAIN_LEVEL_CHANGED);
+    public void testRfc3161SignatureProvidedLevelOne() throws Exception {
+        KSISignature signature = TestUtil.loadSignature(RFC3161_SIGNATURE);
         RuleResult result = rule.verify(build(signature, 1L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);

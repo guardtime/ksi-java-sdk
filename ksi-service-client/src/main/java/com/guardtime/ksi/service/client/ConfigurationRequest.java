@@ -20,8 +20,21 @@ package com.guardtime.ksi.service.client;
 
 import com.guardtime.ksi.exceptions.KSIException;
 
+/**
+ * For wrapping configuration requests to pass them to configuration handler.
+ *
+ * @param <T> Type of configuration response.
+ */
 public interface ConfigurationRequest<T> {
 
+    /**
+     * Implementation should call the clients method that asks for new configuration.
+     *
+     * @return
+     *      Configuration response
+     * @throws KSIException
+     *      If something goes wrong with fetching the configuration.
+     */
     T invoke() throws KSIException;
 
 }

@@ -48,8 +48,8 @@ public interface KSIExtenderClient extends Closeable {
     List<KSIExtenderClient> getSubExtenderClients();
 
     /**
-     * Registeres a new {@link ConfigurationListener<ExtenderConfiguration>} for the client. Each time client's configuration is
-     * updated, this listener is called.
+     * Registers a new {@link ConfigurationListener<ExtenderConfiguration>} for the client. Each time client's configuration is
+     * update is handled, this listener is called.
      */
     void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener);
 
@@ -57,5 +57,5 @@ public interface KSIExtenderClient extends Closeable {
      * Makes the client ask for configuration update. On completion of the update config registered {@link ConfigurationListener}s
      * are called
      */
-    void updateExtenderConfiguration();
+    void sendExtenderConfigurationRequest();
 }

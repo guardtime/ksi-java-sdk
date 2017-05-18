@@ -54,7 +54,7 @@ public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
         return Collections.emptyList();
     }
 
-    public void updateAggregationConfiguration() {
+    public void sendAggregationConfigurationRequest() {
         throw new RuntimeException("Failure!");
     }
 
@@ -63,7 +63,7 @@ public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
         throw new RuntimeException("Failure!");
     }
 
-    public void updateExtenderConfiguration() {
+    public void sendExtenderConfigurationRequest() {
         throw new RuntimeException("Failure!");
     }
 

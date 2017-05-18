@@ -59,7 +59,7 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
                 }
             }
         });
-        simpleHttpClientV2.updateAggregationConfiguration();
+        simpleHttpClientV2.sendAggregationConfigurationRequest();
         ac.await();
     }
 
@@ -87,7 +87,7 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
                 }
             }
         });
-        simpleHttpClient.updateAggregationConfiguration();
+        simpleHttpClient.sendAggregationConfigurationRequest();
 
         ac.await();
     }

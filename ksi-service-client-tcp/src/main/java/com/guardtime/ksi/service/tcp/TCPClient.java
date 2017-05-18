@@ -172,7 +172,7 @@ public class TCPClient implements KSISigningClient {
                 "'}";
     }
 
-    public void updateAggregationConfiguration() {
+    public void sendAggregationConfigurationRequest() {
         aggregatorConfHandler.doConfigurationUpdate(new ConfigurationRequest<AggregatorConfiguration>() {
             public AggregatorConfiguration invoke() throws KSIException {
                 return getAggregatorConfiguration();

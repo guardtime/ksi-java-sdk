@@ -59,7 +59,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
                 }
             }
         });
-        simpleHttpClientV2.updateExtenderConfiguration();
+        simpleHttpClientV2.sendExtenderConfigurationRequest();
         ac.await();
     }
 
@@ -87,7 +87,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
                 }
             }
         });
-        simpleHttpClient.updateExtenderConfiguration();
+        simpleHttpClient.sendExtenderConfigurationRequest();
 
         ac.await();
     }

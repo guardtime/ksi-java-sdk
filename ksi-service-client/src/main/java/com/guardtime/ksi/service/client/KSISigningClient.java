@@ -61,6 +61,6 @@ public interface KSISigningClient extends Closeable {
      * Makes the client ask for configuration update. On completion of the update config registered {@link ConfigurationListener}s
      * are called
      */
-    void updateAggregationConfiguration();
+    void sendAggregationConfigurationRequest();
 
 }

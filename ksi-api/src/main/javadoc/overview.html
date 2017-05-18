@@ -278,7 +278,7 @@ configuration updates and how to call for an update (works similarly with KSIExt
             // do something with the exception that made the configuration update fail
         }
     });
-    signingClient.updateAggregationConfiguration(); // Invokes a configuration request but does not block until it responds
+    signingClient.sendAggregationConfigurationRequest(); // Invokes a configuration request but does not block until it responds
 </code></pre>
 
 <h2>HTTP Proxy Configuration</h2>

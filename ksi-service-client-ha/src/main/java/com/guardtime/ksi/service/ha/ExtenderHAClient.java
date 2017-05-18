@@ -186,9 +186,9 @@ public class ExtenderHAClient implements KSIExtenderClient {
         consolidatedConfListeners.add(listener);
     }
 
-    public void updateExtenderConfiguration() {
+    public void sendExtenderConfigurationRequest() {
         for (KSIExtenderClient subclient : subclients) {
-            subclient.updateExtenderConfiguration();
+            subclient.sendExtenderConfigurationRequest();
         }
     }
 

@@ -139,9 +139,9 @@ public class SigningHAClient implements KSISigningClient {
         consolidatedConfListeners.add(listener);
     }
 
-    public void updateAggregationConfiguration() {
+    public void sendAggregationConfigurationRequest() {
         for (KSISigningClient subclient : subclients) {
-            subclient.updateAggregationConfiguration();
+            subclient.sendAggregationConfigurationRequest();
         }
     }
 

@@ -190,7 +190,7 @@ public class HAClientTest {
                 }
             }
         });
-        signingHAClient.updateAggregationConfiguration();
+        signingHAClient.sendAggregationConfigurationRequest();
         context.await();
         assertEquals(aggregatorConsolidatedConf.getMaximumRequests(), new Long(300));
     }
@@ -217,7 +217,7 @@ public class HAClientTest {
                 }
             }
         });
-        extenderHAClient.updateExtenderConfiguration();
+        extenderHAClient.sendExtenderConfigurationRequest();
         context.await();
         assertEquals(extenderConsolidatedConf.getMaximumRequests(), new Long(300));
     }
@@ -315,7 +315,7 @@ public class HAClientTest {
             extenderConfHandler.registerListener(listener);
         }
 
-        public void updateExtenderConfiguration() {
+        public void sendExtenderConfigurationRequest() {
             extenderConfHandler.doConfigurationUpdate(new ConfigurationRequest<ExtenderConfiguration>() {
                 public ExtenderConfiguration invoke() throws KSIException {
                     ExtenderConfiguration confMock = Mockito.mock(ExtenderConfiguration.class);
@@ -338,7 +338,7 @@ public class HAClientTest {
             aggrConfHandler.registerListener(listener);
         }
 
-        public void updateAggregationConfiguration() {
+        public void sendAggregationConfigurationRequest() {
             aggrConfHandler.doConfigurationUpdate(new ConfigurationRequest<AggregatorConfiguration>() {
                 public AggregatorConfiguration invoke() throws KSIException {
                     AggregatorConfiguration confMock = Mockito.mock(AggregatorConfiguration.class);

@@ -104,10 +104,10 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
     }
 
     /**
-     * @see SigningHAClient#updateAggregationConfiguration()
+     * @see SigningHAClient#sendAggregationConfigurationRequest()
      */
-    public void updateAggregationConfiguration() {
-        signingHAClient.updateAggregationConfiguration();
+    public void sendAggregationConfigurationRequest() {
+        signingHAClient.sendAggregationConfigurationRequest();
     }
 
     /**
@@ -118,10 +118,10 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
     }
 
     /**
-     * @see SigningHAClient#updateAggregationConfiguration()
+     * @see SigningHAClient#sendAggregationConfigurationRequest()
      */
-    public void updateExtenderConfiguration() {
-        signingHAClient.updateAggregationConfiguration();
+    public void sendExtenderConfigurationRequest() {
+        signingHAClient.sendAggregationConfigurationRequest();
     }
 
     /**

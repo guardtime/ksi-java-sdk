@@ -21,7 +21,6 @@ package com.guardtime.ksi.pdu.v1;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
@@ -33,7 +32,6 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 
 public class AggregationRequestV1Test {
 
-    private static final KSIRequestContext REQUEST_CONTEXT = new KSIRequestContext(42L, 42L, 42L);
     private static final byte[] LOGIN_ID = "anon".getBytes();
     private PduMessageHeader header;
 

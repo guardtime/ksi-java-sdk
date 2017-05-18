@@ -21,9 +21,16 @@ package com.guardtime.ksi.integration;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.ExtensionRequest;
+import com.guardtime.ksi.pdu.ExtensionResponseFuture;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.RequestContextFactory;
+import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.tlv.MultipleTLVElementException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
@@ -40,8 +47,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
 import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_CRITICAL_ELEMENT;
@@ -50,6 +58,7 @@ import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_
 import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS;
 import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS;
 import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_NON_CRITICAL_ELEMENT;
+import static com.guardtime.ksi.Resources.EXTENSION_RESPONSE_DUMMY;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
@@ -114,7 +123,7 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
         } catch (IntegrationTestFailureException e) {
             throw e;
         } catch (Exception e) {
-            if (!(e.getClass().toString().equals(exceptionClass.toString()))) {
+            if (!(e.getClass().isAssignableFrom(exceptionClass))) {
                 throw new IntegrationTestFailureException("Expected exception " + exceptionClass.toString() + " but received " + e.getClass().toString());
             } else if (!(e.getMessage().contains(message))) {
                 throw new IntegrationTestFailureException("Expected exception message '" + message + "' was not found int " + e.getMessage());
@@ -122,25 +131,34 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
         }
     }
 
-    protected KSIExtenderClient mockExtenderResponseCalendarHashCain(String responseCalendarHashChain) throws Exception {
+    protected KSIExtenderClient mockExtenderResponseCalendarHashCain(String responseCalendarChainFile) throws Exception {
         KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
-        Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(serviceCredentials);
-        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
+        final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes(EXTENSION_RESPONSE_DUMMY));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
-        final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarHashChain));
+        final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
 
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(InputStream.class))).then(new Answer<Future>() {
+        Mockito.when(mockedExtenderClient.extend(Mockito.any(Date.class), Mockito.any
+                (Date.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
-                InputStream input = (InputStream) invocationOnMock.getArguments()[0];
-                TLVElement tlvElement = TLVElement.create(Util.toByteArray(input));
+                KSIServiceCredentials credentials = new KSIServiceCredentials("anon", "anon");
+                KSIRequestContext requestContext = RequestContextFactory.DEFAULT_FACTORY.createContext();
+                Date aggregationTime = (Date) invocationOnMock.getArguments()[0];
+                Date publicationTime = (Date) invocationOnMock.getArguments()[1];
+                PduFactory pduFactory = new PduV1Factory();
+                ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, credentials, aggregationTime,
+                        publicationTime);
+                ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());
+                TLVElement tlvElement = TLVElement.create(Util.toByteArray(requestStream));
                 TLVElement payload = responseTLV.getFirstChildElement(0x302);
-                payload.getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x301).getFirstChildElement(0x01).getDecodedLong());
+                payload.getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x301).getFirstChildElement
+                        (0x01).getDecodedLong());
 
                 payload.replace(payload.getFirstChildElement(CalendarHashChain.ELEMENT_TYPE), calendarChain);
-                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(serviceCredentials.getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
-                return mockedFuture;
+                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(simpleHttpClient.getServiceCredentials()
+                        .getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
+                return new ExtensionResponseFuture(mockedFuture, requestContext, credentials, pduFactory);
             }
         });
         return mockedExtenderClient;

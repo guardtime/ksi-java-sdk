@@ -23,7 +23,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
-import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -145,7 +144,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
                         mockAdapter,
                         simpleHttpClient,
                         false,
-                        new PduV1Factory(),
                         new InMemoryKsiSignatureComponentFactory()
                 )).build();
 
@@ -171,7 +169,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
                         mockAdapter,
                         simpleHttpClient,
                         false,
-                        new PduV1Factory(),
                         new InMemoryKsiSignatureComponentFactory()
                         )).build();
 
@@ -194,7 +191,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
                         mockAdapter,
                         simpleHttpClient,
                         false,
-                        new PduV1Factory(),
                         new InMemoryKsiSignatureComponentFactory()
                         )).build();
 

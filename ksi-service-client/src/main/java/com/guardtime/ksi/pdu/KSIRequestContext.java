@@ -18,10 +18,6 @@
  */
 package com.guardtime.ksi.pdu;
 
-import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.service.client.ServiceCredentials;
-
-
 /**
  * Helper class for KSI request/response. This class holds additional data that
  * specific data like request identifier and login key.
@@ -32,38 +28,15 @@ public final class KSIRequestContext {
     private Long requestId;
     private Long instanceId;
     private Long messageId;
-    private ServiceCredentials credentials;
 
-    /**
-     * @param credentials instance of {@link ServiceCredentials} object
-     * @param requestId   - request id
-     */
-    public KSIRequestContext(ServiceCredentials credentials, Long requestId) {
-        this.credentials = credentials;
-        this.requestId = requestId;
-    }
-
-    public KSIRequestContext(ServiceCredentials credentials, Long requestId, Long instanceId, Long messageId) {
+    public KSIRequestContext(Long requestId, Long instanceId, Long messageId) {
         this.requestId = requestId;
         this.instanceId = instanceId;
         this.messageId = messageId;
-        this.credentials = credentials;
     }
 
     public Long getRequestId() {
         return requestId;
-    }
-
-    public String getLoginId() {
-        return credentials.getLoginId();
-    }
-
-    public byte[] getLoginKey() {
-        return credentials.getLoginKey();
-    }
-
-    public HashAlgorithm getHmacAlgorithm() {
-        return credentials.getHmacAlgorithm();
     }
 
     public Long getInstanceId() {
@@ -73,4 +46,5 @@ public final class KSIRequestContext {
     public Long getMessageId() {
         return messageId;
     }
+
 }

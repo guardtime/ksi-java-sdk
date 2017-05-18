@@ -21,6 +21,7 @@ package com.guardtime.ksi.service.client;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 /**
  * KSI service credentials for HMAC authentication.
@@ -139,5 +140,16 @@ public class KSIServiceCredentials implements ServiceCredentials {
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException("Encoding loginKey failed", e);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        KSIServiceCredentials that = (KSIServiceCredentials) o;
+
+        if (loginId != null ? !loginId.equals(that.loginId) : that.loginId != null) return false;
+        return Arrays.equals(loginKey, that.loginKey);
     }
 }

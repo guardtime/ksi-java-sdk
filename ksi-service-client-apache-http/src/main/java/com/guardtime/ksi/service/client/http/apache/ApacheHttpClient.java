@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.service.client.http.apache;
 
+import com.guardtime.ksi.concurrency.DefaultExecutorServiceProvider;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
@@ -48,6 +49,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
@@ -76,15 +78,31 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
      *         - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
      */
     public ApacheHttpClient(AbstractHttpClientSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
-        super(settings);
+        this(settings, asyncConfiguration, DefaultExecutorServiceProvider.getExecutorService());
+    }
+
+    /**
+     * Constructs ApacheHttpClient with configuration values passed in and a custom {@link ExecutorService}.
+     *
+     * @param settings
+     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     * @param asyncConfiguration
+     *         - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
+     * @param executorService
+     *         - Custom {@link ExecutorService}. Only used for configuration requests. Apache HTTP Client will still make its
+     *           own thread pool.
+     */
+    public ApacheHttpClient(AbstractHttpClientSettings settings, ApacheHttpClientConfiguration asyncConfiguration,
+                            ExecutorService executorService) {
+        super(settings, executorService);
         this.apacheClient = createClient(settings, asyncConfiguration);
     }
 
-    public ApacheHttpPostRequestFuture sign(InputStream request) throws KSIClientException {
+    protected ApacheHttpPostRequestFuture sign(InputStream request) throws KSIClientException {
         return post(request, settings.getSigningUrl());
     }
 
-    public ApacheHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
+    protected ApacheHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
         return post(request, settings.getExtendingUrl());
     }
 
@@ -97,7 +115,7 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
         }
     }
 
-    private ApacheHttpPostRequestFuture post(InputStream request, URL url) throws KSIClientException {
+    protected ApacheHttpPostRequestFuture post(InputStream request, URL url) throws KSIClientException {
         try {
             HttpPost httpRequest = new HttpPost(url.toURI());
             httpRequest.setHeader(AbstractHttpClient.HEADER_NAME_CONTENT_TYPE, AbstractHttpClient.HEADER_APPLICATION_KSI_REQUEST);
@@ -181,4 +199,8 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
         return RequestConfig.custom().setConnectionRequestTimeout(connectionTimeout).setSocketTimeout(socketTimeout).build();
     }
 
+    @Override
+    public String toString() {
+        return "ApacheHttpClient{Gateway='" + settings.getSigningUrl() + "', Extender='" + settings.getExtendingUrl() + "', Publications='" + settings.getPublicationsFileUrl() + "', LoginID='" + getServiceCredentials().getLoginId() + "', PDUVersion='" + getPduVersion() + "'}";
+    }
 }

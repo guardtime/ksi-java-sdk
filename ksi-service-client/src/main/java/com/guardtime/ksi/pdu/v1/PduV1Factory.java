@@ -23,6 +23,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.*;
 import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.util.Util;
@@ -34,53 +35,55 @@ import java.util.Date;
  */
 public class PduV1Factory implements PduFactory {
 
-    public AggregationRequest createAggregationRequest(KSIRequestContext context, DataHash imprint, Long level) throws KSIException {
+    public AggregationRequest createAggregationRequest(KSIRequestContext context, ServiceCredentials credentials, DataHash imprint, Long level) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(imprint, "DataHash");
-        PduMessageHeader header = new PduMessageHeader(context.getLoginId(), context.getInstanceId(), context.getMessageId());
+        Util.notNull(credentials, "ServiceCredentials");
+        PduMessageHeader header = new PduMessageHeader(credentials.getLoginId(), context.getInstanceId(), context.getMessageId());
         AggregationRequestPayloadV1 request = new AggregationRequestPayloadV1(imprint, context.getRequestId(), level);
-        return new AggregationRequestV1(header, request, context);
+        return new AggregationRequestV1(header, request, credentials.getLoginKey());
     }
 
-    public AggregationResponse readAggregationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
+    public AggregationResponse readAggregationResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(input, "Input TLV");
         if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2) {
             throw new KSIProtocolException("Received PDU v2 response to PDU v1 request. Configure the SDK to use PDU v2 format for the given Aggregator");
         }
-        return new AggregationResponseV1(input, context).getResponsePayload();
+        return new AggregationResponseV1(input, context, credentials).getResponsePayload();
     }
 
-    public ExtensionRequest createExtensionRequest(KSIRequestContext context, Date aggregationTime, Date publicationTime) throws KSIException {
+    public ExtensionRequest createExtensionRequest(KSIRequestContext context, ServiceCredentials credentials, Date aggregationTime, Date publicationTime) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(aggregationTime, "AggregationTime");
-        PduMessageHeader header = new PduMessageHeader(context.getLoginId(), context.getInstanceId(), context.getMessageId());
+        Util.notNull(credentials, "ServiceCredentials");
+        PduMessageHeader header = new PduMessageHeader(credentials.getLoginId(), context.getInstanceId(), context.getMessageId());
         ExtensionRequestPayloadV1 extensionRequest = new ExtensionRequestPayloadV1(aggregationTime, publicationTime, context.getRequestId());
-        return new ExtensionRequestV1(header, extensionRequest, context.getLoginKey());
+        return new ExtensionRequestV1(header, extensionRequest, credentials.getLoginKey());
     }
 
-    public ExtensionResponse readExtensionResponse(KSIRequestContext context, TLVElement input) throws KSIException {
+    public ExtensionResponse readExtensionResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(input, "Input TLV");
         if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_RESPONSE_PDU_V2) {
             throw new KSIProtocolException("Received PDU v2 response to PDU v1 request. Configure the SDK to use PDU v2 format for the given Extender");
         }
-        return new ExtensionResponseV1(input, context).getResponsePayload();
+        return new ExtensionResponseV1(input, context, credentials).getResponsePayload();
     }
 
-    public AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext requestContext) throws KSIException {
+    public AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext requestContext, ServiceCredentials credentials) throws KSIException {
         throw new KSIException("Not supported. Configure the SDK to use PDU v2 format.");
     }
 
-    public AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext requestContext, TLVElement input) throws KSIException {
+    public AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext requestContext, ServiceCredentials credentials, TLVElement input) throws KSIException {
         throw new KSIException("Not supported. Configure the SDK to use PDU v2 format.");
     }
 
-    public ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext requestContext) throws KSIException {
+    public ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext requestContext, ServiceCredentials credentials) throws KSIException {
         throw new KSIException("Not supported. Configure the SDK to use PDU v2 format.");
     }
 
-    public ExtenderConfiguration readExtenderConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException {
+    public ExtenderConfiguration readExtenderConfigurationResponse(ServiceCredentials credentials, TLVElement input) throws KSIException {
         throw new KSIException("Not supported. Configure the SDK to use PDU v2 format.");
     }
 

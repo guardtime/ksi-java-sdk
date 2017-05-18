@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -16,25 +16,16 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.client;
-
-import com.guardtime.ksi.pdu.PduVersion;
-
-import java.io.Closeable;
+package com.guardtime.ksi.service.ha;
 
 /**
- * KSI client is an interface that defines KSI related services.
+ * Listener to call every time subclients configuration is updated.
  */
-interface KSICredentialsAwareClient extends Closeable {
+interface SubconfUpdateListener {
 
     /**
-     * Returns the service credentials used by this service
+     * This methods implementation should start the consolidated configurations recalculation process.
      */
-    ServiceCredentials getServiceCredentials();
-
-    /**
-     * Returns the PDU format version of the client
-     */
-    PduVersion getPduVersion();
+    void updated();
 
 }

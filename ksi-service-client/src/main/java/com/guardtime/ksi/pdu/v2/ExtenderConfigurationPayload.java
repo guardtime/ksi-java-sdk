@@ -86,14 +86,4 @@ public class ExtenderConfigurationPayload extends TLVStructure implements Extend
         return 0x04;
     }
 
-    @Override
-    public String toString() {
-        return "ExtenderConfiguration{" +
-                "maximumRequests=" + maximumRequests +
-                ", parents=" + parents +
-                ", calendarFirstTime=" + calendarFirstTime +
-                ", calendarLastTime=" + calendarLastTime +
-                '}';
-    }
-
 }

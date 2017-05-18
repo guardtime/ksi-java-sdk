@@ -26,6 +26,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 
 public class UtilTest {
 
@@ -132,6 +136,38 @@ public class UtilTest {
         alfa.close();
         beta.close();
         Assert.assertEquals(beta.toString(), "foo");
+    }
+
+    @Test
+    public void testEqualsBothNulls() {
+        Assert.assertTrue(Util.equals(null, null));
+    }
+
+    @Test
+    public void testEqualsOneNull() {
+        Assert.assertFalse(Util.equals(null, new Object()));
+        Assert.assertFalse(Util.equals(new Object(), null));
+    }
+
+    @Test
+    public void testEqualsBothNotNull() {
+        Assert.assertTrue(Util.equals("a_string", "a_string"));
+    }
+
+    @Test
+    public void testEqualsIgnoreOrderBothNull() {
+        Assert.assertTrue(Util.equalsIgnoreOrder(null,  null));
+    }
+
+    @Test
+    public void testEqualsIgnoreOrderOneNull() {
+        Assert.assertFalse(Util.equalsIgnoreOrder(null, Collections.emptyList()));
+        Assert.assertFalse(Util.equalsIgnoreOrder(Collections.emptyList(), null));
+    }
+
+    @Test
+    public void testEqualsIgnoreOrderSameContentsDifferentOrder() {
+        Assert.assertTrue(Util.equalsIgnoreOrder(new ArrayList<String>(Arrays.asList("1", "2", "3")), new LinkedList<String>(Arrays.asList("2", "1", "3"))));
     }
 
 }

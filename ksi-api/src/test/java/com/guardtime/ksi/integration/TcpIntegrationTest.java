@@ -157,7 +157,7 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         TCPClientSettings settings = loadTCPSettings();
         int tcpTransactionTimeoutSec = 1;
         ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
-        return new TCPClientSettings(settings.getEndpoint(), tcpTransactionTimeoutSec, settings.getTcpTransactionThreadPoolSize(), serviceCredentials);
+        return new TCPClientSettings(settings.getEndpoint(), tcpTransactionTimeoutSec, serviceCredentials);
     }
 
 }

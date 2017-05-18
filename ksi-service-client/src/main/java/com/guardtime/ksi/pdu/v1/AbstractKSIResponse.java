@@ -25,6 +25,7 @@ import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
@@ -72,11 +73,15 @@ abstract class AbstractKSIResponse<T extends PduResponsePayloadV1> extends TLVSt
      *         - instance of {@link TLVElement}. may not be null.
      * @param context
      *         - instance of {@link KSIRequestContext}. may not be null
+     * @param credentials
+     *         - credentials of the gateway. may not be null
      * @throws KSIProtocolException
      *         - will be thrown when TLV message parsing fails
      */
-    public AbstractKSIResponse(TLVElement rootElement, KSIRequestContext context) throws KSIException {
+    public AbstractKSIResponse(TLVElement rootElement, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
         super(rootElement);
+        Util.notNull(credentials, "AbstractKSIResponse.serviceCredentials");
+        Util.notNull(context, "AbstractKSIResponse.ksiRequestContext");
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Incoming response message: {}", rootElement);
         }
@@ -109,7 +114,7 @@ abstract class AbstractKSIResponse<T extends PduResponsePayloadV1> extends TLVSt
         if (mac == null) {
             throw new KSIProtocolException("Invalid response message. Response message mac tag is required");
         }
-        validateMac(context.getLoginKey(), context.getHmacAlgorithm());
+        validateMac(credentials.getLoginKey(), credentials.getHmacAlgorithm());
         if (response == null) {
             throw new KSIProtocolException("Response message does not contain response payload element");
         }

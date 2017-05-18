@@ -25,16 +25,21 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
-import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.pdu.ExtensionRequest;
+import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.ExtensionResponseFuture;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.RequestContextFactory;
 import com.guardtime.ksi.pdu.v2.PduV2Factory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
-import com.guardtime.ksi.service.http.simple.SimpleHttpPostRequestFuture;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.trust.JKSTrustStore;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -50,8 +55,8 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -83,7 +88,6 @@ public class IntegrationTestDataHolder {
     private KSIExtenderClient extenderClient;
     private KSI ksi;
     private final HttpClientSettings settings;
-    private KSIExtenderClient httpClient;
 
     public IntegrationTestDataHolder(String testFilePath, String[] inputData, KSIExtenderClient httpClient) throws Exception {
         notNull(inputData, "Input data");
@@ -155,28 +159,34 @@ public class IntegrationTestDataHolder {
                 setExtendingAllowed(extendingPermitted).
                 setDocumentHash(inputHash);
         VerificationContext context = builder.createVerificationContext();
-        context.setPduFactory(new PduV2Factory());
         context.setKsiSignatureComponentFactory(new InMemoryKsiSignatureComponentFactory());
         return context;
     }
 
-    private SimpleHttpClient mockExtenderClient() throws KSIException, IOException {
-        final TLVElement responseTLV = TLVElement.create(IOUtils.toByteArray(load(responseFile)));
-        SimpleHttpClient mockClient = Mockito.mock(SimpleHttpClient.class);
-        final SimpleHttpPostRequestFuture mockedFuture = Mockito.mock(SimpleHttpPostRequestFuture.class);
+    private KSIExtenderClient mockExtenderClient() throws KSIException, IOException {
+        KSIExtenderClient mockClient = Mockito.mock(KSIExtenderClient.class);
+        final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
+        final TLVElement responseTLV = TLVElement.create(IOUtils.toByteArray(load(responseFile)));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
-        Mockito.when(mockClient.getServiceCredentials()).thenReturn(settings.getCredentials());
-        Mockito.when(mockClient.getPduVersion()).thenReturn(PduVersion.V2);
 
-        Mockito.when(mockClient.extend(Mockito.any(InputStream.class))).then(new Answer<Future>() {
-            public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
-                InputStream input = (InputStream) invocationOnMock.getArguments()[0];
-                TLVElement tlvElement = TLVElement.create(Util.toByteArray(input));
-                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x01).setLongContent(tlvElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong());
+        Mockito.when(mockClient.extend(Mockito.any(Date.class), Mockito.any
+                (Date.class))).then(new Answer<Future>() {
+            public Future<ExtensionResponse> answer(InvocationOnMock invocationOnMock) throws Throwable {
+                KSIServiceCredentials credentials = new KSIServiceCredentials("anon", "anon");
+                Date aggregationTime = (Date) invocationOnMock.getArguments()[0];
+                Date publicationTime = (Date) invocationOnMock.getArguments()[1];
+
+                PduFactory factory = new PduV2Factory();
+                KSIRequestContext context = RequestContextFactory.DEFAULT_FACTORY.createContext();
+                ExtensionRequest request = factory.createExtensionRequest(context, credentials, aggregationTime, publicationTime);
+                ByteArrayInputStream bais = new ByteArrayInputStream(request.toByteArray());
+                TLVElement requestElement = TLVElement.create(Util.toByteArray(bais));
+
+                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x01).setLongContent(requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong());
 
                 responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(responseTLV, responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(), settings.getCredentials().getLoginKey()));
-                return mockedFuture;
+                return new ExtensionResponseFuture(mockedFuture, context, credentials, factory);
             }
         });
         return mockClient;

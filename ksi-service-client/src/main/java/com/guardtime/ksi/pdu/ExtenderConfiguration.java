@@ -45,4 +45,5 @@ public interface ExtenderConfiguration {
      * Return the aggregation time of the oldest calendar record the extender has
      */
     Date getCalendarLastTime();
+
 }

@@ -23,7 +23,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
-import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
@@ -76,10 +75,6 @@ public class KsiTest {
         Mockito.when(mockedIdentifierProvider.getInstanceId()).thenReturn(42L);
         Mockito.when(mockedIdentifierProvider.nextMessageId()).thenReturn(42L);
         Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(42275443333883166L);
-        Mockito.when(mockedSigningClient.getServiceCredentials()).thenReturn(TestUtil.CREDENTIALS_ANONYMOUS);
-        Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(TestUtil.CREDENTIALS_ANONYMOUS);
-        Mockito.when(mockedSigningClient.getPduVersion()).thenReturn(PduVersion.V1);
-        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V1);
 
         Mockito.when(mockedTrustStore.isTrusted(Mockito.any(X509Certificate.class), Mockito.any(Store.class))).thenReturn(true);
         mockedResponse = Mockito.mock(Future.class);

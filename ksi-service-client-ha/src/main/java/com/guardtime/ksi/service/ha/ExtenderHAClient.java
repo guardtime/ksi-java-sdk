@@ -127,7 +127,7 @@ public class ExtenderHAClient implements KSIExtenderClient {
 
     private void confRecalculationFailed() {
         try {
-            throw new KSIClientException("ExtenderHAClient has no active subconfigurations to base it's consolidated configuration on");
+            throw new KSIClientException("ExtenderHAClient has no active subconfigurations to base its consolidated configuration on");
         } catch (KSIClientException e) {
             logger.error("Configuration recalculation failed.", e);
             for (ConfigurationListener<ExtenderConfiguration> listener : consolidatedConfListeners) {

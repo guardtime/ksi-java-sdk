@@ -87,7 +87,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
 
             public void updateFailed(Throwable t) {
                 try {
-                    if ("ExtendingHAClient has no active subconfigurations to base it's consolitated configuration on.".equals(t.getMessage())) {
+                    if ("ExtenderHAClient has no active subconfigurations to base its consolidated configuration on".equals(t.getMessage())) {
                         ac.succeed();
                     } else {
                         Assert.fail("Configuration update failed for unexpected reason", t);
@@ -98,7 +98,6 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
             }
         });
         haClientV1.sendExtenderConfigurationRequest();
-
         ac.await();
     }
 

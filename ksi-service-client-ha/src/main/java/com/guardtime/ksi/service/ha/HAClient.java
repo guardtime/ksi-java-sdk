@@ -118,10 +118,10 @@ public class HAClient implements KSISigningClient, KSIExtenderClient {
     }
 
     /**
-     * @see SigningHAClient#sendAggregationConfigurationRequest()
+     * @see ExtenderHAClient#sendExtenderConfigurationRequest()
      */
     public void sendExtenderConfigurationRequest() {
-        signingHAClient.sendAggregationConfigurationRequest();
+        extenderHAClient.sendExtenderConfigurationRequest();
     }
 
     /**

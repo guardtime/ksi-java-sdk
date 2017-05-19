@@ -87,7 +87,7 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
 
             public void updateFailed(Throwable t) {
                 try {
-                    if ("SigningHAClient has no active subconfigurations to base it's consolitated configuration on.".equals(t.getMessage())) {
+                    if ("SigningHAClient has no active subconfigurations to base its consolidated configuration on".equals(t.getMessage())) {
                         ac.succeed();
                     } else {
                         Assert.fail("Configuration update failed for unexpected reason", t);

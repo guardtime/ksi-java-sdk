@@ -22,26 +22,36 @@ import com.guardtime.ksi.pdu.AggregatorConfiguration;
 
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.ha.HAClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
+
 public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
-    private SimpleHttpClient simpleHttpClientV2;
+    private HAClient haClientV2;
+    private HAClient haClientV1;
 
     @BeforeMethod
     public void setUp() throws Exception {
         super.setUp();
-        simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
+        SimpleHttpClient simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
+        haClientV2 = new HAClient(Collections.singletonList((KSISigningClient) simpleHttpClientV2),
+                Collections.singletonList((KSIExtenderClient) simpleHttpClientV2));
+        haClientV1 = new HAClient(Collections.singletonList((KSISigningClient) simpleHttpClient),
+                Collections.singletonList((KSIExtenderClient) simpleHttpClient));
     }
 
     @Test
     public void testAggregationConfigurationRequestV2() throws Exception {
         final AsyncContext ac = new AsyncContext();
 
-        simpleHttpClientV2.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
+        haClientV2.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
             public void updated(AggregatorConfiguration aggregatorConfiguration) {
                 try {
                     Assert.assertNotNull(aggregatorConfiguration);
@@ -59,12 +69,41 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
                 }
             }
         });
-        simpleHttpClientV2.sendAggregationConfigurationRequest();
+        haClientV2.sendAggregationConfigurationRequest();
         ac.await();
     }
 
     @Test
-    public void testAggregationConfigurationRequestV1() throws Exception {
+    public void testAggregationConfigurationRequestWithHaClientV1() throws Exception {
+        final AsyncContext ac = new AsyncContext();
+        haClientV1.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
+            public void updated(AggregatorConfiguration aggregatorConfiguration) {
+                try {
+                    Assert.fail("Configuration request was not supposed to succeed because of PDU V1, but it did.");
+                } catch (AssertionError e) {
+                    ac.fail(e);
+                }
+            }
+
+            public void updateFailed(Throwable t) {
+                try {
+                    if ("SigningHAClient has no active subconfigurations to base it's consolitated configuration on.".equals(t.getMessage())) {
+                        ac.succeed();
+                    } else {
+                        Assert.fail("Configuration update failed for unexpected reason", t);
+                    }
+                } catch (AssertionError e) {
+                    ac.fail(e);
+                }
+            }
+        });
+        haClientV1.sendAggregationConfigurationRequest();
+
+        ac.await();
+    }
+
+    @Test
+    public void testAggregationConfigurationRequestWithSimpleHttpClientV1() throws Exception {
         final AsyncContext ac = new AsyncContext();
         simpleHttpClient.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
             public void updated(AggregatorConfiguration aggregatorConfiguration) {

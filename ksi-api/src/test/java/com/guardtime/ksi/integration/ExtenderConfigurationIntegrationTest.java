@@ -22,29 +22,39 @@ import com.guardtime.ksi.pdu.ExtenderConfiguration;
 
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.ha.HAClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
+
 public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
-    private SimpleHttpClient simpleHttpClientV2;
+    private HAClient haClientV2;
+    private HAClient haClientV1;
 
     @BeforeMethod
     public void setUp() throws Exception {
         super.setUp();
-        simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
+        SimpleHttpClient simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
+        haClientV2 = new HAClient(Collections.singletonList((KSISigningClient) simpleHttpClientV2),
+                Collections.singletonList((KSIExtenderClient) simpleHttpClientV2));
+        haClientV1 = new HAClient(Collections.singletonList((KSISigningClient) simpleHttpClient),
+                Collections.singletonList((KSIExtenderClient) simpleHttpClient));
     }
 
     @Test
-    public void testAggregationConfigurationRequestV2() throws Exception {
+    public void testExtenderConfigurationRequestV2() throws Exception {
         final AsyncContext ac = new AsyncContext();
 
-        simpleHttpClientV2.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
-            public void updated(ExtenderConfiguration aggregatorConfiguration) {
+        haClientV2.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
+            public void updated(ExtenderConfiguration extenderConfiguration) {
                 try {
-                    Assert.assertNotNull(aggregatorConfiguration);
+                    Assert.assertNotNull(extenderConfiguration);
                     ac.succeed();
                 } catch (AssertionError e) {
                     ac.fail(e);
@@ -59,15 +69,44 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
                 }
             }
         });
-        simpleHttpClientV2.sendExtenderConfigurationRequest();
+        haClientV2.sendExtenderConfigurationRequest();
         ac.await();
     }
 
     @Test
-    public void testAggregationConfigurationRequestV1() throws Exception {
+    public void testExtenderConfigurationRequestWithHaClientV1() throws Exception {
+        final AsyncContext ac = new AsyncContext();
+        haClientV1.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
+            public void updated(ExtenderConfiguration extenderConfiguration) {
+                try {
+                    Assert.fail("Configuration request was not supposed to succeed because of PDU V1, but it did.");
+                } catch (AssertionError e) {
+                    ac.fail(e);
+                }
+            }
+
+            public void updateFailed(Throwable t) {
+                try {
+                    if ("ExtendingHAClient has no active subconfigurations to base it's consolitated configuration on.".equals(t.getMessage())) {
+                        ac.succeed();
+                    } else {
+                        Assert.fail("Configuration update failed for unexpected reason", t);
+                    }
+                } catch (AssertionError e) {
+                    ac.fail(e);
+                }
+            }
+        });
+        haClientV1.sendExtenderConfigurationRequest();
+
+        ac.await();
+    }
+
+    @Test
+    public void testAggregationConfigurationRequestWithSimpleHttpClientV1() throws Exception {
         final AsyncContext ac = new AsyncContext();
         simpleHttpClient.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
-            public void updated(ExtenderConfiguration aggregatorConfiguration) {
+            public void updated(ExtenderConfiguration extenderConfiguration) {
                 try {
                     Assert.fail("Configuration request was not supposed to succeed because of PDU V1, but it did.");
                 } catch (AssertionError e) {

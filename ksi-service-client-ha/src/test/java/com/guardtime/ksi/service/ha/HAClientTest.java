@@ -38,11 +38,14 @@ import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import sun.awt.image.ImageWatched;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -146,6 +149,28 @@ public class HAClientTest {
         ));
         ExtensionResponse haClientResponse = haClient.extend(mock(Date.class), mock(Date.class)).getResult();
         Assert.assertEquals(haClientResponse, subclientResponse);
+    }
+
+    @Test
+    public void testGetSubclients() throws Exception {
+        LinkedList<KSISigningClient> signingClients = new LinkedList<KSISigningClient>();
+        signingClients.add(initSlowSigningClient());
+        signingClients.add(initFailingSigningClient("Failrue!"));
+        signingClients.add(initSucceedingSigningClient(mock(AggregationResponse.class)));
+
+        LinkedList<KSIExtenderClient> extenderClients = new LinkedList<KSIExtenderClient>();
+        extenderClients.add(initSlowExtenderClient());
+        extenderClients.add(initFailingExtenderClient("Failrue!"));
+        extenderClients.add(initSucceedingExtenderClient(mock(ExtensionResponse.class)));
+
+        HAClient haClient = new HAClient(signingClients, extenderClients);
+        List<KSIExtenderClient> requestedExtenderClients = haClient.getSubExtenderClients();
+        List<KSISigningClient> requestedSigningClients = haClient.getSubSigningClients();
+
+        for (int i = 0; i < 2; i++) {
+            Assert.assertEquals(signingClients.get(i), requestedSigningClients.get(i));
+            Assert.assertEquals(extenderClients.get(i), requestedExtenderClients.get(i));
+        }
     }
 
     @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "All subclients of HAClient failed")

@@ -86,6 +86,7 @@ public class Resources {
     public static final String SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature-with-extended-calendar-PUB-03.ksig";
     public static final String SIGNATURE_NO_CALENDAR_AUTH_RECORD = VALID_SIGNATURES + "signature-one-aggregation-chain-and-chc.ksig";
     public static final String SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS =  VALID_SIGNATURES + "signature-only-aggregation-chains.ksig";
+    public static final String SIGNATURE_INPUT_HASH_LEVEL_5 =  VALID_SIGNATURES + "signature-provided-input-hash-level-is-5.ksig";
     //Aggregation Hash Chains
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_OK = SIGNATURES + "single-long-aggregation-hash-chain-ok.tlv";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INDEX = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-missing-tag.tlv";
@@ -136,9 +137,6 @@ public class Resources {
     public static final String SIGNATURE_PUBLICATION_RECORD_INVALID_PUBLICATION_TIME =  INVALID_SIGNATURES_PUBLICATION_RECORD + "invalid-signature-pub-rec-pub-time-future-value.tlv";
     public static final String SIGNATURE_WITH_CAL_AUTH_AND_PUB_REC = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-cal-aut-present-pub-rec-present.tlv";
     public static final String SIGNATURE_PUBLICATION_RECORD_BUT_NO_CALENDAR = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-missing-pub-rec-present.tlv";
-    // Root signature
-    public static final String SIGNATURE_LEVEL_10_ROOT =  VALID_SIGNATURES + "ok-level10-root.ksig";
-    public static final String SIGNATURE_RFC_AGGR_CHAIN_LEVEL_CHANGED =  VALID_SIGNATURES + "rfc_signature_changed_aggr_chain_level.ksi";
 
     /**
      * Signature components

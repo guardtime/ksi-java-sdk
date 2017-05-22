@@ -157,7 +157,8 @@ public class IntegrationTestDataHolder {
                 setPublicationsFile(publicationsFile == null ? ksi.getPublicationsFile() : getPublicationsFile()).
                 setUserPublication(userPublication).
                 setExtendingAllowed(extendingPermitted).
-                setDocumentHash(inputHash);
+                setDocumentHash(inputHash).
+                setInputHashLevel(inputHashLevel);
         VerificationContext context = builder.createVerificationContext();
         context.setKsiSignatureComponentFactory(new InMemoryKsiSignatureComponentFactory());
         return context;

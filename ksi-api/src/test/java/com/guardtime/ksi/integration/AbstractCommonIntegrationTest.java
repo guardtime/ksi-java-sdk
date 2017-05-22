@@ -117,20 +117,24 @@ public abstract class AbstractCommonIntegrationTest {
         HttpClientSettings httpSettings = loadHTTPSettings();
         SimpleHttpClient simpleHttpClient = new SimpleHttpClient(httpSettings);
         ApacheHttpClient apacheHttpClient = new ApacheHttpClient(httpSettings);
+
         TCPClientSettings tcpSettings = loadTCPSettings();
-        PendingKSIClient pendingKSIClient = new PendingKSIClient();
         KSISigningClient tcpClient = new TCPClient(tcpSettings);
+
+        PendingKSIClient pendingKSIClient = new PendingKSIClient();
         ApacheHttpClient failingClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
+
         List<KSISigningClient> signingClientsForHa = new ArrayList<KSISigningClient>();
         List<KSIExtenderClient> extenderClientsForHa = new ArrayList<KSIExtenderClient>();
+
         signingClientsForHa.add(failingClient);
         signingClientsForHa.add(simpleHttpClient);
-        signingClientsForHa.add(apacheHttpClient);
         signingClientsForHa.add(pendingKSIClient);
+
         extenderClientsForHa.add(simpleHttpClient);
-        extenderClientsForHa.add(apacheHttpClient);
         extenderClientsForHa.add(failingClient);
         extenderClientsForHa.add(pendingKSIClient);
+
         HAClient haClient = new HAClient(signingClientsForHa, extenderClientsForHa);
 
         return new Object[][] {

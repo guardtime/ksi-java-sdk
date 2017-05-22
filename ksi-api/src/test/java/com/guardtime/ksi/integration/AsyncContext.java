@@ -39,6 +39,7 @@ class AsyncContext {
 
     void fail(AssertionError e) {
         potentialFailure.set(e);
+        countDownLatch.countDown();
     }
 
     void await() throws InterruptedException {

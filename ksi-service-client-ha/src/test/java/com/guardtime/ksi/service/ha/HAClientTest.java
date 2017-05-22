@@ -38,8 +38,6 @@ import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import sun.awt.image.ImageWatched;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

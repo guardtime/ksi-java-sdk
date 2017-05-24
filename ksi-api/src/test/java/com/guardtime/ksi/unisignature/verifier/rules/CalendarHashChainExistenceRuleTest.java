@@ -38,7 +38,7 @@ public class CalendarHashChainExistenceRuleTest extends AbstractRuleTest {
         RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
     }
 
     @Test

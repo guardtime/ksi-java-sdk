@@ -57,7 +57,7 @@ public class DocumentHashVerificationRule extends BaseRule {
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.GEN_1;
+        return VerificationErrorCode.GEN_01;
     }
 
 }

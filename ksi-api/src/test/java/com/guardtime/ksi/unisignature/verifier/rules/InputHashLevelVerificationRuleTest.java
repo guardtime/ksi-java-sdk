@@ -65,7 +65,7 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
         RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_INPUT_HASH_LEVEL_5), 11L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_3);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_03);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
         RuleResult result = rule.verify(build(signature, 1L));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_3);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_03);
     }
 
 }

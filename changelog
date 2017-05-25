@@ -10,10 +10,11 @@ Version 5.0
 * IMPROVEMENT: Renewed and cleaned test resources and improved test coverage.
 * BUGFIX: Removed registration time from KSISignature and CalendarHashChain.
 * BUGFIX: Removed addAggregationHashChain from KSISignature.
-* IMPROVEMENT: Chain index continuation check
-* IMPROVEMENT: HMAC algorithm of incoming messages
-* IMPROVEMENT: Now possible to verify input hash level, default value is 0, GEN-3 is returned in case of error.
+* IMPROVEMENT: Chain index continuation check.
+* IMPROVEMENT: HMAC algorithm of incoming messages.
+* IMPROVEMENT: Now possible to verify input hash level, default value is 0, GEN-03 is returned in case of error.
 * IMPROVEMENT: TCPClients default threadpool size is now configurable through TCPClient initialization with custom ExecutorService.
+* IMPROVEMENT: Verification error codes are unified.
 
 Version 4.9
 

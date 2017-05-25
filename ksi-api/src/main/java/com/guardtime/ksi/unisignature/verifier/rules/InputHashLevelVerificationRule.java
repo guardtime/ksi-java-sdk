@@ -56,6 +56,6 @@ public class InputHashLevelVerificationRule extends BaseRule {
     }
 
     VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.GEN_3;
+        return VerificationErrorCode.GEN_03;
     }
 }

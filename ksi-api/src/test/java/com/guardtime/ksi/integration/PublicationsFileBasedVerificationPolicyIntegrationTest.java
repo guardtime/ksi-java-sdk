@@ -61,7 +61,7 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, false);
         Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)

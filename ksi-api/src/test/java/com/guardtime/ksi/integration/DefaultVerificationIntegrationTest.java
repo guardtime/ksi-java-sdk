@@ -59,7 +59,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
             ksiTest.sign(new byte[32]);
         } catch (InvalidSignatureContentException e) {
             Assert.assertNotNull(e.getSignature(), "Signature is not provided with exception.");
-            Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.GEN_2);
+            Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.GEN_02);
             throw e;
         }
     }

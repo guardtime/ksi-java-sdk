@@ -41,6 +41,6 @@ public class UserProvidedPublicationCreationTimeVerificationRule extends BaseRul
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.GEN_2;
+        return VerificationErrorCode.GEN_02;
     }
 }

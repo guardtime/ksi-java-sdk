@@ -23,6 +23,7 @@ import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
+import com.guardtime.ksi.util.Util;
 
 /**
  * Common class for all KSI HTTP clients
@@ -35,9 +36,7 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
     protected AbstractHttpClientSettings settings;
 
     public AbstractHttpClient(AbstractHttpClientSettings settings) {
-        if (settings == null) {
-            throw new IllegalArgumentException("Can not create HTTP client without settings");
-        }
+        Util.notNull(settings, "HttpClient.settings");
         this.settings = settings;
     }
 

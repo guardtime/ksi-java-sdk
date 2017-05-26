@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.AsyncContext;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;

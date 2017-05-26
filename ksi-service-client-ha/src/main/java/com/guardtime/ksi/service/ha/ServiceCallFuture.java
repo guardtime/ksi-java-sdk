@@ -36,7 +36,7 @@ class ServiceCallFuture<T> implements Future<T> {
             try {
                 this.result = serviceCallFuture.get();
             } catch (Exception e) {
-                throw new KSIClientException("All subclients of HAClient failed", e);
+                throw new KSIClientException("All subclients of HAService failed", e);
             }
         }
         return result;

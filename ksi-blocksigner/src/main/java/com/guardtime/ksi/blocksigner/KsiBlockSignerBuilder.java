@@ -20,7 +20,9 @@
 package com.guardtime.ksi.blocksigner;
 
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.KSISigningService;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.client.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 
@@ -32,14 +34,19 @@ import static com.guardtime.ksi.util.Util.notNull;
  */
 public class KsiBlockSignerBuilder {
 
-    private KSISigningClient signingClient;
+    private KSISigningService signingService;
     private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
     private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private int maxTreeHeight = KsiBlockSigner.MAXIMUM_LEVEL;
 
     public KsiBlockSignerBuilder setKsiSigningClient(KSISigningClient signingClient) {
         notNull(signingClient, "Signing client");
-        this.signingClient = signingClient;
+        return setKsiSigningService(new KSISigningClientServiceAdapter(signingClient));
+    }
+
+    public KsiBlockSignerBuilder setKsiSigningService(KSISigningService signingService) {
+        notNull(signingService, "Signing service");
+        this.signingService = signingService;
         return this;
     }
 
@@ -62,6 +69,6 @@ public class KsiBlockSignerBuilder {
     }
 
     public KsiBlockSigner build() {
-        return new KsiBlockSigner(signingClient, signatureFactory, algorithm, maxTreeHeight);
+        return new KsiBlockSigner(signingService, signatureFactory, algorithm, maxTreeHeight);
     }
 }

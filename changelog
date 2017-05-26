@@ -1,11 +1,9 @@
 Version 5.0
 
-* IMPROVEMENT: Removed KSISigningClient.sign(InputStream) and provided an alternative KSISigningClient.sign(DataHash, Long).
-* IMPROVEMENT: Removed KSIExtenderClient.extend(InputStream) and provided an alternative KSIExtenderClient.extend(Date, Date).
-* IMPROVEMENT: Removed VerificationContext.setPduVersion(PduVersion) as PDU version is decided in the client now.
-* IMPROVEMENT: KSISigningClient and KSIExtenderClient do not give out external service settings like credentials and PDU version anymore.
-* IMPROVEMENT: Configuration requests from KSI instance have been removed. Callback based asynchronous configuration asking implemented to all the KSISigningClients and KSIExtenderClients.
-* FEATURE: HAClient (High-availability client) is a client that combines multiple KSISigningClients and KSIExtenderClients to achieve redundancy.
+* IMPROVEMENT: Added KSISigningService and KSIExtendingService which act as a more high level alternatives to KSISigningClient and KSIExtenderClient. Both clients are convertable to services via KSISigningClientServiceAdapter and KSIExtendingClientServiceAdapter.
+* IMPROVEMENT: Deprecated VerificationContext.setPduVersion(PduVersion) as PDU version is decided in the client now.
+* IMPROVEMENT: Configuration requests in the KSI instance have been deprecated. Callback based asynchronous configuration asking implemented to all the KSISigningServices and KSIExtenderServices.
+* FEATURE: HAService (High-availability service) is a service that combines multiple KSISigningServices and KSIExtenderServices to achieve redundancy.
 * BUGFIX: RFC3161 record index rule code error code and messages corrected.
 * IMPROVEMENT: Renewed and cleaned test resources and improved test coverage.
 * BUGFIX: Removed registration time from KSISignature and CalendarHashChain.

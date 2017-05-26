@@ -29,9 +29,9 @@ import static com.guardtime.ksi.service.ha.HAConfUtil.isBefore;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isBigger;
 
 /**
- * {@link ExtenderConfiguration} that can be used to consolidate multiple {@link ExtenderHAClient} subclients configurations.
+ * {@link ExtenderConfiguration} that can be used to consolidate multiple {@link ExtendingHAService} subclients configurations.
  */
-class ExtenderHAClientConfiguration implements ExtenderConfiguration {
+class ExtenderHAServiceConfiguration implements ExtenderConfiguration {
 
     private static final Date JAN_01_2006_00_00_00 = new Date(1136073600000L);
 
@@ -41,13 +41,13 @@ class ExtenderHAClientConfiguration implements ExtenderConfiguration {
     private final Date calLastTime;
 
     /**
-     * Creates a new ExtenderHAClientConfiguration by copying all the properties from the given configuration.
+     * Creates a new ExtenderHAServiceConfiguration by copying all the properties from the given configuration.
      * If any of the given properties is not sane then it's left unset.
      *
      * @param configuration May not be null.
      */
-    ExtenderHAClientConfiguration(ExtenderConfiguration configuration) {
-        Util.notNull(configuration, "ExtenderHAClientConfiguration configuration to copy");
+    ExtenderHAServiceConfiguration(ExtenderConfiguration configuration) {
+        Util.notNull(configuration, "ExtenderHAServiceConfiguration configuration to copy");
         this.maxRequests = normalizeMaxRequests(configuration.getMaximumRequests());
         this.calFirstTime = normalizeCalFirstTime(configuration.getCalendarFirstTime(), configuration.getCalendarLastTime());
         this.calLastTime = normalizeCalLastTime(configuration.getCalendarLastTime(), configuration.getCalendarFirstTime());
@@ -57,9 +57,9 @@ class ExtenderHAClientConfiguration implements ExtenderConfiguration {
     /**
      * Consolidates two configurations to make the maximum out of them. Neither of the configurations may be null.
      */
-    ExtenderHAClientConfiguration(ExtenderConfiguration c1, ExtenderConfiguration c2) {
-        Util.notNull(c1, "ExtenderHAClientConfiguration first configuration to consolidate");
-        Util.notNull(c2, "ExtenderHAClientConfiguration second configuration to consolidate");
+    ExtenderHAServiceConfiguration(ExtenderConfiguration c1, ExtenderConfiguration c2) {
+        Util.notNull(c1, "ExtenderHAServiceConfiguration first configuration to consolidate");
+        Util.notNull(c2, "ExtenderHAServiceConfiguration second configuration to consolidate");
 
         Long c1MaxReqs = normalizeMaxRequests(c1.getMaximumRequests());
         Long c2MaxReqs = normalizeMaxRequests(c2.getMaximumRequests());
@@ -135,7 +135,7 @@ class ExtenderHAClientConfiguration implements ExtenderConfiguration {
 
     @Override
     public String toString() {
-        return "ExtenderHAClientConfiguration{" +
+        return "ExtenderHAServiceConfiguration{" +
                 "maxRequests=" + maxRequests +
                 ", parents=" + parents +
                 ", calFirstTime=" + calFirstTime +

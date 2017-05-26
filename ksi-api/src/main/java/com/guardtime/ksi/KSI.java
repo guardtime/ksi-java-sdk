@@ -22,13 +22,17 @@ package com.guardtime.ksi;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.KSIExtendingService;
+import com.guardtime.ksi.pdu.KSISigningService;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.client.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
-import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
@@ -283,14 +287,38 @@ public interface KSI extends Closeable {
     PublicationsFile getPublicationsFile() throws KSIException;
 
     /**
-     * This method is used to get the signing client that the SDK was initialized with. One could use the signing client to get
+     * This method is used to get the signing service that the SDK was initialized with. One could use the signing service to get
      * access to its configuration for example.
      */
-    KSISigningClient getSigningClient();
+    KSISigningService getSigningService();
 
     /**
-     * This method is used to get the extender client that the SDK was initialized with. One could use the extender client to get
+     * This method is used to get the extender service that the SDK was initialized with. One could use the extender service to get
      * access to its configuration for example.
      */
-    KSIExtenderClient getExtenderClient();
+    KSIExtendingService getExtendingService();
+
+    /**
+     * GetAggregatorConfiguration method is used to ask aggregation configuration from KSI gateway/aggregator.Only supported
+     * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
+     *
+     * @deprecated Deprecated since 4.10. Use {@link KSISigningService#sendAggregationConfigurationRequest()}
+     *      in pair with {@link KSISigningService#registerAggregatorConfigurationListener(ConfigurationListener)} instead.
+     *      One can acquire instance of {@link KSISigningService} which a {@link KSI} instance uses by calling
+     *      {@link KSI#getSigningService()}.
+     */
+    @Deprecated
+    AggregatorConfiguration getAggregatorConfiguration() throws KSIException;
+
+    /**
+     * GetExtenderConfiguration method is used to ask extender configuration from KSI gateway/aggregator. Only supported
+     * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
+     *
+     * @deprecated Deprecated since 4.10. Use {@link KSIExtendingService#sendExtenderConfigurationRequest()}
+     *      in pair with {@link KSIExtendingService#registerExtenderConfigurationListener(ConfigurationListener)} instead.
+     *      One can acquire instance of {@link KSIExtendingService} which a {@link KSI} instance uses by calling
+     *      {@link KSI#getExtendingService()}.
+     */
+    @Deprecated
+    ExtenderConfiguration getExtenderConfiguration() throws KSIException;
 }

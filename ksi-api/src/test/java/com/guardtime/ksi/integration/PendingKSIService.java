@@ -23,10 +23,10 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.KSIExtendingService;
+import com.guardtime.ksi.pdu.KSISigningService;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIClientException;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ConfigurationListener;
 
 import java.io.IOException;
@@ -35,9 +35,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Dummy KSI Client all of which's calls idle for ten seconds and then fail.
+ * Dummy KSI Service all of which's calls idle for ten seconds and then fail.
  */
-public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
+public class PendingKSIService implements KSISigningService, KSIExtendingService {
     
     public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime)
             throws KSIException {
@@ -50,7 +50,7 @@ public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
         throw new KSIClientException("Failure!");
     }
 
-    public List<KSISigningClient> getSubSigningClients() {
+    public List<KSISigningService> getSubSigningServices() {
         return Collections.emptyList();
     }
 
@@ -68,7 +68,7 @@ public class PendingKSIClient implements KSISigningClient, KSIExtenderClient {
     public void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener) {
     }
 
-    public List<KSIExtenderClient> getSubExtenderClients() {
+    public List<KSIExtendingService> getSubExtendingServices() {
         return Collections.emptyList();
     }
 

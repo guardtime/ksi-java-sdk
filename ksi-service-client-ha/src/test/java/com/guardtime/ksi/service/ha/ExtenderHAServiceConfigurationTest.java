@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.*;
 
-public class ExtenderHAClientConfigurationTest {
+public class ExtenderHAServiceConfigurationTest {
 
     private ExtenderConfiguration c1;
     private ExtenderConfiguration c2;
@@ -54,7 +54,7 @@ public class ExtenderHAClientConfigurationTest {
 
     @Test
     public void testConstructWithSaneValues() {
-        ExtenderHAClientConfiguration ec = new ExtenderHAClientConfiguration(c1);
+        ExtenderHAServiceConfiguration ec = new ExtenderHAServiceConfiguration(c1);
         assertEquals(ec.getCalendarFirstTime(), c1.getCalendarFirstTime());
         assertEquals(ec.getCalendarLastTime(), c1.getCalendarLastTime());
         assertEquals(ec.getParents(), c1.getParents());
@@ -66,7 +66,7 @@ public class ExtenderHAClientConfigurationTest {
         when(c1.getCalendarFirstTime()).thenReturn(new Date(100L));
         when(c1.getCalendarLastTime()).thenReturn(new Date(50L));
         when(c1.getMaximumRequests()).thenReturn(17000L);
-        ExtenderHAClientConfiguration ec = new ExtenderHAClientConfiguration(c1);
+        ExtenderHAServiceConfiguration ec = new ExtenderHAServiceConfiguration(c1);
         assertNull(ec.getCalendarFirstTime());
         assertNull(ec.getCalendarLastTime());
         assertNull(ec.getMaximumRequests());
@@ -74,22 +74,22 @@ public class ExtenderHAClientConfigurationTest {
 
     @Test
     public void testConsolidatedMaximumRequests() throws Exception {
-        assertEquals(c1.getMaximumRequests(), new ExtenderHAClientConfiguration(c1, c2).getMaximumRequests());
+        assertEquals(c1.getMaximumRequests(), new ExtenderHAServiceConfiguration(c1, c2).getMaximumRequests());
     }
 
     @Test
     public void testConsolidatedParents() throws Exception {
-        assertEquals(c2.getParents(), new ExtenderHAClientConfiguration(c1, c2).getParents());
+        assertEquals(c2.getParents(), new ExtenderHAServiceConfiguration(c1, c2).getParents());
     }
 
     @Test
     public void testConsolidatedCalendarFirstTime() throws Exception {
-        assertEquals(c1.getCalendarFirstTime(), new ExtenderHAClientConfiguration(c1, c2).getCalendarFirstTime());
+        assertEquals(c1.getCalendarFirstTime(), new ExtenderHAServiceConfiguration(c1, c2).getCalendarFirstTime());
     }
 
     @Test
     public void testConsolidatedCalendarLastTime() throws Exception {
-        assertEquals(c2.getCalendarLastTime(), new ExtenderHAClientConfiguration(c1, c2).getCalendarLastTime());
+        assertEquals(c2.getCalendarLastTime(), new ExtenderHAServiceConfiguration(c1, c2).getCalendarLastTime());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class ExtenderHAClientConfigurationTest {
         when(c1.getCalendarFirstTime()).thenReturn(new Date(100L));
         when(c2.getCalendarLastTime()).thenReturn(new Date(0L));
         when(c1.getMaximumRequests()).thenReturn(17000L);
-        ExtenderHAClientConfiguration ec = new ExtenderHAClientConfiguration(c1, c2);
+        ExtenderHAServiceConfiguration ec = new ExtenderHAServiceConfiguration(c1, c2);
         assertNull(ec.getCalendarFirstTime());
         assertEquals(ec.getCalendarLastTime(), c1.getCalendarLastTime());
         assertEquals(ec.getMaximumRequests(), c2.getMaximumRequests());

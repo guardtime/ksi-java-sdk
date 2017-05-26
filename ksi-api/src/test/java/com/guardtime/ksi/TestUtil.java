@@ -20,8 +20,7 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.DataHasher;
-import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.KSIExtendingService;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
@@ -37,7 +36,6 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.util.Util;
 import org.bouncycastle.util.Store;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
 
@@ -75,10 +73,10 @@ public final class TestUtil extends CommonTestUtil {
         return publicationsFileFactory.create(new TLVInputStream(load(file)));
     }
 
-    public static DataHash getFileHash(File file, String name) throws Exception {
-        DataHasher dataHasher = new DataHasher(HashAlgorithm.getByName(name));
-        dataHasher.addData(file);
-        return dataHasher.getHash();
+    public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtendingService extendingService, DataHash documentHash) throws Exception {
+        VerificationContextBuilder builder = new VerificationContextBuilder();
+        builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtendingService(extendingService);
+        return builder.setDocumentHash(documentHash).createVerificationContext();
     }
 
     public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtenderClient extenderClient, DataHash documentHash) throws Exception {
@@ -98,12 +96,5 @@ public final class TestUtil extends CommonTestUtil {
         builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtenderClient(extenderClient);
         return builder.setUserPublication(publicationData).setExtendingAllowed(allowExtending).createVerificationContext();
     }
-
-    public static VerificationContext buildContext(KSISignature sig, KSI ksi, KSIExtenderClient extenderClient, DataHash fileHash, PublicationsFile pub) throws KSIException {
-        VerificationContextBuilder builder = new VerificationContextBuilder();
-        builder.setSignature(sig).setPublicationsFile(pub).setExtenderClient(extenderClient);
-        return builder.setDocumentHash(fileHash).createVerificationContext();
-    }
-
 
 }

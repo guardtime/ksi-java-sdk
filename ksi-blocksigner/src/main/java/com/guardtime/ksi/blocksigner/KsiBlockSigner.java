@@ -27,6 +27,7 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.*;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.client.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
@@ -83,12 +84,36 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     private final Map<LeafKey, AggregationChainLink> chains = new HashMap<LeafKey, AggregationChainLink>();
     private final HashTreeBuilder treeBuilder;
 
-    private final KSISigningClient signingClient;
+    private final KSISigningService signingService;
 
     private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
     private DataHasher linkDataHasher;
     private int maxTreeHeight;
+
+    /**
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService}. Default hash algorithm is
+     * used to create signature.
+     *
+     * @param signingService an instance of {@link KSISigningService}
+     */
+    public KsiBlockSigner(KSISigningService signingService) {
+        this(signingService, null);
+    }
+
+    /**
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService} and {@link HashAlgorithm}.
+     */
+    public KsiBlockSigner(KSISigningService signingService, HashAlgorithm algorithm) {
+        notNull(signingService, "KSI signing service");
+        if (algorithm != null) {
+            this.algorithm = algorithm;
+        }
+        this.signingService = signingService;
+        this.treeBuilder = new HashTreeBuilder(this.algorithm);
+        this.linkDataHasher = new DataHasher(this.algorithm);
+        this.maxTreeHeight = MAXIMUM_LEVEL;
+    }
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}. Default hash algorithm is
@@ -104,14 +129,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient} and {@link HashAlgorithm}.
      */
     public KsiBlockSigner(KSISigningClient signingClient, HashAlgorithm algorithm) {
-        notNull(signingClient, "KSI signing client");
-        if (algorithm != null) {
-            this.algorithm = algorithm;
-        }
-        this.signingClient = signingClient;
-        this.treeBuilder = new HashTreeBuilder(this.algorithm);
-        this.linkDataHasher = new DataHasher(this.algorithm);
-        this.maxTreeHeight = MAXIMUM_LEVEL;
+       this(new KSISigningClientServiceAdapter(signingClient), algorithm);
     }
 
     /**
@@ -119,13 +137,21 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * and {@link HashAlgorithm}.
      */
     public KsiBlockSigner(KSISigningClient signingClient, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
-        this(signingClient, algorithm);
+        this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm);
+    }
+
+    /**
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService}, {@link KSISignatureFactory}
+     * and {@link HashAlgorithm}.
+     */
+    public KsiBlockSigner(KSISigningService signingService, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
+        this(signingService, algorithm);
         notNull(signatureFactory, "KSI signature factory");
         this.signatureFactory = signatureFactory;
     }
 
-    KsiBlockSigner(KSISigningClient signingClient, KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight) {
-        this(signingClient, signatureFactory, algorithm);
+    KsiBlockSigner(KSISigningService signingService, KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight) {
+        this(signingService, signatureFactory, algorithm);
         this.maxTreeHeight = maxTreeHeight;
     }
 
@@ -222,7 +248,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private KSISignature signRootNode(TreeNode rootNode) throws KSIException {
         DataHash dataHash = new DataHash(rootNode.getValue());
-        Future<AggregationResponse> future = signingClient.sign(dataHash, rootNode.getLevel());
+        Future<AggregationResponse> future = signingService.sign(dataHash, rootNode.getLevel());
         SigningFuture SigningFuture = new SigningFuture(future, new InMemoryKsiSignatureFactory(), dataHash);
         return SigningFuture.getResult();
     }

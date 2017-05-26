@@ -25,13 +25,13 @@ import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.KSIExtendingService;
+import com.guardtime.ksi.pdu.KSISigningService;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.ConfigurationHandler;
 import com.guardtime.ksi.service.client.ConfigurationListener;
 import com.guardtime.ksi.service.client.ConfigurationRequest;
 import com.guardtime.ksi.service.client.KSIClientException;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSISigningClient;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -55,151 +54,143 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
-public class HAClientTest {
+public class HAServiceTest {
 
     private AggregatorConfiguration aggregatorConsolidatedConf;
     private ExtenderConfiguration extenderConsolidatedConf;
 
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize without any subclients")
-    public void testInitSigningHaClientWithNull() {
-        new SigningHAClient(null);
+
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize SigningHAService without any subservices")
+    public void testInitSigningHaServiceWithEmptyList() {
+        new SigningHAService.Builder().build();
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize without any subclients")
-    public void testInitExtenderHaClientWithNull() {
-        new ExtenderHAClient(null);
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize ExtendingHAService without any subservices")
+    public void testInitExtendingHAServiceWithEmptyList() {
+        new ExtendingHAService.Builder().build();
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize without any subclients")
-    public void testInitSigningHaClientWithEmptyList() {
-        new SigningHAClient(Collections.<KSISigningClient>emptyList());
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Can not initialize without any subclients")
-    public void testInitExtenderHaClientWithEmptyList() {
-        new ExtenderHAClient(Collections.<KSIExtenderClient>emptyList());
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "SigningHAClient can not be initialized with more than 3 subclients")
-    public void testInitSigningHaClientWithTooMuchSubclients() throws Exception {
-        new SigningHAClient(Arrays.asList(
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "SigningHAService can not be initialized with more than 3 subservices")
+    public void testInitSigningHaServiceWithTooMuchSubclients() throws Exception {
+        new SigningHAService.Builder().setServices(Arrays.asList(
                 initSlowSigningClient(),
                 initSlowSigningClient(),
                 initSlowSigningClient(),
-                initSlowSigningClient()));
+                initSlowSigningClient())).build();
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "ExtenderHAClient can not be initialized with more than 3 subclients")
-    public void testInitExtenderHaClientWithTooMuchSubclients() throws Exception {
-        new ExtenderHAClient(Arrays.asList(
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "ExtendingHAService can not be initialized with more than 3 subservices")
+    public void testInitExtendingHAServiceWithTooMuchSubclients() throws Exception {
+        new ExtendingHAService.Builder().setServices(Arrays.asList(
                 initSlowExtenderClient(),
                 initSlowExtenderClient(),
                 initSlowExtenderClient(),
-                initSlowExtenderClient()));
+                initSlowExtenderClient())).build();
     }
 
     @Test
     public void testOneAggregatorSucceedsOtherFail() throws Exception {
         AggregationResponse subclientResponse = mock(AggregationResponse.class);
-        KSISigningClient succeedingClient = initSucceedingSigningClient(subclientResponse);
-        SigningHAClient haClient = new SigningHAClient(Arrays.asList(
+        KSISigningService succeedingClient = initSucceedingSigningClient(subclientResponse);
+        SigningHAService haService = new SigningHAService.Builder().setServices(Arrays.asList(
                 initFailingSigningClient("Test failed. Client 1"),
                 succeedingClient,
-                initFailingSigningClient("Test failed. Client 3")
-        ));
-        AggregationResponse haClientResponse = haClient.sign(mock(DataHash.class), 0L).getResult();
-        Assert.assertEquals(haClientResponse, subclientResponse);
+                initFailingSigningClient("Test failed. Client 3")))
+                .build();
+        AggregationResponse haServiceResponse = haService.sign(mock(DataHash.class), 0L).getResult();
+        Assert.assertEquals(haServiceResponse, subclientResponse);
     }
 
 
     @Test
     public void testOneExtenderSucceedsOtherFail() throws Exception {
         ExtensionResponse subclientResponse = mock(ExtensionResponse.class);
-        KSIExtenderClient succeedingClient = initSucceedingExtenderClient(subclientResponse);
-        ExtenderHAClient haClient = new ExtenderHAClient(Arrays.asList(
+        KSIExtendingService succeedingClient = initSucceedingExtenderClient(subclientResponse);
+
+        ExtendingHAService haService = new ExtendingHAService.Builder().setServices(Arrays.asList(
                 initFailingExtenderClient("Test failed. Client 1"),
                 succeedingClient,
-                initFailingExtenderClient("Test failed. Client 3")
-        ));
-        ExtensionResponse haClientResponse = haClient.extend(mock(Date.class), mock(Date.class)).getResult();
-        Assert.assertEquals(haClientResponse, subclientResponse);
+                initFailingExtenderClient("Test failed. Client 3")))
+                .build();
+        ExtensionResponse haServiceResponse = haService.extend(mock(Date.class), mock(Date.class)).getResult();
+        Assert.assertEquals(haServiceResponse, subclientResponse);
     }
 
     @Test(timeOut = 1000)
     public void testOneAggregatorQuickOtherSlow() throws Exception {
         AggregationResponse subclientResponse = mock(AggregationResponse.class);
-        SigningHAClient haClient = new SigningHAClient(Arrays.asList(
+        SigningHAService haService = new SigningHAService.Builder().setServices(Arrays.asList(
                 initSlowSigningClient(),
                 initSucceedingSigningClient(subclientResponse),
-                initSlowSigningClient()
-        ));
-        AggregationResponse haClientResponse = haClient.sign(mock(DataHash.class), 0L).getResult();
-        Assert.assertEquals(haClientResponse, subclientResponse);
+                initSlowSigningClient()))
+                .build();
+        AggregationResponse haServiceResponse = haService.sign(mock(DataHash.class), 0L).getResult();
+        Assert.assertEquals(haServiceResponse, subclientResponse);
     }
 
     @Test(timeOut = 1000)
     public void testOneExtenderQuickOtherSlow() throws Exception {
         ExtensionResponse subclientResponse = mock(ExtensionResponse.class);
-        ExtenderHAClient haClient = new ExtenderHAClient(Arrays.asList(
+        ExtendingHAService haService = new ExtendingHAService.Builder().setServices(Arrays.asList(
                 initSlowExtenderClient(),
                 initSucceedingExtenderClient(subclientResponse),
-                initSlowExtenderClient()
-        ));
-        ExtensionResponse haClientResponse = haClient.extend(mock(Date.class), mock(Date.class)).getResult();
-        Assert.assertEquals(haClientResponse, subclientResponse);
+                initSlowExtenderClient()))
+                .build();
+        ExtensionResponse haServiceResponse = haService.extend(mock(Date.class), mock(Date.class)).getResult();
+        Assert.assertEquals(haServiceResponse, subclientResponse);
     }
 
     @Test
     public void testGetSubclients() throws Exception {
-        LinkedList<KSISigningClient> signingClients = new LinkedList<KSISigningClient>();
-        signingClients.add(initSlowSigningClient());
-        signingClients.add(initFailingSigningClient("Failrue!"));
-        signingClients.add(initSucceedingSigningClient(mock(AggregationResponse.class)));
+        List<KSISigningService> signingServices = new ArrayList<KSISigningService>();
+        signingServices.add(initSlowSigningClient());
+        signingServices.add(initFailingSigningClient("Failrue!"));
+        signingServices.add(initSucceedingSigningClient(mock(AggregationResponse.class)));
 
-        LinkedList<KSIExtenderClient> extenderClients = new LinkedList<KSIExtenderClient>();
-        extenderClients.add(initSlowExtenderClient());
-        extenderClients.add(initFailingExtenderClient("Failrue!"));
-        extenderClients.add(initSucceedingExtenderClient(mock(ExtensionResponse.class)));
+        List<KSIExtendingService> extendingServices = new ArrayList<KSIExtendingService>();
+        extendingServices.add(initSlowExtenderClient());
+        extendingServices.add(initFailingExtenderClient("Failrue!"));
+        extendingServices.add(initSucceedingExtenderClient(mock(ExtensionResponse.class)));
 
-        HAClient haClient = new HAClient(signingClients, extenderClients);
-        List<KSIExtenderClient> requestedExtenderClients = haClient.getSubExtenderClients();
-        List<KSISigningClient> requestedSigningClients = haClient.getSubSigningClients();
+        HAService haService = new HAService.Builder().setSigningServices(signingServices).setExtendingServices(extendingServices).build();
+        List<KSIExtendingService> requestedExtenderClients = haService.getSubExtendingServices();
+        List<KSISigningService> requestedSigningClients = haService.getSubSigningServices();
 
         for (int i = 0; i < 2; i++) {
-            Assert.assertEquals(signingClients.get(i), requestedSigningClients.get(i));
-            Assert.assertEquals(extenderClients.get(i), requestedExtenderClients.get(i));
+            Assert.assertEquals(signingServices.get(i), requestedSigningClients.get(i));
+            Assert.assertEquals(extendingServices.get(i), requestedExtenderClients.get(i));
         }
     }
 
-    @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "All subclients of HAClient failed")
+    @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "All subclients of HAService failed")
     public void testAllAggregatorsFail() throws Exception {
-        SigningHAClient haClient = new SigningHAClient(Arrays.asList(
+        SigningHAService haService = new SigningHAService.Builder().setServices(Arrays.asList(
                 initFailingSigningClient("Client failed. Client 1"),
                 initFailingSigningClient("Client failed. Client 2"),
-                initFailingSigningClient("Client failed. Client 3")
-        ));
-        haClient.sign(mock(DataHash.class), 0L).getResult();
+                initFailingSigningClient("Client failed. Client 3")))
+                .build();
+        haService.sign(mock(DataHash.class), 0L).getResult();
     }
 
-    @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "All subclients of HAClient failed")
+    @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "All subclients of HAService failed")
     public void testAllExtendersFail() throws Exception {
-        ExtenderHAClient haClient = new ExtenderHAClient(Arrays.asList(
+        ExtendingHAService haService = new ExtendingHAService.Builder().setServices(Arrays.asList(
                 initFailingExtenderClient("Client failed. Client 1"),
                 initFailingExtenderClient("Client failed. Client 2"),
-                initFailingExtenderClient("Client failed. Client 3")
-        ));
-        haClient.extend(new Date(), new Date()).getResult();
+                initFailingExtenderClient("Client failed. Client 3")))
+                .build();
+        haService.extend(new Date(), new Date()).getResult();
     }
 
     @Test
     public void testSigningConfigurationListening() throws Exception {
         final AsyncContext context = new AsyncContext(3);
-        List<KSISigningClient> signingClients = new ArrayList<KSISigningClient>();
-        signingClients.add(new DummyClient(300L));
-        signingClients.add(new DummyClient(200L));
-        signingClients.add(new DummyClient(100L));
-        SigningHAClient signingHAClient = new SigningHAClient(signingClients);
-        signingHAClient.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
+        List<KSISigningService> signingServices = new ArrayList<KSISigningService>();
+        signingServices.add(new DummyClient(300L));
+        signingServices.add(new DummyClient(200L));
+        signingServices.add(new DummyClient(100L));
+        SigningHAService signingHAService = new SigningHAService.Builder().setServices(signingServices).build();
+        signingHAService.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
             public void updated(AggregatorConfiguration configuration) {
                 setConsolidatedConf(configuration);
                 context.succeed();
@@ -213,7 +204,7 @@ public class HAClientTest {
                 }
             }
         });
-        signingHAClient.sendAggregationConfigurationRequest();
+        signingHAService.sendAggregationConfigurationRequest();
         context.await();
         assertEquals(aggregatorConsolidatedConf.getMaximumRequests(), new Long(300));
     }
@@ -221,12 +212,12 @@ public class HAClientTest {
     @Test
     public void testExtenderConfigurationListening() throws Exception {
         final AsyncContext context = new AsyncContext(3);
-        List<KSIExtenderClient> extenderClients = new ArrayList<KSIExtenderClient>();
-        extenderClients.add(new DummyClient(300L));
-        extenderClients.add(new DummyClient(200L));
-        extenderClients.add(new DummyClient(100L));
-        ExtenderHAClient extenderHAClient = new ExtenderHAClient(extenderClients);
-        extenderHAClient.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
+        List<KSIExtendingService> extendingServices = new ArrayList<KSIExtendingService>();
+        extendingServices.add(new DummyClient(300L));
+        extendingServices.add(new DummyClient(200L));
+        extendingServices.add(new DummyClient(100L));
+        ExtendingHAService extendingHAService = new ExtendingHAService.Builder().setServices(extendingServices).build();
+        extendingHAService.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
             public void updated(ExtenderConfiguration configuration) {
                 setConsolidatedConf(configuration);
                 context.succeed();
@@ -240,13 +231,13 @@ public class HAClientTest {
                 }
             }
         });
-        extenderHAClient.sendExtenderConfigurationRequest();
+        extendingHAService.sendExtenderConfigurationRequest();
         context.await();
         assertEquals(extenderConsolidatedConf.getMaximumRequests(), new Long(300));
     }
 
-    private KSISigningClient initSucceedingSigningClient(final AggregationResponse subclientResponse) throws KSIException {
-        KSISigningClient succeedingClient = mock(KSISigningClient.class);
+    private KSISigningService initSucceedingSigningClient(final AggregationResponse subclientResponse) throws KSIException {
+        KSISigningService succeedingClient = mock(KSISigningService.class);
         when(succeedingClient.sign(any(DataHash.class), anyLong())).thenReturn(new Future<AggregationResponse>() {
             public AggregationResponse getResult() throws KSIException {
                 return subclientResponse;
@@ -259,14 +250,14 @@ public class HAClientTest {
         return succeedingClient;
     }
 
-    private KSISigningClient initFailingSigningClient(String exMessage) throws KSIException {
-        KSISigningClient subsigningClient = mock(KSISigningClient.class);
+    private KSISigningService initFailingSigningClient(String exMessage) throws KSIException {
+        KSISigningService subsigningClient = mock(KSISigningService.class);
         when(subsigningClient.sign(any(DataHash.class), anyLong())).thenThrow(new RuntimeException(exMessage));
         return subsigningClient;
     }
 
-    private KSIExtenderClient initSucceedingExtenderClient(final ExtensionResponse subclientResponse) throws KSIException {
-        KSIExtenderClient succeedingClient = mock(KSIExtenderClient.class);
+    private KSIExtendingService initSucceedingExtenderClient(final ExtensionResponse subclientResponse) throws KSIException {
+        KSIExtendingService succeedingClient = mock(KSIExtendingService.class);
         when(succeedingClient.extend(any(Date.class), any(Date.class))).thenReturn(new Future<ExtensionResponse>() {
             public ExtensionResponse getResult() throws KSIException {
                 return subclientResponse;
@@ -279,14 +270,14 @@ public class HAClientTest {
         return succeedingClient;
     }
 
-    private KSIExtenderClient initFailingExtenderClient(String exMessage) throws KSIException {
-        KSIExtenderClient subClient = mock(KSIExtenderClient.class);
+    private KSIExtendingService initFailingExtenderClient(String exMessage) throws KSIException {
+        KSIExtendingService subClient = mock(KSIExtendingService.class);
         when(subClient.extend(any(Date.class), any(Date.class))).thenThrow(new RuntimeException(exMessage));
         return subClient;
     }
 
-    private KSISigningClient initSlowSigningClient() throws KSIException {
-        KSISigningClient client = mock(KSISigningClient.class);
+    private KSISigningService initSlowSigningClient() throws KSIException {
+        KSISigningService client = mock(KSISigningService.class);
         when(client.sign(any(DataHash.class), anyLong())).then(new Answer<Object>() {
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                 Thread.sleep(10000);
@@ -296,8 +287,8 @@ public class HAClientTest {
         return client;
     }
 
-    private KSIExtenderClient initSlowExtenderClient() throws KSIException {
-        KSIExtenderClient client = mock(KSIExtenderClient.class);
+    private KSIExtendingService initSlowExtenderClient() throws KSIException {
+        KSIExtendingService client = mock(KSIExtendingService.class);
         when(client.extend(any(Date.class), any(Date.class))).then(new Answer<Object>() {
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                 Thread.sleep(10000);
@@ -315,7 +306,7 @@ public class HAClientTest {
         this.aggregatorConsolidatedConf = conf;
     }
 
-    private static class DummyClient implements KSISigningClient, KSIExtenderClient {
+    private static class DummyClient implements KSISigningService, KSIExtendingService {
 
         private final ConfigurationHandler<AggregatorConfiguration> aggrConfHandler = new ConfigurationHandler<AggregatorConfiguration>(DefaultExecutorServiceProvider.getExecutorService());
         private final ConfigurationHandler<ExtenderConfiguration> extenderConfHandler = new ConfigurationHandler<ExtenderConfiguration>(DefaultExecutorServiceProvider.getExecutorService());
@@ -330,7 +321,7 @@ public class HAClientTest {
             return null;
         }
 
-        public List<KSIExtenderClient> getSubExtenderClients() {
+        public List<KSIExtendingService> getSubExtendingServices() {
             return Collections.emptyList();
         }
 
@@ -353,7 +344,7 @@ public class HAClientTest {
             return null;
         }
 
-        public List<KSISigningClient> getSubSigningClients() {
+        public List<KSISigningService> getSubSigningServices() {
             return Collections.emptyList();
         }
 

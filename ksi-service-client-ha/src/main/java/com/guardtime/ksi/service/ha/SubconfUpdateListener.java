@@ -19,7 +19,7 @@
 package com.guardtime.ksi.service.ha;
 
 /**
- * Listener to call every time subclients configuration is updated.
+ * Listener to call every time subservices configuration is updated.
  */
 interface SubconfUpdateListener {
 

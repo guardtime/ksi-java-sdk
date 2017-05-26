@@ -27,7 +27,6 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.SignaturePublicationRecord;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
@@ -51,13 +50,13 @@ import static com.guardtime.ksi.TestUtil.loadSignature;
 public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testExtendToNearest_OK(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testExtendToNearest_OK(KSI ksi) throws Exception {
         KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_2017_03_14));
         Assert.assertTrue(extendedSignature.isExtended(), "Signature extension failed.");
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyExtendedSignature_OK(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testVerifyExtendedSignature_OK(KSI ksi) throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
         signature = ksi.extend(signature);
         Assert.assertTrue(signature.isExtended(), "Signature extension failed.");
@@ -67,7 +66,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testExtendWithPublicationsFile_OK(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testExtendWithPublicationsFile_OK(KSI ksi) throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
         PublicationsFile publicationsFile = TestUtil.loadPublicationsFile(PUBLICATIONS_FILE);
         PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(signature.getPublicationTime());
@@ -76,7 +75,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testExtendToUserPublicationString_OK(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testExtendToUserPublicationString_OK(KSI ksi) throws Exception {
 
         SignaturePublicationRecord publicationRecord = loadSignature(EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord();
         KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_2017_03_14), publicationRecord);
@@ -86,7 +85,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyExtendedSignatureAfterWrithingToAndReadingFromStream_OK(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testVerifyExtendedSignatureAfterWrithingToAndReadingFromStream_OK(KSI ksi) throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
         signature = ksi.extend(signature);
         Assert.assertTrue(signature.isExtended(), "Signature extension failed.");
@@ -107,7 +106,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testExtendSignatureFromAnotherCore_NOK(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testExtendSignatureFromAnotherCore_NOK(KSI ksi) throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
         PublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData(new Date(signature.getPublicationTime().getTime()+100000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
         try {

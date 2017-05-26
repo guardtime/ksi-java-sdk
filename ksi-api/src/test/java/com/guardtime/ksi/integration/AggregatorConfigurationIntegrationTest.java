@@ -18,13 +18,16 @@
  */
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.KSI;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.ha.HAClient;
+import com.guardtime.ksi.service.client.KSISigningClientServiceAdapter;
+import com.guardtime.ksi.service.ha.HAService;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -34,24 +37,28 @@ import java.util.Collections;
 
 public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
-    private HAClient haClientV2;
-    private HAClient haClientV1;
+    private HAService haServiceV2;
+    private HAService haServiceV1;
+    private KSI ksiV2;
+    private KSI serviceBasedKsi;
 
     @BeforeMethod
     public void setUp() throws Exception {
         super.setUp();
         SimpleHttpClient simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
-        haClientV2 = new HAClient(Collections.singletonList((KSISigningClient) simpleHttpClientV2),
-                Collections.singletonList((KSIExtenderClient) simpleHttpClientV2));
-        haClientV1 = new HAClient(Collections.singletonList((KSISigningClient) simpleHttpClient),
-                Collections.singletonList((KSIExtenderClient) simpleHttpClient));
+        haServiceV2 = new HAService.Builder().setSigningClients(Collections.<KSISigningClient>singletonList(simpleHttpClientV2))
+                .setExtenderClients(Collections.<KSIExtenderClient>singletonList(simpleHttpClientV2)).build();
+        haServiceV1 = new HAService.Builder().setSigningClients(Collections.<KSISigningClient>singletonList(simpleHttpClient))
+                .setExtenderClients(Collections.<KSIExtenderClient>singletonList(simpleHttpClient)).build();
+        this.ksiV2 = createKsi(simpleHttpClientV2, simpleHttpClientV2, simpleHttpClientV2);
+        this.serviceBasedKsi = createKsi(haServiceV2, haServiceV2, simpleHttpClientV2);
     }
 
     @Test
     public void testAggregationConfigurationRequestV2() throws Exception {
         final AsyncContext ac = new AsyncContext();
 
-        haClientV2.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
+        haServiceV2.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
             public void updated(AggregatorConfiguration aggregatorConfiguration) {
                 try {
                     Assert.assertNotNull(aggregatorConfiguration);
@@ -69,14 +76,14 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
                 }
             }
         });
-        haClientV2.sendAggregationConfigurationRequest();
+        haServiceV2.sendAggregationConfigurationRequest();
         ac.await();
     }
 
     @Test
-    public void testAggregationConfigurationRequestWithHaClientV1() throws Exception {
+    public void testAggregationConfigurationRequestWithHAServiceV1() throws Exception {
         final AsyncContext ac = new AsyncContext();
-        haClientV1.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
+        haServiceV1.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
             public void updated(AggregatorConfiguration aggregatorConfiguration) {
                 try {
                     Assert.fail("Configuration request was not supposed to succeed because of PDU V1, but it did.");
@@ -87,7 +94,7 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
 
             public void updateFailed(Throwable t) {
                 try {
-                    if ("SigningHAClient has no active subconfigurations to base its consolidated configuration on".equals(t.getMessage())) {
+                    if ("SigningHAService has no active subconfigurations to base its consolidated configuration on".equals(t.getMessage())) {
                         ac.succeed();
                     } else {
                         Assert.fail("Configuration update failed for unexpected reason", t);
@@ -97,7 +104,7 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
                 }
             }
         });
-        haClientV1.sendAggregationConfigurationRequest();
+        haServiceV1.sendAggregationConfigurationRequest();
 
         ac.await();
     }
@@ -105,7 +112,8 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
     @Test
     public void testAggregationConfigurationRequestWithSimpleHttpClientV1() throws Exception {
         final AsyncContext ac = new AsyncContext();
-        simpleHttpClient.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
+        KSISigningClientServiceAdapter simpleHttpService = new KSISigningClientServiceAdapter(simpleHttpClient);
+        simpleHttpService.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {
             public void updated(AggregatorConfiguration aggregatorConfiguration) {
                 try {
                     Assert.fail("Configuration request was not supposed to succeed because of PDU V1, but it did.");
@@ -126,8 +134,25 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
                 }
             }
         });
-        simpleHttpClient.sendAggregationConfigurationRequest();
+        simpleHttpService.sendAggregationConfigurationRequest();
 
         ac.await();
+    }
+
+    @Test
+    public void testSynchronousAggregationConfigurationRequestV2() throws Exception {
+        AggregatorConfiguration response = ksiV2.getAggregatorConfiguration();
+        Assert.assertNotNull(response);
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
+    public void testSynchronousAggregationConfigurationRequestV1() throws Exception {
+        ksi.getAggregatorConfiguration();
+    }
+
+    @Test(expectedExceptions = UnsupportedOperationException.class,
+            expectedExceptionsMessageRegExp = "Can not ask this type of service its configuration synchronously.*")
+    public void testSynchronousServiceBasedAggregationConfigurationRequest() throws Exception {
+        serviceBasedKsi.getAggregatorConfiguration();
     }
 }

@@ -35,6 +35,7 @@ import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.pdu.PduVersion.V2;
 import static java.util.Arrays.asList;
 
 public class InMemoryKsiSignatureFactoryTest {
@@ -48,8 +49,11 @@ public class InMemoryKsiSignatureFactoryTest {
     public void setUp() throws Exception {
         this.mockedPublicationsFileAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
         Mockito.when(mockedPublicationsFileAdapter.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile(PUBLICATIONS_FILE));
+
+        KSIExtenderClient extenderClient = Mockito.mock(KSIExtenderClient.class);
+        Mockito.when(extenderClient.getPduVersion()).thenReturn(V2);
         this.signatureFactory = new InMemoryKsiSignatureFactory(new InternalVerificationPolicy(),
-                mockedPublicationsFileAdapter, Mockito.mock(KSIExtenderClient.class), false,
+                mockedPublicationsFileAdapter, extenderClient, false,
                 new InMemoryKsiSignatureComponentFactory());
     }
 

@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.*;
 
-public class SigningHAClientConfigurationTest {
+public class SigningHAServiceConfigurationTest {
 
     private AggregatorConfiguration c1;
     private AggregatorConfiguration c2;
@@ -57,7 +57,7 @@ public class SigningHAClientConfigurationTest {
 
     @Test
     public void testConstructWithSaneValues() {
-        SigningHAClientConfiguration conf = new SigningHAClientConfiguration(c1);
+        SigningHAServiceConfiguration conf = new SigningHAServiceConfiguration(c1);
         assertEquals(conf.getAggregationAlgorithm(), c1.getAggregationAlgorithm());
         assertEquals(conf.getAggregationPeriod(), c1.getAggregationPeriod());
         assertEquals(conf.getMaximumLevel(), c1.getMaximumLevel());
@@ -70,7 +70,7 @@ public class SigningHAClientConfigurationTest {
         when(c1.getAggregationPeriod()).thenReturn(20001L);
         when(c1.getMaximumLevel()).thenReturn(21L);
         when(c1.getMaximumRequests()).thenReturn(16001L);
-        SigningHAClientConfiguration conf = new SigningHAClientConfiguration(c1);
+        SigningHAServiceConfiguration conf = new SigningHAServiceConfiguration(c1);
         assertNull(conf.getAggregationPeriod());
         assertNull(conf.getMaximumLevel());
         assertNull(conf.getMaximumRequests());
@@ -78,27 +78,27 @@ public class SigningHAClientConfigurationTest {
 
     @Test
     public void testConsolidatedMaximumLevel() throws Exception {
-        assertEquals(new SigningHAClientConfiguration(c1, c2).getMaximumLevel(), c1.getMaximumLevel());
+        assertEquals(new SigningHAServiceConfiguration(c1, c2).getMaximumLevel(), c1.getMaximumLevel());
     }
 
     @Test
     public void testConsolidatedAggregationAlgorithm() throws Exception {
-        assertEquals(new SigningHAClientConfiguration(c1, c2).getAggregationAlgorithm(), c1.getAggregationAlgorithm());
+        assertEquals(new SigningHAServiceConfiguration(c1, c2).getAggregationAlgorithm(), c1.getAggregationAlgorithm());
     }
 
     @Test
     public void testConsolidatedAggregationPeriod() throws Exception {
-        assertEquals(new SigningHAClientConfiguration(c1, c2).getAggregationPeriod(), c1.getAggregationPeriod());
+        assertEquals(new SigningHAServiceConfiguration(c1, c2).getAggregationPeriod(), c1.getAggregationPeriod());
     }
 
     @Test
     public void testConsolidatedMaximumRequests() throws Exception {
-        assertEquals(new SigningHAClientConfiguration(c1, c2).getMaximumRequests(), c1.getMaximumRequests());
+        assertEquals(new SigningHAServiceConfiguration(c1, c2).getMaximumRequests(), c1.getMaximumRequests());
     }
 
     @Test
     public void testConsolidatedParents() throws Exception {
-        assertEquals(new SigningHAClientConfiguration(c1, c2).getParents(), c2.getParents());
+        assertEquals(new SigningHAServiceConfiguration(c1, c2).getParents(), c2.getParents());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class SigningHAClientConfigurationTest {
         when(c1.getMaximumLevel()).thenReturn(21L);
         when(c1.getAggregationPeriod()).thenReturn(0L);
         when(c1.getMaximumRequests()).thenReturn(0L);
-        SigningHAClientConfiguration conf = new SigningHAClientConfiguration(c1, c2);
+        SigningHAServiceConfiguration conf = new SigningHAServiceConfiguration(c1, c2);
         assertEquals(conf.getMaximumLevel(), c2.getMaximumLevel());
         assertEquals(conf.getAggregationPeriod(), c2.getAggregationPeriod());
         assertEquals(conf.getMaximumRequests(), c2.getMaximumRequests());

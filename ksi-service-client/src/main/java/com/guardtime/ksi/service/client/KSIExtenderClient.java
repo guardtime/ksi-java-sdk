@@ -16,46 +16,27 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+
 package com.guardtime.ksi.service.client;
 
-import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.pdu.ExtenderConfiguration;
-import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.tlv.TLVElement;
 
-import java.io.Closeable;
-import java.util.Date;
-import java.util.List;
+import java.io.InputStream;
 
 /**
  * KSI client for extender service
  */
-public interface KSIExtenderClient extends Closeable {
+public interface KSIExtenderClient extends KSICredentialsAwareClient {
 
     /**
      * Used to extend existing signatures.
      *
-     * @param aggregationTime - aggregation time of the existing signature.
-     * @param publicationTime - publication time to which the existing signature is to be extended.
-     * @return instance of {@link ExtensionResponseFuture} containing calendar chains needed to extend the signature.
+     * @param request
+     *         instance of {@link InputStream} that contains request data.
+     * @return instance of {@link Future} containing KSI response data.
+     * @throws KSIClientException
      */
-    Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException;
-    /**
-     * If the implementation combines multiple clients then this method can be used to get those subclients. If the implementation
-     * is a client that directly connects to a single gateway then it will return an empty list.
-     */
-    List<KSIExtenderClient> getSubExtenderClients();
+    Future<TLVElement> extend(InputStream request) throws KSIClientException;
 
-    /**
-     * Registers a new {@link ConfigurationListener<ExtenderConfiguration>} for the client. Each time client's configuration is
-     * update is handled, this listener is called.
-     */
-    void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener);
-
-    /**
-     * Makes the client ask for configuration update. On completion of the update config registered {@link ConfigurationListener}s
-     * are called
-     */
-    void sendExtenderConfigurationRequest();
 }

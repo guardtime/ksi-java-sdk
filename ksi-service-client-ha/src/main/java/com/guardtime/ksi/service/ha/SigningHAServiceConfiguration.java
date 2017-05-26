@@ -27,7 +27,7 @@ import java.util.List;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isBigger;
 import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
 
-class SigningHAClientConfiguration implements AggregatorConfiguration {
+class SigningHAServiceConfiguration implements AggregatorConfiguration {
 
     private final Long maxLevel;
     private final HashAlgorithm aggrAlgorithm;
@@ -36,12 +36,12 @@ class SigningHAClientConfiguration implements AggregatorConfiguration {
     private final List<String> parents;
 
     /**
-     * Creates a new SigningHAClientConfiguration all of which properties are taken from the given configuration.
+     * Creates a new SigningHAServiceConfiguration all of which properties are taken from the given configuration.
      *
      * @param configuration May not be null.
      */
-    SigningHAClientConfiguration(AggregatorConfiguration configuration) {
-        Util.notNull(configuration, "SigningHAClientConfiguration configuration to copy");
+    SigningHAServiceConfiguration(AggregatorConfiguration configuration) {
+        Util.notNull(configuration, "SigningHAServiceConfiguration configuration to copy");
         this.maxLevel = normalizeMaxLevel(configuration.getMaximumLevel());
         this.aggrPeriod = normalizeAggregationPeriod(configuration.getAggregationPeriod());
         this.maxRequests = normalizeMaxRequests(configuration.getMaximumRequests());
@@ -52,9 +52,9 @@ class SigningHAClientConfiguration implements AggregatorConfiguration {
     /**
      * Consolidates two configurations to make the maximum out of them. Neither of the configurations may be null.
      */
-    SigningHAClientConfiguration(AggregatorConfiguration c1, AggregatorConfiguration c2) {
-        Util.notNull(c1, "SigningHAClientConfiguration first configuration to consolidate");
-        Util.notNull(c2, "SigningHAClientConfiguration second configuration to consolidate");
+    SigningHAServiceConfiguration(AggregatorConfiguration c1, AggregatorConfiguration c2) {
+        Util.notNull(c1, "SigningHAServiceConfiguration first configuration to consolidate");
+        Util.notNull(c2, "SigningHAServiceConfiguration second configuration to consolidate");
 
         Long c1MaxLevel = normalizeMaxLevel(c1.getMaximumLevel());
         Long c2MaxLevel = normalizeMaxLevel(c2.getMaximumLevel());
@@ -132,7 +132,7 @@ class SigningHAClientConfiguration implements AggregatorConfiguration {
 
     @Override
     public String toString() {
-        return "SigningHAClientConfiguration{" +
+        return "SigningHAServiceConfiguration{" +
                 "maxLevel=" + maxLevel +
                 ", aggrAlgorithm=" + aggrAlgorithm +
                 ", aggrPeriod=" + aggrPeriod +

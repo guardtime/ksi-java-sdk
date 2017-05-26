@@ -16,7 +16,25 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+package com.guardtime.ksi.service.client;
+
+import com.guardtime.ksi.pdu.PduVersion;
+
+import java.io.Closeable;
+
 /**
- * High Availability service - KSI service which combines other services to achieve redundancy.
+ * KSI client is an interface that defines KSI related services.
  */
-package com.guardtime.ksi.service.ha;
+interface KSICredentialsAwareClient extends Closeable {
+
+    /**
+     * Returns the service credentials used by this service
+     */
+    ServiceCredentials getServiceCredentials();
+
+    /**
+     * Returns the PDU format version of the client
+     */
+    PduVersion getPduVersion();
+
+}

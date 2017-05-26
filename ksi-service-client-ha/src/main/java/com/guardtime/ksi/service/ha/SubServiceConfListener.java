@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Helper to keep track of the last known state of certain subclients configuration
  */
-class SubClientConfListener<T> implements ConfigurationListener<T> {
+class SubServiceConfListener<T> implements ConfigurationListener<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SubClientConfListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(SubServiceConfListener.class);
 
     private final SubconfUpdateListener subconfUpdateListener;
 
@@ -40,9 +40,9 @@ class SubClientConfListener<T> implements ConfigurationListener<T> {
      * @param subconfUpdateListener Listener to call every time subclients configuration is updated. It's implementation
      *                                    should start the recalculation process.
      */
-    SubClientConfListener(String clientId, SubconfUpdateListener subconfUpdateListener) {
-        Util.notNull(clientId, "SubClientConfListener.clientId");
-        Util.notNull(subconfUpdateListener, "SubClientConfListener.subconfUpdateListener");
+    SubServiceConfListener(String clientId, SubconfUpdateListener subconfUpdateListener) {
+        Util.notNull(clientId, "SubServiceConfListener.clientId");
+        Util.notNull(subconfUpdateListener, "SubServiceConfListener.subconfUpdateListener");
         this.clientId = clientId;
         this.subconfUpdateListener = subconfUpdateListener;
     }
@@ -68,7 +68,7 @@ class SubClientConfListener<T> implements ConfigurationListener<T> {
 
     public void updateFailed(Throwable t) {
         lastConfiguration = null;
-        logger.warn("SigningHAClient " + clientId + " subclients configuration request failed.", t);
+        logger.warn("SigningHAService " + clientId + " subclients configuration request failed.", t);
         subconfUpdateListener.updated();
     }
 }

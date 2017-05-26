@@ -19,48 +19,24 @@
 
 package com.guardtime.ksi.service.client;
 
-import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.pdu.AggregationResponse;
-import com.guardtime.ksi.pdu.AggregationResponseFuture;
-import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.tlv.TLVElement;
 
-import java.io.Closeable;
-import java.util.List;
+import java.io.InputStream;
 
 /**
  * KSI client for signing service
  */
-public interface KSISigningClient extends Closeable {
+public interface KSISigningClient extends KSICredentialsAwareClient {
 
     /**
      * Used to create new signature.
      *
-     * @param dataHash - instance of {@link DataHash} to be signed.
-     * @param level - level of the dataHash to be signed in the overall tree.
-     *
-     * @return instance of {@link AggregationResponseFuture} containing Aggregation response data.
-     * @throws KSIException
+     * @param request
+     *         - instance of {@link InputStream} that contains request data.
+     * @return instance of {@link Future} containing KSI response data.
+     * @throws KSIClientException
      */
-    Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException;
-
-    /**
-     * If the implementation combines multiple clients then this method can be used to get those subclients. If the implementation
-     * is a client that directly connects to a single gateway then it will return an empty list.
-     */
-    List<KSISigningClient> getSubSigningClients();
-
-    /**
-     * Registeres a new {@link ConfigurationListener<AggregatorConfiguration>} for the client. Each time client's configuration is
-     * updated, this listener is called.
-     */
-    void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener);
-
-    /**
-     * Makes the client ask for configuration update. On completion of the update config registered {@link ConfigurationListener}s
-     * are called
-     */
-    void sendAggregationConfigurationRequest();
+    Future<TLVElement> sign(InputStream request) throws KSIClientException;
 
 }

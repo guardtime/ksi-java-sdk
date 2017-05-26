@@ -3,7 +3,7 @@ package com.guardtime.ksi.service.ha;
 import java.util.Date;
 
 /**
- * Set of different utility methods used by HAClient
+ * Set of different utility methods used by HAService
  */
 class HAConfUtil {
 

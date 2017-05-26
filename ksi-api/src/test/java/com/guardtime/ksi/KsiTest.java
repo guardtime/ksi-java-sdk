@@ -21,8 +21,8 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
@@ -55,13 +55,11 @@ public class KsiTest {
     private KSIExtenderClient mockedExtenderClient;
     private KSIPublicationsFileClient mockedPublicationsFileClient;
     private PKITrustStore mockedTrustStore;
-    private Future mockedResponse;
     private Future mockedPublicationsFileResponse;
 
     private PduIdentifierProvider mockedIdentifierProvider;
 
     private KSI ksi;
-    private DataHash defaultDataHash;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -72,18 +70,17 @@ public class KsiTest {
         mockedTrustStore = Mockito.mock(PKITrustStore.class);
         mockedIdentifierProvider = Mockito.mock(PduIdentifierProvider.class);
 
+        Mockito.when(mockedSigningClient.getPduVersion()).thenReturn(PduVersion.V2);
+        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V2);
         Mockito.when(mockedIdentifierProvider.getInstanceId()).thenReturn(42L);
         Mockito.when(mockedIdentifierProvider.nextMessageId()).thenReturn(42L);
         Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(42275443333883166L);
 
         Mockito.when(mockedTrustStore.isTrusted(Mockito.any(X509Certificate.class), Mockito.any(Store.class))).thenReturn(true);
-        mockedResponse = Mockito.mock(Future.class);
 
         mockedPublicationsFileResponse = Mockito.mock(Future.class);
         Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load(PUBLICATIONS_FILE))));
         Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(mockedPublicationsFileResponse);
-
-        this.defaultDataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
 
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(TestUtil.load(KSI_TRUSTSTORE), KSI_TRUSTSTORE_PASSWORD.toCharArray());

@@ -25,9 +25,9 @@ package com.guardtime.ksi.pdu;
  */
 public final class KSIRequestContext {
 
-    private Long requestId;
-    private Long instanceId;
-    private Long messageId;
+    private final Long requestId;
+    private final Long instanceId;
+    private final Long messageId;
 
     public KSIRequestContext(Long requestId, Long instanceId, Long messageId) {
         this.requestId = requestId;

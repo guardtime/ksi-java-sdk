@@ -18,6 +18,8 @@
  */
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.AsyncContext;
+import com.guardtime.ksi.CommonTestUtil;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
@@ -111,6 +113,7 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
 
     @Test
     public void testAggregationConfigurationRequestWithSimpleHttpClientV1() throws Exception {
+
         final AsyncContext ac = new AsyncContext();
         KSISigningClientServiceAdapter simpleHttpService = new KSISigningClientServiceAdapter(simpleHttpClient);
         simpleHttpService.registerAggregatorConfigurationListener(new ConfigurationListener<AggregatorConfiguration>() {

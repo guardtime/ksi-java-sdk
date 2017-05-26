@@ -1,7 +1,8 @@
 Version 5.0
 
-* IMPROVEMENT: Added KSISigningService and KSIExtendingService which act as a more high level alternatives to KSISigningClient and KSIExtenderClient. Both clients are convertable to services via KSISigningClientServiceAdapter and KSIExtendingClientServiceAdapter.
-* IMPROVEMENT: Deprecated VerificationContext.setPduVersion(PduVersion) as PDU version is decided in the client now.
+* IMPROVEMENT: Added KSISigningService and KSIExtendingService which act as a more high level alternatives to KSISigningClient and KSIExtenderClient. Both clients can be converted to services via KSISigningClientServiceAdapter and KSIExtendingClientServiceAdapter.
+* IMPROVEMENT: All the API components which used to be initializable with clients are now also initializable with services.
+* IMPROVEMENT: Deprecated VerificationContext.setPduFactory(PduFactory). Has no effect since PduFactory is defined in the KSIExtendingService level.
 * IMPROVEMENT: Configuration requests in the KSI instance have been deprecated. Callback based asynchronous configuration asking implemented to all the KSISigningServices and KSIExtenderServices.
 * FEATURE: HAService (High-availability service) is a service that combines multiple KSISigningServices and KSIExtenderServices to achieve redundancy.
 * BUGFIX: RFC3161 record index rule code error code and messages corrected.

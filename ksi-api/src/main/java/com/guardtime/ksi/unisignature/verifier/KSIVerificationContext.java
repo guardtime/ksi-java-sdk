@@ -23,6 +23,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIExtendingService;
+import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -128,6 +129,10 @@ final class KSIVerificationContext implements VerificationContext {
 
     public PublicationRecord getPublicationRecord() {
         return getSignature().getPublicationRecord();
+    }
+
+    @Deprecated
+    public void setPduFactory(PduFactory pduFactory) {
     }
 
     public PublicationData getUserProvidedPublication() {

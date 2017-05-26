@@ -112,4 +112,13 @@ public class TCPClient implements KSISigningClient {
         return connector;
     }
 
+    @Override
+    public String toString() {
+        return "TCPClient{" +
+                "Gateway='" + tcpClientSettings.getEndpoint() + "', " +
+                "LoginID='" + tcpClientSettings.getServiceCredentials().getLoginId() + "', " +
+                "PDUVersion='" + tcpClientSettings.getPduVersion() +
+                "'}";
+    }
+
 }

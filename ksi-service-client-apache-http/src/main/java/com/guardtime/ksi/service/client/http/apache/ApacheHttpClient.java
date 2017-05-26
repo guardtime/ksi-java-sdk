@@ -181,4 +181,9 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
         return RequestConfig.custom().setConnectionRequestTimeout(connectionTimeout).setSocketTimeout(socketTimeout).build();
     }
 
+    @Override
+    public String toString() {
+        return "ApacheHttpClient{Gateway='" + settings.getSigningUrl() + "', Extender='" + settings.getExtendingUrl() + "', Publications='" + settings.getPublicationsFileUrl() + "', LoginID='" + getServiceCredentials().getLoginId() + "', PDUVersion='" + getPduVersion() + "'}";
+    }
+
 }

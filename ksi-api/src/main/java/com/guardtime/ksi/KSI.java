@@ -306,6 +306,8 @@ public interface KSI extends Closeable {
      *      in pair with {@link KSISigningService#registerAggregatorConfigurationListener(ConfigurationListener)} instead.
      *      One can acquire instance of {@link KSISigningService} which a {@link KSI} instance uses by calling
      *      {@link KSI#getSigningService()}.
+     *
+     * @throws UnsupportedOperationException If KSI is initialized with a service not a client.
      */
     @Deprecated
     AggregatorConfiguration getAggregatorConfiguration() throws KSIException;
@@ -318,6 +320,8 @@ public interface KSI extends Closeable {
      *      in pair with {@link KSIExtendingService#registerExtenderConfigurationListener(ConfigurationListener)} instead.
      *      One can acquire instance of {@link KSIExtendingService} which a {@link KSI} instance uses by calling
      *      {@link KSI#getExtendingService()}.
+     *
+     * @throws UnsupportedOperationException If KSI is initialized with a service not a client.
      */
     @Deprecated
     ExtenderConfiguration getExtenderConfiguration() throws KSIException;

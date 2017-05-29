@@ -326,8 +326,8 @@ public final class KSIBuilder {
         PKITrustStore jksTrustStore = new JKSTrustStore(trustStore, certSelector);
         PublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(jksTrustStore);
         PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
-        logger.info("KSI SDK initialized with signing client: {}", signingService);
-        logger.info("KSI SDK initialized with extender client: {}", extendingService);
+        logger.info("KSI SDK initialized with signing service: {}", signingService);
+        logger.info("KSI SDK initialized with extender service: {}", extendingService);
         KSISignatureComponentFactory signatureComponentFactory= new InMemoryKsiSignatureComponentFactory();
         KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory(defaultVerificationPolicy, publicationsFileAdapter, extendingService, true, signatureComponentFactory);
 
@@ -538,9 +538,7 @@ public final class KSIBuilder {
         @Deprecated
         public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
             if (signingClient == null) {
-                throw new UnsupportedOperationException("Can not ask this type of service its configuration " +
-                        "synchronously. Instead use KSISigningService to register a listener and send a configuration request. " +
-                        "Instance of KSISigningService can be acquired by invoking KSI.getSigningService()");
+                throw new UnsupportedOperationException("Can not ask this type of service its configuration synchronously");
             }
             KSIRequestContext requestContext = requestContextFactory.createContext();
             ServiceCredentials credentials = signingClient.getServiceCredentials();
@@ -552,9 +550,7 @@ public final class KSIBuilder {
         @Deprecated
         public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
             if (extenderClient == null) {
-                throw new UnsupportedOperationException("Can not ask this type of service its configuration " +
-                        "synchronously. Instead use KSIExtendingService to register a listener and send a configuration request. " +
-                        "Instance of KSIExtendingService can be acquired by invoking KSI.getExtendingService()");
+                throw new UnsupportedOperationException("Can not ask this type of service its configuration synchronously");
             }
             KSIRequestContext requestContext = requestContextFactory.createContext();
             ServiceCredentials credentials = extenderClient.getServiceCredentials();

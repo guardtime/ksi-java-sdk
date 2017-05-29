@@ -61,7 +61,7 @@
 		<module>ksi-service-client-tcp</module>
 		<module>ksi-api</module>
 		<module>ksi-blocksigner</module>
-        <module>ksi-service-client-ha</module>
+        <module>ksi-service-ha</module>
     </modules>
 
 	<properties>

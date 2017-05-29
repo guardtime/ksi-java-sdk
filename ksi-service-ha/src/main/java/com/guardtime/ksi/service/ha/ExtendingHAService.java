@@ -88,8 +88,7 @@ public class ExtendingHAService implements KSIExtendingService {
      * Converts list of {@link KSIExtenderClient} to a list of {@link KSIExtendingService} by wrapping them all with
      * {@link KSIExtendingClientServiceAdapter}s
      */
-    private static List<KSIExtendingService> clientsToServices(List<KSIExtenderClient> clients) {
-        Util.notNull(clients, "ExtendingHAService.clients");
+    private List<KSIExtendingService> clientsToServices(List<KSIExtenderClient> clients) {
         List<KSIExtendingService> services = new ArrayList<KSIExtendingService>(clients.size());
         for (KSIExtenderClient client : clients) {
             services.add(new KSIExtendingClientServiceAdapter(client));

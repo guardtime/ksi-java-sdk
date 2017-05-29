@@ -89,8 +89,7 @@ public class SigningHAService implements KSISigningService {
      * Converts list of {@link KSISigningClient} to a list of {@link KSISigningService} by wrapping them all with
      * {@link KSISigningClientServiceAdapter}s
      */
-    private static List<KSISigningService> clientsToServices(List<KSISigningClient> clients) {
-        Util.notNull(clients, "SigningHAService.clients");
+    private List<KSISigningService> clientsToServices(List<KSISigningClient> clients) {
         List<KSISigningService> services = new ArrayList<KSISigningService>(clients.size());
         for (KSISigningClient client : clients) {
             services.add(new KSISigningClientServiceAdapter(client));

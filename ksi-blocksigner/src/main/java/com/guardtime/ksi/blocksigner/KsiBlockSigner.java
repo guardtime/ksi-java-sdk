@@ -155,6 +155,19 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         this.maxTreeHeight = maxTreeHeight;
     }
 
+    @Deprecated
+    KsiBlockSigner(KSISigningClient signingClient, PduFactory pduFactory, PduIdentifierProvider pduIdentifierProvider,
+                   KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
+        this(signingClient, signatureFactory, algorithm);
+    }
+
+    @Deprecated
+    KsiBlockSigner(KSISigningClient signingClient, PduFactory pduFactory, PduIdentifierProvider pduIdentifierProvider,
+                   KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight) {
+        this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm, maxTreeHeight);
+    }
+
+
     /**
      * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
      */

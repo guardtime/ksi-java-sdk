@@ -44,7 +44,7 @@ public class ExtendingPermittedVerificationRuleTest {
         Mockito.when(context.isExtendingAllowed()).thenReturn(false);
         RuleResult result = rule.verify(context);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
     }
 
     @Test

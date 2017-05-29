@@ -56,14 +56,14 @@ public class DocumentHashVerificationRuleTest extends AbstractRuleTest {
     public void testSignatureVerificationWithInvalidDocumentHashReturnsOkStatus_Ok() throws Exception {
         RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_1);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_01);
     }
 
     @Test
     public void testSignatureVerificationWithInvalidRfc3161OutputHashReturnsFailStatus_Ok() throws Exception {
         RuleResult result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_1);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_01);
     }
 
 }

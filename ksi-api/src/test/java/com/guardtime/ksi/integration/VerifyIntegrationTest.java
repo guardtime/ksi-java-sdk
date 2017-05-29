@@ -95,7 +95,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertFalse(result.isOk());
         PolicyVerificationResult policyVerificationResult = result.getPolicyVerificationResults().get(0);
         Assert.assertEquals(policyVerificationResult.getPolicyStatus(), VerificationResultCode.NA);
-        Assert.assertEquals(policyVerificationResult.getErrorCode(), VerificationErrorCode.GEN_2);
+        Assert.assertEquals(policyVerificationResult.getErrorCode(), VerificationErrorCode.GEN_02);
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)

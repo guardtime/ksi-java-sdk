@@ -98,7 +98,7 @@ public class SignatureVerifierTest {
     public void testFallbackPolicy() throws Exception {
         Rule mockedRule = Mockito.mock(Rule.class);
         RuleResult mockedResult = Mockito.mock(RuleResult.class);
-        Mockito.when(mockedResult.getErrorCode()).thenReturn(VerificationErrorCode.GEN_1);
+        Mockito.when(mockedResult.getErrorCode()).thenReturn(VerificationErrorCode.GEN_01);
         Mockito.when(mockedResult.getResultCode()).thenReturn(VerificationResultCode.NA);
         Mockito.when(mockedRule.verify(Mockito.any(KSIVerificationContext.class))).thenReturn(mockedResult);
 

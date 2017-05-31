@@ -42,8 +42,8 @@ public class TCPClient implements KSISigningClient {
     private static final Logger logger = LoggerFactory.getLogger(TCPClient.class);
 
     private IoSession tcpSession;
-    private TCPClientSettings tcpClientSettings;
-    private NioSocketConnector connector;
+    private final TCPClientSettings tcpClientSettings;
+    private final NioSocketConnector connector;
 
     public TCPClient(TCPClientSettings tcpClientSettings) {
         Util.notNull(tcpClientSettings, "TCPClientSettings.tcpClientSettings");

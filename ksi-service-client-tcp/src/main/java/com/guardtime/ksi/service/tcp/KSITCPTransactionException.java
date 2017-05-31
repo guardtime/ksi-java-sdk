@@ -27,11 +27,11 @@ public class KSITCPTransactionException extends KSIClientException {
 
     private static final long serialVersionUID = 1;
 
-    public KSITCPTransactionException(String message, Throwable cause) {
+    KSITCPTransactionException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public KSITCPTransactionException(String message) {
+    KSITCPTransactionException(String message) {
         super(message);
     }
 }

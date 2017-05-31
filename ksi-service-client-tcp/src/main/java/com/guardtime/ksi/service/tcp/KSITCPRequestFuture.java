@@ -34,17 +34,22 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
 
     private KSITCPSigningTransaction transaction;
     private final long timeoutSec;
-    private final WriteFuture writeFuture;
-    private long transactionStartedMillis = System.currentTimeMillis();
+    private WriteFuture writeFuture;
+    private long transactionStartedMillis;
     private TLVElement response;
     private KSITCPTransactionException exception;
     private boolean finished;
 
     KSITCPRequestFuture(InputStream request, IoSession tcpSession, int timeoutSec) throws IOException, KSIException {
-        this.transaction = KSITCPSigningTransaction.fromRequest(request);
-        ActiveTransactionsHolder.put(transaction);
         this.timeoutSec = timeoutSec;
+        startTransaction(tcpSession, request);
+    }
+
+    private void startTransaction(IoSession tcpSession, InputStream request) throws IOException, KSIException {
+        this.transaction = KSITCPSigningTransaction.fromRequest(request);
+        transactionStartedMillis = System.currentTimeMillis();
         this.writeFuture = transaction.send(tcpSession);
+        ActiveTransactionsHolder.put(transaction);
     }
 
     /**
@@ -61,26 +66,35 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
                 throw exception;
             }
         }
+        return blockUntilTransactionFinished();
+    }
+
+    private TLVElement blockUntilTransactionFinished() throws KSITCPTransactionException {
         try {
             boolean written = writeFuture.await(timeoutSec, TimeUnit.SECONDS);
             if (!written) {
-                exception = new TCPTimeoutException("TCP request sending could not be completed in " + timeoutSec + " seconds");
-                throw exception;
+                throw saveException(new TCPTimeoutException("TCP request sending could not be completed in " + timeoutSec + " seconds"));
             }
+
             int timeoutSeconds = getSecondsLeftBeforeTimeout();
             response = transaction.waitResponse(timeoutSeconds);
-            if (response == null) {
-                exception = new TCPTimeoutException("Response was not received in " + timeoutSec + " seconds");
-                throw exception;
+
+            if (response != null) {
+                return response;
+            } else {
+                throw saveException(new TCPTimeoutException("Response was not received in " + timeoutSec + " seconds"));
             }
-            return response;
         } catch (InterruptedException e) {
-            exception = new KSITCPTransactionException("TCP transaction was interrupted", e);
-            throw exception;
+            throw saveException(new KSITCPTransactionException("TCP transaction was interrupted", e));
         } finally {
             finished = true;
             ActiveTransactionsHolder.remove(transaction);
         }
+    }
+
+    private KSITCPTransactionException saveException(KSITCPTransactionException e) {
+        this.exception = e;
+        return e;
     }
 
     private int getSecondsLeftBeforeTimeout() {
@@ -100,6 +114,7 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
         }
         long now = System.currentTimeMillis();
         long timePassed = now - transactionStartedMillis;
+        // If following is true, it means that it's now safe to call getResult() because it will time out immediately even if it is not ready
         return timePassed > (timeoutSec * 1000);
     }
 }

@@ -71,7 +71,7 @@ class KSITCPSigningTransaction {
         if (isConfigurationPayload(tlv)) {
             synchronized (confRequestId) {
                 transaction.correlationId = confRequestId;
-                confRequestId = confRequestId+1;
+                confRequestId = confRequestId + 1;
             }
         } else {
             transaction.correlationId = extractTransactionIdFromResponseTLV(tlv);
@@ -150,34 +150,14 @@ class KSITCPSigningTransaction {
     void responseReceived(TLVElement response) {
         this.response = response;
         availableResponse.offer(response);
+        ActiveTransactionsHolder.remove(this);
     }
 
-    void waitResponse(int timeoutSeconds) throws InterruptedException {
-        availableResponse.poll(timeoutSeconds, TimeUnit.SECONDS);
+    TLVElement waitResponse(int timeoutSeconds) throws InterruptedException {
+        return availableResponse.poll(timeoutSeconds, TimeUnit.SECONDS);
     }
 
     WriteFuture send(IoSession session) {
-        ActiveTransactionsHolder.put(this);
         return session.write(this);
-    }
-
-    void blockUntilResponseOrTimeout(WriteFuture writeFuture, int timeoutSec) throws KSITCPTransactionException {
-        try {
-            if (!writeFuture.await(timeoutSec, TimeUnit.SECONDS)) {
-                throw new TCPTimeoutException("Request could not be sent in " + timeoutSec + " seconds.");
-            }
-            if (writeFuture.getException() != null) {
-                throw new KSITCPTransactionException("An exception occurred with the TCP transaction.", writeFuture.getException());
-            }
-            waitResponse(timeoutSec);
-            if (response == null) {
-                throw new TCPTimeoutException("Response was not received in " + timeoutSec + " seconds.");
-            }
-
-        } catch (InterruptedException e) {
-            throw new KSITCPTransactionException("Waiting for TCP response was interrupted.", e);
-        } finally {
-            ActiveTransactionsHolder.remove(this);
-        }
     }
 }

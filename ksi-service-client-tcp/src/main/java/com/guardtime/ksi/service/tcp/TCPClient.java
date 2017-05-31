@@ -18,7 +18,6 @@
  */
 package com.guardtime.ksi.service.tcp;
 
-import com.guardtime.ksi.concurrency.DefaultExecutorServiceProvider;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSISigningClient;
@@ -34,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutorService;
+
 /**
  * KSI TCP client for signing.
  */
@@ -43,20 +42,13 @@ public class TCPClient implements KSISigningClient {
     private static final Logger logger = LoggerFactory.getLogger(TCPClient.class);
 
     private IoSession tcpSession;
-    private ExecutorService executorService;
     private TCPClientSettings tcpClientSettings;
     private NioSocketConnector connector;
 
     public TCPClient(TCPClientSettings tcpClientSettings) {
-        this(tcpClientSettings, DefaultExecutorServiceProvider.getExecutorService());
-    }
-
-    public TCPClient(TCPClientSettings tcpClientSettings, ExecutorService executorService) {
         Util.notNull(tcpClientSettings, "TCPClientSettings.tcpClientSettings");
-        Util.notNull(executorService, "TCPClientSettings.executorService");
         this.tcpClientSettings = tcpClientSettings;
         this.connector = createConnector();
-        this.executorService = executorService;
     }
 
     public Future<TLVElement> sign(InputStream request) throws KSITCPTransactionException {
@@ -67,8 +59,7 @@ public class TCPClient implements KSISigningClient {
         }
 
         try {
-            return new KSITCPRequestFuture(executorService.submit(new TCPTransactionHolder(request, tcpSession,
-                    tcpClientSettings.getTcpTransactionTimeoutSec())));
+            return new KSITCPRequestFuture(request, tcpSession, tcpClientSettings.getTcpTransactionTimeoutSec());
         } catch (Throwable e) {
             throw new KSITCPTransactionException("There was a problem with initiating a TCP signing transaction with endpoint " +
                     tcpClientSettings.getEndpoint() + ".", e);

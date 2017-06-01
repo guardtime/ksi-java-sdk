@@ -312,7 +312,7 @@ public final class KSIBuilder {
     /**
      * {@link KSI} class implementation
      */
-    private class KSIImpl implements KSI {
+    private class KSIImpl extends SignatureVerifier implements KSI {
 
         private final Long DEFAULT_LEVEL = 0L;
 

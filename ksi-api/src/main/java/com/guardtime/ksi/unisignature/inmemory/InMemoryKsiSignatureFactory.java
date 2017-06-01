@@ -19,26 +19,25 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
+import com.guardtime.ksi.Extender;
+import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationRecord;
+import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
-import com.guardtime.ksi.unisignature.AggregationHashChain;
-import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
-import com.guardtime.ksi.unisignature.CalendarHashChain;
-import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
-import com.guardtime.ksi.unisignature.KSISignatureFactory;
-import com.guardtime.ksi.unisignature.RFC3161Record;
+import com.guardtime.ksi.unisignature.*;
 import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
+import com.guardtime.ksi.unisignature.verifier.policies.PolicyContext;
 import com.guardtime.ksi.util.Util;
 
 import java.io.IOException;
@@ -54,14 +53,30 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
 
     private Policy policy;
     private KSIExtenderClient extenderClient;
-    private PublicationsFileClientAdapter publicationsFileClientAdapter;
+    private PublicationsHandler publicationsHandler;
     private boolean extendingAllowed;
 
     private boolean verifySignatures = false;
 
-    private KSISignatureVerifier verifier = new KSISignatureVerifier();
     private KSISignatureComponentFactory signatureComponentFactory;
+    private KSISignatureVerifier verifier = new KSISignatureVerifier();
 
+    public InMemoryKsiSignatureFactory() {
+    }
+
+    public InMemoryKsiSignatureFactory(ContextAwarePolicy policy, KSISignatureComponentFactory signatureComponentFactory) {
+        Util.notNull(policy, "Signature verification policy");
+        Util.notNull(policy.getPolicyContext(), "Policy Context");
+        Util.notNull(signatureComponentFactory, "Signature component factory");
+        this.policy = policy;
+        this.extenderClient = getExtenderClient(policy.getPolicyContext());
+        this.extendingAllowed = policy.getPolicyContext().isExtendingAllowed();
+        this.publicationsHandler = policy.getPolicyContext().getPublicationsHandler();
+        this.signatureComponentFactory = signatureComponentFactory;
+        this.verifySignatures = true;
+    }
+
+    @Deprecated
     public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter,
                                        KSIExtenderClient extenderClient, boolean extendingAllowed,
                                        KSISignatureComponentFactory signatureComponentFactory) {
@@ -69,16 +84,12 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         Util.notNull(publicationsFileClientAdapter, "Publications file client adapter");
         Util.notNull(extenderClient, "KSI extender client");
         this.policy = policy;
-        this.publicationsFileClientAdapter = publicationsFileClientAdapter;
+        this.publicationsHandler = createPublicationsHandler(publicationsFileClientAdapter);
         this.extenderClient = extenderClient;
         this.extendingAllowed = extendingAllowed;
-        this.verifySignatures = true;
         this.signatureComponentFactory = signatureComponentFactory;
+        this.verifySignatures = true;
     }
-
-    public InMemoryKsiSignatureFactory() {
-    }
-
 
     public KSISignature createSignature(InputStream input) throws KSIException {
         TLVInputStream tlvInput = new TLVInputStream(input);
@@ -122,21 +133,46 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     private KSISignature createSignature(TLVElement element, boolean extendingAllowed, DataHash inputHash) throws KSIException {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(element);
         if (verifySignatures) {
-            VerificationContextBuilder builder = new VerificationContextBuilder();
-            builder.setSignature(signature).setExtenderClient(extenderClient)
-                    .setPublicationsFile(publicationsFileClientAdapter.getPublicationsFile())
+            VerificationContextBuilder builder = new VerificationContextBuilder()
+                    .setSignature(signature)
+                    .setExtenderClient(extenderClient)
+                    .setPublicationsFile(getPublicationsFile(publicationsHandler))
                     .setExtendingAllowed(extendingAllowed);
             if (inputHash != null) {
                 builder.setDocumentHash(inputHash);
             }
-            VerificationContext context = builder.createVerificationContext();
+            VerificationContext context = builder.build();
             context.setKsiSignatureComponentFactory(signatureComponentFactory);
+
             VerificationResult result = verifier.verify(context, policy);
             if (!result.isOk()) {
                 throw new InvalidSignatureContentException(signature, result);
             }
         }
         return signature;
+    }
+
+    private KSIExtenderClient getExtenderClient(PolicyContext c) {
+        Extender extender = c.getExtender();
+        if (extender == null) {
+            return null;
+        }
+        return extender.getExtenderClient();
+    }
+
+    private PublicationsFile getPublicationsFile(PublicationsHandler handler) throws KSIException {
+        if (handler == null) {
+            return null;
+        }
+        return handler.getPublicationsFile();
+    }
+
+    private PublicationsHandler createPublicationsHandler(final PublicationsFileClientAdapter clientAdapter) {
+        return new PublicationsHandler() {
+            public PublicationsFile getPublicationsFile() throws KSIException {
+                return clientAdapter.getPublicationsFile();
+            }
+        };
     }
 
     private void addTlvStructure(TLVElement root, TLVStructure structure) throws KSIException {

@@ -25,6 +25,8 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.util.Util;
+
 
 /**
  * This class is used to createSignature {@link VerificationContext} instances.
@@ -42,8 +44,7 @@ public class VerificationContextBuilder {
     /**
      * Used to set the KSI signature that is verified.
      *
-     * @param signature
-     *         signature to verify.
+     * @param signature signature to verify.
      * @return instance of {@link VerificationContextBuilder}
      */
     public VerificationContextBuilder setSignature(KSISignature signature) {
@@ -54,8 +55,7 @@ public class VerificationContextBuilder {
     /**
      * Used to set the publications file that is used by verification process
      *
-     * @param publicationsFile
-     *         instance of publications file. may be null.
+     * @param publicationsFile instance of publications file. may be null.
      * @return instance of {@link VerificationContextBuilder}
      */
     public VerificationContextBuilder setPublicationsFile(PublicationsFile publicationsFile) {
@@ -66,8 +66,7 @@ public class VerificationContextBuilder {
     /**
      * Used to set the user publication (e.g from newspaper). Used by {@link com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy}.
      *
-     * @param userPublication
-     *         instance of publication data. may be null.
+     * @param userPublication instance of publication data. may be null.
      * @return instance of {@link VerificationContextBuilder}
      */
     public VerificationContextBuilder setUserPublication(PublicationData userPublication) {
@@ -79,8 +78,7 @@ public class VerificationContextBuilder {
      * If true then extending is allowed when verifying signature. Does not affect {@link
      * com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy} policy.
      *
-     * @param extendingAllowed
-     *         true if extending is allowed, false otherwise
+     * @param extendingAllowed true if extending is allowed, false otherwise
      * @return instance of {@link VerificationContextBuilder}
      */
     public VerificationContextBuilder setExtendingAllowed(boolean extendingAllowed) {
@@ -91,8 +89,7 @@ public class VerificationContextBuilder {
     /**
      * Used to set the {@link KSIExtenderClient} to be used to extend signature.
      *
-     * @param extenderClient
-     *         instance of extender client
+     * @param extenderClient instance of extender client
      * @return instance of {@link VerificationContextBuilder}
      */
     public VerificationContextBuilder setExtenderClient(KSIExtenderClient extenderClient) {
@@ -100,11 +97,17 @@ public class VerificationContextBuilder {
         return this;
     }
 
+    //TODO
+    public VerificationContextBuilder setDocumentHash(DataHash documentHash, long level) {
+        this.documentHash = documentHash;
+        this.inputHashLevel = level;
+        return this;
+    }
+
     /**
      * Used to set the hash of the original document. If present then this hash must equal to signature input hash.
      *
-     * @param documentHash
-     *         document hash
+     * @param documentHash document hash
      * @return instance of {@link VerificationContextBuilder}
      */
     public VerificationContextBuilder setDocumentHash(DataHash documentHash) {
@@ -123,13 +126,18 @@ public class VerificationContextBuilder {
         return this;
     }
 
+    public VerificationContext build() {
+        Util.notNull(signature, "Signature");
+        return new KSIVerificationContext(publicationsFile, signature, userPublication, extendingAllowed, extenderClient, documentHash, inputHashLevel);
+    }
+
     /**
      * Builds the verification context.
      *
      * @return instance of verification context
-     * @throws KSIException
-     *         when error occurs (e.g mandatory parameters aren't present)
+     * @throws KSIException when error occurs (e.g mandatory parameters aren't present)
      */
+    @Deprecated
     public final VerificationContext createVerificationContext() throws KSIException {
         if (signature == null) {
             throw new KSIException("Failed to createSignature verification context. Signature must be present.");

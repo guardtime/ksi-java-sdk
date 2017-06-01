@@ -18,20 +18,15 @@
  */
 package com.guardtime.ksi.util;
 
+import com.guardtime.ksi.exceptions.KSIException;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.*;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
 import java.util.Collection;
 import java.util.Random;
 import java.util.zip.CRC32;
@@ -657,13 +652,34 @@ public final class Util {
     }
 
     /**
-     * For getting the stacktrace of a throwable as a string.
+     * Returns the default location of Java Runtime Environment certificate store.
+     *
+     * @return default certificate store location
      */
-    public static String getStacktrace(Throwable t) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        t.printStackTrace(pw);
-        return sw.toString();
+    public static String getDefaultTrustStore() {
+        return System.getProperty("java.home") + File.separatorChar + "lib" + File.separatorChar
+                + "security" + File.separatorChar + "cacerts";
+    }
+    /**
+     * Loads and returns the {@link java.security.KeyStore} from the file system.
+     */
+    public static KeyStore loadKeyStore(File file, String password) throws KSIException {
+        notNull(file, "Trust store file");
+        FileInputStream input = null;
+        KeyStore keyStore = null;
+        try {
+            keyStore = KeyStore.getInstance("JKS");
+            char[] passwordCharArray = password == null ? null : password.toCharArray();
+            input = new FileInputStream(file);
+            keyStore.load(input, passwordCharArray);
+        } catch (GeneralSecurityException e) {
+            throw new KSIException("Loading java key store with path " + file + " failed", e);
+        } catch (IOException e) {
+            throw new KSIException("Loading java key store with path " + file + " failed", e);
+        } finally {
+            closeQuietly(input);
+        }
+        return keyStore;
     }
 
     /**

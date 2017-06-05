@@ -48,7 +48,9 @@ import java.io.IOException;
 import java.security.KeyStore;
 import java.security.cert.CertSelector;
 
-import static com.guardtime.ksi.util.Util.*;
+import static com.guardtime.ksi.util.Util.getDefaultTrustStore;
+import static com.guardtime.ksi.util.Util.loadKeyStore;
+import static com.guardtime.ksi.util.Util.notNull;
 
 /**
  * This class provides functionality to obtain {@link Extender} object(s). This class offers multiple methods to configure
@@ -139,7 +141,8 @@ public final class ExtenderBuilder {
     }
 
     /**
-     * Builds the {@link Extender} instance. Checks that the extender and publications file clients are set.
+     * Builds the {@link Extender} instance. Checks that the extender, publications file client and
+     * KSI publications file trusted certificate selector are set. If not configured {@link NullPointerException} is thrown.
      *
      * @return instance of {@link Extender} class
      * @throws KSIException will be thrown when errors occur on {@link Extender} class initialization.

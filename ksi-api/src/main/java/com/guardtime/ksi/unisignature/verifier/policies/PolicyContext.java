@@ -22,16 +22,30 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 
 public class PolicyContext {
 
     private PublicationsHandler publicationsHandler;
     private Extender extender;
-    private boolean extendingAllowed = false;
     private PublicationData userPublication;
+    private KSISignatureComponentFactory signatureComponentFactory;
+
+    public PolicyContext() {}
 
     public PolicyContext(PublicationsHandler publicationsHandler, Extender extender) {
         this.publicationsHandler = publicationsHandler;
+        this.extender = extender;
+    }
+
+    public PolicyContext(KSISignatureComponentFactory signatureComponentFactory, Extender extender) {
+        this.signatureComponentFactory = signatureComponentFactory;
+        this.extender = extender;
+    }
+
+    public PolicyContext(PublicationData publicationData, KSISignatureComponentFactory signatureComponentFactory, Extender extender) {
+        this.userPublication = publicationData;
+        this.signatureComponentFactory = signatureComponentFactory;
         this.extender = extender;
     }
 
@@ -44,10 +58,14 @@ public class PolicyContext {
     }
 
     public boolean isExtendingAllowed() {
-        return extendingAllowed;
+        return extender != null;
     }
 
     public PublicationData getUserPublication() {
         return userPublication;
+    }
+
+    public KSISignatureComponentFactory getSignatureComponentFactory() {
+        return signatureComponentFactory;
     }
 }

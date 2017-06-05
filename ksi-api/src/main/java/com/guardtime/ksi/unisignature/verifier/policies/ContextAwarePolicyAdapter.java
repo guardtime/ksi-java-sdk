@@ -21,6 +21,8 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 
 import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
+import com.guardtime.ksi.publication.PublicationData;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
 import com.guardtime.ksi.util.Util;
 
@@ -38,18 +40,45 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
         this.context = context;
     }
 
+    // InternalVerificationPolicy
+    public static ContextAwarePolicy createInternalPolicy() {
+        return new ContextAwarePolicyAdapter(new InternalVerificationPolicy(), new PolicyContext());
+    }
+
+    // KeyBasedVerificationPolicy
+    public static ContextAwarePolicy createKeyPolicy(PublicationsHandler handler) {
+        Util.notNull(handler, "Publications handler");
+        return new ContextAwarePolicyAdapter(new KeyBasedVerificationPolicy(), new PolicyContext(handler, null));
+    }
+
+    // PublicationsFileBasedVerificationPolicy
     public static ContextAwarePolicy createPublicationsFilePolicy(PublicationsHandler handler) {
         return createPublicationsFilePolicy(handler, null);
     }
 
+    // PublicationsFileBasedVerificationPolicy
     public static ContextAwarePolicy createPublicationsFilePolicy(PublicationsHandler handler, Extender extender) {
         Util.notNull(handler, "Publications handler");
         PolicyContext context = new PolicyContext(handler, extender);
         return new ContextAwarePolicyAdapter(new PublicationsFileBasedVerificationPolicy(), context);
     }
 
-    public static ContextAwarePolicy createInternalPolicy() {
-        return new ContextAwarePolicyAdapter(new InternalVerificationPolicy(), new PolicyContext(null, null));
+    // CalendarBasedVerificationPolicy
+    public static ContextAwarePolicy createCalendarPolicy(KSISignatureComponentFactory signatureComponentFactory,
+            Extender extender) {
+        Util.notNull(signatureComponentFactory, "Signature factory");
+        Util.notNull(extender, "Extender");
+        return new ContextAwarePolicyAdapter(new CalendarBasedVerificationPolicy(),
+                new PolicyContext(signatureComponentFactory, extender));
+    }
+
+    // UserProvidedPublicationBasedVerificationPolicy
+    public static ContextAwarePolicy createUserPolicy(PublicationData publicationData, KSISignatureComponentFactory signatureComponentFactory, Extender extender) {
+        Util.notNull(publicationData, "Publication data");
+        Util.notNull(signatureComponentFactory, "Signature factory");
+        Util.notNull(extender, "Extender");
+        return new ContextAwarePolicyAdapter(new UserProvidedPublicationBasedVerificationPolicy(),
+                new PolicyContext(publicationData, signatureComponentFactory, extender));
     }
 
     public PolicyContext getPolicyContext() {
@@ -75,6 +104,5 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     public void setFallbackPolicy(Policy policy) {
         policy.setFallbackPolicy(policy);
     }
-
 
 }

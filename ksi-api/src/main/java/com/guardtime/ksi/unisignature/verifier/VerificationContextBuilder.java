@@ -97,8 +97,14 @@ public class VerificationContextBuilder {
         return this;
     }
 
-    //TODO
-    public VerificationContextBuilder setDocumentHash(DataHash documentHash, long level) {
+    /**
+     * Used to set the hash and local aggregation tree height.
+     * If present then this hash must equal to signature input hash.
+     *
+     * @param documentHash document hash
+     * @return instance of {@link VerificationContextBuilder}
+     */
+    public VerificationContextBuilder setDocumentHash(DataHash documentHash, Long level) {
         this.documentHash = documentHash;
         this.inputHashLevel = level;
         return this;
@@ -109,26 +115,18 @@ public class VerificationContextBuilder {
      *
      * @param documentHash document hash
      * @return instance of {@link VerificationContextBuilder}
-     */
-    public VerificationContextBuilder setDocumentHash(DataHash documentHash) {
-        this.documentHash = documentHash;
-        return this;
-    }
-
-    /**
-     * Used to set the input hash level.
      *
-     * @param inputHashLevel
-     * @return instance of {@link VerificationContextBuilder}
+     * @deprecated Deprecated since 4.10, replaced by {@link VerificationContextBuilder#setDocumentHash(DataHash, long)}.
      */
-    public VerificationContextBuilder setInputHashLevel(Long inputHashLevel) {
-        this.inputHashLevel = inputHashLevel;
-        return this;
+    @Deprecated
+    public VerificationContextBuilder setDocumentHash(DataHash documentHash) {
+        return setDocumentHash(documentHash, 0L);
     }
 
     public VerificationContext build() {
         Util.notNull(signature, "Signature");
-        return new KSIVerificationContext(publicationsFile, signature, userPublication, extendingAllowed, extenderClient, documentHash, inputHashLevel);
+        return new KSIVerificationContext(publicationsFile, signature, userPublication, extendingAllowed, extenderClient,
+                documentHash, inputHashLevel);
     }
 
     /**

@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.InputStream;
 
 /**
- * Interface for parsing KSI signatures. An instance of this class can be obtained using {@link ReaderBuilder} class.
+ * Interface for parsing KSI signatures. An instance of this class can be obtained using {@link SignatureReader} class.
  */
 public interface Reader {
 

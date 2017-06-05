@@ -26,14 +26,56 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 
 /**
- * An instance of this class can be obtained using {@link VerifierBuilder} class.
+ * An instance of this class can be obtained using {@link SignatureVerifier} class.
  */
 public interface Verifier {
 
+    /**
+     * This method is used to verify the keyless signature.
+     *
+     * @param signature
+     *         instance of {@link KSISignature} to be verified.
+     * @param policy
+     *         context aware policy {@link ContextAwarePolicy} to be used to verify the signature.
+     * @return returns the verification result
+     * @throws KSIException
+     *         when error occurs (e.g when communication with KSI service fails)
+     */
     VerificationResult verify(KSISignature signature, ContextAwarePolicy policy) throws KSIException;
 
+    /**
+     * This method is used to verify the keyless signature. User provided document hash is compared against the data hash
+     * within the KSI signature.
+     *
+     * @param signature
+     *         instance of {@link KSISignature} to be verified.
+     * @param documentHash
+     *         instance of {@link DataHash} to be verified against the signature.
+     * @param policy
+     *         context aware policy {@link ContextAwarePolicy} to be used to verify the signature.
+     * @return returns the verification result
+     * @throws KSIException
+     *         when error occurs (e.g when communication with KSI service fails)
+     */
     VerificationResult verify(KSISignature signature, DataHash documentHash, ContextAwarePolicy policy) throws KSIException;
 
-    VerificationResult verify(KSISignature signature, DataHash documentHash, Long level, ContextAwarePolicy policy) throws KSIException;
+    /**
+     * This method is used to verify the keyless signature. User provided document hash and level are compared against the values
+     * within the KSI signature.
+     *
+     * @param signature
+     *         instance of {@link KSISignature} to be verified.
+     * @param documentHash
+     *         instance of {@link DataHash} to be verified against the signature.
+     * @param level
+     *         local aggregation tree height.
+     * @param policy
+     *         context aware policy {@link ContextAwarePolicy} to be used to verify the signature.
+     * @return returns the verification result
+     * @throws KSIException
+     *         when error occurs (e.g when communication with KSI service fails)
+     */
+    VerificationResult verify(KSISignature signature, DataHash documentHash, Long level, ContextAwarePolicy policy)
+            throws KSIException;
 
 }

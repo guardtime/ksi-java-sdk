@@ -57,7 +57,7 @@ public abstract class AbstractRuleTest {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
         builder.setPublicationsFile(trustStore).setExtenderClient(mockedExtenderClient).setUserPublication(publication);
-        return builder.setSignature(signature).setDocumentHash(documentHash).setInputHashLevel(level).createVerificationContext();
+        return builder.setSignature(signature).setDocumentHash(documentHash, level).createVerificationContext();
     }
 
 

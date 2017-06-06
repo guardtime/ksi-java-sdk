@@ -18,9 +18,9 @@
  */
 package com.guardtime.ksi.unisignature.verifier.policies;
 
-import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
 import org.mockito.Mockito;
 import org.testng.annotations.Test;
 
@@ -35,39 +35,35 @@ public class PolicyContextTest {
     public void testPolicyContextWithoutParams() {
         PolicyContext pc = new PolicyContext();
         assertFalse(pc.isExtendingAllowed());
-        assertNull(pc.getExtender());
+        assertNull(pc.getExtenderClient());
         assertNull(pc.getPublicationsHandler());
-        assertNotNull(pc.getSignatureComponentFactory());
-        assertNull(pc.getUserPublication());
-    }
-
-    @Test
-    public void testPolicyContextWithPublicationsHandlerExtender() {
-        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationsHandler.class), Mockito.mock(Extender.class));
-        assertTrue(pc.isExtendingAllowed());
-        assertNotNull(pc.getExtender());
-        assertNotNull(pc.getPublicationsHandler());
-        assertNotNull(pc.getSignatureComponentFactory());
         assertNull(pc.getUserPublication());
     }
 
     @Test
     public void testPolicyContextWithExtender() {
-        PolicyContext pc = new PolicyContext(Mockito.mock(Extender.class));
+        PolicyContext pc = new PolicyContext(Mockito.mock(KSIExtenderClient.class));
         assertTrue(pc.isExtendingAllowed());
-        assertNotNull(pc.getExtender());
+        assertNotNull(pc.getExtenderClient());
         assertNull(pc.getPublicationsHandler());
-        assertNotNull(pc.getSignatureComponentFactory());
+        assertNull(pc.getUserPublication());
+    }
+
+    @Test
+    public void testPolicyContextWithPublicationsHandlerExtender() {
+        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationsHandler.class), Mockito.mock(KSIExtenderClient.class));
+        assertTrue(pc.isExtendingAllowed());
+        assertNotNull(pc.getExtenderClient());
+        assertNotNull(pc.getPublicationsHandler());
         assertNull(pc.getUserPublication());
     }
 
     @Test
     public void testPolicyContextWithPublicationDataExtender() {
-        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationData.class), Mockito.mock(Extender.class));
+        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationData.class), Mockito.mock(KSIExtenderClient.class));
         assertTrue(pc.isExtendingAllowed());
-        assertNotNull(pc.getExtender());
+        assertNotNull(pc.getExtenderClient());
         assertNull(pc.getPublicationsHandler());
-        assertNotNull(pc.getSignatureComponentFactory());
         assertNotNull(pc.getUserPublication());
     }
 

@@ -3,6 +3,7 @@ package com.guardtime.ksi;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
@@ -19,22 +20,25 @@ public class SignatureVerifier implements Verifier {
         return verify(signature, null, null, policy);
     }
 
-    public VerificationResult verify(KSISignature signature, DataHash documentHash, ContextAwarePolicy policy) throws KSIException {
+    public VerificationResult verify(KSISignature signature, DataHash documentHash, ContextAwarePolicy policy)
+            throws KSIException {
         return verify(signature, documentHash, null, policy);
     }
 
-    public VerificationResult verify(KSISignature signature, DataHash documentHash, Long level, ContextAwarePolicy policy) throws KSIException {
+    public VerificationResult verify(KSISignature signature, DataHash documentHash, Long level, ContextAwarePolicy policy)
+            throws KSIException {
         Util.notNull(signature, "Signature");
         Util.notNull(policy, "Policy");
         PolicyContext c = policy.getPolicyContext();
         VerificationContext context = new VerificationContextBuilder()
                 .setDocumentHash(documentHash, level)
-                .setExtenderClient(c.getExtender() != null ? c.getExtender().getExtenderClient() : null)
+                .setExtenderClient(c.getExtenderClient())
                 .setExtendingAllowed(c.isExtendingAllowed())
                 .setPublicationsFile(c.getPublicationsHandler() != null ? c.getPublicationsHandler().getPublicationsFile() : null)
                 .setSignature(signature)
                 .setUserPublication(c.getUserPublication())
                 .build();
+        context.setKsiSignatureComponentFactory(new InMemoryKsiSignatureComponentFactory());
 
         return verifier.verify(context, policy);
     }

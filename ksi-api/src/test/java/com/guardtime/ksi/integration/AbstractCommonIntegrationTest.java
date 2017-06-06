@@ -19,8 +19,12 @@
 package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.CommonTestUtil;
+import com.guardtime.ksi.Extender;
+import com.guardtime.ksi.ExtenderBuilder;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.KSIBuilder;
+import com.guardtime.ksi.PublicationsHandler;
+import com.guardtime.ksi.PublicationsHandlerBuilder;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
@@ -48,7 +52,7 @@ import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 
 import java.io.BufferedReader;
@@ -65,9 +69,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE;
 import static com.guardtime.ksi.CommonTestUtil.load;
 import static com.guardtime.ksi.CommonTestUtil.loadFile;
+import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE;
 import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE_PASSWORD;
 import static com.guardtime.ksi.Resources.PROPERTIES_INTEGRATION_TEST;
 
@@ -92,8 +96,8 @@ public abstract class AbstractCommonIntegrationTest {
     protected SimpleHttpClient simpleHttpClient;
 
 
-    @BeforeMethod
-    public void setUp() throws Exception {
+    @BeforeClass
+    protected void setUp() throws Exception {
         this.simpleHttpClient = new SimpleHttpClient(loadHTTPSettings());
         this.ksi = createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient);
     }
@@ -204,6 +208,22 @@ public abstract class AbstractCommonIntegrationTest {
                 setKsiProtocolSignerClient(signingClient).
                 setPublicationsFilePkiTrustStore(createKeyStore()).
                 setPublicationsFileTrustedCertSelector(createCertSelector());
+    }
+
+    protected PublicationsHandler getPublicationsHandler(KSIPublicationsFileClient publicationsFileClient) throws Exception {
+        return new PublicationsHandlerBuilder().setKsiProtocolPublicationsFileClient(publicationsFileClient)
+                .setPublicationsFileCacheExpirationTime(10000L)
+                .setPublicationsFilePkiTrustStore(createKeyStore())
+                .setPublicationsFileCertificateConstraints(createCertSelector()).build();
+    }
+
+    protected Extender getExtender(KSIExtenderClient extenderClient, KSIPublicationsFileClient publicationsFileClient) throws Exception {
+        return new ExtenderBuilder()
+                .setExtenderClient(extenderClient)
+                .setKsiProtocolPublicationsFileClient(publicationsFileClient)
+                .setPublicationsFileCacheExpirationTime(10000L)
+                .setPublicationsFilePkiTrustStore(createKeyStore())
+                .setPublicationsFileCertificateConstraints(createCertSelector()).build();
     }
 
     protected static KeyStore createKeyStore() throws CertificateException, NoSuchAlgorithmException, IOException, KeyStoreException {

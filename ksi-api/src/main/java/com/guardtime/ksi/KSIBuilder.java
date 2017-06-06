@@ -44,6 +44,7 @@ import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
+import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,6 +244,9 @@ public final class KSIBuilder {
      * By default {@link InternalVerificationPolicy} is used.
      */
     public KSIBuilder setDefaultVerificationPolicy(Policy defaultVerificationPolicy) {
+        if (defaultVerificationPolicy instanceof UserProvidedPublicationBasedVerificationPolicy) {
+            throw new IllegalArgumentException("Unsupported default verification policy.");
+        }
         this.defaultVerificationPolicy = defaultVerificationPolicy;
         return this;
     }
@@ -271,9 +275,16 @@ public final class KSIBuilder {
         logger.info("KSI SDK initialized with signing client: {}", signingClient);
         logger.info("KSI SDK initialized with extender client: {}", extenderClient);
 
-        ContextAwarePolicy contextAwarePolicy = ContextAwarePolicyAdapter.addContextToPolicy(defaultVerificationPolicy);
+        PublicationsHandler publicationsHandler =
+                new PublicationsHandlerBuilder().setKsiProtocolPublicationsFileClient(publicationsFileClient)
+                .setPublicationsFileCacheExpirationTime(publicationsFileCacheExpirationTime)
+                .setPublicationsFilePkiTrustStore(trustStore)
+                .setPublicationsFileCertificateConstraints(certSelector).build();
 
-        Reader reader = new SignatureReader();
+        ContextAwarePolicy contextAwarePolicy =
+                ContextAwarePolicyAdapter.createPolicy(defaultVerificationPolicy, publicationsHandler, extenderClient);
+
+        Reader reader = new SignatureReader(contextAwarePolicy);
         Signer signer = new SignerBuilder().setDefaultSigningHashAlgorithm(defaultHashAlgorithm)
                 .setDefaultVerificationPolicy(contextAwarePolicy)
                 .setSignerClient(signingClient).build();
@@ -283,11 +294,6 @@ public final class KSIBuilder {
                 .setPublicationsFileCacheExpirationTime(publicationsFileCacheExpirationTime)
                 .setPublicationsFilePkiTrustStore(trustStore)
                 .setPublicationsFileCertificateConstraints(certSelector).build();
-        PublicationsHandler publicationsHandler =
-                new PublicationsHandlerBuilder().setKsiProtocolPublicationsFileClient(publicationsFileClient)
-                        .setPublicationsFileCacheExpirationTime(publicationsFileCacheExpirationTime)
-                        .setPublicationsFilePkiTrustStore(trustStore)
-                        .setPublicationsFileCertificateConstraints(certSelector).build();
         return new KSIImpl(reader, signer, extender, publicationsHandler);
     }
 
@@ -295,7 +301,6 @@ public final class KSIBuilder {
      * {@link KSI} class implementation
      */
     private class KSIImpl extends SignatureVerifier implements KSI {
-
         private final Reader reader;
         private final Signer signer;
         private final Extender extender;

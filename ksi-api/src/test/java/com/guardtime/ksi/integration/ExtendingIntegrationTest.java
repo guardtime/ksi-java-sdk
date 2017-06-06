@@ -18,11 +18,8 @@
  */
 package com.guardtime.ksi.integration;
 
-import com.guardtime.ksi.Extender;
-import com.guardtime.ksi.ExtenderBuilder;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
@@ -44,23 +41,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
-import static com.guardtime.ksi.Resources.*;
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
-
-    @Test
-    public void testExtender() throws Exception {
-        Extender e = new ExtenderBuilder()
-                .setExtenderClient(simpleHttpClient)
-                .setKsiProtocolPublicationsFileClient(simpleHttpClient)
-                .setPublicationsFileCertificateConstraints(createCertSelector())
-                .setPublicationsFilePkiTrustStore(createKeyStore())
-                .build();
-
-        KSISignature extendedSignature = e.extend(loadSignature(SIGNATURE_2017_03_14));
-        Assert.assertTrue(extendedSignature.isExtended(), "Signature extension failed.");
-    }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
     public void testExtendToNearest_OK(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
@@ -111,7 +97,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(verificationResult.isOk(), "Verification of extended signature failed with " + verificationResult.getErrorCode());
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
+    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
     public void testExtendPublicationBeforeSignature_NOK() throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
         PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(new Date(signature.getAggregationTime().getTime() - 1000000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));

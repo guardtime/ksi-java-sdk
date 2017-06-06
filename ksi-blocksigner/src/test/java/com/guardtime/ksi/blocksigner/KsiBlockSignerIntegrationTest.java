@@ -30,7 +30,7 @@ import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFact
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.mockito.Mockito;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -59,7 +59,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     private DataHash dataHashRipemd160;
 
     @Override
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
         super.setUp();
         metadata = new IdentityMetadata("test1");

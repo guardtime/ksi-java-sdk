@@ -19,52 +19,50 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
-import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
-import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.util.Util;
 
 public class PolicyContext {
 
     private PublicationsHandler publicationsHandler;
-    private Extender extender;
+    private KSIExtenderClient extenderClient;
     private PublicationData userPublication;
-    private KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
 
     public PolicyContext() {}
 
-    public PolicyContext(Extender extender) {
-        this.extender = extender;
+    public PolicyContext(KSIExtenderClient extenderClient) {
+        Util.notNull(extenderClient, "Extender client");
+        this.extenderClient = extenderClient;
     }
 
-    public PolicyContext(PublicationsHandler publicationsHandler, Extender extender) {
+    public PolicyContext(PublicationsHandler publicationsHandler, KSIExtenderClient extenderClient) {
+        Util.notNull(publicationsHandler, "Publications handler");
         this.publicationsHandler = publicationsHandler;
-        this.extender = extender;
+        this.extenderClient = extenderClient;
     }
 
-    public PolicyContext(PublicationData publicationData, Extender extender) {
+    public PolicyContext(PublicationData publicationData, KSIExtenderClient extenderClient) {
+        Util.notNull(publicationData, "Publication data");
         this.userPublication = publicationData;
-        this.extender = extender;
+        this.extenderClient = extenderClient;
     }
 
     public PublicationsHandler getPublicationsHandler() {
         return publicationsHandler;
     }
 
-    public Extender getExtender() {
-        return extender;
+    public KSIExtenderClient getExtenderClient() {
+        return extenderClient;
     }
 
     public boolean isExtendingAllowed() {
-        return extender != null;
+        return extenderClient != null;
     }
 
     public PublicationData getUserPublication() {
         return userPublication;
     }
 
-    public KSISignatureComponentFactory getSignatureComponentFactory() {
-        return signatureComponentFactory;
-    }
 }

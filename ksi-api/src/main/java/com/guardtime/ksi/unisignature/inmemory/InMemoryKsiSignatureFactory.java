@@ -19,7 +19,6 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
-import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
@@ -30,14 +29,19 @@ import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
-import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.AggregationHashChain;
+import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
+import com.guardtime.ksi.unisignature.CalendarHashChain;
+import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
+import com.guardtime.ksi.unisignature.KSISignatureFactory;
+import com.guardtime.ksi.unisignature.RFC3161Record;
 import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
-import com.guardtime.ksi.unisignature.verifier.policies.PolicyContext;
 import com.guardtime.ksi.util.Util;
 
 import java.io.IOException;
@@ -69,7 +73,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         Util.notNull(policy.getPolicyContext(), "Policy Context");
         Util.notNull(signatureComponentFactory, "Signature component factory");
         this.policy = policy;
-        this.extenderClient = getExtenderClient(policy.getPolicyContext());
+        this.extenderClient = policy.getPolicyContext().getExtenderClient();
         this.extendingAllowed = policy.getPolicyContext().isExtendingAllowed();
         this.publicationsHandler = policy.getPolicyContext().getPublicationsHandler();
         this.signatureComponentFactory = signatureComponentFactory;
@@ -150,14 +154,6 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
             }
         }
         return signature;
-    }
-
-    private KSIExtenderClient getExtenderClient(PolicyContext c) {
-        Extender extender = c.getExtender();
-        if (extender == null) {
-            return null;
-        }
-        return extender.getExtenderClient();
     }
 
     private PublicationsFile getPublicationsFile(PublicationsHandler handler) throws KSIException {

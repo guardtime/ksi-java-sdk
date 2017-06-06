@@ -22,6 +22,7 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
 import com.guardtime.ksi.util.Util;
 
@@ -72,8 +73,8 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     }
 
     /**
-     * Method creating context aware policy using {@link PublicationsFileBasedVerificationPolicy} for verification. Since
-     * extender is provided, then extending is allowed when verifying signature.
+     * Method creating context aware policy using {@link PublicationsFileBasedVerificationPolicy} for verification. If
+     * extender is provided, then extending is allowed while verifying signature.
      *
      * @param handler
      *      Publications handler.
@@ -83,7 +84,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
      */
     public static ContextAwarePolicy createPublicationsFilePolicy(PublicationsHandler handler, Extender extender) {
         Util.notNull(handler, "Publications handler");
-        PolicyContext context = new PolicyContext(handler, extender);
+        PolicyContext context = new PolicyContext(handler, extender != null ? extender.getExtenderClient() : null);
         return new ContextAwarePolicyAdapter(new PublicationsFileBasedVerificationPolicy(), context);
     }
 
@@ -97,7 +98,8 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
      */
     public static ContextAwarePolicy createCalendarPolicy(Extender extender) {
         Util.notNull(extender, "Extender");
-        return new ContextAwarePolicyAdapter(new CalendarBasedVerificationPolicy(), new PolicyContext(extender));
+        return new ContextAwarePolicyAdapter(new CalendarBasedVerificationPolicy(),
+                new PolicyContext(extender.getExtenderClient()));
     }
 
     /**
@@ -114,7 +116,27 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
         Util.notNull(publicationData, "Publication data");
         Util.notNull(extender, "Extender");
         return new ContextAwarePolicyAdapter(new UserProvidedPublicationBasedVerificationPolicy(),
-                new PolicyContext(publicationData, extender));
+                new PolicyContext(publicationData, extender.getExtenderClient()));
+    }
+
+    /**
+     * Method creating context aware policy using user provided policy with needed components.
+     *
+     * @param policy
+     *      Policy.
+     * @param handler
+     *      Publications handler.
+     * @param extenderClient
+     *      Extender client.
+     * @return Policy with suitable context.
+     */
+    public static ContextAwarePolicy createPolicy(Policy policy, PublicationsHandler handler, KSIExtenderClient extenderClient) {
+        if(policy instanceof UserProvidedPublicationBasedVerificationPolicy){
+            throw new IllegalArgumentException("Unsupported verification policy.");
+        }
+        Util.notNull(handler, "Publications handler");
+        Util.notNull(extenderClient, "Extender client");
+        return new ContextAwarePolicyAdapter(policy, new PolicyContext(handler, extenderClient));
     }
 
     public PolicyContext getPolicyContext() {
@@ -139,14 +161,6 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
 
     public void setFallbackPolicy(Policy policy) {
         policy.setFallbackPolicy(policy);
-    }
-
-    public static ContextAwarePolicy addContextToPolicy(Policy defaultVerificationPolicy) {
-        if(defaultVerificationPolicy instanceof ContextAwarePolicy){
-            return (ContextAwarePolicy) defaultVerificationPolicy;
-        }
-        //TODO
-        return null;
     }
 
 }

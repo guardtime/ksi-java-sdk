@@ -21,52 +21,43 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
-import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
-import com.guardtime.ksi.publication.PublicationsFileFactory;
-import com.guardtime.ksi.publication.adapter.CachingPublicationsFileClientAdapter;
-import com.guardtime.ksi.publication.adapter.NonCachingPublicationsFileClientAdapter;
-import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
-import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.trust.JKSTrustStore;
-import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
-import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
-import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.CertSelector;
+
+import static com.guardtime.ksi.util.Util.getDefaultTrustStore;
+import static com.guardtime.ksi.util.Util.notNull;
 
 /**
  * <p>This class provides functionality to obtain {@link KSI} object(s). This cass offers multiple methods to configure
@@ -264,20 +255,12 @@ public final class KSIBuilder {
      *         will be thrown when some client is null.
      */
     public KSI build() throws KSIException {
+        notNull(signingClient, "KSI signing client");
+        notNull(extenderClient, "KSI extender client");
+        notNull(publicationsFileClient, "KSI publications file");
+        notNull(certSelector, "KSI publications file trusted certificate selector");
         if (defaultHashAlgorithm == null) {
             this.defaultHashAlgorithm = HashAlgorithm.SHA2_256;
-        }
-        if (signingClient == null) {
-            throw new KSIException("Invalid input parameter. KSI signing client must be present");
-        }
-        if (extenderClient == null) {
-            throw new KSIException("Invalid input parameter. KSI extender client must be present");
-        }
-        if (publicationsFileClient == null) {
-            throw new KSIException("Invalid input parameter. KSI publications file client must be present");
-        }
-        if (certSelector == null) {
-            throw new KSIException("Invalid input parameter. KSI publications file trusted certificate selector must be present");
         }
         if (trustStore == null) {
             this.setPublicationsFilePkiTrustStore(new File(getDefaultTrustStore()), null);
@@ -285,28 +268,27 @@ public final class KSIBuilder {
         if (defaultVerificationPolicy == null) {
             this.defaultVerificationPolicy = new InternalVerificationPolicy();
         }
-        PKITrustStore jksTrustStore = new JKSTrustStore(trustStore, certSelector);
-        PublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(jksTrustStore);
-        PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
         logger.info("KSI SDK initialized with signing client: {}", signingClient);
         logger.info("KSI SDK initialized with extender client: {}", extenderClient);
-        KSISignatureComponentFactory signatureComponentFactory= new InMemoryKsiSignatureComponentFactory();
-        KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory(defaultVerificationPolicy, publicationsFileAdapter, extenderClient, true, signatureComponentFactory);
 
+        ContextAwarePolicy contextAwarePolicy = ContextAwarePolicyAdapter.addContextToPolicy(defaultVerificationPolicy);
 
-        return new KSIImpl(signingClient, extenderClient, publicationsFileAdapter, uniSignatureFactory, signatureComponentFactory, pduIdentifierProvider, defaultHashAlgorithm);
-    }
-
-    private PublicationsFileClientAdapter createPublicationsFileAdapter(KSIPublicationsFileClient publicationsFileClient, PublicationsFileFactory publicationsFileFactory, long expirationTime) {
-        if (expirationTime > 0) {
-            return new CachingPublicationsFileClientAdapter(publicationsFileClient, publicationsFileFactory, expirationTime);
-        }
-        return new NonCachingPublicationsFileClientAdapter(publicationsFileClient, publicationsFileFactory);
-    }
-
-    private String getDefaultTrustStore() {
-        return System.getProperty("java.home") + File.separatorChar + "lib" + File.separatorChar
-                + "security" + File.separatorChar + "cacerts";
+        Reader reader = new SignatureReader();
+        Signer signer = new SignerBuilder().setDefaultSigningHashAlgorithm(defaultHashAlgorithm)
+                .setDefaultVerificationPolicy(contextAwarePolicy)
+                .setSignerClient(signingClient).build();
+        Extender extender = new ExtenderBuilder().setDefaultVerificationPolicy(contextAwarePolicy)
+                .setExtenderClient(extenderClient)
+                .setKsiProtocolPublicationsFileClient(publicationsFileClient)
+                .setPublicationsFileCacheExpirationTime(publicationsFileCacheExpirationTime)
+                .setPublicationsFilePkiTrustStore(trustStore)
+                .setPublicationsFileCertificateConstraints(certSelector).build();
+        PublicationsHandler publicationsHandler =
+                new PublicationsHandlerBuilder().setKsiProtocolPublicationsFileClient(publicationsFileClient)
+                        .setPublicationsFileCacheExpirationTime(publicationsFileCacheExpirationTime)
+                        .setPublicationsFilePkiTrustStore(trustStore)
+                        .setPublicationsFileCertificateConstraints(certSelector).build();
+        return new KSIImpl(reader, signer, extender, publicationsHandler);
     }
 
     /**
@@ -314,139 +296,74 @@ public final class KSIBuilder {
      */
     private class KSIImpl extends SignatureVerifier implements KSI {
 
-        private final Long DEFAULT_LEVEL = 0L;
+        private final Reader reader;
+        private final Signer signer;
+        private final Extender extender;
+        private final PublicationsHandler publicationsHandler;
+        private final KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
 
-        private final KSISignatureFactory signatureFactory;
-        private final KSISignatureComponentFactory signatureComponentFactory;
-        private final HashAlgorithm defaultHashAlgorithm;
-        private final KSISigningClient signingClient;
-        private final KSIExtenderClient extenderClient;
-        private final PublicationsFileClientAdapter publicationsFileAdapter;
-
-        public KSIImpl(KSISigningClient signingClient, KSIExtenderClient extenderClient,
-                       PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory,
-                       KSISignatureComponentFactory signatureComponentFactory, PduIdentifierProvider pduIdentifierProvider,
-                       HashAlgorithm defaultHashAlgorithm) {
-            this.signatureFactory = signatureFactory;
-            this.signatureComponentFactory = signatureComponentFactory;
-            this.defaultHashAlgorithm = defaultHashAlgorithm;
-            this.signingClient = signingClient;
-            this.extenderClient = extenderClient;
-            this.publicationsFileAdapter = publicationsFileAdapter;
+        public KSIImpl(Reader reader, Signer signer, Extender extender, PublicationsHandler publicationsHandler) {
+            this.reader = reader;
+            this.signer = signer;
+            this.extender = extender;
+            this.publicationsHandler = publicationsHandler;
         }
 
         public KSISignature read(InputStream input) throws KSIException {
-            if (input == null) {
-                throw new KSIException("Invalid input parameter. Input stream can not be null");
-            }
-            return signatureFactory.createSignature(input);
+            return reader.read(input);
         }
 
         public KSISignature read(byte[] bytes) throws KSIException {
-            if (bytes == null) {
-                throw new KSIException("Invalid input parameter. Byte array can not be null");
-            }
-            return read(new ByteArrayInputStream(bytes));
+            return reader.read(bytes);
         }
 
         public KSISignature read(File file) throws KSIException {
-            if (file == null) {
-                throw new KSIException("Invalid input parameter. File can not be null");
-            }
-            FileInputStream input = null;
-            try {
-                input = new FileInputStream(file);
-                return read(input);
-            } catch (FileNotFoundException e) {
-                throw new KSIException("File " + file + " not found", e);
-            } finally {
-                Util.closeQuietly(input);
-            }
+            return reader.read(file);
         }
 
         public KSISignature sign(DataHash dataHash) throws KSIException {
-            Future<KSISignature> future = asyncSign(dataHash);
-            return future.getResult();
+            return signer.sign(dataHash);
         }
 
         public KSISignature sign(File file) throws KSIException {
-            Future<KSISignature> future = asyncSign(file);
-            return future.getResult();
+            return signer.sign(file);
         }
 
         public KSISignature sign(byte[] bytes) throws KSIException {
-            Future<KSISignature> future = asyncSign(bytes);
-            return future.getResult();
+            return signer.sign(bytes);
         }
 
         public Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException {
-            if (dataHash == null) {
-                throw new KSIException("Invalid input parameter. Data hash must not be null");
-            }
-            Future<AggregationResponse> aggregationResponseFuture = signingClient.sign(dataHash, DEFAULT_LEVEL);
-            return new SigningFuture(aggregationResponseFuture, signatureFactory, dataHash);
+            return signer.asyncSign(dataHash);
         }
 
         public Future<KSISignature> asyncSign(File file) throws KSIException {
-            if (file == null) {
-                throw new KSIException("Invalid input parameter. File must not be null");
-            }
-            DataHasher hasher = new DataHasher(defaultHashAlgorithm);
-            hasher.addData(file);
-            return asyncSign(hasher.getHash());
+            return signer.asyncSign(file);
         }
 
         public Future<KSISignature> asyncSign(byte[] bytes) throws KSIException {
-            if (bytes == null) {
-                throw new KSIException("Invalid input parameter. Byte array must not be null");
-            }
-            DataHasher hasher = new DataHasher(defaultHashAlgorithm);
-            hasher.addData(bytes);
-            return asyncSign(hasher.getHash());
+            return signer.asyncSign(bytes);
         }
 
         public KSISignature extend(KSISignature signature) throws KSIException {
-            Future<KSISignature> future = asyncExtend(signature);
-            return future.getResult();
+            return extender.extend(signature);
         }
 
         public KSISignature extend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException {
-            Future<KSISignature> future = asyncExtend(signature, publicationRecord);
-            return future.getResult();
+            return extender.extend(signature, publicationRecord);
         }
 
         public Future<KSISignature> asyncExtend(KSISignature signature) throws KSIException {
-            if (signature == null) {
-                throw new KSIException("Invalid input parameter. KSI signature must be present.");
-            }
-            PublicationRecord publicationRecord = getPublicationsFile().getPublicationRecord(signature.getAggregationTime());
-            if (publicationRecord == null) {
-                throw new KSIException("No suitable publication yet");
-            }
-            return asyncExtend(signature, publicationRecord);
+            return extender.asyncExtend(signature);
         }
 
         public Future<KSISignature> asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException {
-            if (signature == null) {
-                throw new KSIException("Invalid input parameter. KSI signature must be present.");
-            }
-            if (publicationRecord == null) {
-                throw new KSIException("Invalid input parameter. Publication record must be present");
-            }
-            if (signature.getAggregationTime().after(publicationRecord.getPublicationTime())) {
-                throw new KSIException("Publication is before signature");
-            }
-            Future<ExtensionResponse> extenderFuture = extenderClient.extend(signature.getAggregationTime(), publicationRecord.getPublicationTime());
-            return new ExtensionFuture(extenderFuture, publicationRecord, signature, signatureComponentFactory, signatureFactory);
+            return extender.asyncExtend(signature, publicationRecord);
         }
 
         public VerificationResult verify(VerificationContext context, Policy policy) throws KSIException {
-            if (context == null) {
-                throw new KSIException("Invalid input parameter. Verification context is null.");
-            }
-            if (policy == null) {
-                throw new KSIException("Invalid input parameter. Policy is null.");
-            }
+            Util.notNull(context, "Verification context");
+            Util.notNull(policy, "Policy");
             KSISignatureVerifier verifier = new KSISignatureVerifier();
             context.setKsiSignatureComponentFactory(signatureComponentFactory);
             return verifier.verify(context, policy);
@@ -473,21 +390,20 @@ public final class KSIBuilder {
         }
 
         public PublicationsFile getPublicationsFile() throws KSIException {
-            return publicationsFileAdapter.getPublicationsFile();
+            return publicationsHandler.getPublicationsFile();
         }
 
         public KSISigningClient getSigningClient() {
-            return signingClient;
+            return signer.getSigningClient();
         }
 
         public KSIExtenderClient getExtenderClient() {
-            return extenderClient;
+            return extender.getExtenderClient();
         }
 
         public void close() throws IOException {
-            signingClient.close();
-            extenderClient.close();
-            publicationsFileClient.close();
+            signer.close();
+            extender.close();
         }
     }
 

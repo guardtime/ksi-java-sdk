@@ -21,7 +21,6 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import org.mockito.Mockito;
 import org.testng.annotations.Test;
 
@@ -38,7 +37,7 @@ public class PolicyContextTest {
         assertFalse(pc.isExtendingAllowed());
         assertNull(pc.getExtender());
         assertNull(pc.getPublicationsHandler());
-        assertNull(pc.getSignatureComponentFactory());
+        assertNotNull(pc.getSignatureComponentFactory());
         assertNull(pc.getUserPublication());
     }
 
@@ -48,13 +47,13 @@ public class PolicyContextTest {
         assertTrue(pc.isExtendingAllowed());
         assertNotNull(pc.getExtender());
         assertNotNull(pc.getPublicationsHandler());
-        assertNull(pc.getSignatureComponentFactory());
+        assertNotNull(pc.getSignatureComponentFactory());
         assertNull(pc.getUserPublication());
     }
 
     @Test
-    public void testPolicyContextWithSignatureComponentFactoryExtender() {
-        PolicyContext pc = new PolicyContext(Mockito.mock(KSISignatureComponentFactory.class), Mockito.mock(Extender.class));
+    public void testPolicyContextWithExtender() {
+        PolicyContext pc = new PolicyContext(Mockito.mock(Extender.class));
         assertTrue(pc.isExtendingAllowed());
         assertNotNull(pc.getExtender());
         assertNull(pc.getPublicationsHandler());
@@ -63,9 +62,8 @@ public class PolicyContextTest {
     }
 
     @Test
-    public void testPolicyContextWithPublicationDataSignatureComponentFactoryExtender() {
-        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationData.class),
-                Mockito.mock(KSISignatureComponentFactory.class), Mockito.mock(Extender.class));
+    public void testPolicyContextWithPublicationDataExtender() {
+        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationData.class), Mockito.mock(Extender.class));
         assertTrue(pc.isExtendingAllowed());
         assertNotNull(pc.getExtender());
         assertNull(pc.getPublicationsHandler());

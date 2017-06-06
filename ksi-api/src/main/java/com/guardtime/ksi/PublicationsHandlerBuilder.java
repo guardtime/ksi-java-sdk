@@ -104,7 +104,7 @@ public final class PublicationsHandlerBuilder {
      * @return instance of builder
      * @see java.security.cert.X509CertSelector
      */
-    public PublicationsHandlerBuilder setPublicationsFileTrustedCertSelector(CertSelector certSelector) {
+    public PublicationsHandlerBuilder setPublicationsFileCertificateConstraints(CertSelector certSelector) {
         this.certSelector = certSelector;
         return this;
     }

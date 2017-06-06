@@ -23,29 +23,28 @@ import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 
 public class PolicyContext {
 
     private PublicationsHandler publicationsHandler;
     private Extender extender;
     private PublicationData userPublication;
-    private KSISignatureComponentFactory signatureComponentFactory;
+    private KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
 
     public PolicyContext() {}
+
+    public PolicyContext(Extender extender) {
+        this.extender = extender;
+    }
 
     public PolicyContext(PublicationsHandler publicationsHandler, Extender extender) {
         this.publicationsHandler = publicationsHandler;
         this.extender = extender;
     }
 
-    public PolicyContext(KSISignatureComponentFactory signatureComponentFactory, Extender extender) {
-        this.signatureComponentFactory = signatureComponentFactory;
-        this.extender = extender;
-    }
-
-    public PolicyContext(PublicationData publicationData, KSISignatureComponentFactory signatureComponentFactory, Extender extender) {
+    public PolicyContext(PublicationData publicationData, Extender extender) {
         this.userPublication = publicationData;
-        this.signatureComponentFactory = signatureComponentFactory;
         this.extender = extender;
     }
 

@@ -21,7 +21,6 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import org.mockito.Mockito;
 import org.testng.annotations.Test;
 
@@ -43,7 +42,7 @@ public class ContextAwarePolicyAdapterTest {
         assertNotNull(policy.getPolicyContext());
         assertNull(policy.getPolicyContext().getExtender());
         assertNull(policy.getPolicyContext().getPublicationsHandler());
-        assertNull(policy.getPolicyContext().getSignatureComponentFactory());
+        assertNotNull(policy.getPolicyContext().getSignatureComponentFactory());
         assertNull(policy.getPolicyContext().getUserPublication());
         assertFalse(policy.getPolicyContext().isExtendingAllowed());
     }
@@ -58,7 +57,7 @@ public class ContextAwarePolicyAdapterTest {
         assertNotNull(policy.getPolicyContext());
         assertNull(policy.getPolicyContext().getExtender());
         assertNotNull(policy.getPolicyContext().getPublicationsHandler());
-        assertNull(policy.getPolicyContext().getSignatureComponentFactory());
+        assertNotNull(policy.getPolicyContext().getSignatureComponentFactory());
         assertNull(policy.getPolicyContext().getUserPublication());
         assertFalse(policy.getPolicyContext().isExtendingAllowed());
     }
@@ -74,7 +73,7 @@ public class ContextAwarePolicyAdapterTest {
         assertNotNull(policy.getPolicyContext());
         assertNull(policy.getPolicyContext().getExtender());
         assertNotNull(policy.getPolicyContext().getPublicationsHandler());
-        assertNull(policy.getPolicyContext().getSignatureComponentFactory());
+        assertNotNull(policy.getPolicyContext().getSignatureComponentFactory());
         assertNull(policy.getPolicyContext().getUserPublication());
         assertFalse(policy.getPolicyContext().isExtendingAllowed());
     }
@@ -90,7 +89,7 @@ public class ContextAwarePolicyAdapterTest {
         assertNotNull(policy.getPolicyContext());
         assertNotNull(policy.getPolicyContext().getExtender());
         assertNotNull(policy.getPolicyContext().getPublicationsHandler());
-        assertNull(policy.getPolicyContext().getSignatureComponentFactory());
+        assertNotNull(policy.getPolicyContext().getSignatureComponentFactory());
         assertNull(policy.getPolicyContext().getUserPublication());
         assertTrue(policy.getPolicyContext().isExtendingAllowed());
     }
@@ -98,7 +97,7 @@ public class ContextAwarePolicyAdapterTest {
     @Test
     public void testCalendarBasedVerificationPolicyCreation() {
         ContextAwarePolicy policy = ContextAwarePolicyAdapter
-                .createCalendarPolicy(Mockito.mock(KSISignatureComponentFactory.class), Mockito.mock(Extender.class));
+                .createCalendarPolicy(Mockito.mock(Extender.class));
         assertNotNull(policy);
         assertEquals(policy.getName(), "Calendar-based verification policy");
         assertNotNull(policy.getType());
@@ -114,8 +113,7 @@ public class ContextAwarePolicyAdapterTest {
     @Test
     public void testUserProvidedPublicationBasedVerificationPolicyCreation() {
         ContextAwarePolicy policy = ContextAwarePolicyAdapter
-                .createUserPolicy(Mockito.mock(PublicationData.class), Mockito.mock(KSISignatureComponentFactory.class),
-                        Mockito.mock(Extender.class));
+                .createUserPolicy(Mockito.mock(PublicationData.class), Mockito.mock(Extender.class));
         assertNotNull(policy);
         assertEquals(policy.getName(), "User provided publication based verification policy");
         assertNotNull(policy.getType());

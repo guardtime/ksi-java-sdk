@@ -16,17 +16,19 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha;
+package com.guardtime.ksi.service.ha.configuration;
 
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.service.ha.ExtendingHAService;
 import com.guardtime.ksi.util.Util;
 
 import java.util.Date;
 import java.util.List;
 
-import static com.guardtime.ksi.service.ha.HAConfUtil.isAfter;
-import static com.guardtime.ksi.service.ha.HAConfUtil.isBefore;
-import static com.guardtime.ksi.service.ha.HAConfUtil.isBigger;
+import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isAfter;
+import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isBefore;
+import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isBigger;
+
 
 /**
  * {@link ExtenderConfiguration} that can be used to consolidate multiple {@link ExtendingHAService} subclients configurations.

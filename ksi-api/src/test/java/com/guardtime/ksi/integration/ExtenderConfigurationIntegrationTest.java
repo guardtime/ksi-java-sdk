@@ -95,7 +95,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
 
             public void updateFailed(Throwable t) {
                 try {
-                    if ("ExtendingHAService has no active subconfigurations to base its consolidated configuration on".equals(t.getMessage())) {
+                    if ("HA service has no active subconfigurations to base its consolidated configuration on".equals(t.getMessage())) {
                         ac.succeed();
                     } else {
                         Assert.fail("Configuration update failed for unexpected reason", t);

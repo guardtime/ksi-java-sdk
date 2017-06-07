@@ -28,6 +28,7 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.KSISigningClientServiceAdapter;
+import com.guardtime.ksi.service.ha.configuration.SigningHAServiceConfigurationUpdater;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallsTask;
 import com.guardtime.ksi.service.ha.tasks.SigningTask;
 import com.guardtime.ksi.util.Util;
@@ -55,11 +56,7 @@ public class SigningHAService implements KSISigningService {
 
     private final List<KSISigningService> subservices;
     private final ExecutorService executorService;
-    private final Object confRecalculationLock = new Object();
-    private final List<ConfigurationListener<AggregatorConfiguration>> consolidatedConfListeners = new ArrayList<ConfigurationListener<AggregatorConfiguration>>();
-    private final List<SubServiceConfListener<AggregatorConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<AggregatorConfiguration>>();
-
-    private LatestConsolidationResult<SigningHAServiceConfiguration> lastConsolidatedConfiguration;
+    private final SigningHAServiceConfigurationUpdater configurationUpdater;
 
     private SigningHAService(Builder builder) {
         this.executorService = builder.executorService;
@@ -72,16 +69,8 @@ public class SigningHAService implements KSISigningService {
         if (subservices.size() > 3) {
             throw new IllegalArgumentException("SigningHAService can not be initialized with more than 3 subservices");
         }
-        for (KSISigningService subservice : subservices) {
-            SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), new SubconfUpdateListener() {
-                public void updated() {
-                    recalculateConfiguration();
-                }
-            });
-            subservice.registerAggregatorConfigurationListener(listener);
-            subServiceConfListeners.add(listener);
-        }
         this.subservices = Collections.unmodifiableList(subservices);
+        this.configurationUpdater = new SigningHAServiceConfigurationUpdater(this.subservices);
     }
 
     /**
@@ -131,11 +120,7 @@ public class SigningHAService implements KSISigningService {
      * @param listener May not be null.
      */
     public void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener) {
-        Util.notNull(listener, "SigningHAService consolidated configuration listener");
-        consolidatedConfListeners.add(listener);
-        if (lastConsolidatedConfiguration != null) {
-            updateListener(listener);
-        }
+        configurationUpdater.registerNewListener(listener);
     }
 
     /**
@@ -143,62 +128,7 @@ public class SigningHAService implements KSISigningService {
      * Active configuration listeners are only called if any of the responses change the state of consolidated configuration.
      */
     public void sendAggregationConfigurationRequest() {
-        for (KSISigningService service : subservices) {
-            service.sendAggregationConfigurationRequest();
-        }
-    }
-
-    private void recalculateConfiguration() {
-        SigningHAServiceConfiguration newConsolidatedConfiguration = null;
-        LatestConsolidationResult<SigningHAServiceConfiguration> oldConsolidatedConfiguration = lastConsolidatedConfiguration;
-        boolean listenersNeedUpdate;
-        synchronized (confRecalculationLock) {
-            for (SubServiceConfListener<AggregatorConfiguration> serviceConfListener : subServiceConfListeners) {
-                if (serviceConfListener.isAccountedFor()) {
-                    newConsolidatedConfiguration = consolidate(serviceConfListener.getLastConfiguration(),
-                            newConsolidatedConfiguration);
-                }
-            }
-            resetLastConsolidatedConfiguration(newConsolidatedConfiguration);
-            listenersNeedUpdate = !Util.equals(lastConsolidatedConfiguration, oldConsolidatedConfiguration);
-        }
-        if (listenersNeedUpdate) {
-            logger.info("SigningHaServices configuration changed. Old configuration: {}. New configuration: {}.",
-                    oldConsolidatedConfiguration, lastConsolidatedConfiguration);
-            updateListeners();
-        }
-    }
-
-    private void resetLastConsolidatedConfiguration(SigningHAServiceConfiguration newConsolidatedConfiguration) {
-        if (newConsolidatedConfiguration == null) {
-            lastConsolidatedConfiguration = new LatestConsolidationResult<SigningHAServiceConfiguration>(
-                    new HAConfigurationConsolidationException("SigningHAService has no active subconfigurations to base its consolidated configuration on"));
-        } else {
-            lastConsolidatedConfiguration = new LatestConsolidationResult<SigningHAServiceConfiguration>(newConsolidatedConfiguration);
-        }
-    }
-
-    private void updateListeners() {
-        for (ConfigurationListener<AggregatorConfiguration> listener : consolidatedConfListeners) {
-            updateListener(listener);
-        }
-    }
-
-    private void updateListener(ConfigurationListener<AggregatorConfiguration> listener) {
-        if (lastConsolidatedConfiguration.wasSuccessful()) {
-            listener.updated(lastConsolidatedConfiguration.getLatestResult());
-        } else {
-            listener.updateFailed(lastConsolidatedConfiguration.getLatestException());
-        }
-    }
-
-    private SigningHAServiceConfiguration consolidate(AggregatorConfiguration c1, AggregatorConfiguration c2) {
-        boolean c1Exists = c1 != null;
-        boolean c2Exists = c2 != null;
-        if (c1Exists && c2Exists) return new SigningHAServiceConfiguration(c1, c2);
-        if (c1Exists) return new SigningHAServiceConfiguration(c1);
-        if (c2Exists) return new SigningHAServiceConfiguration(c2);
-        return null;
+        configurationUpdater.sendAggregationConfigurationRequest();
     }
 
     /**

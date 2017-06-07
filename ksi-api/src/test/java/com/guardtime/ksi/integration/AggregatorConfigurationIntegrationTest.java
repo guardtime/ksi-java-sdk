@@ -19,7 +19,6 @@
 package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.AsyncContext;
-import com.guardtime.ksi.CommonTestUtil;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
@@ -96,7 +95,7 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
 
             public void updateFailed(Throwable t) {
                 try {
-                    if ("SigningHAService has no active subconfigurations to base its consolidated configuration on".equals(t.getMessage())) {
+                    if ("HA service has no active subconfigurations to base its consolidated configuration on".equals(t.getMessage())) {
                         ac.succeed();
                     } else {
                         Assert.fail("Configuration update failed for unexpected reason", t);

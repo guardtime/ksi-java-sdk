@@ -27,6 +27,7 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.ha.configuration.ExtendingHAServiceConfigurationUpdater;
 import com.guardtime.ksi.service.ha.tasks.ExtendingTask;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallsTask;
 import com.guardtime.ksi.util.Util;
@@ -54,14 +55,8 @@ public class ExtendingHAService implements KSIExtendingService {
     private static final Logger logger = LoggerFactory.getLogger(ExtendingHAService.class);
 
     private final List<KSIExtendingService> subservices;
-    private final List<ConfigurationListener<ExtenderConfiguration>> consolidatedConfListeners = new
-            ArrayList<ConfigurationListener<ExtenderConfiguration>>();
-    private final List<SubServiceConfListener<ExtenderConfiguration>> subServiceConfListeners = new
-            ArrayList<SubServiceConfListener<ExtenderConfiguration>>();
-    private final Object confRecalculationLock = new Object();
     private final ExecutorService executorService;
-
-    private LatestConsolidationResult<ExtendingHAServiceConfiguration> lastConsolidatedConfiguration;
+    private final ExtendingHAServiceConfigurationUpdater configurationUpdater;
 
     private ExtendingHAService(Builder builder) {
         this.executorService = builder.executorService;
@@ -74,17 +69,8 @@ public class ExtendingHAService implements KSIExtendingService {
         if (subservices.size() > 3) {
             throw new IllegalArgumentException("ExtendingHAService can not be initialized with more than 3 subservices");
         }
-        for (KSIExtendingService subservice : subservices) {
-            SubServiceConfListener<ExtenderConfiguration> listener = new SubServiceConfListener<ExtenderConfiguration>
-                    (subservice.toString(), new SubconfUpdateListener() {
-                public void updated() {
-                    recalculateConfiguration();
-                }
-            });
-            subservice.registerExtenderConfigurationListener(listener);
-            subServiceConfListeners.add(listener);
-        }
         this.subservices = Collections.unmodifiableList(subservices);
+        this.configurationUpdater = new ExtendingHAServiceConfigurationUpdater(this.subservices);
     }
 
     /**
@@ -97,61 +83,6 @@ public class ExtendingHAService implements KSIExtendingService {
             services.add(new KSIExtendingClientServiceAdapter(client));
         }
         return services;
-    }
-
-    private void recalculateConfiguration() {
-        ExtendingHAServiceConfiguration newConsolidatedConfiguration = null;
-        LatestConsolidationResult<ExtendingHAServiceConfiguration> oldConsolidatedConfiguration = lastConsolidatedConfiguration;
-        boolean listenersNeedUpdate;
-        synchronized (confRecalculationLock) {
-            for (SubServiceConfListener<ExtenderConfiguration> serviceConfListener : subServiceConfListeners) {
-                if (serviceConfListener.isAccountedFor()) {
-                    newConsolidatedConfiguration = consolidate(serviceConfListener.getLastConfiguration(),
-                            newConsolidatedConfiguration);
-                }
-            }
-            resetLastConsolidatedConfiguration(newConsolidatedConfiguration);
-            listenersNeedUpdate = !Util.equals(lastConsolidatedConfiguration, oldConsolidatedConfiguration);
-        }
-        if (listenersNeedUpdate) {
-            logger.info("ExtendingHAService configuration changed. Old configuration: {}. New configuration: {}.",
-                    oldConsolidatedConfiguration, lastConsolidatedConfiguration);
-            updateListeners();
-        }
-    }
-
-    private void resetLastConsolidatedConfiguration(ExtendingHAServiceConfiguration newConsolidatedConfiguration) {
-        if (newConsolidatedConfiguration == null) {
-            lastConsolidatedConfiguration = new LatestConsolidationResult<ExtendingHAServiceConfiguration>(
-                    new HAConfigurationConsolidationException("ExtendingHAService has no active subconfigurations to base " +
-                            "its consolidated configuration on"));
-        } else {
-            lastConsolidatedConfiguration = new LatestConsolidationResult<ExtendingHAServiceConfiguration>
-                    (newConsolidatedConfiguration);
-        }
-    }
-
-    private void updateListeners() {
-        for (ConfigurationListener<ExtenderConfiguration> listener : consolidatedConfListeners) {
-            updateListener(listener);
-        }
-    }
-
-    private void updateListener(ConfigurationListener<ExtenderConfiguration> listener) {
-        if (lastConsolidatedConfiguration.wasSuccessful()) {
-            listener.updated(lastConsolidatedConfiguration.getLatestResult());
-        } else {
-            listener.updateFailed(lastConsolidatedConfiguration.getLatestException());
-        }
-    }
-
-    private ExtendingHAServiceConfiguration consolidate(ExtenderConfiguration c1, ExtenderConfiguration c2) {
-        boolean c1Exists = c1 != null;
-        boolean c2Exists = c2 != null;
-        if (c1Exists && c2Exists) return new ExtendingHAServiceConfiguration(c1, c2);
-        if (c1Exists) return new ExtendingHAServiceConfiguration(c1);
-        if (c2Exists) return new ExtendingHAServiceConfiguration(c2);
-        return null;
     }
 
     /**
@@ -189,17 +120,11 @@ public class ExtendingHAService implements KSIExtendingService {
      * @param listener May not be null.
      */
     public void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener) {
-        Util.notNull(listener, "ExtendingHAService consolidated configuration listener");
-        consolidatedConfListeners.add(listener);
-        if (lastConsolidatedConfiguration != null) {
-            updateListener(listener);
-        }
+        configurationUpdater.registerNewListener(listener);
     }
 
     public void sendExtenderConfigurationRequest() {
-        for (KSIExtendingService service : subservices) {
-            service.sendExtenderConfigurationRequest();
-        }
+        configurationUpdater.sendAggregationConfigurationRequest();
     }
 
     /**

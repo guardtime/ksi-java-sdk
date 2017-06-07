@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha;
+package com.guardtime.ksi.service.ha.configuration;
 
 import com.guardtime.ksi.service.client.KSIClientException;
 
@@ -27,7 +27,11 @@ public class HAConfigurationConsolidationException extends KSIClientException {
 
     private final String message;
 
-    public HAConfigurationConsolidationException(String message) {
+    HAConfigurationConsolidationException() {
+        this("HA service has no active subconfigurations to base its consolidated configuration on");
+    }
+
+    HAConfigurationConsolidationException(String message) {
         super(message);
         this.message = message;
     }

@@ -27,7 +27,7 @@ import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregationResponseFuture;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.KSISigningService;
+import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.PduFactoryProvider;
 import com.guardtime.ksi.pdu.RequestContextFactory;

@@ -21,7 +21,7 @@ package com.guardtime.ksi.service.client;
 
 import com.guardtime.ksi.AsyncContext;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
-import com.guardtime.ksi.pdu.KSIExtendingService;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.tlv.TLVElement;

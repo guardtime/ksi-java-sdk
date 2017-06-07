@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha;
+package com.guardtime.ksi.service.ha.configuration;
 
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
@@ -24,8 +24,8 @@ import com.guardtime.ksi.util.Util;
 
 import java.util.List;
 
-import static com.guardtime.ksi.service.ha.HAConfUtil.isBigger;
-import static com.guardtime.ksi.service.ha.HAConfUtil.isSmaller;
+import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isBigger;
+import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isSmaller;
 
 class SigningHAServiceConfiguration implements AggregatorConfiguration {
 

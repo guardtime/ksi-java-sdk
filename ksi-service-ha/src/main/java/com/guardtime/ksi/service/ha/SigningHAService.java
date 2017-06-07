@@ -23,12 +23,12 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
-import com.guardtime.ksi.pdu.KSISigningService;
+import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.ConfigurationListener;
-import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.KSISigningClientServiceAdapter;
+import com.guardtime.ksi.service.ha.configuration.SigningHAServiceConfigurationUpdater;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallsTask;
 import com.guardtime.ksi.service.ha.tasks.SigningTask;
 import com.guardtime.ksi.util.Util;
@@ -56,11 +56,7 @@ public class SigningHAService implements KSISigningService {
 
     private final List<KSISigningService> subservices;
     private final ExecutorService executorService;
-    private final Object confRecalculationLock = new Object();
-    private final List<ConfigurationListener<AggregatorConfiguration>> consolidatedConfListeners = new ArrayList<ConfigurationListener<AggregatorConfiguration>>();
-    private final List<SubServiceConfListener<AggregatorConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<AggregatorConfiguration>>();
-
-    private SigningHAServiceConfiguration lastConsolidatedConfiguration;
+    private final SigningHAServiceConfigurationUpdater configurationUpdater;
 
     private SigningHAService(Builder builder) {
         this.executorService = builder.executorService;
@@ -73,16 +69,8 @@ public class SigningHAService implements KSISigningService {
         if (subservices.size() > 3) {
             throw new IllegalArgumentException("SigningHAService can not be initialized with more than 3 subservices");
         }
-        for (KSISigningService subservice : subservices) {
-            SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), new SubconfUpdateListener() {
-                public void updated() {
-                    recalculateConfiguration();
-                }
-            });
-            subservice.registerAggregatorConfigurationListener(listener);
-            subServiceConfListeners.add(listener);
-        }
         this.subservices = Collections.unmodifiableList(subservices);
+        this.configurationUpdater = new SigningHAServiceConfigurationUpdater(this.subservices);
     }
 
     /**
@@ -125,13 +113,14 @@ public class SigningHAService implements KSISigningService {
     /**
      * Registers configuration listeners that will be called if this SigningHAServices configuration changes. They will not be
      * called if subservices configuration changes in a way that does not change the consolidated configuration. To get detailed
-     * info about subservices configurations one should register their own listeners directly on subservices.
+     * info about subservices configurations one should register their own listeners directly on subservices. Listener will
+     * be called instantaneously once with the latest consolidation result as part of the registration if the latest result is
+     * not null.
      *
      * @param listener May not be null.
      */
     public void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener) {
-        Util.notNull(listener, "SigningHAService consolidated configuration listener");
-        consolidatedConfListeners.add(listener);
+        configurationUpdater.registerNewListener(listener);
     }
 
     /**
@@ -139,61 +128,7 @@ public class SigningHAService implements KSISigningService {
      * Active configuration listeners are only called if any of the responses change the state of consolidated configuration.
      */
     public void sendAggregationConfigurationRequest() {
-        for (KSISigningService service : subservices) {
-            service.sendAggregationConfigurationRequest();
-        }
-    }
-
-    private void recalculateConfiguration() {
-        boolean hasAnySubconfs = false;
-        SigningHAServiceConfiguration newConsolidatedConfiguration = null;
-        SigningHAServiceConfiguration oldConsolidatedConfiguration = lastConsolidatedConfiguration;
-        boolean listenersNeedUpdate;
-        synchronized (confRecalculationLock) {
-            for (SubServiceConfListener<AggregatorConfiguration> serviceConfListener : subServiceConfListeners) {
-                if (serviceConfListener.isAccountedFor()) {
-                    newConsolidatedConfiguration = consolidate(serviceConfListener.getLastConfiguration(),
-                            newConsolidatedConfiguration);
-                    hasAnySubconfs = true;
-                }
-            }
-            lastConsolidatedConfiguration = newConsolidatedConfiguration;
-            listenersNeedUpdate = !Util.equals(newConsolidatedConfiguration, oldConsolidatedConfiguration);
-        }
-        if (listenersNeedUpdate) {
-            logger.info("SigningHaServices configuration changed. Old configuration: {}. New configuration: {}.",
-                    oldConsolidatedConfiguration, newConsolidatedConfiguration);
-            for (ConfigurationListener<AggregatorConfiguration> listener : consolidatedConfListeners) {
-                listener.updated(newConsolidatedConfiguration);
-            }
-        }
-        if (!hasAnySubconfs) {
-            confRecalculationFailed();
-        }
-    }
-
-    private void confRecalculationFailed() {
-        try {
-            throw new KSIClientException("SigningHAService has no active subconfigurations to base its consolidated configuration on");
-        } catch (KSIClientException e) {
-            logger.error("Configuration recalculation failed.", e);
-            for (ConfigurationListener<AggregatorConfiguration> listener : consolidatedConfListeners) {
-                listener.updateFailed(e);
-            }
-        }
-    }
-
-    private SigningHAServiceConfiguration consolidate(AggregatorConfiguration c1, AggregatorConfiguration c2) {
-        if (c1 == null) {
-            if (c2 != null) {
-                return new SigningHAServiceConfiguration(c2);
-            }
-            return null;
-        }
-        if (c2 == null) {
-            return new SigningHAServiceConfiguration(c1);
-        }
-        return new SigningHAServiceConfiguration(c1, c2);
+        configurationUpdater.sendAggregationConfigurationRequest();
     }
 
     /**

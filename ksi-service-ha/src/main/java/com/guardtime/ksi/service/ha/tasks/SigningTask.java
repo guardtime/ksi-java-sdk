@@ -20,7 +20,7 @@ package com.guardtime.ksi.service.ha.tasks;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
-import com.guardtime.ksi.pdu.KSISigningService;
+import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.KSIClientException;
 
 import java.util.concurrent.Callable;

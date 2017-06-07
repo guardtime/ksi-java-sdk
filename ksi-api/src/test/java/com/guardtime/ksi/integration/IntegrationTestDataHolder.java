@@ -28,7 +28,7 @@ import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
-import com.guardtime.ksi.pdu.KSIExtendingService;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.RequestContextFactory;

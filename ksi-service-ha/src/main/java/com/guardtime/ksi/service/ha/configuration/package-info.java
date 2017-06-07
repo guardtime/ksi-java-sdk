@@ -17,6 +17,6 @@
  * reserves and retains all trademark rights.
  */
 /**
- * Tasks for HAServices different assignments.
+ * HAService configuration handling logic.
  */
-package com.guardtime.ksi.service.ha.tasks;
+package com.guardtime.ksi.service.ha.configuration;

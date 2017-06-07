@@ -38,7 +38,7 @@ public class CalendarAuthenticationRecordExistenceRuleTest extends AbstractRuleT
         RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_NO_CALENDAR_AUTH_RECORD)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
     }
 
     @Test

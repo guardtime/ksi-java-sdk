@@ -63,7 +63,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
         KSISignature sig = ksi.sign(loadFile(INPUT_FILE));
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, extenderClient, getFileHash(INPUT_FILE_REVERSED)), new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_1);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_01);
     }
 
 }

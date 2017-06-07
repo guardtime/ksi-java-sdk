@@ -39,7 +39,7 @@ public class CalendarHashChainDoesNotExistRule extends BaseRule {
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.GEN_2;
+        return VerificationErrorCode.GEN_02;
     }
 
 }

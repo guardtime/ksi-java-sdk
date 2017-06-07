@@ -20,16 +20,32 @@ package com.guardtime.ksi.util;
 
 import com.guardtime.ksi.exceptions.KSIException;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.*;
-import java.security.*;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CodingErrorAction;
+import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Random;
 import java.util.zip.CRC32;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * A collection of miscellaneous, commonly used utility functions.
@@ -652,6 +668,16 @@ public final class Util {
     }
 
     /**
+     * For getting the stacktrace of a throwable as a string.
+     */
+    public static String getStacktrace(Throwable t) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
+        return sw.toString();
+    }
+
+    /**
      * Returns the default location of Java Runtime Environment certificate store.
      *
      * @return default certificate store location
@@ -660,6 +686,7 @@ public final class Util {
         return System.getProperty("java.home") + File.separatorChar + "lib" + File.separatorChar
                 + "security" + File.separatorChar + "cacerts";
     }
+
     /**
      * Loads and returns the {@link java.security.KeyStore} from the file system.
      */

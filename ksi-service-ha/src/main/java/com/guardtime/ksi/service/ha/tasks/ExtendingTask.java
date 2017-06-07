@@ -19,7 +19,7 @@
 package com.guardtime.ksi.service.ha.tasks;
 
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIExtendingService;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.client.KSIClientException;
 
 import java.util.Date;

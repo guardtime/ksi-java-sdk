@@ -26,6 +26,7 @@ import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.*;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.tree.HashTreeBuilder;

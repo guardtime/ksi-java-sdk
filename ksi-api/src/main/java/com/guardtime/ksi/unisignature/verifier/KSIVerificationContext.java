@@ -22,7 +22,7 @@ package com.guardtime.ksi.unisignature.verifier;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.pdu.KSIExtendingService;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;

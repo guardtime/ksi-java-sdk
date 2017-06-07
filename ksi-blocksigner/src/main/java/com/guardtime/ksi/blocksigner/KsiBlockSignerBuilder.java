@@ -20,7 +20,7 @@
 package com.guardtime.ksi.blocksigner;
 
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.KSISigningService;
+import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.KSISigningClient;

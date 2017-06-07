@@ -1,7 +1,9 @@
-package com.guardtime.ksi.pdu;
+package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.service.client.ConfigurationListener;
 
 import java.io.Closeable;

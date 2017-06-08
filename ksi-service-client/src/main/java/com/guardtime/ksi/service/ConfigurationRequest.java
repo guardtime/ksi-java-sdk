@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Guardtime, Inc.
+ * Copyright 2013-2016 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -16,16 +16,25 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service;
+
+import com.guardtime.ksi.exceptions.KSIException;
 
 /**
- * Listener to call every time subservices configuration is updated.
+ * For wrapping configuration requests to pass them to configuration handler.
+ *
+ * @param <T> Type of configuration response.
  */
-interface SubconfUpdateListener {
+public interface ConfigurationRequest<T> {
 
     /**
-     * This methods implementation should start the consolidated configurations recalculation process.
+     * Implementation should call the clients method that asks for new configuration.
+     *
+     * @return
+     *      Configuration response
+     * @throws KSIException
+     *      If something goes wrong with fetching the configuration.
      */
-    void updated();
+    T invoke() throws KSIException;
 
 }

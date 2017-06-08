@@ -16,7 +16,10 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.client;
+package com.guardtime.ksi.service;
+
+import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.client.KSISigningClient;
 
 /**
  * Objects of this type can be registered to listen for configuration updates by {@link KSISigningClient} and

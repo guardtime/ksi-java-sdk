@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.client;
+package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
@@ -71,11 +71,10 @@ public class ConfigurationHandler<T> {
                 T conf;
                 try {
                     conf = configurationRequest.invoke();
+                    updateListenersWithNewConfiguration(conf);
                 } catch (Exception e) {
                     updateListenersWithFailure(e);
-                    return null;
                 }
-                updateListenersWithNewConfiguration(conf);
                 return null;
             }
         });

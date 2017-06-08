@@ -27,19 +27,15 @@ import java.util.List;
 /**
  * Handles configuration consolidation and listener updates for SigningHAService
  */
-public class SigningHAServiceConfigurationUpdater extends AbstractConfigurationUpdater<AggregatorConfiguration> {
+public class SigningHAServiceHAConfigurationListener extends AbstractHAConfigurationListener<AggregatorConfiguration> {
 
     private final List<SubServiceConfListener<AggregatorConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<AggregatorConfiguration>>();
     private final List<KSISigningService> subservices;
 
-    public SigningHAServiceConfigurationUpdater(List<KSISigningService> subservices) {
+    public SigningHAServiceHAConfigurationListener(List<KSISigningService> subservices) {
         this.subservices = subservices;
         for (KSISigningService subservice : subservices) {
-            SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), new SubconfUpdateListener() {
-                public void updated() {
-                    recalculateConfiguration();
-                }
-            });
+            SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), this);
             subservice.registerAggregatorConfigurationListener(listener);
             subServiceConfListeners.add(listener);
         }
@@ -48,16 +44,21 @@ public class SigningHAServiceConfigurationUpdater extends AbstractConfigurationU
     protected AggregatorConfiguration consolidate(AggregatorConfiguration c1, AggregatorConfiguration c2) {
         boolean c1Exists = c1 != null;
         boolean c2Exists = c2 != null;
-        if (c1Exists && c2Exists) return new SigningHAServiceConfiguration(c1, c2);
-        if (c1Exists) return new SigningHAServiceConfiguration(c1);
-        if (c2Exists) return new SigningHAServiceConfiguration(c2);
+        if (c1Exists && c2Exists) {
+            return new SigningHAServiceConfiguration(c1, c2);
+        }
+        if (c1Exists) {
+            return new SigningHAServiceConfiguration(c1);
+        }
+        if (c2Exists) {
+            return new SigningHAServiceConfiguration(c2);
+        }
         return null;
     }
 
     List<SubServiceConfListener<AggregatorConfiguration>> getSubServiceConfListeners() {
         return subServiceConfListeners;
     }
-
 
     public void sendAggregationConfigurationRequest() {
         for (KSISigningService service : subservices) {

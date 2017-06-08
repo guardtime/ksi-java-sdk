@@ -27,19 +27,15 @@ import java.util.List;
 /**
  * Handles configuration consolidation and listener updates for ExtendingHAService
  */
-public class ExtendingHAServiceConfigurationUpdater extends AbstractConfigurationUpdater<ExtenderConfiguration> {
+public class ExtendingHAServiceHAConfigurationListener extends AbstractHAConfigurationListener<ExtenderConfiguration> {
 
     private final List<SubServiceConfListener<ExtenderConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<ExtenderConfiguration>>();
     private final List<KSIExtendingService> subservices;
 
-    public ExtendingHAServiceConfigurationUpdater(List<KSIExtendingService> subservices) {
+    public ExtendingHAServiceHAConfigurationListener(List<KSIExtendingService> subservices) {
         this.subservices = subservices;
         for (KSIExtendingService subservice : subservices) {
-            SubServiceConfListener<ExtenderConfiguration> listener = new SubServiceConfListener<ExtenderConfiguration>(subservice.toString(), new SubconfUpdateListener() {
-                public void updated() {
-                    recalculateConfiguration();
-                }
-            });
+            SubServiceConfListener<ExtenderConfiguration> listener = new SubServiceConfListener<ExtenderConfiguration>(subservice.toString(), this);
             subservice.registerExtenderConfigurationListener(listener);
             subServiceConfListeners.add(listener);
         }
@@ -57,7 +53,6 @@ public class ExtendingHAServiceConfigurationUpdater extends AbstractConfiguratio
     List<SubServiceConfListener<ExtenderConfiguration>> getSubServiceConfListeners() {
         return subServiceConfListeners;
     }
-
 
     public void sendAggregationConfigurationRequest() {
         for (KSIExtendingService service : subservices) {

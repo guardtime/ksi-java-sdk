@@ -25,10 +25,10 @@ import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.client.KSISigningClientServiceAdapter;
-import com.guardtime.ksi.service.ha.configuration.SigningHAServiceConfigurationUpdater;
+import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
+import com.guardtime.ksi.service.ha.configuration.SigningHAServiceHAConfigurationListener;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallsTask;
 import com.guardtime.ksi.service.ha.tasks.SigningTask;
 import com.guardtime.ksi.util.Util;
@@ -56,33 +56,12 @@ public class SigningHAService implements KSISigningService {
 
     private final List<KSISigningService> subservices;
     private final ExecutorService executorService;
-    private final SigningHAServiceConfigurationUpdater configurationUpdater;
+    private final SigningHAServiceHAConfigurationListener haConfListener;
 
-    private SigningHAService(Builder builder) {
-        this.executorService = builder.executorService;
-        List<KSISigningService> subservices = new ArrayList<KSISigningService>();
-        subservices.addAll(builder.services);
-        subservices.addAll(clientsToServices(builder.clients));
-        if (subservices.isEmpty()) {
-            throw new IllegalArgumentException("Can not initialize SigningHAService without any subservices");
-        }
-        if (subservices.size() > 3) {
-            throw new IllegalArgumentException("SigningHAService can not be initialized with more than 3 subservices");
-        }
-        this.subservices = Collections.unmodifiableList(subservices);
-        this.configurationUpdater = new SigningHAServiceConfigurationUpdater(this.subservices);
-    }
-
-    /**
-     * Converts list of {@link KSISigningClient} to a list of {@link KSISigningService} by wrapping them all with
-     * {@link KSISigningClientServiceAdapter}s
-     */
-    private List<KSISigningService> clientsToServices(List<KSISigningClient> clients) {
-        List<KSISigningService> services = new ArrayList<KSISigningService>(clients.size());
-        for (KSISigningClient client : clients) {
-            services.add(new KSISigningClientServiceAdapter(client));
-        }
-        return services;
+    private SigningHAService(List<KSISigningService> subservices, ExecutorService executorService) {
+        this.executorService = executorService;
+        this.subservices = subservices;
+        this.haConfListener = new SigningHAServiceHAConfigurationListener(this.subservices);
     }
 
     /**
@@ -120,7 +99,7 @@ public class SigningHAService implements KSISigningService {
      * @param listener May not be null.
      */
     public void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener) {
-        configurationUpdater.registerNewListener(listener);
+        haConfListener.registerListener(listener);
     }
 
     /**
@@ -128,7 +107,7 @@ public class SigningHAService implements KSISigningService {
      * Active configuration listeners are only called if any of the responses change the state of consolidated configuration.
      */
     public void sendAggregationConfigurationRequest() {
-        configurationUpdater.sendAggregationConfigurationRequest();
+        haConfListener.sendAggregationConfigurationRequest();
     }
 
     /**
@@ -154,12 +133,11 @@ public class SigningHAService implements KSISigningService {
      */
     public static class Builder {
 
-        private List<KSISigningClient> clients = Collections.emptyList();
-        private List<KSISigningService> services = Collections.emptyList();
+        private List<KSISigningService> services = new ArrayList<KSISigningService>();
         private ExecutorService executorService = DefaultExecutorServiceProvider.getExecutorService();
 
         /**
-         * For setting subclients. If both clients and services are set then they are combined.
+         * For adding subclients. If both clients and services are set then they are combined.
          * There should be either at least one subclient or one subservice and no more than three of them combined before
          * building. Do not have to call this if there is at least one subservice set.
          *
@@ -168,14 +146,14 @@ public class SigningHAService implements KSISigningService {
          *
          * @return Instance of the builder itself.
          */
-        public Builder setClients(List<KSISigningClient> clients) {
+        public Builder addClients(List<KSISigningClient> clients) {
             Util.notNull(clients, "SigningHAService.Builder.clients");
-            this.clients = clients;
+            this.services.addAll(clientsToServices(clients));
             return this;
         }
 
         /**
-         * For setting subservices. If both clients and services are set then they are combined.
+         * For adding subservices. If both clients and services are set then they are combined.
          * There should be either at least one subclient or one subservice and no more than three of them combined before
          * building. Do not have to call this if there is at least one subclient set.
          *
@@ -184,9 +162,9 @@ public class SigningHAService implements KSISigningService {
          *
          * @return Instance of the builder itself.
          */
-        public Builder setServices(List<KSISigningService> services) {
+        public Builder addServices(List<KSISigningService> services) {
             Util.notNull(services, "SigningHAService.Builder.services");
-            this.services = services;
+            this.services.addAll(services);
             return this;
         }
 
@@ -208,7 +186,26 @@ public class SigningHAService implements KSISigningService {
          * @return Instance of {@link SigningHAService}
          */
         public SigningHAService build() {
-            return new SigningHAService(this);
+            List<KSISigningService> subservices = Collections.unmodifiableList(this.services);
+            if (subservices.isEmpty()) {
+                throw new IllegalArgumentException("Can not initialize SigningHAService without any subservices");
+            }
+            if (subservices.size() > 3) {
+                throw new IllegalArgumentException("SigningHAService can not be initialized with more than 3 combined subservices or subclients");
+            }
+            return new SigningHAService(subservices, executorService);
+        }
+
+        /**
+         * Converts list of {@link KSISigningClient} to a list of {@link KSISigningService} by wrapping them all with
+         * {@link KSISigningClientServiceAdapter}s
+         */
+        private List<KSISigningService> clientsToServices(List<KSISigningClient> clients) {
+            List<KSISigningService> services = new ArrayList<KSISigningService>(clients.size());
+            for (KSISigningClient client : clients) {
+                services.add(new KSISigningClientServiceAdapter(client));
+            }
+            return services;
         }
 
     }

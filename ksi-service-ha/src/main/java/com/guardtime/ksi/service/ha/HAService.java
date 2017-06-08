@@ -29,7 +29,7 @@ import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 
 import java.util.Date;
 import java.util.List;
@@ -104,7 +104,6 @@ public class HAService implements KSISigningService, KSIExtendingService {
         return extendingHAService.getSubExtendingServices();
     }
 
-
     /**
      * Closes signingHaService and extenderHaService
      *
@@ -130,18 +129,18 @@ public class HAService implements KSISigningService, KSIExtendingService {
         private final ExtendingHAService.Builder extenderHAServiceBuilder = new ExtendingHAService.Builder();
 
         /**
-         * @see SigningHAService.Builder#setClients(List)
+         * @see SigningHAService.Builder#addClients(List)
          */
-        public HAService.Builder setSigningClients(List<KSISigningClient> clients) {
-            signingHAServiceBuilder.setClients(clients);
+        public HAService.Builder addSigningClients(List<KSISigningClient> clients) {
+            signingHAServiceBuilder.addClients(clients);
             return this;
         }
 
         /**
-         * @see SigningHAService.Builder#setServices(List)
+         * @see SigningHAService.Builder#addServices(List)
          */
-        public HAService.Builder setSigningServices(List<KSISigningService> services) {
-            signingHAServiceBuilder.setServices(services);
+        public HAService.Builder addSigningServices(List<KSISigningService> services) {
+            signingHAServiceBuilder.addServices(services);
             return this;
         }
 

@@ -24,10 +24,10 @@ import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIExtendingClientServiceAdapter;
-import com.guardtime.ksi.service.ha.configuration.ExtendingHAServiceConfigurationUpdater;
+import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.ha.configuration.ExtendingHAServiceHAConfigurationListener;
 import com.guardtime.ksi.service.ha.tasks.ExtendingTask;
 import com.guardtime.ksi.service.ha.tasks.ServiceCallsTask;
 import com.guardtime.ksi.util.Util;
@@ -56,7 +56,7 @@ public class ExtendingHAService implements KSIExtendingService {
 
     private final List<KSIExtendingService> subservices;
     private final ExecutorService executorService;
-    private final ExtendingHAServiceConfigurationUpdater configurationUpdater;
+    private final ExtendingHAServiceHAConfigurationListener haConfListener;
 
     private ExtendingHAService(Builder builder) {
         this.executorService = builder.executorService;
@@ -70,7 +70,7 @@ public class ExtendingHAService implements KSIExtendingService {
             throw new IllegalArgumentException("ExtendingHAService can not be initialized with more than 3 subservices");
         }
         this.subservices = Collections.unmodifiableList(subservices);
-        this.configurationUpdater = new ExtendingHAServiceConfigurationUpdater(this.subservices);
+        this.haConfListener = new ExtendingHAServiceHAConfigurationListener(this.subservices);
     }
 
     /**
@@ -120,11 +120,11 @@ public class ExtendingHAService implements KSIExtendingService {
      * @param listener May not be null.
      */
     public void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener) {
-        configurationUpdater.registerNewListener(listener);
+        haConfListener.registerListener(listener);
     }
 
     public void sendExtenderConfigurationRequest() {
-        configurationUpdater.sendAggregationConfigurationRequest();
+        haConfListener.sendAggregationConfigurationRequest();
     }
 
     /**

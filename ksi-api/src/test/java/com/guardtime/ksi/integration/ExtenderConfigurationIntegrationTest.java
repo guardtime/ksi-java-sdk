@@ -24,9 +24,9 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 
 import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.HAService;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
@@ -47,9 +47,9 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
     public void setUp() throws Exception {
         super.setUp();
         SimpleHttpClient simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
-        haServiceV2 = new HAService.Builder().setSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClientV2))
+        haServiceV2 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClientV2))
                 .setExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV2)).build();
-        haServiceV1 = new HAService.Builder().setSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClient))
+        haServiceV1 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClient))
                 .setExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClient)).build();
         this.ksiV2 = createKsi(simpleHttpClientV2, simpleHttpClientV2, simpleHttpClientV2);
         this.serviceBasedKsi = createKsi(haServiceV2, haServiceV2, simpleHttpClientV2);

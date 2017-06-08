@@ -18,21 +18,17 @@
  */
 package com.guardtime.ksi.service.ha.configuration;
 
-import com.guardtime.ksi.util.Util;
-
 class LatestConsolidationResult<T> {
 
     private final T latestResultIfItWasSuccessful;
     private final HAConfigurationConsolidationException latestResultIfItWasUnsuccessful;
 
     LatestConsolidationResult(T latestResultIfItWasSuccessful) {
-        Util.notNull(latestResultIfItWasSuccessful, "Consolidation result");
         this.latestResultIfItWasSuccessful = latestResultIfItWasSuccessful;
         this.latestResultIfItWasUnsuccessful = null;
     }
 
     LatestConsolidationResult(HAConfigurationConsolidationException latestResultIfItWasUnsuccessful) {
-        Util.notNull(latestResultIfItWasUnsuccessful, "Consolidation result");
         this.latestResultIfItWasUnsuccessful = latestResultIfItWasUnsuccessful;
         this.latestResultIfItWasSuccessful = null;
     }

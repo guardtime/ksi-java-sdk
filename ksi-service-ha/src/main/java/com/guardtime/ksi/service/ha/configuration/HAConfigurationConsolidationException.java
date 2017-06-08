@@ -25,25 +25,8 @@ import com.guardtime.ksi.service.client.KSIClientException;
  */
 public class HAConfigurationConsolidationException extends KSIClientException {
 
-    private final String message;
-
     HAConfigurationConsolidationException() {
-        this("HA service has no active subconfigurations to base its consolidated configuration on");
-    }
-
-    HAConfigurationConsolidationException(String message) {
-        super(message);
-        this.message = message;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        HAConfigurationConsolidationException that = (HAConfigurationConsolidationException) o;
-
-        return message.equals(that.message);
+        super("HA service has no active subconfigurations to base its consolidated configuration on");
     }
 
 }

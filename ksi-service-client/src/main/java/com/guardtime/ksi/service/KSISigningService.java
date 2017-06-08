@@ -24,7 +24,6 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregationResponseFuture;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
-import com.guardtime.ksi.service.client.ConfigurationListener;
 
 import java.io.Closeable;
 import java.util.List;
@@ -52,7 +51,7 @@ public interface KSISigningService extends Closeable {
     List<KSISigningService> getSubSigningServices();
 
     /**
-     * Registeres a new {@link ConfigurationListener <AggregatorConfiguration>} for the client. Each time client's configuration is
+     * Registers a new {@link ConfigurationListener <AggregatorConfiguration>} for the client. Each time client's configuration is
      * updated, this listener is called.
      */
     void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener);

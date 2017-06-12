@@ -30,14 +30,14 @@ import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPoli
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.CommonTestUtil.loadFile;
 import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.INPUT_FILE_REVERSED;
-import static com.guardtime.ksi.TestUtil.loadFile;
 
 public class SignIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test
-    public void testSigner() throws Exception {
+    public void testSigningWithSignerClient_Ok() throws Exception {
         Signer s = new SignerBuilder().setSignerClient(simpleHttpClient).build();
         KSISignature sig = s.sign(loadFile(INPUT_FILE));
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, getFileHash(INPUT_FILE)), new KeyBasedVerificationPolicy());

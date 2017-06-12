@@ -29,6 +29,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
@@ -150,6 +151,51 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         KSISignature signature = loadSignature(RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION);
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, signature.getInputHash()
         ), new PublicationsFileBasedVerificationPolicy());
+        Assert.assertTrue(result.isOk());
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureUsingContextKeyBasedPolicy_Ok() throws Exception {
+        KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
+        VerificationResult result =
+                ksi.verify(sig, ContextAwarePolicyAdapter.createKeyPolicy(getPublicationsHandler(simpleHttpClient)));
+        Assert.assertTrue(result.isOk());
+    }
+
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureUsingContextCalendarBasedPolicy_Ok(KSI ksi, KSIExtenderClient extenderClient)
+            throws Exception {
+        KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
+        VerificationResult result =
+                ksi.verify(sig, ContextAwarePolicyAdapter.createCalendarPolicy(getExtender(extenderClient, simpleHttpClient)));
+        Assert.assertTrue(result.isOk());
+    }
+
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureUsingContextPublicationsFilePolicy_Ok(KSI ksi, KSIExtenderClient extenderClient)
+            throws Exception {
+        KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
+        VerificationResult result =
+                ksi.verify(sig, ContextAwarePolicyAdapter.createPublicationsFilePolicy(getPublicationsHandler(simpleHttpClient),
+                        getExtender(extenderClient, simpleHttpClient)));
+        Assert.assertTrue(result.isOk());
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifyOfflineExtendedKSIRfc3161SignatureUsingContextPublicationsFilePolicy_Ok() throws Exception {
+        KSISignature sig = loadSignature(RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION);
+        VerificationResult result =
+                ksi.verify(sig, ContextAwarePolicyAdapter.createPublicationsFilePolicy(getPublicationsHandler(simpleHttpClient)));
+        Assert.assertTrue(result.isOk());
+    }
+
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
+    public void testVerifyExtendedSignatureWithContextUserProvidedPublicationString_OK(KSI ksi, KSIExtenderClient extenderClient)
+            throws Exception {
+        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
+        VerificationResult result =
+                ksi.verify(sig, ContextAwarePolicyAdapter.createUserPolicy(sig.getPublicationRecord().getPublicationData(),
+                        getExtender(extenderClient, simpleHttpClient)));
         Assert.assertTrue(result.isOk());
     }
 }

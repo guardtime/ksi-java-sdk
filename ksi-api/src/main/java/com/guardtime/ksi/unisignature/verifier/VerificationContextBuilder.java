@@ -115,10 +115,7 @@ public class VerificationContextBuilder {
      *
      * @param documentHash document hash
      * @return instance of {@link VerificationContextBuilder}
-     *
-     * @deprecated Deprecated since 4.10, replaced by {@link VerificationContextBuilder#setDocumentHash(DataHash, long)}.
      */
-    @Deprecated
     public VerificationContextBuilder setDocumentHash(DataHash documentHash) {
         return setDocumentHash(documentHash, 0L);
     }

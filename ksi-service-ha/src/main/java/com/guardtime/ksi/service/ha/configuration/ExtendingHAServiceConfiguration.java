@@ -21,6 +21,8 @@ package com.guardtime.ksi.service.ha.configuration;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.service.ha.ExtendingHAService;
 import com.guardtime.ksi.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
@@ -35,7 +37,11 @@ import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isBigger;
  */
 class ExtendingHAServiceConfiguration implements ExtenderConfiguration {
 
+    private static final Logger logger = LoggerFactory.getLogger(ExtendingHAServiceConfiguration.class);
+
     private static final Date JAN_01_2006_00_00_00 = new Date(1136073600000L);
+    private static final int MIN_MAX_REQS = 0;
+    private static final int MAX_MAX_REQS = 16000;
 
     private final Long maxRequests;
     private final List<String> parents;
@@ -97,19 +103,36 @@ class ExtendingHAServiceConfiguration implements ExtenderConfiguration {
     }
 
     private Long normalizeMaxRequests(Long maxRequests) {
-        return isMaxRequestsSane(maxRequests) ? maxRequests : null;
+        if (isMaxRequestsSane(maxRequests)) {
+            return maxRequests;
+        } else {
+            logger.warn("Received max requests '{}' from an extender. Will not use it as only values between {} and {} are considered sane.", maxRequests, MIN_MAX_REQS, MAX_MAX_REQS);
+            return null;
+        }
     }
 
     private Date normalizeCalFirstTime(Date calFirstTime, Date calLastTime) {
-        return isCalFirstTimeSane(calFirstTime, calLastTime) ? calFirstTime : null;
+        if (isCalFirstTimeSane(calFirstTime, calLastTime)) {
+            return calFirstTime;
+        } else {
+            logger.warn("Received calendar first time '{}' from an extender. Will not use it as it is not sane. Calendar first time has to be after {} and before calendar last time ({}).",
+                    calFirstTime, JAN_01_2006_00_00_00, calLastTime);
+            return null;
+        }
     }
 
     private Date normalizeCalLastTime(Date calLastTime, Date calFirstTime) {
-        return isCalLastTimeSane(calLastTime, calFirstTime) ? calLastTime : null;
+        if (isCalLastTimeSane(calLastTime, calFirstTime)) {
+            return calLastTime;
+        } else {
+            logger.warn("Received calendar last time '{}' from an extender. Will not use it as it is not sane. Calendar last time has to be after {} and after calendar first time ({}).",
+                    calLastTime, JAN_01_2006_00_00_00, calFirstTime);
+            return null;
+        }
     }
 
     private boolean isMaxRequestsSane(Long maxRequests) {
-        return maxRequests == null || (maxRequests > 0 && maxRequests <= 16000);
+        return maxRequests == null || (maxRequests > MIN_MAX_REQS && maxRequests <= MAX_MAX_REQS);
     }
 
     private boolean isCalFirstTimeSane(Date calFirstTime, Date calLastTime) {

@@ -21,6 +21,8 @@ package com.guardtime.ksi.service.ha.configuration;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -28,6 +30,15 @@ import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isBigger;
 import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isSmaller;
 
 class SigningHAServiceConfiguration implements AggregatorConfiguration {
+
+    private static final Logger logger = LoggerFactory.getLogger(SigningHAServiceConfiguration.class);
+
+    private static final int MIN_MAX_REQS = 0;
+    private static final int MAX_MAX_REQS = 16000;
+    private static final int MIN_MAX_LEVEL = 0;
+    private static final int MAX_MAX_LEVEL = 20;
+    private static final int MIN_AGGR_PERIOD = 100;
+    private static final int MAX_AGGR_PERIOD = 20000;
 
     private final Long maxLevel;
     private final HashAlgorithm aggrAlgorithm;
@@ -93,27 +104,42 @@ class SigningHAServiceConfiguration implements AggregatorConfiguration {
     }
 
     private Long normalizeMaxRequests(Long maxRequests) {
-        return isMaxRequestsSane(maxRequests) ? maxRequests : null;
+        if (isMaxRequestsSane(maxRequests)) {
+            return maxRequests;
+        } else {
+            logger.warn("Received max requests '{}' from an aggregator. Will not use it as only values between {} and {} are considered sane.", maxRequests, MIN_MAX_REQS, MAX_MAX_REQS);
+            return null;
+        }
     }
 
     private Long normalizeMaxLevel(Long maxLevel) {
-        return isMaxLevelSane(maxLevel) ? maxLevel : null;
+        if (isMaxLevelSane(maxLevel)) {
+            return maxLevel;
+        } else {
+            logger.warn("Received max level '{}' from an aggregator. Will not use it as only values between {} and {} are considered sane.", maxLevel, MIN_MAX_LEVEL, MAX_MAX_LEVEL);
+            return null;
+        }
     }
 
     private Long normalizeAggregationPeriod(Long maxLevel) {
-        return isAggregationPeriodSane(maxLevel) ? maxLevel : null;
+        if (isAggregationPeriodSane(maxLevel)) {
+            return maxLevel;
+        } else {
+            logger.warn("Received aggregation period '{}' from an aggregator. Will not use it as only values between {} and {} are considered sane.", maxLevel, MIN_AGGR_PERIOD, MAX_AGGR_PERIOD);
+            return null;
+        }
     }
 
     private boolean isMaxRequestsSane(Long maxRequests) {
-        return maxRequests == null || (maxRequests > 0 && maxRequests <= 16000);
+        return maxRequests == null || (maxRequests > MIN_MAX_REQS && maxRequests <= MAX_MAX_REQS);
     }
 
     private boolean isMaxLevelSane(Long maxLevel) {
-        return maxLevel == null || (maxLevel >= 0 && maxLevel <= 20);
+        return maxLevel == null || (maxLevel >= MIN_MAX_LEVEL && maxLevel <= MAX_MAX_LEVEL);
     }
 
     private boolean isAggregationPeriodSane(Long aggrPeriod) {
-        return aggrPeriod == null || (aggrPeriod >= 100 && aggrPeriod <= 20000);
+        return aggrPeriod == null || (aggrPeriod >= MIN_AGGR_PERIOD && aggrPeriod <= MAX_AGGR_PERIOD);
     }
 
     @Override

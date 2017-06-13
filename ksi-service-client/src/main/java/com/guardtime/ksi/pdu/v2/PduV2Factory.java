@@ -21,13 +21,22 @@ package com.guardtime.ksi.pdu.v2;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.ExtensionRequest;
+import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -35,6 +44,9 @@ import java.util.List;
 
 public class PduV2Factory implements PduFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(PduV2Factory.class);
+
+    private static final int[] PUSHABLE_ELEMENT_TYPES = new int[] {0x04};
     public static final int ELEMENT_TYPE_CONFIGURATION = 0x04;
 
     public AggregationRequest createAggregationRequest(KSIRequestContext context, ServiceCredentials credentials, DataHash imprint, Long level) throws KSIException {
@@ -107,11 +119,20 @@ public class PduV2Factory implements PduFactory {
             TLVElement requestIdElement = payload.getFirstChildElement(0x01);
 
             if (requestIdElement != null && requestId.equals(requestIdElement.getDecodedLong())) {
+                if(responsePayload != null){
+                    logger.warn("Duplicate payload was received");
+                }
                 responsePayload = payload;
-                break;
+            } else if (!isPushableElement(payload)) {
+                logger.warn("Non-pushable payload with wrong request ID received");
             }
         }
         return responsePayload;
+    }
+
+    private boolean isPushableElement(TLVElement element) {
+        int type = element.getType();
+        return org.bouncycastle.util.Arrays.contains(PUSHABLE_ELEMENT_TYPES, type);
     }
 
     private List<TLVElement> getAggregatorPayloadElements(ServiceCredentials credentials, TLVElement input, int payloadType) throws KSIException {

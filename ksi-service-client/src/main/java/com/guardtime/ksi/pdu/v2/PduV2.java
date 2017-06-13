@@ -169,6 +169,7 @@ abstract class PduV2 extends TLVStructure {
                 payloads.add(element);
             } else {
                 verifyCriticalFlag(element);
+                logger.info("Unknown non-critical TLV element with tag=0x" + Integer.toHexString(element.getType()) + " encountered");
             }
         }
     }

@@ -170,4 +170,14 @@ public class UtilTest {
         Assert.assertTrue(Util.equalsIgnoreOrder(new ArrayList<String>(Arrays.asList("1", "2", "3")), new LinkedList<String>(Arrays.asList("2", "1", "3"))));
     }
 
+    @Test
+    public void testIntArrayContainsGivenKey() {
+        Assert.assertTrue(Util.containsInt(new int[] {1, 2, 3, 4, 5}, 4));
+    }
+
+    @Test
+    public void testIntArrayDoesNotContainsGivenKey() {
+        Assert.assertFalse(Util.containsInt(new int[] {1, 2, 3, 4, 5}, 8));
+    }
+
 }

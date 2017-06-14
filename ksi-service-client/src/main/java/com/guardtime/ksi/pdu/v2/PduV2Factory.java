@@ -42,6 +42,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static com.guardtime.ksi.util.Util.containsInt;
+
 public class PduV2Factory implements PduFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(PduV2Factory.class);
@@ -132,7 +134,7 @@ public class PduV2Factory implements PduFactory {
 
     private boolean isPushableElement(TLVElement element) {
         int type = element.getType();
-        return org.bouncycastle.util.Arrays.contains(PUSHABLE_ELEMENT_TYPES, type);
+        return containsInt(PUSHABLE_ELEMENT_TYPES, type);
     }
 
     private List<TLVElement> getAggregatorPayloadElements(ServiceCredentials credentials, TLVElement input, int payloadType) throws KSIException {

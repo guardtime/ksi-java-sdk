@@ -120,11 +120,11 @@ public class PduV2Factory implements PduFactory {
 
             if (requestIdElement != null && requestId.equals(requestIdElement.getDecodedLong())) {
                 if(responsePayload != null){
-                    logger.warn("Duplicate payload was received");
+                    logger.warn("Duplicate response payload received");
                 }
                 responsePayload = payload;
             } else if (!isPushableElement(payload)) {
-                logger.warn("Non-pushable payload with wrong request ID received");
+                logger.warn("Non-pushable payload with unknown/invalid request ID received");
             }
         }
         return responsePayload;

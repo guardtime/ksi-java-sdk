@@ -15,6 +15,7 @@ Version 5.0
 * IMPROVEMENT: Now possible to verify input hash level, default value is 0, GEN-03 is returned in case of error.
 * IMPROVEMENT: TCPClients default threadpool size is now configurable through TCPClient initialization with custom ExecutorService.
 * IMPROVEMENT: Verification error codes are unified.
+* BUGFIX: Wrong signature type was ignored in Calendar Authentication Records
 
 Version 4.9
 

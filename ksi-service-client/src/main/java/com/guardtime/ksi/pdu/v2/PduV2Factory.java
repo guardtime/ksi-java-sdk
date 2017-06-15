@@ -42,13 +42,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static com.guardtime.ksi.util.Util.containsInt;
-
 public class PduV2Factory implements PduFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(PduV2Factory.class);
 
-    private static final int[] PUSHABLE_ELEMENT_TYPES = new int[] {0x04};
     public static final int ELEMENT_TYPE_CONFIGURATION = 0x04;
 
     public AggregationRequest createAggregationRequest(KSIRequestContext context, ServiceCredentials credentials, DataHash imprint, Long level) throws KSIException {
@@ -120,21 +117,20 @@ public class PduV2Factory implements PduFactory {
         for (TLVElement payload : payloads) {
             TLVElement requestIdElement = payload.getFirstChildElement(0x01);
 
-            if (requestIdElement != null && requestId.equals(requestIdElement.getDecodedLong())) {
-                if(responsePayload != null){
-                    logger.warn("Duplicate response payload received");
+            if (requestIdElement != null) {
+                Long id = requestIdElement.getDecodedLong();
+                if (requestId.equals(id)) {
+                    if (responsePayload == null) {
+                        responsePayload = payload;
+                    } else {
+                        logger.warn("Duplicate response payload received");
+                    }
+                } else {
+                    logger.warn("Response payload with requestId={} encountered, expected requestId={}", id, requestId);
                 }
-                responsePayload = payload;
-            } else if (!isPushableElement(payload)) {
-                logger.warn("Non-pushable payload with unknown/invalid request ID received");
             }
         }
         return responsePayload;
-    }
-
-    private boolean isPushableElement(TLVElement element) {
-        int type = element.getType();
-        return containsInt(PUSHABLE_ELEMENT_TYPES, type);
     }
 
     private List<TLVElement> getAggregatorPayloadElements(ServiceCredentials credentials, TLVElement input, int payloadType) throws KSIException {

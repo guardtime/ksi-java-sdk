@@ -47,6 +47,9 @@ abstract class PduV2 extends TLVStructure {
 
     private static final Logger logger = LoggerFactory.getLogger(PduV2.class);
 
+    private static final int[] PUSHABLE_ELEMENT_TYPES = new int[] {0x04};
+    public static final int ELEMENT_TYPE_ACK = 0x05;
+
     protected List<TLVElement> payloads = new LinkedList<TLVElement>();
     private PduMessageHeader header;
     private MessageMac mac;
@@ -117,6 +120,8 @@ abstract class PduV2 extends TLVStructure {
         for (TLVElement payload : payloads) {
             if (payload.getType() == tlvType) {
                 payloadElements.add(payload);
+            } else if (!isPushableElement(payload) && payload.getType() != ELEMENT_TYPE_ACK) {
+                logger.warn("Non-pushable payload with type=0x{} encountered", Integer.toHexString(payload.getType()));
             }
         }
         return payloadElements;
@@ -178,6 +183,11 @@ abstract class PduV2 extends TLVStructure {
     private boolean isSupportedPayloadElement(TLVElement element) {
         int type = element.getType();
         return containsInt(getSupportedPayloadTypes(), type);
+    }
+
+    private boolean isPushableElement(TLVElement element) {
+        int type = element.getType();
+        return containsInt(PUSHABLE_ELEMENT_TYPES, type);
     }
 
     private void readMac(TLVElement rootElement, ServiceCredentials credentials) throws KSIException {

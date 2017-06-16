@@ -58,31 +58,10 @@ public class ExtendingHAService implements KSIExtendingService {
     private final ExecutorService executorService;
     private final ExtendingHAServiceHAConfigurationListener haConfListener;
 
-    private ExtendingHAService(Builder builder) {
-        this.executorService = builder.executorService;
-        List<KSIExtendingService> subservices = new ArrayList<KSIExtendingService>();
-        subservices.addAll(builder.services);
-        subservices.addAll(clientsToServices(builder.clients));
-        if (subservices.isEmpty()) {
-            throw new IllegalArgumentException("Can not initialize ExtendingHAService without any subservices");
-        }
-        if (subservices.size() > 3) {
-            throw new IllegalArgumentException("ExtendingHAService can not be initialized with more than 3 subservices");
-        }
+    private ExtendingHAService(List<KSIExtendingService> subservices, ExecutorService executorService) {
         this.subservices = Collections.unmodifiableList(subservices);
+        this.executorService = executorService;
         this.haConfListener = new ExtendingHAServiceHAConfigurationListener(this.subservices);
-    }
-
-    /**
-     * Converts list of {@link KSIExtenderClient} to a list of {@link KSIExtendingService} by wrapping them all with
-     * {@link KSIExtendingClientServiceAdapter}s
-     */
-    private List<KSIExtendingService> clientsToServices(List<KSIExtenderClient> clients) {
-        List<KSIExtendingService> services = new ArrayList<KSIExtendingService>(clients.size());
-        for (KSIExtenderClient client : clients) {
-            services.add(new KSIExtendingClientServiceAdapter(client));
-        }
-        return services;
     }
 
     /**
@@ -145,35 +124,34 @@ public class ExtendingHAService implements KSIExtendingService {
      */
     public static class Builder {
 
-        private List<KSIExtenderClient> clients = Collections.emptyList();
-        private List<KSIExtendingService> services = Collections.emptyList();
+        private List<KSIExtendingService> services = new ArrayList<KSIExtendingService>();
         private ExecutorService executorService = DefaultExecutorServiceProvider.getExecutorService();
 
         /**
-         * For setting subclients. If both clients and services are set then they are combined.
+         * For adding subclients. If both clients and services are set then they are combined.
          * There should be either at least one subclient or one subservice and no more than three of them combined before
          * building. Do not have to call this if there is at least one subservice set.
          *
          * @param clients List of subclients. May not be null.
          * @return Instance of the builder itself.
          */
-        public Builder setClients(List<KSIExtenderClient> clients) {
+        public Builder addClients(List<KSIExtenderClient> clients) {
             Util.notNull(clients, "ExtendingHAService.Builder.clients");
-            this.clients = clients;
+            this.services.addAll(clientsToServices(clients));
             return this;
         }
 
         /**
-         * For setting subservices. If both clients and services are set then they are combined.
+         * For adding subservices. If both clients and services are set then they are combined.
          * There should be either at least one subclient or one subservice and no more than three of them combined before
          * building. Do not have to call this if there is at least one subclient set.
          *
          * @param services List of subservices. May not be null.
          * @return Instance of the builder itself.
          */
-        public Builder setServices(List<KSIExtendingService> services) {
+        public Builder addServices(List<KSIExtendingService> services) {
             Util.notNull(services, "ExtendingHAService.Builder.services");
-            this.services = services;
+            this.services.addAll(services);
             return this;
         }
 
@@ -194,7 +172,26 @@ public class ExtendingHAService implements KSIExtendingService {
          * @return Instance of {@link ExtendingHAService}
          */
         public ExtendingHAService build() {
-            return new ExtendingHAService(this);
+            List<KSIExtendingService> subservices = Collections.unmodifiableList(this.services);
+            if (subservices.isEmpty()) {
+                throw new IllegalArgumentException("Can not initialize ExtendingHAService without any subservices");
+            }
+            if (subservices.size() > 3) {
+                throw new IllegalArgumentException("ExtendingHAService can not be initialized with more than 3 subservices");
+            }
+            return new ExtendingHAService(subservices, this.executorService);
+        }
+
+        /**
+         * Converts list of {@link KSIExtenderClient} to a list of {@link KSIExtendingService} by wrapping them all with
+         * {@link KSIExtendingClientServiceAdapter}s
+         */
+        private List<KSIExtendingService> clientsToServices(List<KSIExtenderClient> clients) {
+            List<KSIExtendingService> services = new ArrayList<KSIExtendingService>(clients.size());
+            for (KSIExtenderClient client : clients) {
+                services.add(new KSIExtendingClientServiceAdapter(client));
+            }
+            return services;
         }
 
     }

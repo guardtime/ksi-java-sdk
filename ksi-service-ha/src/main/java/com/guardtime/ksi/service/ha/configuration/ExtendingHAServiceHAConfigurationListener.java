@@ -44,9 +44,15 @@ public class ExtendingHAServiceHAConfigurationListener extends AbstractHAConfigu
     protected ExtenderConfiguration consolidate(ExtenderConfiguration c1, ExtenderConfiguration c2) {
         boolean c1Exists = c1 != null;
         boolean c2Exists = c2 != null;
-        if (c1Exists && c2Exists) return new ExtendingHAServiceConfiguration(c1, c2);
-        if (c1Exists) return new ExtendingHAServiceConfiguration(c1);
-        if (c2Exists) return new ExtendingHAServiceConfiguration(c2);
+        if (c1Exists && c2Exists) {
+            return new ExtendingHAServiceConfiguration(c1, c2);
+        }
+        if (c1Exists) {
+            return new ExtendingHAServiceConfiguration(c1);
+        }
+        if (c2Exists){
+            return new ExtendingHAServiceConfiguration(c2);
+        }
         return null;
     }
 

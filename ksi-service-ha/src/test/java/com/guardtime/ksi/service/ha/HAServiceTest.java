@@ -80,7 +80,7 @@ public class HAServiceTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "ExtendingHAService can not be initialized with more than 3 subservices")
     public void testInitExtendingHAServiceWithTooMuchSubclients() throws Exception {
-        new ExtendingHAService.Builder().setServices(Arrays.asList(
+        new ExtendingHAService.Builder().addServices(Arrays.asList(
                 initSlowExtenderClient(),
                 initSlowExtenderClient(),
                 initSlowExtenderClient(),
@@ -105,7 +105,7 @@ public class HAServiceTest {
         ExtensionResponse subclientResponse = mock(ExtensionResponse.class);
         KSIExtendingService succeedingClient = initSucceedingExtenderClient(subclientResponse);
 
-        ExtendingHAService haService = new ExtendingHAService.Builder().setServices(Arrays.asList(
+        ExtendingHAService haService = new ExtendingHAService.Builder().addServices(Arrays.asList(
                 initFailingExtenderClient("Test failed. Client 1"),
                 succeedingClient,
                 initFailingExtenderClient("Test failed. Client 3")))
@@ -129,7 +129,7 @@ public class HAServiceTest {
     @Test(timeOut = 1000)
     public void testOneExtenderQuickOtherSlow() throws Exception {
         ExtensionResponse subclientResponse = mock(ExtensionResponse.class);
-        ExtendingHAService haService = new ExtendingHAService.Builder().setServices(Arrays.asList(
+        ExtendingHAService haService = new ExtendingHAService.Builder().addServices(Arrays.asList(
                 initSlowExtenderClient(),
                 initSucceedingExtenderClient(subclientResponse),
                 initSlowExtenderClient()))
@@ -172,7 +172,7 @@ public class HAServiceTest {
 
     @Test(expectedExceptions = KSIClientException.class, expectedExceptionsMessageRegExp = "All subclients of HAService failed")
     public void testAllExtendersFail() throws Exception {
-        ExtendingHAService haService = new ExtendingHAService.Builder().setServices(Arrays.asList(
+        ExtendingHAService haService = new ExtendingHAService.Builder().addServices(Arrays.asList(
                 initFailingExtenderClient("Client failed. Client 1"),
                 initFailingExtenderClient("Client failed. Client 2"),
                 initFailingExtenderClient("Client failed. Client 3")))
@@ -214,7 +214,7 @@ public class HAServiceTest {
         extendingServices.add(new DummyClient(300L));
         extendingServices.add(new DummyClient(200L));
         extendingServices.add(new DummyClient(100L));
-        ExtendingHAService extendingHAService = new ExtendingHAService.Builder().setServices(extendingServices).build();
+        ExtendingHAService extendingHAService = new ExtendingHAService.Builder().addServices(extendingServices).build();
         extendingHAService.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
             public void updated(ExtenderConfiguration configuration) {
                 setConsolidatedConf(configuration);

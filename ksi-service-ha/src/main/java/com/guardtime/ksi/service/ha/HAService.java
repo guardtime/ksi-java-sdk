@@ -145,18 +145,18 @@ public class HAService implements KSISigningService, KSIExtendingService {
         }
 
         /**
-         * @see ExtendingHAService.Builder#setClients(List)
+         * @see ExtendingHAService.Builder#addClients(List)
          */
         public HAService.Builder setExtenderClients(List<KSIExtenderClient> clients) {
-            extenderHAServiceBuilder.setClients(clients);
+            extenderHAServiceBuilder.addClients(clients);
             return this;
         }
 
         /**
-         * @see ExtendingHAService.Builder#setServices(List)
+         * @see ExtendingHAService.Builder#addServices(List)
          */
         public HAService.Builder setExtendingServices(List<KSIExtendingService> services) {
-            extenderHAServiceBuilder.setServices(services);
+            extenderHAServiceBuilder.addServices(services);
             return this;
         }
 

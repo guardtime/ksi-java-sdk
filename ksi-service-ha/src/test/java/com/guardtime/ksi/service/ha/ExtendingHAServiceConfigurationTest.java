@@ -16,9 +16,10 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.service.ha.ExtendingHAServiceConfiguration;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

@@ -28,9 +28,6 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
-import com.guardtime.ksi.service.ha.configuration.SigningHAServiceHAConfigurationListener;
-import com.guardtime.ksi.service.ha.tasks.ServiceCallsTask;
-import com.guardtime.ksi.service.ha.tasks.SigningTask;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,12 +53,12 @@ public class SigningHAService implements KSISigningService {
 
     private final List<KSISigningService> subservices;
     private final ExecutorService executorService;
-    private final SigningHAServiceHAConfigurationListener haConfListener;
+    private final SigningHAServiceConfigurationListener haConfListener;
 
     private SigningHAService(List<KSISigningService> subservices, ExecutorService executorService) {
         this.executorService = executorService;
         this.subservices = subservices;
-        this.haConfListener = new SigningHAServiceHAConfigurationListener(this.subservices);
+        this.haConfListener = new SigningHAServiceConfigurationListener(this.subservices);
     }
 
     /**
@@ -209,4 +206,5 @@ public class SigningHAService implements KSISigningService {
         }
 
     }
+
 }

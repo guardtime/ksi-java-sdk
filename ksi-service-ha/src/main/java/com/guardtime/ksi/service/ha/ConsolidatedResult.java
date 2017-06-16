@@ -16,33 +16,33 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
-class LatestConsolidationResult<T> {
+class ConsolidatedResult<T> {
 
-    private final T latestResultIfItWasSuccessful;
-    private final HAConfigurationConsolidationException latestResultIfItWasUnsuccessful;
+    private final T latest;
+    private final HAConfigurationConsolidationException latestException;
 
-    LatestConsolidationResult(T latestResultIfItWasSuccessful) {
-        this.latestResultIfItWasSuccessful = latestResultIfItWasSuccessful;
-        this.latestResultIfItWasUnsuccessful = null;
+    ConsolidatedResult(T latest) {
+        this.latest = latest;
+        this.latestException = null;
     }
 
-    LatestConsolidationResult(HAConfigurationConsolidationException latestResultIfItWasUnsuccessful) {
-        this.latestResultIfItWasUnsuccessful = latestResultIfItWasUnsuccessful;
-        this.latestResultIfItWasSuccessful = null;
+    ConsolidatedResult(HAConfigurationConsolidationException e) {
+        this.latestException = e;
+        this.latest = null;
     }
 
     boolean wasSuccessful() {
-        return latestResultIfItWasSuccessful != null;
+        return latest != null;
     }
 
     public T getLatestResult() {
-        return latestResultIfItWasSuccessful;
+        return latest;
     }
 
     public Throwable getLatestException() {
-        return latestResultIfItWasUnsuccessful;
+        return latestException;
     }
 
     @Override
@@ -50,7 +50,7 @@ class LatestConsolidationResult<T> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        LatestConsolidationResult<?> that = (LatestConsolidationResult<?>) o;
+        ConsolidatedResult<?> that = (ConsolidatedResult<?>) o;
 
         boolean successful = wasSuccessful();
         if (successful != that.wasSuccessful()) return false;

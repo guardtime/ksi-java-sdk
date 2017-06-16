@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.service.KSISigningService;
@@ -27,12 +27,12 @@ import java.util.List;
 /**
  * Handles configuration consolidation and listener updates for SigningHAService
  */
-public class SigningHAServiceHAConfigurationListener extends AbstractHAConfigurationListener<AggregatorConfiguration> {
+class SigningHAServiceConfigurationListener extends AbstractHAConfigurationListener<AggregatorConfiguration> {
 
     private final List<SubServiceConfListener<AggregatorConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<AggregatorConfiguration>>();
     private final List<KSISigningService> subservices;
 
-    public SigningHAServiceHAConfigurationListener(List<KSISigningService> subservices) {
+    public SigningHAServiceConfigurationListener(List<KSISigningService> subservices) {
         this.subservices = subservices;
         for (KSISigningService subservice : subservices) {
             SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), this);

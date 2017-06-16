@@ -24,8 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.*;
@@ -654,16 +652,6 @@ public final class Util {
      */
     public static boolean equalsIgnoreOrder(Collection<?> c1, Collection<?> c2) {
         return (c1 == null && c2 == null) || (c1 != null && c2 != null  && c1.size() == c2.size() && c1.containsAll(c2) && c2.containsAll(c1));
-    }
-
-    /**
-     * For getting the stacktrace of a throwable as a string.
-     */
-    public static String getStacktrace(Throwable t) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        t.printStackTrace(pw);
-        return sw.toString();
     }
 
     /**

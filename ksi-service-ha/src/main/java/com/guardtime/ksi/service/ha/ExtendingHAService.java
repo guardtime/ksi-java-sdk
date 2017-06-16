@@ -27,9 +27,6 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
-import com.guardtime.ksi.service.ha.configuration.ExtendingHAServiceHAConfigurationListener;
-import com.guardtime.ksi.service.ha.tasks.ExtendingTask;
-import com.guardtime.ksi.service.ha.tasks.ServiceCallsTask;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,12 +53,12 @@ public class ExtendingHAService implements KSIExtendingService {
 
     private final List<KSIExtendingService> subservices;
     private final ExecutorService executorService;
-    private final ExtendingHAServiceHAConfigurationListener haConfListener;
+    private final ExtendingHAServiceConfigurationListener haConfListener;
 
     private ExtendingHAService(List<KSIExtendingService> subservices, ExecutorService executorService) {
         this.subservices = Collections.unmodifiableList(subservices);
         this.executorService = executorService;
-        this.haConfListener = new ExtendingHAServiceHAConfigurationListener(this.subservices);
+        this.haConfListener = new ExtendingHAServiceConfigurationListener(this.subservices);
     }
 
     /**

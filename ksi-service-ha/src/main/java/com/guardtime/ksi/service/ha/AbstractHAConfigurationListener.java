@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.util.Util;
@@ -36,7 +36,7 @@ abstract class AbstractHAConfigurationListener<T> implements ConfigurationListen
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final List<ConfigurationListener<T>> consolidatedConfListeners = new ArrayList<ConfigurationListener<T>>();
-    private LatestConsolidationResult<T> lastConsolidatedConfiguration;
+    private ConsolidatedResult<T> lastConsolidatedConfiguration;
     private final Object lock = new Object();
 
     protected abstract T consolidate(T lastConfiguration, T newConsolidatedConfiguration);
@@ -61,7 +61,7 @@ abstract class AbstractHAConfigurationListener<T> implements ConfigurationListen
 
     void recalculateConfiguration() {
         T newConsolidatedConfiguration = null;
-        LatestConsolidationResult<T> oldConsolidatedConfiguration = lastConsolidatedConfiguration;
+        ConsolidatedResult<T> oldConsolidatedConfiguration = lastConsolidatedConfiguration;
         boolean listenersNeedUpdate;
         synchronized (lock) {
             for (SubServiceConfListener<T> serviceConfListener : getSubServiceConfListeners()) {
@@ -96,9 +96,9 @@ abstract class AbstractHAConfigurationListener<T> implements ConfigurationListen
 
     private void resetLastConsolidatedConfiguration(T newConsolidatedConfiguration) {
         if (newConsolidatedConfiguration == null) {
-            lastConsolidatedConfiguration = new LatestConsolidationResult<T>(new HAConfigurationConsolidationException());
+            lastConsolidatedConfiguration = new ConsolidatedResult<T>(new HAConfigurationConsolidationException());
         } else {
-            lastConsolidatedConfiguration = new LatestConsolidationResult<T>(newConsolidatedConfiguration);
+            lastConsolidatedConfiguration = new ConsolidatedResult<T>(newConsolidatedConfiguration);
         }
     }
 

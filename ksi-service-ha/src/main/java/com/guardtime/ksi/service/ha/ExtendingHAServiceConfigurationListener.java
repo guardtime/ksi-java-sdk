@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.service.KSIExtendingService;
@@ -27,12 +27,12 @@ import java.util.List;
 /**
  * Handles configuration consolidation and listener updates for ExtendingHAService
  */
-public class ExtendingHAServiceHAConfigurationListener extends AbstractHAConfigurationListener<ExtenderConfiguration> {
+class ExtendingHAServiceConfigurationListener extends AbstractHAConfigurationListener<ExtenderConfiguration> {
 
     private final List<SubServiceConfListener<ExtenderConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<ExtenderConfiguration>>();
     private final List<KSIExtendingService> subservices;
 
-    public ExtendingHAServiceHAConfigurationListener(List<KSIExtendingService> subservices) {
+    public ExtendingHAServiceConfigurationListener(List<KSIExtendingService> subservices) {
         this.subservices = subservices;
         for (KSIExtendingService subservice : subservices) {
             SubServiceConfListener<ExtenderConfiguration> listener = new SubServiceConfListener<ExtenderConfiguration>(subservice.toString(), this);

@@ -16,18 +16,13 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
-import com.guardtime.ksi.service.ha.ExtendingHAService;
 import com.guardtime.ksi.util.Util;
 
 import java.util.Date;
 import java.util.List;
-
-import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isAfter;
-import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isBefore;
-import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isBigger;
 
 
 /**
@@ -65,15 +60,15 @@ class ExtendingHAServiceConfiguration implements ExtenderConfiguration {
 
         Long c1MaxReqs = normalizeMaxRequests(c1.getMaximumRequests());
         Long c2MaxReqs = normalizeMaxRequests(c2.getMaximumRequests());
-        this.maxRequests = isBigger(c1MaxReqs, c2MaxReqs) ? c2MaxReqs : c1MaxReqs;
+        this.maxRequests = HAConfUtil.isBigger(c1MaxReqs, c2MaxReqs) ? c2MaxReqs : c1MaxReqs;
 
         Date c1CalFirstTime = normalizeCalFirstTime(c1.getCalendarFirstTime(), c1.getCalendarLastTime());
         Date c2CalFirstTime = normalizeCalFirstTime(c2.getCalendarFirstTime(), c2.getCalendarLastTime());
-        this.calFirstTime = isBefore(c1CalFirstTime, c2CalFirstTime) ? c2CalFirstTime : c1CalFirstTime;
+        this.calFirstTime = HAConfUtil.isBefore(c1CalFirstTime, c2CalFirstTime) ? c2CalFirstTime : c1CalFirstTime;
 
         Date c1CalLastTime = normalizeCalLastTime(c1.getCalendarLastTime(), c1.getCalendarFirstTime());
         Date c2CalLastTime = normalizeCalLastTime(c2.getCalendarLastTime(), c2.getCalendarFirstTime());
-        this.calLastTime = isAfter(c1CalLastTime, c2CalLastTime) ? c2CalLastTime : c1.getCalendarLastTime();
+        this.calLastTime = HAConfUtil.isAfter(c1CalLastTime, c2CalLastTime) ? c2CalLastTime : c1.getCalendarLastTime();
 
         List<String> c1Parents = c1.getParents();
         List<String> c2Parents = c2.getParents();

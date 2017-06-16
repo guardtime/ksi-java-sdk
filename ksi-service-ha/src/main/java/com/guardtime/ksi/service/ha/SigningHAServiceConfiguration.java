@@ -16,16 +16,13 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.util.Util;
 
 import java.util.List;
-
-import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isBigger;
-import static com.guardtime.ksi.service.ha.configuration.HAConfUtil.isSmaller;
 
 class SigningHAServiceConfiguration implements AggregatorConfiguration {
 
@@ -58,15 +55,15 @@ class SigningHAServiceConfiguration implements AggregatorConfiguration {
 
         Long c1MaxLevel = normalizeMaxLevel(c1.getMaximumLevel());
         Long c2MaxLevel = normalizeMaxLevel(c2.getMaximumLevel());
-        this.maxLevel = isBigger(c1MaxLevel, c2MaxLevel) ? c2MaxLevel : c1MaxLevel;
+        this.maxLevel = HAConfUtil.isBigger(c1MaxLevel, c2MaxLevel) ? c2MaxLevel : c1MaxLevel;
 
         Long c1AggrPeriod = normalizeAggregationPeriod(c1.getAggregationPeriod());
         Long c2AggrPeriod = normalizeAggregationPeriod(c2.getAggregationPeriod());
-        this.aggrPeriod = isSmaller(c1AggrPeriod, c2AggrPeriod) ? c2AggrPeriod : c1AggrPeriod;
+        this.aggrPeriod = HAConfUtil.isSmaller(c1AggrPeriod, c2AggrPeriod) ? c2AggrPeriod : c1AggrPeriod;
 
         Long c1MaxReqs = normalizeMaxRequests(c1.getMaximumRequests());
         Long c2MaxReqs = normalizeMaxRequests(c2.getMaximumRequests());
-        this.maxRequests = isBigger(c1MaxReqs, c2MaxReqs) ? c2MaxReqs : c1MaxReqs;
+        this.maxRequests = HAConfUtil.isBigger(c1MaxReqs, c2MaxReqs) ? c2MaxReqs : c1MaxReqs;
 
         this.aggrAlgorithm = c1.getAggregationAlgorithm() == null ? c2.getAggregationAlgorithm() : c1.getAggregationAlgorithm();
         this.parents = c1.getParents() == null ? c2.getParents() : c1.getParents();

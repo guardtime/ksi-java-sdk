@@ -48,7 +48,6 @@ abstract class PduV2 extends TLVStructure {
     private static final Logger logger = LoggerFactory.getLogger(PduV2.class);
 
     private static final int[] PUSHABLE_ELEMENT_TYPES = new int[] {0x04};
-    public static final int ELEMENT_TYPE_ACK = 0x05;
 
     protected List<TLVElement> payloads = new LinkedList<TLVElement>();
     private PduMessageHeader header;
@@ -120,7 +119,7 @@ abstract class PduV2 extends TLVStructure {
         for (TLVElement payload : payloads) {
             if (payload.getType() == tlvType) {
                 payloadElements.add(payload);
-            } else if (!isPushableElement(payload) && payload.getType() != ELEMENT_TYPE_ACK) {
+            } else if (!isPushableElement(payload)) {
                 logger.warn("Non-pushable payload with type=0x{} encountered", Integer.toHexString(payload.getType()));
             }
         }

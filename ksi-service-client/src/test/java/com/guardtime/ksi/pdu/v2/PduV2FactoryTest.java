@@ -22,6 +22,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionRequest;
@@ -223,6 +224,12 @@ public class PduV2FactoryTest {
         for (String parent : cnf.getParents()){
             Assert.assertTrue(parent.contains(".url"));
         }
+    }
+
+    @Test
+    public void testAggregationResponseParsingWithMultipleResponses() throws Exception {
+        AggregationResponse response = pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregator-response-with-conf-ack-response-and-duplicate-response.tlv"));
+        Assert.assertNotNull(response);
     }
 
     @Test

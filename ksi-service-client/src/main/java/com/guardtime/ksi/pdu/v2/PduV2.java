@@ -29,7 +29,6 @@ import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
-import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +38,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.guardtime.ksi.util.Util.containsInt;
+
 /**
  * Common PDU implementation for aggregation and extension request/response classes
  */
 abstract class PduV2 extends TLVStructure {
 
     private static final Logger logger = LoggerFactory.getLogger(PduV2.class);
+
+    private static final int[] PUSHABLE_ELEMENT_TYPES = new int[] {0x04};
 
     protected List<TLVElement> payloads = new LinkedList<TLVElement>();
     private PduMessageHeader header;
@@ -116,6 +119,8 @@ abstract class PduV2 extends TLVStructure {
         for (TLVElement payload : payloads) {
             if (payload.getType() == tlvType) {
                 payloadElements.add(payload);
+            } else if (!isPushableElement(payload)) {
+                logger.warn("Non-pushable payload with type=0x{} encountered", Integer.toHexString(payload.getType()));
             }
         }
         return payloadElements;
@@ -169,13 +174,19 @@ abstract class PduV2 extends TLVStructure {
                 payloads.add(element);
             } else {
                 verifyCriticalFlag(element);
+                logger.info("Unknown non-critical TLV element with tag=0x{} encountered", Integer.toHexString(element.getType()));
             }
         }
     }
 
     private boolean isSupportedPayloadElement(TLVElement element) {
         int type = element.getType();
-        return Arrays.contains(getSupportedPayloadTypes(), type);
+        return containsInt(getSupportedPayloadTypes(), type);
+    }
+
+    private boolean isPushableElement(TLVElement element) {
+        int type = element.getType();
+        return containsInt(PUSHABLE_ELEMENT_TYPES, type);
     }
 
     private void readMac(TLVElement rootElement, ServiceCredentials credentials) throws KSIException {

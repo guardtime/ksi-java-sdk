@@ -205,6 +205,13 @@ public class PduV2FactoryTest {
     }
 
     @Test
+    public void testReadV2ExtensionResponseContainingDifferentPayloads() throws Exception {
+        ExtensionResponse response = pduFactory.readExtensionResponse(new KSIRequestContext(8396215651691691389L, 42L, 42L), new KSIServiceCredentials("anon", "anon".getBytes("UTF-8")), loadTlv("pdu/extension/extension-response-v2-multiple-mixed-and-duplicate-payloads.tlv"));
+        Assert.assertNotNull(response);
+        Assert.assertNotNull(response.getCalendarHashChain());
+    }
+
+    @Test
     public void testCreateAggregationConfigurationRequest() throws Exception {
         AggregationRequest request = pduFactory.createAggregatorConfigurationRequest(requestContext, CREDENTIALS);
         Assert.assertNotNull(request);
@@ -228,7 +235,7 @@ public class PduV2FactoryTest {
 
     @Test
     public void testAggregationResponseParsingWithMultipleResponses() throws Exception {
-        AggregationResponse response = pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregator-response-with-conf-ack-response-and-duplicate-response.tlv"));
+        AggregationResponse response = pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregator-response-v2-multiple-mixed-and-duplicate-payloads.tlv"));
         Assert.assertNotNull(response);
     }
 

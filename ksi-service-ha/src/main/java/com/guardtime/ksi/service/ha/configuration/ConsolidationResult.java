@@ -20,18 +20,18 @@ package com.guardtime.ksi.service.ha.configuration;
 
 import com.guardtime.ksi.util.Util;
 
-class LatestConsolidationResult<T> {
+class ConsolidationResult<T> {
 
     private final T latestResultIfItWasSuccessful;
     private final HAConfigurationConsolidationException latestResultIfItWasUnsuccessful;
 
-    LatestConsolidationResult(T latestResultIfItWasSuccessful) {
+    ConsolidationResult(T latestResultIfItWasSuccessful) {
         Util.notNull(latestResultIfItWasSuccessful, "Consolidation result");
         this.latestResultIfItWasSuccessful = latestResultIfItWasSuccessful;
         this.latestResultIfItWasUnsuccessful = null;
     }
 
-    LatestConsolidationResult(HAConfigurationConsolidationException latestResultIfItWasUnsuccessful) {
+    ConsolidationResult(HAConfigurationConsolidationException latestResultIfItWasUnsuccessful) {
         Util.notNull(latestResultIfItWasUnsuccessful, "Consolidation result");
         this.latestResultIfItWasUnsuccessful = latestResultIfItWasUnsuccessful;
         this.latestResultIfItWasSuccessful = null;
@@ -41,11 +41,11 @@ class LatestConsolidationResult<T> {
         return latestResultIfItWasSuccessful != null;
     }
 
-    public T getLatestResult() {
+    public T getResult() {
         return latestResultIfItWasSuccessful;
     }
 
-    public Throwable getLatestException() {
+    public Throwable getException() {
         return latestResultIfItWasUnsuccessful;
     }
 
@@ -54,11 +54,11 @@ class LatestConsolidationResult<T> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        LatestConsolidationResult<?> that = (LatestConsolidationResult<?>) o;
+        ConsolidationResult<?> that = (ConsolidationResult<?>) o;
 
         boolean successful = wasSuccessful();
         if (successful != that.wasSuccessful()) return false;
 
-        return successful ? getLatestResult().equals(that.getLatestResult()) : getLatestException().equals(that.getLatestException());
+        return successful ? getResult().equals(that.getResult()) : getException().equals(that.getException());
     }
 }

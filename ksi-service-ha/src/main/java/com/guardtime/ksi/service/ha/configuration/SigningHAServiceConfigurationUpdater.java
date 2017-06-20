@@ -19,6 +19,7 @@
 package com.guardtime.ksi.service.ha.configuration;
 
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSISigningService;
 
 import java.util.ArrayList;
@@ -35,11 +36,12 @@ public class SigningHAServiceConfigurationUpdater extends AbstractConfigurationU
     public SigningHAServiceConfigurationUpdater(List<KSISigningService> subservices) {
         this.subservices = subservices;
         for (KSISigningService subservice : subservices) {
-            SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), new SubconfUpdateListener() {
-                public void updated() {
-                    recalculateConfiguration();
-                }
-            });
+            SubServiceConfListener<AggregatorConfiguration> listener =
+                    new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), new SubconfUpdateListener() {
+                        public void updated() {
+                            recalculateConfiguration();
+                        }
+                    });
             subservice.registerAggregatorConfigurationListener(listener);
             subServiceConfListeners.add(listener);
         }
@@ -58,10 +60,25 @@ public class SigningHAServiceConfigurationUpdater extends AbstractConfigurationU
         return subServiceConfListeners;
     }
 
+    /**
+     * Can be used to get aggregators configuration. Invokes configuration updates for all the subclients.
+     *
+     * @return {@link Future} which eventually provides subconfigurations consolidation result.
+     */
+    public Future<AggregatorConfiguration> getAggregationConfiguration() {
+        return new HAConfFuture<AggregatorConfiguration>(invokeSubServiceConfUpdates(),
+                new HAConfFuture.ConfResultSupplier<ConsolidationResult<AggregatorConfiguration>>() {
+                    public ConsolidationResult<AggregatorConfiguration> get() {
+                        return lastConsolidatedConfiguration;
+                    }
+                });
+    }
 
-    public void sendAggregationConfigurationRequest() {
+    private List<Future<AggregatorConfiguration>> invokeSubServiceConfUpdates() {
+        List<Future<AggregatorConfiguration>> confFutures = new ArrayList<Future<AggregatorConfiguration>>();
         for (KSISigningService service : subservices) {
-            service.sendAggregationConfigurationRequest();
+            confFutures.add(service.getAggregationConfiguration());
         }
+        return confFutures;
     }
 }

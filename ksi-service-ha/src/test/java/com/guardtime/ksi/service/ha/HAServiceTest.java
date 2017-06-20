@@ -144,12 +144,12 @@ public class HAServiceTest {
     public void testGetSubclients() throws Exception {
         List<KSISigningService> signingServices = new ArrayList<KSISigningService>();
         signingServices.add(initSlowSigningClient());
-        signingServices.add(initFailingSigningClient("Failrue!"));
+        signingServices.add(initFailingSigningClient("Failure!"));
         signingServices.add(initSucceedingSigningClient(mock(AggregationResponse.class)));
 
         List<KSIExtendingService> extendingServices = new ArrayList<KSIExtendingService>();
         extendingServices.add(initSlowExtenderClient());
-        extendingServices.add(initFailingExtenderClient("Failrue!"));
+        extendingServices.add(initFailingExtenderClient("Failure!"));
         extendingServices.add(initSucceedingExtenderClient(mock(ExtensionResponse.class)));
 
         HAService haService = new HAService.Builder().setSigningServices(signingServices).setExtendingServices(extendingServices).build();
@@ -204,7 +204,7 @@ public class HAServiceTest {
                 }
             }
         });
-        signingHAService.sendAggregationConfigurationRequest();
+        signingHAService.getAggregationConfiguration();
         context.await();
         assertEquals(aggregatorConsolidatedConf.getMaximumRequests(), new Long(300));
     }
@@ -231,7 +231,7 @@ public class HAServiceTest {
                 }
             }
         });
-        extendingHAService.sendExtenderConfigurationRequest();
+        extendingHAService.getExtendingConfiguration();
         context.await();
         assertEquals(extenderConsolidatedConf.getMaximumRequests(), new Long(300));
     }
@@ -251,9 +251,9 @@ public class HAServiceTest {
     }
 
     private KSISigningService initFailingSigningClient(String exMessage) throws KSIException {
-        KSISigningService subsigningClient = mock(KSISigningService.class);
-        when(subsigningClient.sign(any(DataHash.class), anyLong())).thenThrow(new RuntimeException(exMessage));
-        return subsigningClient;
+        KSISigningService subSigningClient = mock(KSISigningService.class);
+        when(subSigningClient.sign(any(DataHash.class), anyLong())).thenThrow(new RuntimeException(exMessage));
+        return subSigningClient;
     }
 
     private KSIExtendingService initSucceedingExtenderClient(final ExtensionResponse subclientResponse) throws KSIException {
@@ -329,15 +329,24 @@ public class HAServiceTest {
             extenderConfHandler.registerListener(listener);
         }
 
-        public void sendExtenderConfigurationRequest() {
+        public Future<ExtenderConfiguration> getExtendingConfiguration() {
+            final ExtenderConfiguration confMock = Mockito.mock(ExtenderConfiguration.class);
+            Mockito.when(confMock.getMaximumRequests()).thenReturn(maxRequests);
             extenderConfHandler.doConfigurationUpdate(new ConfigurationRequest<ExtenderConfiguration>() {
                 public ExtenderConfiguration invoke() throws KSIException {
-                    ExtenderConfiguration confMock = Mockito.mock(ExtenderConfiguration.class);
                     sleep(maxRequests); // Make sure better values take more time
-                    Mockito.when(confMock.getMaximumRequests()).thenReturn(maxRequests);
                     return confMock;
                 }
             });
+            return new Future<ExtenderConfiguration>() {
+                public ExtenderConfiguration getResult() throws KSIException {
+                    return confMock;
+                }
+
+                public boolean isFinished() {
+                    return true;
+                }
+            };
         }
 
         public Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException {
@@ -352,15 +361,24 @@ public class HAServiceTest {
             aggrConfHandler.registerListener(listener);
         }
 
-        public void sendAggregationConfigurationRequest() {
+        public Future<AggregatorConfiguration> getAggregationConfiguration() {
+            final AggregatorConfiguration confMock = Mockito.mock(AggregatorConfiguration.class);
             aggrConfHandler.doConfigurationUpdate(new ConfigurationRequest<AggregatorConfiguration>() {
                 public AggregatorConfiguration invoke() throws KSIException {
-                    AggregatorConfiguration confMock = Mockito.mock(AggregatorConfiguration.class);
                     sleep(maxRequests); // Make sure better values take more time
                     Mockito.when(confMock.getMaximumRequests()).thenReturn(maxRequests);
                     return confMock;
                 }
             });
+            return new Future<AggregatorConfiguration>() {
+                public AggregatorConfiguration getResult() throws KSIException {
+                    return confMock;
+                }
+
+                public boolean isFinished() {
+                    return true;
+                }
+            };
         }
 
         public void close() throws IOException {

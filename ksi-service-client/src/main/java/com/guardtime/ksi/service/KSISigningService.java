@@ -52,15 +52,17 @@ public interface KSISigningService extends Closeable {
     List<KSISigningService> getSubSigningServices();
 
     /**
-     * Registeres a new {@link ConfigurationListener <AggregatorConfiguration>} for the client. Each time client's configuration is
+     * Registers a new {@link ConfigurationListener <AggregatorConfiguration>} for the client. Each time client's configuration is
      * updated, this listener is called.
      */
     void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener);
 
     /**
      * Makes the client ask for configuration update. On completion of the update config registered {@link ConfigurationListener}s
-     * are called
+     * are called.
+     *
+     * @return Future of the {@link AggregatorConfiguration}
      */
-    void sendAggregationConfigurationRequest();
+    Future<AggregatorConfiguration> getAggregationConfiguration();
 
 }

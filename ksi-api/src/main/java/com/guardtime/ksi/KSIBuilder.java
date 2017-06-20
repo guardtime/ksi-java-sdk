@@ -23,19 +23,11 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
-import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponse;
-import com.guardtime.ksi.service.KSIExtendingService;
-import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.service.KSISigningService;
-import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.PduFactoryProvider;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
-import com.guardtime.ksi.pdu.RequestContextFactory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
@@ -45,13 +37,13 @@ import com.guardtime.ksi.publication.adapter.NonCachingPublicationsFileClientAda
 import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSIExtendingService;
+import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.KSISigningClientServiceAdapter;
-import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.trust.JKSTrustStore;
 import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
@@ -92,9 +84,6 @@ public final class KSIBuilder {
     private HashAlgorithm defaultHashAlgorithm = HashAlgorithm.SHA2_256;
     private CertSelector certSelector;
 
-    private KSISigningClient signingClient;
-    private KSIExtenderClient extenderClient;
-
     private KSISigningService signingService;
     private KSIExtendingService extendingService;
     private KSIPublicationsFileClient publicationsFileClient;
@@ -109,8 +98,7 @@ public final class KSIBuilder {
      * Sets the default signing algorithm to be used to create new KSI signatures. When using {@link KSI#sign(DataHash)}
      * method then this algorithm is ignored. Default value is {@link HashAlgorithm#SHA2_256}
      *
-     * @param defaultHashAlgorithm
-     *         the hash algorithm to be used to create new KSI signatures.
+     * @param defaultHashAlgorithm the hash algorithm to be used to create new KSI signatures.
      * @return the instance of the builder class
      */
     public KSIBuilder setDefaultSigningHashAlgorithm(HashAlgorithm defaultHashAlgorithm) {
@@ -122,8 +110,7 @@ public final class KSIBuilder {
     /**
      * Sets the signing service to be used in signing process.
      *
-     * @param signingService
-     *         instance of signing service.
+     * @param signingService instance of signing service.
      * @return the instance of the builder class
      */
     public KSIBuilder setKsiProtocolSigningService(KSISigningService signingService) {
@@ -134,8 +121,7 @@ public final class KSIBuilder {
     /**
      * Sets the extending service to be used in extending process.
      *
-     * @param extendingService
-     *         instance of extending service.
+     * @param extendingService instance of extending service.
      * @return the instance of the builder class
      */
     public KSIBuilder setKsiProtocolExtendingService(KSIExtendingService extendingService) {
@@ -146,34 +132,29 @@ public final class KSIBuilder {
     /**
      * Sets the signer client to be used in signing process.
      *
-     * @param signingClient
-     *         instance of signing client.
+     * @param signingClient instance of signing client.
      * @return the instance of the builder class
      */
     public KSIBuilder setKsiProtocolSignerClient(KSISigningClient signingClient) {
         Util.notNull(signingClient, "KSI Signing Client");
-        this.signingClient = signingClient;
         return setKsiProtocolSigningService(new KSISigningClientServiceAdapter(signingClient));
     }
 
     /**
      * Sets the extender client to be used in verification and extending process.
      *
-     * @param extenderClient
-     *         instance of extender client
+     * @param extenderClient instance of extender client
      * @return the instance of the builder class
      */
     public KSIBuilder setKsiProtocolExtenderClient(KSIExtenderClient extenderClient) {
         Util.notNull(extenderClient, "KSI Extender Client");
-        this.extenderClient = extenderClient;
         return setKsiProtocolExtendingService(new KSIExtendingClientServiceAdapter(extenderClient));
     }
 
     /**
      * Sets the publications file client to be used to download publications file.
      *
-     * @param publicationsFileClient
-     *         instance of publication file client
+     * @param publicationsFileClient instance of publication file client
      * @return instance of the builder class
      */
     public KSIBuilder setKsiProtocolPublicationsFileClient(KSIPublicationsFileClient publicationsFileClient) {
@@ -185,11 +166,9 @@ public final class KSIBuilder {
      * Sets the {@link KeyStore} to be used as trust store to verify the certificate that was used to sign the
      * publications file. If not set then the default java key store is used.
      *
-     * @param trustStore
-     *         trust store to be used to verify certificates.
+     * @param trustStore trust store to be used to verify certificates.
      * @return instance of builder class
-     * @throws KSIException
-     *         when error occurs
+     * @throws KSIException when error occurs
      */
     public KSIBuilder setPublicationsFilePkiTrustStore(KeyStore trustStore) throws KSIException {
         this.trustStore = trustStore;
@@ -200,13 +179,10 @@ public final class KSIBuilder {
      * Loads the {@link KeyStore} from the file system and sets the {@link KeyStore} to be used as trust store to verify
      * the certificate that was used to sign the publications file.
      *
-     * @param file
-     *         key store file on disk. not null.
-     * @param password
-     *         password of the key store. null if key store isn't protected by password.
+     * @param file     key store file on disk. not null.
+     * @param password password of the key store. null if key store isn't protected by password.
      * @return instance of builder
-     * @throws KSIException
-     *         when error occurs
+     * @throws KSIException when error occurs
      */
     public KSIBuilder setPublicationsFilePkiTrustStore(File file, String password) throws KSIException {
         if (file == null) {
@@ -233,8 +209,7 @@ public final class KSIBuilder {
      * the publications file. {@link java.security.cert.X509CertSelector} can be used to instead of {@link
      * X509CertificateSubjectRdnSelector}
      *
-     * @param certSelector
-     *         instance of {@link CertSelector}.
+     * @param certSelector instance of {@link CertSelector}.
      * @return instance of builder
      * @see java.security.cert.X509CertSelector
      */
@@ -298,8 +273,7 @@ public final class KSIBuilder {
      * Builds the {@link KSI} instance. Checks that the signing, extender and publications file clients are set.
      *
      * @return instance of {@link KSI} class
-     * @throws KSIException
-     *         will be thrown when some client is null.
+     * @throws KSIException will be thrown when some client is null.
      */
     public KSI build() throws KSIException {
         if (defaultHashAlgorithm == null) {
@@ -325,17 +299,22 @@ public final class KSIBuilder {
         }
         PKITrustStore jksTrustStore = new JKSTrustStore(trustStore, certSelector);
         PublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(jksTrustStore);
-        PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
+        PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient,
+                publicationsFileFactory, publicationsFileCacheExpirationTime);
         logger.info("KSI SDK initialized with signing service: {}", signingService);
         logger.info("KSI SDK initialized with extender service: {}", extendingService);
-        KSISignatureComponentFactory signatureComponentFactory= new InMemoryKsiSignatureComponentFactory();
-        KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory(defaultVerificationPolicy, publicationsFileAdapter, extendingService, true, signatureComponentFactory);
+        KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
+        KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory(defaultVerificationPolicy,
+                publicationsFileAdapter, extendingService, true, signatureComponentFactory);
 
 
-        return new KSIImpl(signingService, extendingService, publicationsFileAdapter, uniSignatureFactory, signatureComponentFactory, defaultHashAlgorithm, signingClient, extenderClient);
+        return new KSIImpl(signingService, extendingService, publicationsFileAdapter, uniSignatureFactory,
+                signatureComponentFactory, defaultHashAlgorithm);
     }
 
-    private PublicationsFileClientAdapter createPublicationsFileAdapter(KSIPublicationsFileClient publicationsFileClient, PublicationsFileFactory publicationsFileFactory, long expirationTime) {
+    private PublicationsFileClientAdapter createPublicationsFileAdapter(KSIPublicationsFileClient publicationsFileClient,
+                                                                        PublicationsFileFactory publicationsFileFactory, long
+                                                                                expirationTime) {
         if (expirationTime > 0) {
             return new CachingPublicationsFileClientAdapter(publicationsFileClient, publicationsFileFactory, expirationTime);
         }
@@ -353,9 +332,6 @@ public final class KSIBuilder {
     private class KSIImpl implements KSI {
 
         private final Long DEFAULT_LEVEL = 0L;
-        private final RequestContextFactory requestContextFactory = RequestContextFactory.DEFAULT_FACTORY;
-        private PduFactory signConfPduFactory;
-        private PduFactory extendConfPduFactory;
 
         private final KSISignatureFactory signatureFactory;
         private final KSISignatureComponentFactory signatureComponentFactory;
@@ -363,27 +339,17 @@ public final class KSIBuilder {
         private final KSISigningService signingService;
         private final KSIExtendingService extendingService;
         private final PublicationsFileClientAdapter publicationsFileAdapter;
-        private final KSISigningClient signingClient;
-        private final KSIExtenderClient extenderClient;
 
         public KSIImpl(KSISigningService signingService, KSIExtendingService extendingService,
                        PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory,
                        KSISignatureComponentFactory signatureComponentFactory,
-                       HashAlgorithm defaultHashAlgorithm, KSISigningClient signingClient, KSIExtenderClient extenderClient) {
+                       HashAlgorithm defaultHashAlgorithm) {
             this.signatureFactory = signatureFactory;
             this.signatureComponentFactory = signatureComponentFactory;
             this.defaultHashAlgorithm = defaultHashAlgorithm;
             this.signingService = signingService;
             this.extendingService = extendingService;
             this.publicationsFileAdapter = publicationsFileAdapter;
-            this.signingClient = signingClient;
-            this.extenderClient = extenderClient;
-            if (signingClient != null) {
-                this.signConfPduFactory = PduFactoryProvider.get(signingClient.getPduVersion());
-            }
-            if (extenderClient != null) {
-                this.extendConfPduFactory = PduFactoryProvider.get(extenderClient.getPduVersion());
-            }
         }
 
         public KSISignature read(InputStream input) throws KSIException {
@@ -487,7 +453,8 @@ public final class KSIBuilder {
             if (signature.getAggregationTime().after(publicationRecord.getPublicationTime())) {
                 throw new KSIException("Publication is before signature");
             }
-            Future<ExtensionResponse> extenderFuture = extendingService.extend(signature.getAggregationTime(), publicationRecord.getPublicationTime());
+            Future<ExtensionResponse> extenderFuture = extendingService.extend(signature.getAggregationTime(),
+                    publicationRecord.getPublicationTime());
             return new ExtensionFuture(extenderFuture, publicationRecord, signature, signatureComponentFactory, signatureFactory);
         }
 
@@ -507,7 +474,8 @@ public final class KSIBuilder {
             return verify(signature, policy, null, null);
         }
 
-        public VerificationResult verify(KSISignature signature, Policy policy, PublicationData publicationData) throws KSIException {
+        public VerificationResult verify(KSISignature signature, Policy policy, PublicationData publicationData) throws
+                KSIException {
             return verify(signature, policy, null, publicationData);
         }
 
@@ -515,7 +483,8 @@ public final class KSIBuilder {
             return verify(signature, policy, documentHash, null);
         }
 
-        public VerificationResult verify(KSISignature signature, Policy policy, DataHash documentHash, PublicationData publicationData) throws KSIException {
+        public VerificationResult verify(KSISignature signature, Policy policy, DataHash documentHash, PublicationData
+                publicationData) throws KSIException {
             VerificationContextBuilder builder = new VerificationContextBuilder();
             builder.setDocumentHash(documentHash).setSignature(signature);
             builder.setExtendingService(extendingService).setExtendingAllowed(true).setUserPublication(publicationData);
@@ -537,26 +506,12 @@ public final class KSIBuilder {
 
         @Deprecated
         public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
-            if (signingClient == null) {
-                throw new UnsupportedOperationException("Can not ask this type of service its configuration synchronously");
-            }
-            KSIRequestContext requestContext = requestContextFactory.createContext();
-            ServiceCredentials credentials = signingClient.getServiceCredentials();
-            AggregationRequest requestMessage = signConfPduFactory.createAggregatorConfigurationRequest(requestContext, credentials);
-            Future<TLVElement> future = signingClient.sign(new ByteArrayInputStream(requestMessage.toByteArray()));
-            return signConfPduFactory.readAggregatorConfigurationResponse(requestContext, credentials, future.getResult());
+            return signingService.getAggregationConfiguration().getResult();
         }
 
         @Deprecated
         public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
-            if (extenderClient == null) {
-                throw new UnsupportedOperationException("Can not ask this type of service its configuration synchronously");
-            }
-            KSIRequestContext requestContext = requestContextFactory.createContext();
-            ServiceCredentials credentials = extenderClient.getServiceCredentials();
-            ExtensionRequest request = extendConfPduFactory.createExtensionConfigurationRequest(requestContext, credentials);
-            Future<TLVElement> future = extenderClient.extend(new ByteArrayInputStream(request.toByteArray()));
-            return extendConfPduFactory.readExtenderConfigurationResponse(credentials, future.getResult());
+            return extendingService.getExtendingConfiguration().getResult();
         }
 
         public void close() throws IOException {

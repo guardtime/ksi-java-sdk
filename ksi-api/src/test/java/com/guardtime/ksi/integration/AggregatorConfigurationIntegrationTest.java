@@ -36,12 +36,13 @@ import org.testng.annotations.Test;
 
 import java.util.Collections;
 
+import static com.guardtime.ksi.TestUtil.assertCause;
+
 public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
     private HAService haServiceV2;
     private HAService haServiceV1;
     private KSI ksiV2;
-    private KSI serviceBasedKsi;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -52,7 +53,6 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
         haServiceV1 = new HAService.Builder().setSigningClients(Collections.<KSISigningClient>singletonList(simpleHttpClient))
                 .setExtenderClients(Collections.<KSIExtenderClient>singletonList(simpleHttpClient)).build();
         this.ksiV2 = createKsi(simpleHttpClientV2, simpleHttpClientV2, simpleHttpClientV2);
-        this.serviceBasedKsi = createKsi(haServiceV2, haServiceV2, simpleHttpClientV2);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
                 }
             }
         });
-        haServiceV2.sendAggregationConfigurationRequest();
+        haServiceV2.getAggregationConfiguration();
         ac.await();
     }
 
@@ -105,7 +105,7 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
                 }
             }
         });
-        haServiceV1.sendAggregationConfigurationRequest();
+        haServiceV1.getAggregationConfiguration();
 
         ac.await();
     }
@@ -136,7 +136,7 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
                 }
             }
         });
-        simpleHttpService.sendAggregationConfigurationRequest();
+        simpleHttpService.getAggregationConfiguration();
 
         ac.await();
     }
@@ -147,14 +147,24 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
         Assert.assertNotNull(response);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
-    public void testSynchronousAggregationConfigurationRequestV1() throws Exception {
-        ksi.getAggregatorConfiguration();
+    @Test
+    public void testSynchronousAggregationConfigurationRequestV1() throws Throwable {
+        try {
+            ksi.getAggregatorConfiguration();
+            Assert.fail("Configuration update was not supposed to succeed with PDU V1");
+        } catch (Exception e) {
+           assertCause(KSIException.class, "Not supported. Configure the SDK to use PDU v2 format.", e);
+        }
     }
 
-    @Test(expectedExceptions = UnsupportedOperationException.class,
-            expectedExceptionsMessageRegExp = "Can not ask this type of service its configuration synchronously.*")
-    public void testSynchronousServiceBasedAggregationConfigurationRequest() throws Exception {
-        serviceBasedKsi.getAggregatorConfiguration();
+    @Test
+    public void testSynchronousAggregationConfigurationRequestHA() throws Exception {
+        Assert.assertNotNull(haServiceV2.getAggregationConfiguration().getResult());
     }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Configuration consolidation failed in HA service")
+    public void testSynchronousConfigurationHAFail() throws Exception {
+        haServiceV1.getAggregationConfiguration().getResult();
+    }
+
 }

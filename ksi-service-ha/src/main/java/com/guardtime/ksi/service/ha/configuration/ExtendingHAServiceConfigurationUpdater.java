@@ -19,6 +19,7 @@
 package com.guardtime.ksi.service.ha.configuration;
 
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIExtendingService;
 
 import java.util.ArrayList;
@@ -58,10 +59,25 @@ public class ExtendingHAServiceConfigurationUpdater extends AbstractConfiguratio
         return subServiceConfListeners;
     }
 
+    /**
+     * Can be used to get extenders configuration. Invokes configuration updates for all the subclients.
+     *
+     * @return {@link Future} which eventually provides subconfigurations consolidation result.
+     */
+    public Future<ExtenderConfiguration> getExtensionConfiguration() {
+        return new HAConfFuture<ExtenderConfiguration>(invokeSubserviceConfUpdates(),
+                new HAConfFuture.ConfResultSupplier<ConsolidationResult<ExtenderConfiguration>>() {
+                    public ConsolidationResult<ExtenderConfiguration> get() {
+                        return lastConsolidatedConfiguration;
+                    }
+                });
+    }
 
-    public void sendAggregationConfigurationRequest() {
+    private List<Future<ExtenderConfiguration>> invokeSubserviceConfUpdates() {
+        List<Future<ExtenderConfiguration>> confFutures = new ArrayList<Future<ExtenderConfiguration>>();
         for (KSIExtendingService service : subservices) {
-            service.sendExtenderConfigurationRequest();
+            confFutures.add(service.getExtendingConfiguration());
         }
+        return confFutures;
     }
 }

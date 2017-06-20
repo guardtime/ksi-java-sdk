@@ -70,10 +70,10 @@ public class HAService implements KSISigningService, KSIExtendingService {
     }
 
     /**
-     * @see SigningHAService#sendAggregationConfigurationRequest()
+     * @see SigningHAService#getAggregationConfiguration()
      */
-    public void sendAggregationConfigurationRequest() {
-        signingHAService.sendAggregationConfigurationRequest();
+    public Future<AggregatorConfiguration> getAggregationConfiguration() {
+        return signingHAService.getAggregationConfiguration();
     }
 
     /**
@@ -84,10 +84,10 @@ public class HAService implements KSISigningService, KSIExtendingService {
     }
 
     /**
-     * @see ExtendingHAService#sendExtenderConfigurationRequest()
+     * @see ExtendingHAService#getExtendingConfiguration()
      */
-    public void sendExtenderConfigurationRequest() {
-        extendingHAService.sendExtenderConfigurationRequest();
+    public Future<ExtenderConfiguration> getExtendingConfiguration() {
+        return extendingHAService.getExtendingConfiguration();
     }
 
     /**

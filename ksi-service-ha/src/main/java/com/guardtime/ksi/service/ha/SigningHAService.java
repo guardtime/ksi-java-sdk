@@ -126,9 +126,11 @@ public class SigningHAService implements KSISigningService {
     /**
      * Invokes a configuration for all the subservices. Does not block until responses are received.
      * Active configuration listeners are only called if any of the responses change the state of consolidated configuration.
+     *
+     * @return A future of the result. Can be used as an alternative to listeners to access the configuration result.
      */
-    public void sendAggregationConfigurationRequest() {
-        configurationUpdater.sendAggregationConfigurationRequest();
+    public Future<AggregatorConfiguration> getAggregationConfiguration() {
+        return configurationUpdater.getAggregationConfiguration();
     }
 
     /**

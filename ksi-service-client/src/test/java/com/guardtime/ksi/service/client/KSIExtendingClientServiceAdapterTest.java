@@ -74,7 +74,7 @@ public class KSIExtendingClientServiceAdapterTest {
                 ac.succeed();
             }
         });
-        testService.sendExtenderConfigurationRequest();
+        testService.getExtendingConfiguration();
         ac.await();
     }
 

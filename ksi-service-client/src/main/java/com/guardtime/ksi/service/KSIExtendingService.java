@@ -39,7 +39,9 @@ public interface KSIExtendingService extends Closeable {
     /**
      * Makes the client ask for configuration update. On completion of the update config registered {@link ConfigurationListener}s
      * are called
+     *
+     * @return Future of the {@link ExtenderConfiguration}
      */
-    void sendExtenderConfigurationRequest();
+    Future<ExtenderConfiguration> getExtendingConfiguration();
 
 }

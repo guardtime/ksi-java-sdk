@@ -36,7 +36,8 @@ abstract class AbstractConfigurationUpdater<T> {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final List<ConfigurationListener<T>> consolidatedConfListeners = new ArrayList<ConfigurationListener<T>>();
-    private LatestConsolidationResult<T> lastConsolidatedConfiguration;
+
+    ConsolidationResult<T> lastConsolidatedConfiguration;
     private final Object confRecalculationLock = new Object();
 
     protected abstract T consolidate(T lastConfiguration, T newConsolidatedConfiguration);
@@ -53,7 +54,7 @@ abstract class AbstractConfigurationUpdater<T> {
 
     void recalculateConfiguration() {
         T newConsolidatedConfiguration = null;
-        LatestConsolidationResult<T> oldConsolidatedConfiguration = lastConsolidatedConfiguration;
+        ConsolidationResult<T> oldConsolidatedConfiguration = lastConsolidatedConfiguration;
         boolean listenersNeedUpdate;
         synchronized (confRecalculationLock) {
             for (SubServiceConfListener<T> serviceConfListener : getSubServiceConfListeners()) {
@@ -66,7 +67,7 @@ abstract class AbstractConfigurationUpdater<T> {
             listenersNeedUpdate = !Util.equals(lastConsolidatedConfiguration, oldConsolidatedConfiguration);
         }
         if (listenersNeedUpdate) {
-            logger.info("ExtendingHaServices configuration changed. Old configuration: {}. New configuration: {}.",
+            logger.info("HA service configuration changed. Old configuration: {}. New configuration: {}.",
                     oldConsolidatedConfiguration, lastConsolidatedConfiguration);
             updateListeners();
         }
@@ -80,17 +81,17 @@ abstract class AbstractConfigurationUpdater<T> {
 
     private void updateListener(ConfigurationListener<T> listener) {
         if (lastConsolidatedConfiguration.wasSuccessful()) {
-            listener.updated(lastConsolidatedConfiguration.getLatestResult());
+            listener.updated(lastConsolidatedConfiguration.getResult());
         } else {
-            listener.updateFailed(lastConsolidatedConfiguration.getLatestException());
+            listener.updateFailed(lastConsolidatedConfiguration.getException());
         }
     }
 
     private void resetLastConsolidatedConfiguration(T newConsolidatedConfiguration) {
         if (newConsolidatedConfiguration == null) {
-            lastConsolidatedConfiguration = new LatestConsolidationResult<T>(new HAConfigurationConsolidationException());
+            lastConsolidatedConfiguration = new ConsolidationResult<T>(new HAConfigurationConsolidationException());
         } else {
-            lastConsolidatedConfiguration = new LatestConsolidationResult<T>(newConsolidatedConfiguration);
+            lastConsolidatedConfiguration = new ConsolidationResult<T>(newConsolidatedConfiguration);
         }
     }
 

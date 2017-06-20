@@ -25,12 +25,12 @@ import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
-import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.PduFactoryProvider;
 import com.guardtime.ksi.pdu.RequestContextFactory;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.util.Util;
 
@@ -81,16 +81,17 @@ public final class KSIExtendingClientServiceAdapter implements KSIExtendingServi
         extenderConfHandler.registerListener(listener);
     }
 
-    public void sendExtenderConfigurationRequest() {
-        extenderConfHandler.doConfigurationUpdate(new ConfigurationRequest<ExtenderConfiguration>() {
-            public ExtenderConfiguration invoke() throws KSIException {
-                KSIRequestContext requestContext = requestContextFactory.createContext();
-                ServiceCredentials credentials = client.getServiceCredentials();
-                ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext, credentials);
-                Future<TLVElement> future = client.extend(new ByteArrayInputStream(request.toByteArray()));
-                return pduFactory.readExtenderConfigurationResponse(credentials, future.getResult());
-            }
-        });
+    public Future<ExtenderConfiguration> getExtendingConfiguration() {
+        return new ConfigurationFuture<ExtenderConfiguration>(extenderConfHandler.doConfigurationUpdate(
+                new ConfigurationRequest<ExtenderConfiguration>() {
+                    public ExtenderConfiguration invoke() throws KSIException {
+                        KSIRequestContext requestContext = requestContextFactory.createContext();
+                        ServiceCredentials credentials = client.getServiceCredentials();
+                        ExtensionRequest request = pduFactory.createExtensionConfigurationRequest(requestContext, credentials);
+                        Future<TLVElement> future = client.extend(new ByteArrayInputStream(request.toByteArray()));
+                        return pduFactory.readExtenderConfigurationResponse(credentials, future.getResult());
+                    }
+                }));
     }
 
     public void close() throws IOException {

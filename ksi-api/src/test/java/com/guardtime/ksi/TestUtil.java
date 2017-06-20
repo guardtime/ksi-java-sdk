@@ -39,6 +39,8 @@ import org.bouncycastle.util.Store;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
 
+import static org.testng.AssertJUnit.fail;
+
 public final class TestUtil extends CommonTestUtil {
 
     public static final KSIServiceCredentials CREDENTIALS_ANONYMOUS = new KSIServiceCredentials("anon", "anon");
@@ -95,6 +97,19 @@ public final class TestUtil extends CommonTestUtil {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtenderClient(extenderClient);
         return builder.setUserPublication(publicationData).setExtendingAllowed(allowExtending).createVerificationContext();
+    }
+
+    /**
+     * Asserts that {@param thrown} or it's cause (or it's causes cause and so on) is of type {@param expecedClass} and with
+     * message {@param expectedMessage}.
+     */
+    public static void assertCause(Class<? extends Exception> expectedClass, String expectedMessage, Throwable thrown) {
+        if (thrown == null) {
+            fail("Expected thrown exception to be caused by " + expectedClass + "(\"" + expectedMessage + "\"), but that was not the case.");
+        }
+        if (!expectedClass.isAssignableFrom(thrown.getClass()) || !expectedMessage.equals(thrown.getMessage())) {
+            assertCause(expectedClass, expectedMessage, thrown.getCause());
+        }
     }
 
 }

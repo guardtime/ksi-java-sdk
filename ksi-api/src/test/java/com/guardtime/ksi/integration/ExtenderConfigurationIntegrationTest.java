@@ -24,6 +24,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 
 import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIExtendingClientServiceAdapter;
@@ -36,12 +37,13 @@ import org.testng.annotations.Test;
 
 import java.util.Collections;
 
+import static com.guardtime.ksi.TestUtil.assertCause;
+
 public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
     private HAService haServiceV2;
     private HAService haServiceV1;
     private KSI ksiV2;
-    private KSI serviceBasedKsi;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -52,7 +54,6 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
         haServiceV1 = new HAService.Builder().setSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClient))
                 .setExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClient)).build();
         this.ksiV2 = createKsi(simpleHttpClientV2, simpleHttpClientV2, simpleHttpClientV2);
-        this.serviceBasedKsi = createKsi(haServiceV2, haServiceV2, simpleHttpClientV2);
     }
 
     @Test
@@ -77,7 +78,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
                 }
             }
         });
-        haServiceV2.sendExtenderConfigurationRequest();
+        haServiceV2.getExtendingConfiguration();
         ac.await();
     }
 
@@ -105,12 +106,12 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
                 }
             }
         });
-        haServiceV1.sendExtenderConfigurationRequest();
+        haServiceV1.getExtendingConfiguration();
         ac.await();
     }
 
-    @Test
-    public void testExtenderConfigurationRequestWithSimpleHttpClientV1() throws Exception {
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
+    public void testExtenderConfigurationRequestWithSimpleHttpClientV1() throws Throwable {
         final AsyncContext ac = new AsyncContext();
         KSIExtendingClientServiceAdapter simpleHttpService = new KSIExtendingClientServiceAdapter(simpleHttpClient);
         simpleHttpService.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
@@ -134,9 +135,14 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
                 }
             }
         });
-        simpleHttpService.sendExtenderConfigurationRequest();
+        Future<ExtenderConfiguration> extendingConfiguration = simpleHttpService.getExtendingConfiguration();
 
         ac.await();
+        try {
+            extendingConfiguration.getResult();
+        } catch (Exception e) {
+            throw e.getCause().getCause();
+        }
     }
 
     @Test
@@ -145,15 +151,24 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
         Assert.assertNotNull(response);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
-    public void testSynchronousExtenderConfigurationRequestV1() throws Exception {
-        ksi.getExtenderConfiguration();
+    @Test
+    public void testSynchronousExtenderConfigurationRequestV1() throws Throwable {
+        try {
+            ksi.getExtenderConfiguration();
+            Assert.fail("Configuration update was not supposed to succeed with PDU V1");
+        } catch (Exception e) {
+            assertCause(KSIException.class, "Not supported. Configure the SDK to use PDU v2 format.", e);
+        }
     }
 
-    @Test(expectedExceptions = UnsupportedOperationException.class,
-            expectedExceptionsMessageRegExp = "Can not ask this type of service its configuration synchronously.*")
-    public void testSynchronousServiceBasedExtenderConfigurationRequest() throws Exception {
-        serviceBasedKsi.getExtenderConfiguration();
+    @Test
+    public void testSynchronousExtendingConfigurationRequestHA() throws Exception {
+        Assert.assertNotNull(haServiceV2.getExtendingConfiguration().getResult());
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Configuration consolidation failed in HA service")
+    public void testSynchronousConfigurationHAFail() throws Exception {
+        haServiceV1.getExtendingConfiguration().getResult();
     }
 
 }

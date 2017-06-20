@@ -262,9 +262,9 @@ The following code can be used to verify signature:
 
 <h3>Get info about configuration</h3>
 
-KSI SDK can be used to get information about KSISigningClient's or KSIExtenderClient's configuration. If the client is connected to a single gateway then it represents the configuration of this gateway.
-If the client composes of multiple other clients then their configurations are consolidated into one. To get information about a clients configuration one should register a configuration update listener.
-Configuration updates can be pushed by gateways without client explicitly asking for them and they can be invoked by client also. Following is the example how to register a listener for aggregator
+KSI SDK can be used to get information about KSISigningService's or KSIExtenderService's configuration. If the service is connected to a single gateway then it represents the configuration of this gateway.
+If the service composes of multiple other clients then their configurations are consolidated into one. To get information about a services configuration one should register a configuration update listener.
+Configuration updates can be pushed by gateways without client explicitly asking for them and they can be invoked by service also. Following is the example how to register a listener for aggregator
 configuration updates and how to call for an update (works similarly with KSIExtenderClient):
 
 <pre><code>
@@ -278,7 +278,7 @@ configuration updates and how to call for an update (works similarly with KSIExt
             // do something with the exception that made the configuration update fail
         }
     });
-    signingClient.sendAggregationConfigurationRequest(); // Invokes a configuration request but does not block until it responds
+    signingClient.getAggregationConfiguration(); // Invokes a configuration request. Does not block until it responds. Gives back a Future which can be used as an alternative way in addition to listeners to access the result.
 </code></pre>
 
 <h2>HTTP Proxy Configuration</h2>

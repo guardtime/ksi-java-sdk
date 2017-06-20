@@ -77,7 +77,7 @@ public class KSISigningClientServiceAdapterTest {
                 ac.succeed();
             }
         });
-        testService.sendAggregationConfigurationRequest();
+        testService.getAggregationConfiguration();
         ac.await();
     }
 

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
  * Helper for handling asynchronous configuration requests and keeping track that registered listeners would be appropriately
@@ -64,19 +65,18 @@ public class ConfigurationHandler<T> {
      *
      * @param configurationRequest May not be null.
      */
-    public void doConfigurationUpdate(final ConfigurationRequest<T> configurationRequest) {
+    public Future<T> doConfigurationUpdate(final ConfigurationRequest<T> configurationRequest) {
         Util.notNull(configurationRequest, "ConfigurationRequest passed to ConfigurationHandler");
-        executorService.submit(new Callable<Object>() {
-            public Object call() throws Exception {
-                T conf;
+        return executorService.submit(new Callable<T>() {
+            public T call() throws Exception {
                 try {
-                    conf = configurationRequest.invoke();
+                    T conf = configurationRequest.invoke();
+                    updateListenersWithNewConfiguration(conf);
+                    return conf;
                 } catch (Exception e) {
                     updateListenersWithFailure(e);
-                    return null;
+                    throw e;
                 }
-                updateListenersWithNewConfiguration(conf);
-                return null;
             }
         });
     }

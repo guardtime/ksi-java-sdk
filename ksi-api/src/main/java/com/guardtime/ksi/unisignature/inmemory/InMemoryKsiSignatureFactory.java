@@ -26,7 +26,7 @@ import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;

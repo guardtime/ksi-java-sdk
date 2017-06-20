@@ -25,7 +25,7 @@ import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.unisignature.KSISignature;
 
 /**

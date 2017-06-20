@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.service.Future;
@@ -28,20 +28,15 @@ import java.util.List;
 /**
  * Handles configuration consolidation and listener updates for SigningHAService
  */
-public class SigningHAServiceConfigurationUpdater extends AbstractConfigurationUpdater<AggregatorConfiguration> {
+class SigningHAServiceConfigurationListener extends AbstractHAConfigurationListener<AggregatorConfiguration> {
 
     private final List<SubServiceConfListener<AggregatorConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<AggregatorConfiguration>>();
     private final List<KSISigningService> subservices;
 
-    public SigningHAServiceConfigurationUpdater(List<KSISigningService> subservices) {
+    SigningHAServiceConfigurationListener(List<KSISigningService> subservices) {
         this.subservices = subservices;
         for (KSISigningService subservice : subservices) {
-            SubServiceConfListener<AggregatorConfiguration> listener =
-                    new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), new SubconfUpdateListener() {
-                        public void updated() {
-                            recalculateConfiguration();
-                        }
-                    });
+            SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), this);
             subservice.registerAggregatorConfigurationListener(listener);
             subServiceConfListeners.add(listener);
         }
@@ -50,9 +45,15 @@ public class SigningHAServiceConfigurationUpdater extends AbstractConfigurationU
     protected AggregatorConfiguration consolidate(AggregatorConfiguration c1, AggregatorConfiguration c2) {
         boolean c1Exists = c1 != null;
         boolean c2Exists = c2 != null;
-        if (c1Exists && c2Exists) return new SigningHAServiceConfiguration(c1, c2);
-        if (c1Exists) return new SigningHAServiceConfiguration(c1);
-        if (c2Exists) return new SigningHAServiceConfiguration(c2);
+        if (c1Exists && c2Exists) {
+            return new SigningHAServiceConfiguration(c1, c2);
+        }
+        if (c1Exists) {
+            return new SigningHAServiceConfiguration(c1);
+        }
+        if (c2Exists) {
+            return new SigningHAServiceConfiguration(c2);
+        }
         return null;
     }
 
@@ -65,10 +66,10 @@ public class SigningHAServiceConfigurationUpdater extends AbstractConfigurationU
      *
      * @return {@link Future} which eventually provides subconfigurations consolidation result.
      */
-    public Future<AggregatorConfiguration> getAggregationConfiguration() {
+    Future<AggregatorConfiguration> getAggregationConfiguration() {
         return new HAConfFuture<AggregatorConfiguration>(invokeSubServiceConfUpdates(),
-                new HAConfFuture.ConfResultSupplier<ConsolidationResult<AggregatorConfiguration>>() {
-                    public ConsolidationResult<AggregatorConfiguration> get() {
+                new HAConfFuture.ConfResultSupplier<ConsolidatedResult<AggregatorConfiguration>>() {
+                    public ConsolidatedResult<AggregatorConfiguration> get() {
                         return lastConsolidatedConfiguration;
                     }
                 });

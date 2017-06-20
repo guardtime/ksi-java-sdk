@@ -16,37 +16,33 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
-import com.guardtime.ksi.util.Util;
+class ConsolidatedResult<T> {
 
-class ConsolidationResult<T> {
+    private final T latest;
+    private final HAConfigurationConsolidationException latestException;
 
-    private final T latestResultIfItWasSuccessful;
-    private final HAConfigurationConsolidationException latestResultIfItWasUnsuccessful;
-
-    ConsolidationResult(T latestResultIfItWasSuccessful) {
-        Util.notNull(latestResultIfItWasSuccessful, "Consolidation result");
-        this.latestResultIfItWasSuccessful = latestResultIfItWasSuccessful;
-        this.latestResultIfItWasUnsuccessful = null;
+    ConsolidatedResult(T latest) {
+        this.latest = latest;
+        this.latestException = null;
     }
 
-    ConsolidationResult(HAConfigurationConsolidationException latestResultIfItWasUnsuccessful) {
-        Util.notNull(latestResultIfItWasUnsuccessful, "Consolidation result");
-        this.latestResultIfItWasUnsuccessful = latestResultIfItWasUnsuccessful;
-        this.latestResultIfItWasSuccessful = null;
+    ConsolidatedResult(HAConfigurationConsolidationException e) {
+        this.latestException = e;
+        this.latest = null;
     }
 
     boolean wasSuccessful() {
-        return latestResultIfItWasSuccessful != null;
+        return latest != null;
     }
 
     public T getResult() {
-        return latestResultIfItWasSuccessful;
+        return latest;
     }
 
     public Throwable getException() {
-        return latestResultIfItWasUnsuccessful;
+        return latestException;
     }
 
     @Override
@@ -54,7 +50,7 @@ class ConsolidationResult<T> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ConsolidationResult<?> that = (ConsolidationResult<?>) o;
+        ConsolidatedResult<?> that = (ConsolidatedResult<?>) o;
 
         boolean successful = wasSuccessful();
         if (successful != that.wasSuccessful()) return false;

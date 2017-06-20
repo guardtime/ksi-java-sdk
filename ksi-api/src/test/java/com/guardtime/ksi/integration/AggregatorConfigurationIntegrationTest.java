@@ -24,10 +24,10 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 
 import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.client.KSISigningClientServiceAdapter;
+import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.service.ha.HAService;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import org.testng.Assert;
@@ -48,9 +48,9 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
     public void setUp() throws Exception {
         super.setUp();
         SimpleHttpClient simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
-        haServiceV2 = new HAService.Builder().setSigningClients(Collections.<KSISigningClient>singletonList(simpleHttpClientV2))
+        haServiceV2 = new HAService.Builder().addSigningClients(Collections.<KSISigningClient>singletonList(simpleHttpClientV2))
                 .setExtenderClients(Collections.<KSIExtenderClient>singletonList(simpleHttpClientV2)).build();
-        haServiceV1 = new HAService.Builder().setSigningClients(Collections.<KSISigningClient>singletonList(simpleHttpClient))
+        haServiceV1 = new HAService.Builder().addSigningClients(Collections.<KSISigningClient>singletonList(simpleHttpClient))
                 .setExtenderClients(Collections.<KSIExtenderClient>singletonList(simpleHttpClient)).build();
         this.ksiV2 = createKsi(simpleHttpClientV2, simpleHttpClientV2, simpleHttpClientV2);
     }

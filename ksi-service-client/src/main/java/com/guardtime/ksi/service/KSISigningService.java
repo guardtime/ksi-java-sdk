@@ -24,7 +24,6 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregationResponseFuture;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
-import com.guardtime.ksi.service.client.ConfigurationListener;
 
 import java.io.Closeable;
 import java.util.List;

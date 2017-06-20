@@ -4,7 +4,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
-import com.guardtime.ksi.service.client.ConfigurationListener;
 
 import java.io.Closeable;
 import java.util.Date;

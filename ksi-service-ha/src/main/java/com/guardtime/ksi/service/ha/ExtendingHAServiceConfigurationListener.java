@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.service.Future;
@@ -28,19 +28,15 @@ import java.util.List;
 /**
  * Handles configuration consolidation and listener updates for ExtendingHAService
  */
-public class ExtendingHAServiceConfigurationUpdater extends AbstractConfigurationUpdater<ExtenderConfiguration> {
+class ExtendingHAServiceConfigurationListener extends AbstractHAConfigurationListener<ExtenderConfiguration> {
 
     private final List<SubServiceConfListener<ExtenderConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<ExtenderConfiguration>>();
     private final List<KSIExtendingService> subservices;
 
-    public ExtendingHAServiceConfigurationUpdater(List<KSIExtendingService> subservices) {
+    ExtendingHAServiceConfigurationListener(List<KSIExtendingService> subservices) {
         this.subservices = subservices;
         for (KSIExtendingService subservice : subservices) {
-            SubServiceConfListener<ExtenderConfiguration> listener = new SubServiceConfListener<ExtenderConfiguration>(subservice.toString(), new SubconfUpdateListener() {
-                public void updated() {
-                    recalculateConfiguration();
-                }
-            });
+            SubServiceConfListener<ExtenderConfiguration> listener = new SubServiceConfListener<ExtenderConfiguration>(subservice.toString(), this);
             subservice.registerExtenderConfigurationListener(listener);
             subServiceConfListeners.add(listener);
         }
@@ -49,9 +45,15 @@ public class ExtendingHAServiceConfigurationUpdater extends AbstractConfiguratio
     protected ExtenderConfiguration consolidate(ExtenderConfiguration c1, ExtenderConfiguration c2) {
         boolean c1Exists = c1 != null;
         boolean c2Exists = c2 != null;
-        if (c1Exists && c2Exists) return new ExtendingHAServiceConfiguration(c1, c2);
-        if (c1Exists) return new ExtendingHAServiceConfiguration(c1);
-        if (c2Exists) return new ExtendingHAServiceConfiguration(c2);
+        if (c1Exists && c2Exists) {
+            return new ExtendingHAServiceConfiguration(c1, c2);
+        }
+        if (c1Exists) {
+            return new ExtendingHAServiceConfiguration(c1);
+        }
+        if (c2Exists){
+            return new ExtendingHAServiceConfiguration(c2);
+        }
         return null;
     }
 
@@ -64,10 +66,10 @@ public class ExtendingHAServiceConfigurationUpdater extends AbstractConfiguratio
      *
      * @return {@link Future} which eventually provides subconfigurations consolidation result.
      */
-    public Future<ExtenderConfiguration> getExtensionConfiguration() {
+    Future<ExtenderConfiguration> getExtensionConfiguration() {
         return new HAConfFuture<ExtenderConfiguration>(invokeSubserviceConfUpdates(),
-                new HAConfFuture.ConfResultSupplier<ConsolidationResult<ExtenderConfiguration>>() {
-                    public ConsolidationResult<ExtenderConfiguration> get() {
+                new HAConfFuture.ConfResultSupplier<ConsolidatedResult<ExtenderConfiguration>>() {
+                    public ConsolidatedResult<ExtenderConfiguration> get() {
                         return lastConsolidatedConfiguration;
                     }
                 });

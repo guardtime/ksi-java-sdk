@@ -40,10 +40,10 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.client.KSISigningClientServiceAdapter;
+import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.trust.JKSTrustStore;
 import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
@@ -98,7 +98,8 @@ public final class KSIBuilder {
      * Sets the default signing algorithm to be used to create new KSI signatures. When using {@link KSI#sign(DataHash)}
      * method then this algorithm is ignored. Default value is {@link HashAlgorithm#SHA2_256}
      *
-     * @param defaultHashAlgorithm the hash algorithm to be used to create new KSI signatures.
+     * @param defaultHashAlgorithm
+     *         the hash algorithm to be used to create new KSI signatures.
      * @return the instance of the builder class
      */
     public KSIBuilder setDefaultSigningHashAlgorithm(HashAlgorithm defaultHashAlgorithm) {
@@ -110,7 +111,8 @@ public final class KSIBuilder {
     /**
      * Sets the signing service to be used in signing process.
      *
-     * @param signingService instance of signing service.
+     * @param signingService
+     *         instance of signing service.
      * @return the instance of the builder class
      */
     public KSIBuilder setKsiProtocolSigningService(KSISigningService signingService) {
@@ -121,7 +123,8 @@ public final class KSIBuilder {
     /**
      * Sets the extending service to be used in extending process.
      *
-     * @param extendingService instance of extending service.
+     * @param extendingService
+     *         instance of extending service.
      * @return the instance of the builder class
      */
     public KSIBuilder setKsiProtocolExtendingService(KSIExtendingService extendingService) {
@@ -132,7 +135,8 @@ public final class KSIBuilder {
     /**
      * Sets the signer client to be used in signing process.
      *
-     * @param signingClient instance of signing client.
+     * @param signingClient
+     *         instance of signing client.
      * @return the instance of the builder class
      */
     public KSIBuilder setKsiProtocolSignerClient(KSISigningClient signingClient) {
@@ -143,7 +147,8 @@ public final class KSIBuilder {
     /**
      * Sets the extender client to be used in verification and extending process.
      *
-     * @param extenderClient instance of extender client
+     * @param extenderClient
+     *         instance of extender client
      * @return the instance of the builder class
      */
     public KSIBuilder setKsiProtocolExtenderClient(KSIExtenderClient extenderClient) {
@@ -154,7 +159,8 @@ public final class KSIBuilder {
     /**
      * Sets the publications file client to be used to download publications file.
      *
-     * @param publicationsFileClient instance of publication file client
+     * @param publicationsFileClient
+     *         instance of publication file client
      * @return instance of the builder class
      */
     public KSIBuilder setKsiProtocolPublicationsFileClient(KSIPublicationsFileClient publicationsFileClient) {
@@ -166,9 +172,11 @@ public final class KSIBuilder {
      * Sets the {@link KeyStore} to be used as trust store to verify the certificate that was used to sign the
      * publications file. If not set then the default java key store is used.
      *
-     * @param trustStore trust store to be used to verify certificates.
+     * @param trustStore
+     *         trust store to be used to verify certificates.
      * @return instance of builder class
-     * @throws KSIException when error occurs
+     * @throws KSIException
+     *         when error occurs
      */
     public KSIBuilder setPublicationsFilePkiTrustStore(KeyStore trustStore) throws KSIException {
         this.trustStore = trustStore;
@@ -179,10 +187,13 @@ public final class KSIBuilder {
      * Loads the {@link KeyStore} from the file system and sets the {@link KeyStore} to be used as trust store to verify
      * the certificate that was used to sign the publications file.
      *
-     * @param file     key store file on disk. not null.
-     * @param password password of the key store. null if key store isn't protected by password.
+     * @param file
+     *         key store file on disk. not null.
+     * @param password
+     *         password of the key store. null if key store isn't protected by password.
      * @return instance of builder
-     * @throws KSIException when error occurs
+     * @throws KSIException
+     *         when error occurs
      */
     public KSIBuilder setPublicationsFilePkiTrustStore(File file, String password) throws KSIException {
         if (file == null) {
@@ -209,7 +220,8 @@ public final class KSIBuilder {
      * the publications file. {@link java.security.cert.X509CertSelector} can be used to instead of {@link
      * X509CertificateSubjectRdnSelector}
      *
-     * @param certSelector instance of {@link CertSelector}.
+     * @param certSelector
+     *         instance of {@link CertSelector}.
      * @return instance of builder
      * @see java.security.cert.X509CertSelector
      */
@@ -273,7 +285,8 @@ public final class KSIBuilder {
      * Builds the {@link KSI} instance. Checks that the signing, extender and publications file clients are set.
      *
      * @return instance of {@link KSI} class
-     * @throws KSIException will be thrown when some client is null.
+     * @throws KSIException
+     *         will be thrown when some client is null.
      */
     public KSI build() throws KSIException {
         if (defaultHashAlgorithm == null) {
@@ -312,9 +325,7 @@ public final class KSIBuilder {
                 signatureComponentFactory, defaultHashAlgorithm);
     }
 
-    private PublicationsFileClientAdapter createPublicationsFileAdapter(KSIPublicationsFileClient publicationsFileClient,
-                                                                        PublicationsFileFactory publicationsFileFactory, long
-                                                                                expirationTime) {
+    private PublicationsFileClientAdapter createPublicationsFileAdapter(KSIPublicationsFileClient publicationsFileClient, PublicationsFileFactory publicationsFileFactory, long expirationTime) {
         if (expirationTime > 0) {
             return new CachingPublicationsFileClientAdapter(publicationsFileClient, publicationsFileFactory, expirationTime);
         }

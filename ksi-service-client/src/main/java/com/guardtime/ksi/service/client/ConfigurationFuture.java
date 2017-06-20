@@ -10,7 +10,7 @@ public class ConfigurationFuture<T> implements Future<T> {
     private final java.util.concurrent.Future<T> requestFuture;
     private T result;
 
-    ConfigurationFuture(java.util.concurrent.Future<T> requestFuture) {
+    public ConfigurationFuture(java.util.concurrent.Future<T> requestFuture) {
         this.requestFuture = requestFuture;
     }
 

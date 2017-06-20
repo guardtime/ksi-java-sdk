@@ -28,7 +28,7 @@ import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIClientException;
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 
 import java.io.IOException;
 import java.util.Collections;

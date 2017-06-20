@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.tasks;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
 /**
  * Task for doing a signing request.
  */
-public class SigningTask implements Callable<AggregationResponse> {
+class SigningTask implements Callable<AggregationResponse> {
 
     private final KSISigningService service;
     private DataHash dataHash;

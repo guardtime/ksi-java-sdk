@@ -16,9 +16,9 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,20 +31,19 @@ import java.util.List;
  *
  * @param <T> Type of configuration handled (aggregator or extender).
  */
-abstract class AbstractConfigurationUpdater<T> {
+abstract class AbstractHAConfigurationListener<T> implements ConfigurationListener<T>{
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final List<ConfigurationListener<T>> consolidatedConfListeners = new ArrayList<ConfigurationListener<T>>();
-
-    ConsolidationResult<T> lastConsolidatedConfiguration;
-    private final Object confRecalculationLock = new Object();
+    ConsolidatedResult<T> lastConsolidatedConfiguration;
+    private final Object lock = new Object();
 
     protected abstract T consolidate(T lastConfiguration, T newConsolidatedConfiguration);
 
     abstract List<SubServiceConfListener<T>> getSubServiceConfListeners();
 
-    public void registerNewListener(ConfigurationListener<T> listener) {
+    void registerListener(ConfigurationListener<T> listener) {
         Util.notNull(listener, "Consolidated configuration listener");
         consolidatedConfListeners.add(listener);
         if (lastConsolidatedConfiguration != null) {
@@ -52,11 +51,19 @@ abstract class AbstractConfigurationUpdater<T> {
         }
     }
 
-    void recalculateConfiguration() {
+    public void updated(T configuration) {
+        recalculateConfiguration();
+    }
+
+    public void updateFailed(Throwable reason) {
+        recalculateConfiguration();
+    }
+
+    private void recalculateConfiguration() {
         T newConsolidatedConfiguration = null;
-        ConsolidationResult<T> oldConsolidatedConfiguration = lastConsolidatedConfiguration;
+        ConsolidatedResult<T> oldConsolidatedConfiguration = lastConsolidatedConfiguration;
         boolean listenersNeedUpdate;
-        synchronized (confRecalculationLock) {
+        synchronized (lock) {
             for (SubServiceConfListener<T> serviceConfListener : getSubServiceConfListeners()) {
                 if (serviceConfListener.isAccountedFor()) {
                     newConsolidatedConfiguration = consolidate(serviceConfListener.getLastConfiguration(),
@@ -89,11 +96,10 @@ abstract class AbstractConfigurationUpdater<T> {
 
     private void resetLastConsolidatedConfiguration(T newConsolidatedConfiguration) {
         if (newConsolidatedConfiguration == null) {
-            lastConsolidatedConfiguration = new ConsolidationResult<T>(new HAConfigurationConsolidationException());
+            lastConsolidatedConfiguration = new ConsolidatedResult<T>(new HAConfigurationConsolidationException());
         } else {
-            lastConsolidatedConfiguration = new ConsolidationResult<T>(newConsolidatedConfiguration);
+            lastConsolidatedConfiguration = new ConsolidatedResult<T>(newConsolidatedConfiguration);
         }
     }
-
 
 }

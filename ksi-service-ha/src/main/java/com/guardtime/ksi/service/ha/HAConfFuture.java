@@ -1,4 +1,4 @@
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.Future;
@@ -8,10 +8,10 @@ import java.util.Collection;
 class HAConfFuture<T> implements Future<T> {
 
     private final Collection<Future<T>> confFutures;
-    private final ConfResultSupplier<ConsolidationResult<T>> lastConsolidatedConfigurationSupplier;
-    private ConsolidationResult<T> consolidationResult;
+    private final ConfResultSupplier<ConsolidatedResult<T>> lastConsolidatedConfigurationSupplier;
+    private ConsolidatedResult<T> consolidationResult;
 
-    HAConfFuture(Collection<Future<T>> confFutures, ConfResultSupplier<ConsolidationResult<T>> confResultSupplier) {
+    HAConfFuture(Collection<Future<T>> confFutures, ConfResultSupplier<ConsolidatedResult<T>> confResultSupplier) {
         this.confFutures = confFutures;
         this.lastConsolidatedConfigurationSupplier = confResultSupplier;
     }

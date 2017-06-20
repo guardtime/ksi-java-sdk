@@ -668,6 +668,22 @@ public final class Util {
     }
 
     /**
+     * Method for checking if an element is present in int array.
+     *
+     * @param array an array of int values
+     * @param key a primitive int value
+     * @return if element is present in array
+     */
+    public static boolean containsInt(final int[] array, final int key) {
+        for (int element : array) {
+            if (element == key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * For getting the stacktrace of a throwable as a string.
      */
     public static String getStacktrace(Throwable t) {

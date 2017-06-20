@@ -255,8 +255,6 @@ calendar-authentication-record/invalid-signature-cal-auth-rec-sig-data-has-child
 calendar-authentication-record/invalid-signature-cal-auth-rec-sig-data-missing-tag.tlv;parsing;;;0;;;;;;;;false;;;
 calendar-authentication-record/invalid-signature-cal-auth-rec-sig-data-multiple-tags.tlv;parsing;;;0;;;;;;;;false;;;
 calendar-authentication-record/invalid-signature-cal-auth-rec-sig-type-int-value.tlv;parsing;;;0;;;;;;;;false;;;
-calendar-authentication-record/invalid-signature-cal-auth-rec-sig-type-text-value-wrong.tlv;not-implemented;;;0;;;;;;;;false;;;
-calendar-authentication-record/invalid-signature-cal-auth-rec-sig-type-datahash-value.tlv;not-implemented;;;0;;;;;;;;false;;;
 calendar-authentication-record/invalid-signature-cal-auth-rec-sig-type-no-value.tlv;parsing;;;0;;;;;;;;false;;;
 calendar-authentication-record/invalid-signature-cal-auth-rec-sig-type-missing-tag.tlv;parsing;;;0;;;;;;;;false;;;
 calendar-authentication-record/invalid-signature-cal-auth-rec-sig-type-multiple-tags.tlv;parsing;;;0;;;;;;;;false;;;

@@ -21,19 +21,30 @@ package com.guardtime.ksi.pdu.v2;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
+import com.guardtime.ksi.pdu.ExtensionRequest;
+import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 public class PduV2Factory implements PduFactory {
+
+    private static final Logger logger = LoggerFactory.getLogger(PduV2Factory.class);
 
     public static final int ELEMENT_TYPE_CONFIGURATION = 0x04;
 
@@ -106,9 +117,17 @@ public class PduV2Factory implements PduFactory {
         for (TLVElement payload : payloads) {
             TLVElement requestIdElement = payload.getFirstChildElement(0x01);
 
-            if (requestIdElement != null && requestId.equals(requestIdElement.getDecodedLong())) {
-                responsePayload = payload;
-                break;
+            if (requestIdElement != null) {
+                Long id = requestIdElement.getDecodedLong();
+                if (requestId.equals(id)) {
+                    if (responsePayload == null) {
+                        responsePayload = payload;
+                    } else {
+                        logger.warn("Duplicate response payload received");
+                    }
+                } else {
+                    logger.warn("Response payload with requestId={} encountered, expected requestId={}", id, requestId);
+                }
             }
         }
         return responsePayload;

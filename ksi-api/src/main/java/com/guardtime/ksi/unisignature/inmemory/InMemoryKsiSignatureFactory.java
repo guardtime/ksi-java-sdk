@@ -70,7 +70,6 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
 
     public InMemoryKsiSignatureFactory(ContextAwarePolicy policy, KSISignatureComponentFactory signatureComponentFactory) {
         Util.notNull(policy, "Signature verification policy");
-        Util.notNull(policy.getPolicyContext(), "Policy Context");
         Util.notNull(signatureComponentFactory, "Signature component factory");
         this.policy = policy;
         this.extenderClient = policy.getPolicyContext().getExtenderClient();

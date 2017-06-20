@@ -112,7 +112,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
      *      Extender.
      * @return User provided publication based verification policy with suitable context.
      */
-    public static ContextAwarePolicy createUserPolicy(PublicationData publicationData, Extender extender) {
+    public static ContextAwarePolicy createUserProvidedPublicationPolicy(PublicationData publicationData, Extender extender) {
         Util.notNull(publicationData, "Publication data");
         Util.notNull(extender, "Extender");
         return new ContextAwarePolicyAdapter(new UserProvidedPublicationBasedVerificationPolicy(),

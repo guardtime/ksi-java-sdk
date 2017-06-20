@@ -194,7 +194,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
             throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         VerificationResult result =
-                ksi.verify(sig, ContextAwarePolicyAdapter.createUserPolicy(sig.getPublicationRecord().getPublicationData(),
+                ksi.verify(sig, ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(sig.getPublicationRecord().getPublicationData(),
                         getExtender(extenderClient, simpleHttpClient)));
         Assert.assertTrue(result.isOk());
     }

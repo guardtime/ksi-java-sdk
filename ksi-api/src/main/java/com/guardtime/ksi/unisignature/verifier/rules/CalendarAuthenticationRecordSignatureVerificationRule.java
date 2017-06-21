@@ -20,11 +20,11 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
+import com.guardtime.ksi.unisignature.SignatureData;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
-import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
-import com.guardtime.ksi.unisignature.SignatureData;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import java.security.GeneralSecurityException;
 import java.security.Signature;
 import java.security.cert.Certificate;
-import java.security.cert.X509Certificate;
 
 /**
  * This rule is used to validate calendar authentication record signature. At first X.509 certificate is searched from
@@ -47,7 +46,7 @@ public class CalendarAuthenticationRecordSignatureVerificationRule extends BaseR
         SignatureData signatureData = authenticationRecord.getSignatureData();
         Certificate certificate = context.getCertificate(signatureData.getCertificateId());
         try {
-            Signature sig = Signature.getInstance(((X509Certificate) certificate).getSigAlgName(), BouncyCastleProvider.PROVIDER_NAME);
+            Signature sig = Signature.getInstance(signatureData.getSignatureType(), BouncyCastleProvider.PROVIDER_NAME);
             sig.initVerify(certificate);
             sig.update(authenticationRecord.getPublicationData().getEncoded());
             if (!sig.verify(signatureData.getSignatureValue())) {

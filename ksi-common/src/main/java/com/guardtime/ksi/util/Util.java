@@ -18,21 +18,26 @@
  */
 package com.guardtime.ksi.util;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.*;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CodingErrorAction;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Random;
 import java.util.zip.CRC32;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * A collection of miscellaneous, commonly used utility functions.
@@ -652,6 +657,22 @@ public final class Util {
      */
     public static boolean equalsIgnoreOrder(Collection<?> c1, Collection<?> c2) {
         return (c1 == null && c2 == null) || (c1 != null && c2 != null  && c1.size() == c2.size() && c1.containsAll(c2) && c2.containsAll(c1));
+    }
+
+    /**
+     * Method for checking if an element is present in int array.
+     *
+     * @param array an array of int values
+     * @param key a primitive int value
+     * @return if element is present in array
+     */
+    public static boolean containsInt(final int[] array, final int key) {
+        for (int element : array) {
+            if (element == key) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

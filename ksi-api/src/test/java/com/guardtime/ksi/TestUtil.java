@@ -100,7 +100,7 @@ public final class TestUtil extends CommonTestUtil {
     }
 
     /**
-     * Asserts that {@param thrown} or it's cause (or it's causes cause and so on) is of type {@param expecedClass} and with
+     * Asserts that {@param thrown} or it's cause (or it's causes cause and so on) is of type {@param expectedClass} and with
      * message {@param expectedMessage}.
      */
     public static void assertCause(Class<? extends Exception> expectedClass, String expectedMessage, Throwable thrown) {

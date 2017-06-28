@@ -16,7 +16,7 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.tasks;
+package com.guardtime.ksi.service.ha;
 
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.service.KSIExtendingService;
@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
 /**
  * Task for doing an extension request.
  */
-public class ExtendingTask implements Callable<ExtensionResponse> {
+class ExtendingTask implements Callable<ExtensionResponse> {
 
     private final KSIExtendingService service;
     private Date aggregationTime;

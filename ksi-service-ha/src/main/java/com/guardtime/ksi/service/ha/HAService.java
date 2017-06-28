@@ -29,7 +29,7 @@ import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 
 import java.util.Date;
 import java.util.List;
@@ -70,10 +70,10 @@ public class HAService implements KSISigningService, KSIExtendingService {
     }
 
     /**
-     * @see SigningHAService#sendAggregationConfigurationRequest()
+     * @see SigningHAService#getAggregationConfiguration()
      */
-    public void sendAggregationConfigurationRequest() {
-        signingHAService.sendAggregationConfigurationRequest();
+    public Future<AggregatorConfiguration> getAggregationConfiguration() {
+        return signingHAService.getAggregationConfiguration();
     }
 
     /**
@@ -84,10 +84,10 @@ public class HAService implements KSISigningService, KSIExtendingService {
     }
 
     /**
-     * @see ExtendingHAService#sendExtenderConfigurationRequest()
+     * @see ExtendingHAService#getExtendingConfiguration()
      */
-    public void sendExtenderConfigurationRequest() {
-        extendingHAService.sendExtenderConfigurationRequest();
+    public Future<ExtenderConfiguration> getExtendingConfiguration() {
+        return extendingHAService.getExtendingConfiguration();
     }
 
     /**
@@ -103,7 +103,6 @@ public class HAService implements KSISigningService, KSIExtendingService {
     public List<KSIExtendingService> getSubExtendingServices() {
         return extendingHAService.getSubExtendingServices();
     }
-
 
     /**
      * Closes signingHaService and extenderHaService
@@ -130,34 +129,34 @@ public class HAService implements KSISigningService, KSIExtendingService {
         private final ExtendingHAService.Builder extenderHAServiceBuilder = new ExtendingHAService.Builder();
 
         /**
-         * @see SigningHAService.Builder#setClients(List)
+         * @see SigningHAService.Builder#addClients(List)
          */
-        public HAService.Builder setSigningClients(List<KSISigningClient> clients) {
-            signingHAServiceBuilder.setClients(clients);
+        public HAService.Builder addSigningClients(List<KSISigningClient> clients) {
+            signingHAServiceBuilder.addClients(clients);
             return this;
         }
 
         /**
-         * @see SigningHAService.Builder#setServices(List)
+         * @see SigningHAService.Builder#addServices(List)
          */
-        public HAService.Builder setSigningServices(List<KSISigningService> services) {
-            signingHAServiceBuilder.setServices(services);
+        public HAService.Builder addSigningServices(List<KSISigningService> services) {
+            signingHAServiceBuilder.addServices(services);
             return this;
         }
 
         /**
-         * @see ExtendingHAService.Builder#setClients(List)
+         * @see ExtendingHAService.Builder#addClients(List)
          */
         public HAService.Builder setExtenderClients(List<KSIExtenderClient> clients) {
-            extenderHAServiceBuilder.setClients(clients);
+            extenderHAServiceBuilder.addClients(clients);
             return this;
         }
 
         /**
-         * @see ExtendingHAService.Builder#setServices(List)
+         * @see ExtendingHAService.Builder#addServices(List)
          */
         public HAService.Builder setExtendingServices(List<KSIExtendingService> services) {
-            extenderHAServiceBuilder.setServices(services);
+            extenderHAServiceBuilder.addServices(services);
             return this;
         }
 

@@ -18,23 +18,26 @@
  */
 package com.guardtime.ksi.util;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.*;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CodingErrorAction;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Random;
 import java.util.zip.CRC32;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * A collection of miscellaneous, commonly used utility functions.
@@ -657,13 +660,19 @@ public final class Util {
     }
 
     /**
-     * For getting the stacktrace of a throwable as a string.
+     * Method for checking if an element is present in int array.
+     *
+     * @param array an array of int values
+     * @param key a primitive int value
+     * @return if element is present in array
      */
-    public static String getStacktrace(Throwable t) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        t.printStackTrace(pw);
-        return sw.toString();
+    public static boolean containsInt(final int[] array, final int key) {
+        for (int element : array) {
+            if (element == key) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

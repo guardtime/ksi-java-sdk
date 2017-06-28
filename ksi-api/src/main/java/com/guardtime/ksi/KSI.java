@@ -30,7 +30,7 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -302,7 +302,7 @@ public interface KSI extends Closeable {
      * GetAggregatorConfiguration method is used to ask aggregation configuration from KSI gateway/aggregator.Only supported
      * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
      *
-     * @deprecated Deprecated since 4.10. Use {@link KSISigningService#sendAggregationConfigurationRequest()}
+     * @deprecated Deprecated since 4.10. Use {@link KSISigningService#getAggregationConfiguration()}
      *      in pair with {@link KSISigningService#registerAggregatorConfigurationListener(ConfigurationListener)} instead.
      *      One can acquire instance of {@link KSISigningService} which a {@link KSI} instance uses by calling
      *      {@link KSI#getSigningService()}.
@@ -316,7 +316,7 @@ public interface KSI extends Closeable {
      * GetExtenderConfiguration method is used to ask extender configuration from KSI gateway/aggregator. Only supported
      * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
      *
-     * @deprecated Deprecated since 4.10. Use {@link KSIExtendingService#sendExtenderConfigurationRequest()}
+     * @deprecated Deprecated since 4.10. Use {@link KSIExtendingService#getExtendingConfiguration()}
      *      in pair with {@link KSIExtendingService#registerExtenderConfigurationListener(ConfigurationListener)} instead.
      *      One can acquire instance of {@link KSIExtendingService} which a {@link KSI} instance uses by calling
      *      {@link KSI#getExtendingService()}.

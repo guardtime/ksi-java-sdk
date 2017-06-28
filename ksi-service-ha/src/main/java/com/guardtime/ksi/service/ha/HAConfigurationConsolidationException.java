@@ -16,16 +16,29 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
+
+import com.guardtime.ksi.service.client.KSIClientException;
 
 /**
- * Listener to call every time subservices configuration is updated.
+ * Thrown when HA Service fails to create a consolidated configuration
  */
-interface SubconfUpdateListener {
+public class HAConfigurationConsolidationException extends KSIClientException {
 
-    /**
-     * This methods implementation should start the consolidated configurations recalculation process.
-     */
-    void updated();
+    HAConfigurationConsolidationException() {
+        super("HA service has no active subconfigurations to base its consolidated configuration on");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        HAConfigurationConsolidationException that = (HAConfigurationConsolidationException) o;
+        return getMessage().equals(that.getMessage());
+    }
 
 }

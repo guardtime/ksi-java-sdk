@@ -23,7 +23,7 @@
 
 	<groupId>com.guardtime</groupId>
 	<artifactId>ksi</artifactId>
-	<version>4.10.109-SNAPSHOT</version>
+	<version>4.10.110-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>KSI SDK</name>
@@ -61,8 +61,8 @@
 		<module>ksi-service-client-tcp</module>
 		<module>ksi-api</module>
 		<module>ksi-blocksigner</module>
-        <module>ksi-service-ha</module>
-    </modules>
+		<module>ksi-service-ha</module>
+	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

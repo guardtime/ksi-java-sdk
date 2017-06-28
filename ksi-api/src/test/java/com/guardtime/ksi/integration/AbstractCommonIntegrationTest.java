@@ -139,8 +139,8 @@ public abstract class AbstractCommonIntegrationTest {
         extendingServicesForHa.add(pendingKSIService);
 
         HAService haService = new HAService.Builder()
-                .setSigningClients(signingClientsForHa)
-                .setSigningServices(signingServicesForHa).
+                .addSigningClients(signingClientsForHa)
+                .addSigningServices(signingServicesForHa).
                 setExtenderClients(extenderClientsForHa)
                 .setExtendingServices(extendingServicesForHa)
                 .build();

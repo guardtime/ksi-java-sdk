@@ -21,13 +21,14 @@ package com.guardtime.ksi.integration;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIClientException;
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -54,14 +55,14 @@ public class PendingKSIService implements KSISigningService, KSIExtendingService
         return Collections.emptyList();
     }
 
-    public void sendAggregationConfigurationRequest() {
+    public Future<AggregatorConfiguration> getAggregationConfiguration() {
         throw new RuntimeException("Failure!");
     }
 
     public void registerAggregatorConfigurationListener(ConfigurationListener listener) {
     }
 
-    public void sendExtenderConfigurationRequest() {
+    public Future<ExtenderConfiguration> getExtendingConfiguration() {
         throw new RuntimeException("Failure!");
     }
 

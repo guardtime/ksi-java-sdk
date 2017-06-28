@@ -16,7 +16,25 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+package com.guardtime.ksi.service;
+
+import com.guardtime.ksi.exceptions.KSIException;
+
 /**
- * HAService configuration handling logic.
+ * For wrapping configuration requests to pass them to configuration handler.
+ *
+ * @param <T> Type of configuration response.
  */
-package com.guardtime.ksi.service.ha.configuration;
+public interface ConfigurationRequest<T> {
+
+    /**
+     * Implementation should call the clients method that asks for new configuration.
+     *
+     * @return
+     *      Configuration response
+     * @throws KSIException
+     *      If something goes wrong with fetching the configuration.
+     */
+    T invoke() throws KSIException;
+
+}

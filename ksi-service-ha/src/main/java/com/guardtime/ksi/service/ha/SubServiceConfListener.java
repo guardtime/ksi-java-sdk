@@ -16,9 +16,9 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,21 +30,21 @@ class SubServiceConfListener<T> implements ConfigurationListener<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(SubServiceConfListener.class);
 
-    private final SubconfUpdateListener subconfUpdateListener;
+    private final ConfigurationListener<T> parent;
 
     private final String clientId;
     private T lastConfiguration;
 
     /**
      * @param clientId Something to distinguish the client from other clients. Used in logging.
-     * @param subconfUpdateListener Listener to call every time subclients configuration is updated. It's implementation
+     * @param parent Listener to call every time subclients configuration is updated. It's implementation
      *                                    should start the recalculation process.
      */
-    SubServiceConfListener(String clientId, SubconfUpdateListener subconfUpdateListener) {
+    SubServiceConfListener(String clientId, ConfigurationListener<T> parent) {
         Util.notNull(clientId, "SubServiceConfListener.clientId");
-        Util.notNull(subconfUpdateListener, "SubServiceConfListener.subconfUpdateListener");
+        Util.notNull(parent, "SubServiceConfListener.parent");
         this.clientId = clientId;
-        this.subconfUpdateListener = subconfUpdateListener;
+        this.parent = parent;
     }
 
     /**
@@ -63,12 +63,13 @@ class SubServiceConfListener<T> implements ConfigurationListener<T> {
 
     public void updated(T configuration) {
         lastConfiguration = configuration;
-        subconfUpdateListener.updated();
+        parent.updated(configuration);
     }
 
     public void updateFailed(Throwable t) {
         lastConfiguration = null;
         logger.warn("SigningHAService " + clientId + " subclients configuration request failed.", t);
-        subconfUpdateListener.updated();
+        parent.updateFailed(t);
     }
+
 }

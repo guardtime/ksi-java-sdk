@@ -16,24 +16,33 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.ha.configuration;
+package com.guardtime.ksi.service.ha;
 
-import com.guardtime.ksi.service.client.KSIClientException;
+class ConsolidatedResult<T> {
 
-/**
- * Thrown when HA Service fails to create a consolidated configuration
- */
-public class HAConfigurationConsolidationException extends KSIClientException {
+    private final T latest;
+    private final HAConfigurationConsolidationException latestException;
 
-    private final String message;
-
-    HAConfigurationConsolidationException() {
-        this("HA service has no active subconfigurations to base its consolidated configuration on");
+    ConsolidatedResult(T latest) {
+        this.latest = latest;
+        this.latestException = null;
     }
 
-    HAConfigurationConsolidationException(String message) {
-        super(message);
-        this.message = message;
+    ConsolidatedResult(HAConfigurationConsolidationException e) {
+        this.latestException = e;
+        this.latest = null;
+    }
+
+    boolean wasSuccessful() {
+        return latest != null;
+    }
+
+    public T getResult() {
+        return latest;
+    }
+
+    public Throwable getException() {
+        return latestException;
     }
 
     @Override
@@ -41,9 +50,11 @@ public class HAConfigurationConsolidationException extends KSIClientException {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        HAConfigurationConsolidationException that = (HAConfigurationConsolidationException) o;
+        ConsolidatedResult<?> that = (ConsolidatedResult<?>) o;
 
-        return message.equals(that.message);
+        boolean successful = wasSuccessful();
+        if (successful != that.wasSuccessful()) return false;
+
+        return successful ? getResult().equals(that.getResult()) : getException().equals(that.getException());
     }
-
 }

@@ -21,6 +21,7 @@ package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -56,6 +57,7 @@ public abstract class AbstractRuleTest {
     protected VerificationContext build(KSISignature signature, DataHash documentHash, PublicationsFile trustStore, PublicationData publication, Long level) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
+        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V2);
         builder.setPublicationsFile(trustStore).setExtenderClient(mockedExtenderClient).setUserPublication(publication);
         return builder.setSignature(signature).setDocumentHash(documentHash).setInputHashLevel(level).createVerificationContext();
     }

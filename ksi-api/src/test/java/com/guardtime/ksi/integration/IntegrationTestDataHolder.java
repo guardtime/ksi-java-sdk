@@ -28,6 +28,7 @@ import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.RequestContextFactory;
@@ -141,7 +142,7 @@ public class IntegrationTestDataHolder {
 
         if (responseFile != null) {
 
-            builder.setKsiProtocolExtenderClient(mockExtenderClient());
+            builder.setKsiProtocolExtendingService(mockExtenderService());
         } else {
             builder.setKsiProtocolExtenderClient(extenderClient);
         }
@@ -152,8 +153,12 @@ public class IntegrationTestDataHolder {
     public VerificationContext getVerificationContext(KSISignature signature) throws KSIException, IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
 
         VerificationContextBuilder builder = new VerificationContextBuilder();
+        if (responseFile == null) {
+            builder.setExtenderClient(extenderClient);
+        } else {
+            builder.setExtendingService(mockExtenderService());
+        }
         builder.setSignature(signature).
-                setExtenderClient(responseFile == null ? extenderClient : mockExtenderClient()).
                 setPublicationsFile(publicationsFile == null ? ksi.getPublicationsFile() : getPublicationsFile()).
                 setUserPublication(userPublication).
                 setExtendingAllowed(extendingPermitted).
@@ -164,8 +169,8 @@ public class IntegrationTestDataHolder {
         return context;
     }
 
-    private KSIExtenderClient mockExtenderClient() throws KSIException, IOException {
-        KSIExtenderClient mockClient = Mockito.mock(KSIExtenderClient.class);
+    private KSIExtendingService mockExtenderService() throws KSIException, IOException {
+        KSIExtendingService mockClient = Mockito.mock(KSIExtendingService.class);
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
         final TLVElement responseTLV = TLVElement.create(IOUtils.toByteArray(load(responseFile)));

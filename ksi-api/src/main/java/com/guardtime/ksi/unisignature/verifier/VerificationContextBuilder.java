@@ -21,9 +21,11 @@ package com.guardtime.ksi.unisignature.verifier;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.unisignature.KSISignature;
 
 /**
@@ -35,7 +37,7 @@ public class VerificationContextBuilder {
     private KSISignature signature;
     private PublicationData userPublication;
     private boolean extendingAllowed;
-    private KSIExtenderClient extenderClient;
+    private KSIExtendingService extendingService;
     private DataHash documentHash;
     private Long inputHashLevel;
 
@@ -96,7 +98,18 @@ public class VerificationContextBuilder {
      * @return instance of {@link VerificationContextBuilder}
      */
     public VerificationContextBuilder setExtenderClient(KSIExtenderClient extenderClient) {
-        this.extenderClient = extenderClient;
+        return setExtendingService(new KSIExtendingClientServiceAdapter(extenderClient));
+    }
+
+    /**
+     * Used to set the {@link KSIExtendingService} to be used to extend signature.
+     *
+     * @param extendingService
+     *         instance of extending service
+     * @return instance of {@link VerificationContextBuilder}
+     */
+    public VerificationContextBuilder setExtendingService(KSIExtendingService extendingService) {
+        this.extendingService = extendingService;
         return this;
     }
 
@@ -134,13 +147,13 @@ public class VerificationContextBuilder {
         if (signature == null) {
             throw new KSIException("Failed to createSignature verification context. Signature must be present.");
         }
-        if (extenderClient == null) {
-            throw new KSIException("Failed to createSignature verification context. KSI extender client must be present.");
+        if (extendingService == null) {
+            throw new KSIException("Failed to createSignature verification context. KSI extending service must be present.");
         }
         if (publicationsFile == null) {
             throw new KSIException("Failed to createSignature verification context. PublicationsFile must be present.");
         }
-        return new KSIVerificationContext(publicationsFile, signature, userPublication, extendingAllowed, extenderClient, documentHash, inputHashLevel);
+        return new KSIVerificationContext(publicationsFile, signature, userPublication, extendingAllowed, extendingService, documentHash, inputHashLevel);
     }
 
 }

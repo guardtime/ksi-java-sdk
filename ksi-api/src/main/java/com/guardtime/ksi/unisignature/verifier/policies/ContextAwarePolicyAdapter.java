@@ -22,7 +22,7 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
 import com.guardtime.ksi.util.Util;
 
@@ -84,7 +84,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
      */
     public static ContextAwarePolicy createPublicationsFilePolicy(PublicationsHandler handler, Extender extender) {
         Util.notNull(handler, "Publications handler");
-        PolicyContext context = new PolicyContext(handler, extender != null ? extender.getExtenderClient() : null);
+        PolicyContext context = new PolicyContext(handler, extender != null ? extender.getExtendingService() : null);
         return new ContextAwarePolicyAdapter(new PublicationsFileBasedVerificationPolicy(), context);
     }
 
@@ -99,7 +99,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     public static ContextAwarePolicy createCalendarPolicy(Extender extender) {
         Util.notNull(extender, "Extender");
         return new ContextAwarePolicyAdapter(new CalendarBasedVerificationPolicy(),
-                new PolicyContext(extender.getExtenderClient()));
+                new PolicyContext(extender.getExtendingService()));
     }
 
     /**
@@ -116,7 +116,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
         Util.notNull(publicationData, "Publication data");
         Util.notNull(extender, "Extender");
         return new ContextAwarePolicyAdapter(new UserProvidedPublicationBasedVerificationPolicy(),
-                new PolicyContext(publicationData, extender.getExtenderClient()));
+                new PolicyContext(publicationData, extender.getExtendingService()));
     }
 
     /**
@@ -130,13 +130,13 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
      *      Extender client.
      * @return Policy with suitable context.
      */
-    public static ContextAwarePolicy createPolicy(Policy policy, PublicationsHandler handler, KSIExtenderClient extenderClient) {
+    public static ContextAwarePolicy createPolicy(Policy policy, PublicationsHandler handler, KSIExtendingService extendingService) {
         if(policy instanceof UserProvidedPublicationBasedVerificationPolicy){
             throw new IllegalArgumentException("Unsupported verification policy.");
         }
         Util.notNull(handler, "Publications handler");
-        Util.notNull(extenderClient, "Extender client");
-        return new ContextAwarePolicyAdapter(policy, new PolicyContext(handler, extenderClient));
+        Util.notNull(extendingService, "Extending service");
+        return new ContextAwarePolicyAdapter(policy, new PolicyContext(handler, extendingService));
     }
 
     public PolicyContext getPolicyContext() {

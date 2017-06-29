@@ -22,7 +22,7 @@ package com.guardtime.ksi.integration;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.publication.PublicationRecord;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.PolicyVerificationResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
@@ -63,19 +63,19 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingKeyBasedPolicy_Ok() throws Exception {
         KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
-        VerificationResult result = verify(ksi, simpleHttpClient, sig, new KeyBasedVerificationPolicy());
+        VerificationResult result = verify(ksi, new KSIExtendingClientServiceAdapter(simpleHttpClient), sig, new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifySignatureUsingCalendarBasedPolicy_Ok(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testVerifySignatureUsingCalendarBasedPolicy_Ok(KSI ksi) throws Exception {
         KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
-        VerificationResult result = verify(ksi, simpleHttpClient, sig, new CalendarBasedVerificationPolicy());
+        VerificationResult result = verify(ksi, new KSIExtendingClientServiceAdapter(simpleHttpClient), sig, new CalendarBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifySignatureWithUsingPublicationsFileBasedVerificationPolicy_Ok(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testVerifySignatureWithUsingPublicationsFileBasedVerificationPolicy_Ok(KSI ksi) throws Exception {
         KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, simpleHttpClient, sig, new PublicationsFileBasedVerificationPolicy(), true);
         Assert.assertTrue(result.isOk());
@@ -92,7 +92,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureUsingKeyBasedPolicy_FailInconclusive() throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
-        VerificationResult result = verify(ksi, simpleHttpClient, sig, new KeyBasedVerificationPolicy());
+        VerificationResult result = verify(ksi, new KSIExtendingClientServiceAdapter(simpleHttpClient), sig, new KeyBasedVerificationPolicy());
         Assert.assertFalse(result.isOk());
         PolicyVerificationResult policyVerificationResult = result.getPolicyVerificationResults().get(0);
         Assert.assertEquals(policyVerificationResult.getPolicyStatus(), VerificationResultCode.NA);
@@ -100,21 +100,21 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyExtendedSignatureUsingCalendarBasedPolicy_Ok(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testVerifyExtendedSignatureUsingCalendarBasedPolicy_Ok(KSI ksi) throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
-        VerificationResult result = verify(ksi, simpleHttpClient, sig, new CalendarBasedVerificationPolicy());
+        VerificationResult result = verify(ksi, new KSIExtendingClientServiceAdapter(simpleHttpClient), sig, new CalendarBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyExtendedSignatureUsingPublicationsFileBasedPolicy_Ok(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testVerifyExtendedSignatureUsingPublicationsFileBasedPolicy_Ok(KSI ksi) throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, simpleHttpClient, sig, new PublicationsFileBasedVerificationPolicy(), true);
         Assert.assertTrue(result.isOk());
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyExtendedSignatureUsingUserProvidedPublicationsBasedPolicyAllowExtending_Ok(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testVerifyExtendedSignatureUsingUserProvidedPublicationsBasedPolicyAllowExtending_Ok(KSI ksi) throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         PublicationRecord publication = ksi.getPublicationsFile().getPublicationRecord(sig.getAggregationTime());
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, publication.getPublicationData
@@ -131,7 +131,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyOnlineKSIRfc3161SignatureUsingCalendarBasedVerificationPolicy(KSI ksi, KSIExtenderClient extenderClient) throws Exception {
+    public void testVerifyOnlineKSIRfc3161SignatureUsingCalendarBasedVerificationPolicy(KSI ksi) throws Exception {
         KSISignature signature = loadSignature(RFC3161_SIGNATURE);
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, simpleHttpClient, getFileHash(INPUT_FILE,
                 "SHA2-256")), new CalendarBasedVerificationPolicy());
@@ -163,21 +163,21 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifySignatureUsingContextCalendarBasedPolicy_Ok(KSI ksi, KSIExtenderClient extenderClient)
+    public void testVerifySignatureUsingContextCalendarBasedPolicy_Ok(KSI ksi)
             throws Exception {
         KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result =
-                ksi.verify(sig, ContextAwarePolicyAdapter.createCalendarPolicy(getExtender(extenderClient, simpleHttpClient)));
+                ksi.verify(sig, ContextAwarePolicyAdapter.createCalendarPolicy(getExtender(ksi.getExtendingService(), simpleHttpClient)));
         Assert.assertTrue(result.isOk());
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifySignatureUsingContextPublicationsFilePolicy_Ok(KSI ksi, KSIExtenderClient extenderClient)
+    public void testVerifySignatureUsingContextPublicationsFilePolicy_Ok(KSI ksi)
             throws Exception {
         KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result =
                 ksi.verify(sig, ContextAwarePolicyAdapter.createPublicationsFilePolicy(getPublicationsHandler(simpleHttpClient),
-                        getExtender(extenderClient, simpleHttpClient)));
+                        getExtender(ksi.getExtendingService(), simpleHttpClient)));
         Assert.assertTrue(result.isOk());
     }
 
@@ -190,12 +190,12 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifyExtendedSignatureWithContextUserProvidedPublicationString_OK(KSI ksi, KSIExtenderClient extenderClient)
+    public void testVerifyExtendedSignatureWithContextUserProvidedPublicationString_OK(KSI ksi)
             throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         VerificationResult result =
                 ksi.verify(sig, ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(sig.getPublicationRecord().getPublicationData(),
-                        getExtender(extenderClient, simpleHttpClient)));
+                        getExtender(ksi.getExtendingService(), simpleHttpClient)));
         Assert.assertTrue(result.isOk());
     }
 }

@@ -20,9 +20,15 @@
 package com.guardtime.ksi.blocksigner;
 
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.service.KSISigningService;
+import com.guardtime.ksi.pdu.PduIdentifierProvider;
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.guardtime.ksi.util.Util.notNull;
 
@@ -32,14 +38,21 @@ import static com.guardtime.ksi.util.Util.notNull;
  */
 public class KsiBlockSignerBuilder {
 
-    private KSISigningClient signingClient;
+    private static final Logger logger = LoggerFactory.getLogger(KsiBlockSignerBuilder.class);
+
+    private KSISigningService signingService;
     private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
     private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private int maxTreeHeight = KsiBlockSigner.MAXIMUM_LEVEL;
 
     public KsiBlockSignerBuilder setKsiSigningClient(KSISigningClient signingClient) {
         notNull(signingClient, "Signing client");
-        this.signingClient = signingClient;
+        return setKsiSigningService(new KSISigningClientServiceAdapter(signingClient));
+    }
+
+    public KsiBlockSignerBuilder setKsiSigningService(KSISigningService signingService) {
+        notNull(signingService, "Signing service");
+        this.signingService = signingService;
         return this;
     }
 
@@ -61,7 +74,20 @@ public class KsiBlockSignerBuilder {
         return this;
     }
 
+    @Deprecated
+    public KsiBlockSignerBuilder setPduVersion(PduVersion pduVersion) {
+        logger.warn("KsiBlockSignerBuilder.setPduVersion(PduVersion) is deprecated and has no affect. PDU version is determined " +
+                "by the KSISigningService that the KSIBlockSigner is initialized with.");
+        return this;
+    }
+
+    @Deprecated
+    public KsiBlockSignerBuilder setPduIdentifierProvider(PduIdentifierProvider pduIdentifierProvider) {
+        logger.warn("KsiBlockSignerBuilder.setPduIdentifierProvider(PduIdentifierProvider) is deprecated and has no affect.");
+        return this;
+    }
+
     public KsiBlockSigner build() {
-        return new KsiBlockSigner(signingClient, signatureFactory, algorithm, maxTreeHeight);
+        return new KsiBlockSigner(signingService, signatureFactory, algorithm, maxTreeHeight);
     }
 }

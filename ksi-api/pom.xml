@@ -129,7 +129,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.guardtime</groupId>
-			<artifactId>ksi-service-client-ha</artifactId>
+			<artifactId>ksi-service-ha</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

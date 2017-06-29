@@ -26,8 +26,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -684,16 +682,6 @@ public final class Util {
     }
 
     /**
-     * For getting the stacktrace of a throwable as a string.
-     */
-    public static String getStacktrace(Throwable t) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        t.printStackTrace(pw);
-        return sw.toString();
-    }
-
-    /**
      * Returns the default location of Java Runtime Environment certificate store.
      *
      * @return default certificate store location
@@ -728,6 +716,5 @@ public final class Util {
     /**
      * This class should not be instantiated.
      */
-    private Util() {
-    }
+    private Util() {}
 }

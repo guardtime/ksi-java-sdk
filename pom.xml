@@ -61,8 +61,8 @@
 		<module>ksi-service-client-tcp</module>
 		<module>ksi-api</module>
 		<module>ksi-blocksigner</module>
-        <module>ksi-service-client-ha</module>
-    </modules>
+		<module>ksi-service-ha</module>
+	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

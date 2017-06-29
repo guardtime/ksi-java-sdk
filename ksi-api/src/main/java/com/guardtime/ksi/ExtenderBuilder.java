@@ -20,6 +20,7 @@
 package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFileFactory;
@@ -28,7 +29,7 @@ import com.guardtime.ksi.publication.adapter.NonCachingPublicationsFileClientAda
 import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.trust.JKSTrustStore;
 import com.guardtime.ksi.trust.PKITrustStore;
@@ -57,7 +58,7 @@ import static com.guardtime.ksi.util.Util.notNull;
  * {@link Extender} object. It is mandatory to set extender client and publications file client and publications file certificate constraint.
  */
 public final class ExtenderBuilder {
-    private KSIExtenderClient extenderClient;
+    private KSIExtendingService extendingService;
     private CertSelector certSelector;
     private KSIPublicationsFileClient publicationsFileClient;
     private KeyStore trustStore;
@@ -65,10 +66,10 @@ public final class ExtenderBuilder {
     private ContextAwarePolicy policy;
 
     /**
-     * Sets the extender client to be used in verification and extending process.
+     * Sets the extending service to be used in verification and extending process.
      */
-    public ExtenderBuilder setExtenderClient(KSIExtenderClient extenderClient) {
-        this.extenderClient = extenderClient;
+    public ExtenderBuilder setExtendingService(KSIExtendingService extendingService) {
+        this.extendingService = extendingService;
         return this;
     }
 
@@ -148,7 +149,7 @@ public final class ExtenderBuilder {
      * @throws KSIException will be thrown when errors occur on {@link Extender} class initialization.
      */
     public Extender build() throws KSIException {
-        Util.notNull(extenderClient, "KSI extender client");
+        Util.notNull(extendingService, "KSI extending service");
         Util.notNull(publicationsFileClient, "KSI publications file");
         Util.notNull(certSelector, "KSI publications file trusted certificate selector");
         if (trustStore == null) {
@@ -162,7 +163,7 @@ public final class ExtenderBuilder {
         PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
         KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
         KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory(policy, signatureComponentFactory);
-        return new ExtenderImpl(extenderClient, publicationsFileAdapter, signatureFactory, signatureComponentFactory);
+        return new ExtenderImpl(extendingService, publicationsFileAdapter, signatureFactory, signatureComponentFactory);
     }
 
     private PublicationsFileClientAdapter createPublicationsFileAdapter(KSIPublicationsFileClient publicationsFileClient, PublicationsFileFactory publicationsFileFactory, long expirationTime) {
@@ -175,15 +176,15 @@ public final class ExtenderBuilder {
     private class ExtenderImpl implements Extender {
         private final KSISignatureFactory signatureFactory;
         private final KSISignatureComponentFactory signatureComponentFactory;
-        private final KSIExtenderClient extenderClient;
+        private final KSIExtendingService extendingService;
         private final PublicationsFileClientAdapter publicationsFileAdapter;
 
-        public ExtenderImpl(KSIExtenderClient extenderClient,
+        public ExtenderImpl(KSIExtendingService extendingService,
                             PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory,
                             KSISignatureComponentFactory signatureComponentFactory) {
             this.signatureFactory = signatureFactory;
             this.signatureComponentFactory = signatureComponentFactory;
-            this.extenderClient = extenderClient;
+            this.extendingService = extendingService;
             this.publicationsFileAdapter = publicationsFileAdapter;
         }
 
@@ -212,17 +213,23 @@ public final class ExtenderBuilder {
             if (signature.getAggregationTime().after(publicationRecord.getPublicationTime())) {
                 throw new IllegalArgumentException("Publication is before signature");
             }
-            Future<ExtensionResponse> extenderFuture = extenderClient.extend(signature.getAggregationTime(), publicationRecord.getPublicationTime());
+            Future<ExtensionResponse> extenderFuture = extendingService.extend(signature.getAggregationTime(), publicationRecord.getPublicationTime());
             return new ExtensionFuture(extenderFuture, publicationRecord, signature, signatureComponentFactory, signatureFactory);
         }
 
-        public KSIExtenderClient getExtenderClient() {
-            return extenderClient;
+        public KSIExtendingService getExtendingService() {
+            return extendingService;
+        }
+
+        @Deprecated
+        public ExtenderConfiguration getExtenderConfiguration() throws KSIException {
+            return extendingService.getExtendingConfiguration().getResult();
         }
 
         public void close() throws IOException {
-            extenderClient.close();
+            extendingService.close();
             publicationsFileClient.close();
         }
+
     }
 }

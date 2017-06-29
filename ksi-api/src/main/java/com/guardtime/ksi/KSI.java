@@ -108,5 +108,4 @@ public interface KSI extends Signer, Extender, Reader, Verifier, PublicationsHan
      * @see KSI#verify(VerificationContext, Policy)
      */
     VerificationResult verify(KSISignature signature, Policy policy, DataHash documentHash, PublicationData publicationData) throws KSIException;
-
 }

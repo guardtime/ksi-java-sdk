@@ -21,9 +21,11 @@ package com.guardtime.ksi;
 
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.publication.PublicationRecord;
+import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.unisignature.KSISignature;
 
 import java.io.Closeable;
@@ -76,10 +78,23 @@ public interface Extender extends Closeable {
     Future<KSISignature> asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException;
 
     /**
-     * This method is used to get the extender client that the SDK was initialized with. One could use the extender client to get
+     * This method is used to get the extender service that the SDK was initialized with. One could use the extender service to get
      * access to its configuration for example.
      */
-    KSIExtenderClient getExtenderClient();
+    KSIExtendingService getExtendingService();
 
+    /**
+     * GetExtenderConfiguration method is used to ask extender configuration from KSI gateway/aggregator. Only supported
+     * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
+     *
+     * @deprecated Deprecated since 4.10. Use {@link KSIExtendingService#getExtendingConfiguration()}
+     *      in pair with {@link KSIExtendingService#registerExtenderConfigurationListener(ConfigurationListener)} instead.
+     *      One can acquire instance of {@link KSIExtendingService} which a {@link KSI} instance uses by calling
+     *      {@link KSI#getExtendingService()}.
+     *
+     * @throws UnsupportedOperationException If KSI is initialized with a service not a client.
+     */
+    @Deprecated
+    ExtenderConfiguration getExtenderConfiguration() throws KSIException;
 }
 

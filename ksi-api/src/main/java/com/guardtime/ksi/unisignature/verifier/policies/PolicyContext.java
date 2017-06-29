@@ -21,44 +21,44 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.util.Util;
 
 public class PolicyContext {
 
     private PublicationsHandler publicationsHandler;
-    private KSIExtenderClient extenderClient;
+    private KSIExtendingService extendingService;
     private PublicationData userPublication;
 
     public PolicyContext() {}
 
-    public PolicyContext(KSIExtenderClient extenderClient) {
-        Util.notNull(extenderClient, "Extender client");
-        this.extenderClient = extenderClient;
+    public PolicyContext(KSIExtendingService extendingService) {
+        Util.notNull(extendingService, "Extending service");
+        this.extendingService = extendingService;
     }
 
-    public PolicyContext(PublicationsHandler publicationsHandler, KSIExtenderClient extenderClient) {
+    public PolicyContext(PublicationsHandler publicationsHandler, KSIExtendingService extendingService) {
         Util.notNull(publicationsHandler, "Publications handler");
         this.publicationsHandler = publicationsHandler;
-        this.extenderClient = extenderClient;
+        this.extendingService = extendingService;
     }
 
-    public PolicyContext(PublicationData publicationData, KSIExtenderClient extenderClient) {
+    public PolicyContext(PublicationData publicationData, KSIExtendingService extendingService) {
         Util.notNull(publicationData, "Publication data");
         this.userPublication = publicationData;
-        this.extenderClient = extenderClient;
+        this.extendingService = extendingService;
     }
 
     public PublicationsHandler getPublicationsHandler() {
         return publicationsHandler;
     }
 
-    public KSIExtenderClient getExtenderClient() {
-        return extenderClient;
+    public KSIExtendingService getExtendingService() {
+        return extendingService;
     }
 
     public boolean isExtendingAllowed() {
-        return extenderClient != null;
+        return extendingService != null;
     }
 
     public PublicationData getUserPublication() {

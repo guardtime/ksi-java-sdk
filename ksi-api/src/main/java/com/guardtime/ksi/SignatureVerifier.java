@@ -32,7 +32,7 @@ public class SignatureVerifier implements Verifier {
         PolicyContext c = policy.getPolicyContext();
         VerificationContext context = new VerificationContextBuilder()
                 .setDocumentHash(documentHash, level)
-                .setExtenderClient(c.getExtenderClient())
+                .setExtendingService(c.getExtendingService())
                 .setExtendingAllowed(c.isExtendingAllowed())
                 .setPublicationsFile(c.getPublicationsHandler() != null ? c.getPublicationsHandler().getPublicationsFile() : null)
                 .setSignature(signature)

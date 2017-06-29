@@ -24,8 +24,9 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.service.Future;
-import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
@@ -47,7 +48,7 @@ import static com.guardtime.ksi.util.Util.notNull;
  */
 public final class SignerBuilder {
     private HashAlgorithm defaultHashAlgorithm = HashAlgorithm.SHA2_256;
-    private KSISigningClient signingClient;
+    private KSISigningService signingService;
     private ContextAwarePolicy policy;
 
     /**
@@ -61,10 +62,10 @@ public final class SignerBuilder {
     }
 
     /**
-     * Sets the signer client to be used in signing process.
+     * Sets the signing service to be used in signing process.
      */
-    public SignerBuilder setSignerClient(KSISigningClient signingClient) {
-        this.signingClient = signingClient;
+    public SignerBuilder setSigningService(KSISigningService signingService) {
+        this.signingService = signingService;
         return this;
     }
 
@@ -87,7 +88,7 @@ public final class SignerBuilder {
      * Builds and returns the {@link Signer} instance. If signing client isn't configured {@link NullPointerException} is thrown.
      */
     public Signer build() {
-        Util.notNull(signingClient, "KSI signing client");
+        Util.notNull(signingService, "KSI signing service");
         if (defaultHashAlgorithm == null) {
             this.defaultHashAlgorithm = HashAlgorithm.SHA2_256;
         }
@@ -96,7 +97,7 @@ public final class SignerBuilder {
         }
         KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
         KSISignatureFactory uniSignatureFactory = new InMemoryKsiSignatureFactory(policy, signatureComponentFactory);
-        return new SignerImpl(signingClient, uniSignatureFactory, defaultHashAlgorithm);
+        return new SignerImpl(signingService, uniSignatureFactory, defaultHashAlgorithm);
     }
 
     private class SignerImpl implements Signer {
@@ -105,11 +106,11 @@ public final class SignerBuilder {
 
         private final KSISignatureFactory signatureFactory;
         private final HashAlgorithm defaultHashAlgorithm;
-        private final KSISigningClient signingClient;
+        private final KSISigningService signingService;
 
-        public SignerImpl(KSISigningClient signingClient, KSISignatureFactory signatureFactory,
+        public SignerImpl(KSISigningService signingService, KSISignatureFactory signatureFactory,
                           HashAlgorithm defaultHashAlgorithm) {
-            this.signingClient = signingClient;
+            this.signingService = signingService;
             this.signatureFactory = signatureFactory;
             this.defaultHashAlgorithm = defaultHashAlgorithm;
         }
@@ -131,7 +132,7 @@ public final class SignerBuilder {
 
         public Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException {
             notNull(dataHash, "Data hash");
-            Future<AggregationResponse> aggregationResponseFuture = signingClient.sign(dataHash, DEFAULT_LEVEL);
+            Future<AggregationResponse> aggregationResponseFuture = signingService.sign(dataHash, DEFAULT_LEVEL);
             return new SigningFuture(aggregationResponseFuture, signatureFactory, dataHash);
         }
 
@@ -149,12 +150,17 @@ public final class SignerBuilder {
             return asyncSign(hasher.getHash());
         }
 
-        public KSISigningClient getSigningClient() {
-            return signingClient;
+        public KSISigningService getSigningService() {
+            return signingService;
+        }
+
+        @Deprecated
+        public AggregatorConfiguration getAggregatorConfiguration() throws KSIException {
+            return signingService.getAggregationConfiguration().getResult();
         }
 
         public void close() throws IOException {
-            signingClient.close();
+            signingService.close();
         }
     }
 

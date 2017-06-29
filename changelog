@@ -1,5 +1,14 @@
 Version 4.10
 
+* IMPROVEMENT: Added KSISigningService and KSIExtendingService which act as a more high level alternatives to KSISigningClient and KSIExtenderClient. Both clients can be converted to services via KSISigningClientServiceAdapter and KSIExtendingClientServiceAdapter.
+* IMPROVEMENT: All the API components which used to be initializable with clients are now also initializable with services.
+* IMPROVEMENT: Deprecated VerificationContext.setPduFactory(PduFactory). Has no effect since PduFactory is defined in the KSIExtendingService level.
+* IMPROVEMENT: Configuration requests in the KSI instance have been deprecated. Callback and Future based asynchronous configuration asking implemented to all the KSISigningServices and KSIExtenderServices.
+* FEATURE: HAService (High-availability service) is a service that combines multiple KSISigningServices and KSIExtenderServices to achieve redundancy.
+* BUGFIX: RFC3161 record index rule code error code and messages corrected.
+* IMPROVEMENT: Renewed and cleaned test resources and improved test coverage.
+* BUGFIX: Removed registration time from KSISignature and CalendarHashChain.
+* BUGFIX: Removed addAggregationHashChain from KSISignature.
 * FEATURE: HAClient (High-availability client) is a client that combines multiple KSISigningClients and KSIExtenderClients to achieve redundancy.
 * IMPROVEMENT: Removed KSISigningClient.sign(InputStream) and provided an alternative KSISigningClient.sign(DataHash, Long).
 * IMPROVEMENT: Removed KSIExtenderClient.extend(InputStream) and provided an alternative KSIExtenderClient.extend(Date, Date).

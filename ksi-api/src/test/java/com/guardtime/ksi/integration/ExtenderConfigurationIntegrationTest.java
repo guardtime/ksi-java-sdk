@@ -18,13 +18,18 @@
  */
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.AsyncContext;
+import com.guardtime.ksi.KSI;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 
 import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.service.client.ConfigurationListener;
+import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.ha.HAClient;
+import com.guardtime.ksi.service.ha.HAService;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -32,26 +37,30 @@ import org.testng.annotations.Test;
 
 import java.util.Collections;
 
+import static com.guardtime.ksi.TestUtil.assertCause;
+
 public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
-    private HAClient haClientV2;
-    private HAClient haClientV1;
+    private HAService haServiceV2;
+    private HAService haServiceV1;
+    private KSI ksiV2;
 
     @BeforeMethod
     public void setUp() throws Exception {
         super.setUp();
         SimpleHttpClient simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
-        haClientV2 = new HAClient(Collections.singletonList((KSISigningClient) simpleHttpClientV2),
-                Collections.singletonList((KSIExtenderClient) simpleHttpClientV2));
-        haClientV1 = new HAClient(Collections.singletonList((KSISigningClient) simpleHttpClient),
-                Collections.singletonList((KSIExtenderClient) simpleHttpClient));
+        haServiceV2 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClientV2))
+                .setExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV2)).build();
+        haServiceV1 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClient))
+                .setExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClient)).build();
+        this.ksiV2 = createKsi(simpleHttpClientV2, simpleHttpClientV2, simpleHttpClientV2);
     }
 
     @Test
     public void testExtenderConfigurationRequestV2() throws Exception {
         final AsyncContext ac = new AsyncContext();
 
-        haClientV2.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
+        haServiceV2.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
             public void updated(ExtenderConfiguration extenderConfiguration) {
                 try {
                     Assert.assertNotNull(extenderConfiguration);
@@ -69,14 +78,14 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
                 }
             }
         });
-        haClientV2.sendExtenderConfigurationRequest();
+        haServiceV2.getExtendingConfiguration();
         ac.await();
     }
 
     @Test
-    public void testExtenderConfigurationRequestWithHaClientV1() throws Exception {
+    public void testExtenderConfigurationRequestWithHAServiceV1() throws Exception {
         final AsyncContext ac = new AsyncContext();
-        haClientV1.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
+        haServiceV1.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
             public void updated(ExtenderConfiguration extenderConfiguration) {
                 try {
                     Assert.fail("Configuration request was not supposed to succeed because of PDU V1, but it did.");
@@ -87,7 +96,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
 
             public void updateFailed(Throwable t) {
                 try {
-                    if ("ExtenderHAClient has no active subconfigurations to base its consolidated configuration on".equals(t.getMessage())) {
+                    if ("HA service has no active subconfigurations to base its consolidated configuration on".equals(t.getMessage())) {
                         ac.succeed();
                     } else {
                         Assert.fail("Configuration update failed for unexpected reason", t);
@@ -97,14 +106,15 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
                 }
             }
         });
-        haClientV1.sendExtenderConfigurationRequest();
+        haServiceV1.getExtendingConfiguration();
         ac.await();
     }
 
-    @Test
-    public void testAggregationConfigurationRequestWithSimpleHttpClientV1() throws Exception {
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
+    public void testExtenderConfigurationRequestWithSimpleHttpClientV1() throws Throwable {
         final AsyncContext ac = new AsyncContext();
-        simpleHttpClient.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
+        KSIExtendingClientServiceAdapter simpleHttpService = new KSIExtendingClientServiceAdapter(simpleHttpClient);
+        simpleHttpService.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
             public void updated(ExtenderConfiguration extenderConfiguration) {
                 try {
                     Assert.fail("Configuration request was not supposed to succeed because of PDU V1, but it did.");
@@ -125,9 +135,40 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
                 }
             }
         });
-        simpleHttpClient.sendExtenderConfigurationRequest();
+        Future<ExtenderConfiguration> extendingConfiguration = simpleHttpService.getExtendingConfiguration();
 
         ac.await();
+        try {
+            extendingConfiguration.getResult();
+        } catch (Exception e) {
+            throw e.getCause().getCause();
+        }
+    }
+
+    @Test
+    public void testSynchronousExtenderConfigurationRequestV2() throws Exception {
+        ExtenderConfiguration response = ksiV2.getExtenderConfiguration();
+        Assert.assertNotNull(response);
+    }
+
+    @Test
+    public void testSynchronousExtenderConfigurationRequestV1() throws Throwable {
+        try {
+            ksi.getExtenderConfiguration();
+            Assert.fail("Configuration update was not supposed to succeed with PDU V1");
+        } catch (Exception e) {
+            assertCause(KSIException.class, "Not supported. Configure the SDK to use PDU v2 format.", e);
+        }
+    }
+
+    @Test
+    public void testSynchronousExtendingConfigurationRequestHA() throws Exception {
+        Assert.assertNotNull(haServiceV2.getExtendingConfiguration().getResult());
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Configuration consolidation failed in HA service")
+    public void testSynchronousConfigurationHAFail() throws Exception {
+        haServiceV1.getExtendingConfiguration().getResult();
     }
 
 }

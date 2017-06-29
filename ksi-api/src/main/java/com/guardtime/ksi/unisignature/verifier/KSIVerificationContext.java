@@ -22,13 +22,14 @@ package com.guardtime.ksi.unisignature.verifier;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.pdu.ExtensionResponse;
+import com.guardtime.ksi.service.KSIExtendingService;
+import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.CertificateNotFoundException;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
@@ -52,7 +53,7 @@ final class KSIVerificationContext implements VerificationContext {
     private PublicationsFile publicationsFile;
     private KSISignature signature;
     private PublicationData userPublication;
-    private KSIExtenderClient extenderClient;
+    private KSIExtendingService extendingService;
     private boolean extendingAllowed;
     private DataHash documentHash;
     private Long inputHashLevel;
@@ -62,12 +63,12 @@ final class KSIVerificationContext implements VerificationContext {
     private KSISignatureComponentFactory signatureComponentFactory;
 
     KSIVerificationContext(PublicationsFile publicationsFile, KSISignature signature, PublicationData userPublication,
-                           boolean extendingAllowed, KSIExtenderClient extenderClient, DataHash documentHash, Long inputHashLevel) {
+                           boolean extendingAllowed, KSIExtendingService extendingService, DataHash documentHash, Long inputHashLevel) {
         this.publicationsFile = publicationsFile;
         this.signature = signature;
         this.userPublication = userPublication;
         this.extendingAllowed = extendingAllowed;
-        this.extenderClient = extenderClient;
+        this.extendingService = extendingService;
         this.documentHash = documentHash;
         this.inputHashLevel = inputHashLevel;
     }
@@ -130,6 +131,10 @@ final class KSIVerificationContext implements VerificationContext {
         return getSignature().getPublicationRecord();
     }
 
+    @Deprecated
+    public void setPduFactory(PduFactory pduFactory) {
+    }
+
     public PublicationData getUserProvidedPublication() {
         return userPublication;
     }
@@ -151,7 +156,7 @@ final class KSIVerificationContext implements VerificationContext {
     }
 
     private CalendarHashChain extend(Date publicationTime) throws KSIException {
-        Future<ExtensionResponse> extenderFuture = extenderClient.extend(getSignature().getAggregationTime(), publicationTime);
+        Future<ExtensionResponse> extenderFuture = extendingService.extend(getSignature().getAggregationTime(), publicationTime);
         ExtensionResponse extensionResponse = extenderFuture.getResult();
         try {
             return signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());

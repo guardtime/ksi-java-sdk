@@ -23,13 +23,13 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.RequestContextFactory;
 import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.tlv.MultipleTLVElementException;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -71,10 +71,10 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
         String testFile = EXTENDER_RESPONSE_WITH_NON_CRITICAL_ELEMENT;
 
         LOGGER.info("Used response file: " + testFile);
-        KSIExtenderClient mockedExtenderClient = mockExtenderResponseCalendarHashCain(testFile);
+        KSIExtendingService mockedExtendingService = mockExtenderResponseCalendarHashCain(testFile);
 
         KSISignature signature = ksi.read(load(SIGNATURE_2017_03_14));
-        VerificationResult result = verify(ksi, mockedExtenderClient, signature, policy);
+        VerificationResult result = verify(ksi, mockedExtendingService, signature, policy);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -115,7 +115,7 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
     private void testExtenderResponses(String testFile, Class exceptionClass, String message) throws Exception {
         try {
             LOGGER.info("Used response file: " + testFile);
-            KSIExtenderClient mockedExtenderClient = mockExtenderResponseCalendarHashCain(testFile);
+            KSIExtendingService mockedExtenderClient = mockExtenderResponseCalendarHashCain(testFile);
 
             KSISignature signature = ksi.read(load(SIGNATURE_2017_03_14));
             VerificationResult result = verify(ksi, mockedExtenderClient, signature, policy);
@@ -131,15 +131,15 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
         }
     }
 
-    protected KSIExtenderClient mockExtenderResponseCalendarHashCain(String responseCalendarChainFile) throws Exception {
-        KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
+    protected KSIExtendingService mockExtenderResponseCalendarHashCain(String responseCalendarChainFile) throws Exception {
+        KSIExtendingService mockedExtenderService = Mockito.mock(KSIExtendingService.class);
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
         Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
         final TLVElement responseTLV = TLVElement.create(TestUtil.loadBytes(EXTENSION_RESPONSE_DUMMY));
         Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
         final TLVElement calendarChain = TLVElement.create(TestUtil.loadBytes(responseCalendarChainFile));
 
-        Mockito.when(mockedExtenderClient.extend(Mockito.any(Date.class), Mockito.any
+        Mockito.when(mockedExtenderService.extend(Mockito.any(Date.class), Mockito.any
                 (Date.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
                 KSIServiceCredentials credentials = new KSIServiceCredentials("anon", "anon");
@@ -161,7 +161,7 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
                 return new ExtensionResponseFuture(mockedFuture, requestContext, credentials, pduFactory);
             }
         });
-        return mockedExtenderClient;
+        return mockedExtenderService;
     }
 
     private DataHash calculateHash(byte[] key, TLVElement... elements) throws Exception {

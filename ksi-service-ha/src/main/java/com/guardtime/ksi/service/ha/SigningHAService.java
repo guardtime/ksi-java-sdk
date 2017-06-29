@@ -71,8 +71,8 @@ public class SigningHAService implements KSISigningService {
         Util.notNull(dataHash, "dataHash");
         Util.notNull(level, "level");
         final Collection<Callable<AggregationResponse>> tasks = new ArrayList<Callable<AggregationResponse>>(subservices.size());
-        for (KSISigningService subservices : subservices) {
-            tasks.add(new SigningTask(subservices, dataHash, level));
+        for (KSISigningService subservice : subservices) {
+            tasks.add(new SigningTask(subservice, dataHash, level));
         }
         return new ServiceCallFuture<AggregationResponse>(
                 executorService.submit(new ServiceCallsTask<AggregationResponse>(executorService, tasks))

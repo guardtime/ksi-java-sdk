@@ -19,36 +19,42 @@
 package com.guardtime.ksi.service.client.http;
 
 import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
-import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.util.Util;
 
 /**
- * Common class for all KSI HTTP clients
+ * <p>Credentials aware HTTP client settings</p>
+ * HTTP Service settings consist of service credentials, URL of KSI service and connections parameters.
+ * Connection parameters hold HTTP connection settings like timeouts and proxy configuration.
  */
-public abstract class AbstractHttpClient implements KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
+public class CredentialsAwareHttpSettings extends HttpSettings {
 
-    public static final String HEADER_APPLICATION_KSI_REQUEST = "application/ksi-request";
-    public static final String HEADER_NAME_CONTENT_TYPE = "Content-Type";
+    private final ServiceCredentials credentials;
+    private PduVersion pduVersion = PduVersion.V1;
 
-    protected AbstractHttpClientSettings settings;
-
-    public AbstractHttpClient(AbstractHttpClientSettings settings) {
-        Util.notNull(settings, "HttpClient.settings");
-        this.settings = settings;
+    public CredentialsAwareHttpSettings(String url, ServiceCredentials credentials) {
+        this(url, credentials, null);
     }
 
-    public AbstractHttpClient() {
+    public CredentialsAwareHttpSettings(String url, ServiceCredentials credentials, HTTPConnectionParameters parameters) {
+        super(url, parameters);
+        this.credentials = credentials;
     }
 
-    public ServiceCredentials getServiceCredentials() {
-        return settings.getCredentials();
+    public ServiceCredentials getCredentials() {
+        return credentials;
     }
 
+    /**
+     * Returns the PDU version
+     */
     public PduVersion getPduVersion() {
-        return settings.getPduVersion();
+        return pduVersion;
     }
 
+    /**
+     * Sets the PDU version
+     */
+    public void setPduVersion(PduVersion pduVersion) {
+        this.pduVersion = pduVersion;
+    }
 }

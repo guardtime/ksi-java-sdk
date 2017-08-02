@@ -21,6 +21,8 @@ package com.guardtime.ksi.service.client.http;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 
+import static com.guardtime.ksi.util.Util.notNull;
+
 /**
  * <p>Credentials aware HTTP client settings</p>
  * HTTP Service settings consist of service credentials, URL of KSI service and connections parameters.
@@ -37,6 +39,7 @@ public class CredentialsAwareHttpSettings extends HttpSettings {
 
     public CredentialsAwareHttpSettings(String url, ServiceCredentials credentials, HTTPConnectionParameters parameters) {
         super(url, parameters);
+        notNull(credentials, "Service credentials");
         this.credentials = credentials;
     }
 

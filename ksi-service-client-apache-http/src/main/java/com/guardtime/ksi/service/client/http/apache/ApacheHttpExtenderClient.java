@@ -39,6 +39,7 @@ public class ApacheHttpExtenderClient extends AbstractApacheHttpClient implement
      */
     ApacheHttpExtenderClient(CredentialsAwareHttpSettings settings) {
         super(settings);
+        this.settings = settings;
     }
 
     /**

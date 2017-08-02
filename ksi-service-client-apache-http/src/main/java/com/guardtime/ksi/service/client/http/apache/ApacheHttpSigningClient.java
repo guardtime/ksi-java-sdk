@@ -32,6 +32,7 @@ import java.io.InputStream;
 public class ApacheHttpSigningClient extends AbstractApacheHttpClient implements KSISigningClient {
 
     private CredentialsAwareHttpSettings settings;
+
     /**
      * Constructs ApacheHttpSigningClient with configuration values passed in.
      *
@@ -39,6 +40,7 @@ public class ApacheHttpSigningClient extends AbstractApacheHttpClient implements
      */
     ApacheHttpSigningClient(CredentialsAwareHttpSettings settings) {
         super(settings);
+        this.settings = settings;
     }
 
     /**

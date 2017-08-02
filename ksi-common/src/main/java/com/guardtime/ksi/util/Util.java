@@ -687,7 +687,7 @@ public final class Util {
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Malformed URL", e);
+            throw new IllegalArgumentException("Malformed URL '" + url + "'", e);
         }
     }
 

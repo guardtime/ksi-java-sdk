@@ -19,6 +19,8 @@
 package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.KSI;
+import com.guardtime.ksi.Signer;
+import com.guardtime.ksi.SignerBuilder;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
@@ -27,11 +29,19 @@ import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPoli
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.CommonTestUtil.loadFile;
 import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.INPUT_FILE_REVERSED;
-import static com.guardtime.ksi.TestUtil.loadFile;
 
 public class SignIntegrationTest extends AbstractCommonIntegrationTest {
+
+    @Test
+    public void testSigningWithSignerClient_Ok() throws Exception {
+        Signer s = new SignerBuilder().setSigningService(ksi.getSigningService()).build();
+        KSISignature sig = s.sign(loadFile(INPUT_FILE));
+        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, getFileHash(INPUT_FILE)), new KeyBasedVerificationPolicy());
+        Assert.assertTrue(result.isOk());
+    }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
     public void testSignFile_Ok(KSI ksi) throws Exception {

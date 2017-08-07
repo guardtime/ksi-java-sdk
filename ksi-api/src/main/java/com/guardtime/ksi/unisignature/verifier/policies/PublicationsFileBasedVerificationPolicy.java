@@ -19,7 +19,15 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
-import com.guardtime.ksi.unisignature.verifier.rules.*;
+import com.guardtime.ksi.unisignature.verifier.rules.CompositeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.ExtendingPermittedVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.PublicationsFileContainsPublicationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.PublicationsFileContainsSignaturePublicationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.PublicationsFileExtendedSignatureInputHashRule;
+import com.guardtime.ksi.unisignature.verifier.rules.PublicationsFilePublicationHashMatchesExtenderResponseRule;
+import com.guardtime.ksi.unisignature.verifier.rules.PublicationsFilePublicationTimeMatchesExtenderResponseRule;
+import com.guardtime.ksi.unisignature.verifier.rules.Rule;
+import com.guardtime.ksi.unisignature.verifier.rules.SignaturePublicationRecordExistenceRule;
 
 /**
  * This rule can be used to verify signatures using publications file.

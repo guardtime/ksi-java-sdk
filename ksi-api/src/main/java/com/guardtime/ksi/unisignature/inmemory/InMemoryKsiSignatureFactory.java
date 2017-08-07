@@ -19,14 +19,16 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
+import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.publication.PublicationRecord;
+import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.KSIExtendingService;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
@@ -41,6 +43,7 @@ import com.guardtime.ksi.unisignature.verifier.KSISignatureVerifier;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.util.Util;
 
@@ -57,14 +60,29 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
 
     private Policy policy;
     private KSIExtendingService extendingService;
-    private PublicationsFileClientAdapter publicationsFileClientAdapter;
+    private PublicationsHandler publicationsHandler;
     private boolean extendingAllowed;
 
     private boolean verifySignatures = false;
 
-    private KSISignatureVerifier verifier = new KSISignatureVerifier();
     private KSISignatureComponentFactory signatureComponentFactory;
+    private KSISignatureVerifier verifier = new KSISignatureVerifier();
 
+    public InMemoryKsiSignatureFactory() {
+    }
+
+    public InMemoryKsiSignatureFactory(ContextAwarePolicy policy, KSISignatureComponentFactory signatureComponentFactory) {
+        Util.notNull(policy, "Signature verification policy");
+        Util.notNull(signatureComponentFactory, "Signature component factory");
+        this.policy = policy;
+        this.extendingService = policy.getPolicyContext().getExtendingService();
+        this.extendingAllowed = policy.getPolicyContext().isExtendingAllowed();
+        this.publicationsHandler = policy.getPolicyContext().getPublicationsHandler();
+        this.signatureComponentFactory = signatureComponentFactory;
+        this.verifySignatures = true;
+    }
+
+    @Deprecated
     public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter,
                                        KSIExtendingService extendingService, boolean extendingAllowed,
                                        KSISignatureComponentFactory signatureComponentFactory) {
@@ -72,11 +90,11 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         Util.notNull(publicationsFileClientAdapter, "Publications file client adapter");
         Util.notNull(extendingService, "KSI extending service");
         this.policy = policy;
-        this.publicationsFileClientAdapter = publicationsFileClientAdapter;
+        this.publicationsHandler = createPublicationsHandler(publicationsFileClientAdapter);
         this.extendingService = extendingService;
         this.extendingAllowed = extendingAllowed;
-        this.verifySignatures = true;
         this.signatureComponentFactory = signatureComponentFactory;
+        this.verifySignatures = true;
     }
 
     public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter,
@@ -91,10 +109,6 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
                                        KSISignatureComponentFactory signatureComponentFactory) {
         this(policy, publicationsFileClientAdapter, new KSIExtendingClientServiceAdapter(extenderClient), extendingAllowed, signatureComponentFactory);
     }
-
-    public InMemoryKsiSignatureFactory() {
-    }
-
 
     public KSISignature createSignature(InputStream input) throws KSIException {
         TLVInputStream tlvInput = new TLVInputStream(input);
@@ -140,19 +154,35 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         if (verifySignatures) {
             VerificationContextBuilder builder = new VerificationContextBuilder();
             builder.setSignature(signature).setExtendingService(extendingService)
-                    .setPublicationsFile(publicationsFileClientAdapter.getPublicationsFile())
+                    .setPublicationsFile(getPublicationsFile(publicationsHandler))
                     .setExtendingAllowed(extendingAllowed);
             if (inputHash != null) {
                 builder.setDocumentHash(inputHash);
             }
-            VerificationContext context = builder.createVerificationContext();
+            VerificationContext context = builder.build();
             context.setKsiSignatureComponentFactory(signatureComponentFactory);
+
             VerificationResult result = verifier.verify(context, policy);
             if (!result.isOk()) {
                 throw new InvalidSignatureContentException(signature, result);
             }
         }
         return signature;
+    }
+
+    private PublicationsFile getPublicationsFile(PublicationsHandler handler) throws KSIException {
+        if (handler == null) {
+            return null;
+        }
+        return handler.getPublicationsFile();
+    }
+
+    private PublicationsHandler createPublicationsHandler(final PublicationsFileClientAdapter clientAdapter) {
+        return new PublicationsHandler() {
+            public PublicationsFile getPublicationsFile() throws KSIException {
+                return clientAdapter.getPublicationsFile();
+            }
+        };
     }
 
     private void addTlvStructure(TLVElement root, TLVStructure structure) throws KSIException {

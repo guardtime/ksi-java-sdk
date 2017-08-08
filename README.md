@@ -1,13 +1,13 @@
 # KSI Java SDK #
-Guardtime Keyless Signature Infrastructure (KSI) is an industrial scale blockchain platform that cryptographically 
-ensures data integrity and proves time of existence. Its keyless signatures, based on hash chains, link data to global 
-calendar blockchain. The checkpoints of the blockchain, published in newspapers and electronic media, enable long term 
-integrity of any digital asset without the need to trust any system. There are many applications for KSI, a classical 
-example is signing of any type of logs - system logs, financial transactions, call records, etc. For more, 
+Guardtime Keyless Signature Infrastructure (KSI) is an industrial scale blockchain platform that cryptographically
+ensures data integrity and proves time of existence. Its keyless signatures, based on hash chains, link data to global
+calendar blockchain. The checkpoints of the blockchain, published in newspapers and electronic media, enable long term
+integrity of any digital asset without the need to trust any system. There are many applications for KSI, a classical
+example is signing of any type of logs - system logs, financial transactions, call records, etc. For more,
 see [https://guardtime.com](https://guardtime.com).
 
-The KSI Java SDK is a software development kit for developers who want to integrate KSI with their Java based applications 
-and systems. It provides an API for all KSI functionality, including the core functions - signing of data, extending 
+The KSI Java SDK is a software development kit for developers who want to integrate KSI with their Java based applications
+and systems. It provides an API for all KSI functionality, including the core functions - signing of data, extending
 and verifying the signatures.
 
 ## Installation ##
@@ -27,8 +27,30 @@ dependencies in your pom.xml:
     <artifactId>ksi-service-client-simple-http</artifactId>
     <version>4.x.x</version>
 </dependency>
-```     
+```
 If you need the latest version, download the source and build using Maven.
+
+## Proxy Configuration ##
+
+KSI Java SDK can be configured to use proxy either via `ApacheHttpClient` or `SimpleHttpClient`, see details in the <a href="http://guardtime.github.io/ksi-java-sdk/" target="java-api-ref">API reference</a>.
+
+The example of the use of proxy with KSI Java SDK using `SimpleHttpClient` would be:
+
+  ```
+  HttpClientSettings.HTTPConnectionParameters proxyParam =
+                new HttpClientSettings.HTTPConnectionParameters();
+  proxyParam.setProxyUrl(new URL("<proxyUrl>"));
+  proxyParam.setProxyUser("<proxyUsername>");
+  proxyParam.setProxyPassword("<proxyKey");
+
+  HttpClientSettings settings =
+      new HttpClientSettings(aggregatorUrl,
+                            extenderUrl,
+                            publicationsFileUrl,
+                            credentials);
+  settings.setParameters(proxyParam);
+  SimpleHttpClient simpleHttpClient = new SimpleHttpClient(settings);
+  ```
 
 ## Usage ##
 
@@ -61,15 +83,15 @@ KSISignature sig2 = future.getResult();
 The API full reference is available here [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
 
 ## Compiling the Code ##
-To compile the code you need JDK 1.5 (or later) and [Maven](https://maven.apache.org/). 
-The project can be built via the command line by executing the following maven command: 
+To compile the code you need JDK 1.5 (or later) and [Maven](https://maven.apache.org/).
+The project can be built via the command line by executing the following maven command:
 ```
 mvn clean install
-``` 
+```
 This command tells Maven to build all the modules, and to install it in the local repository. This command also runs all
-integration and unit tests. In order to run the integration tests successfully you need to have access to KSI 
+integration and unit tests. In order to run the integration tests successfully you need to have access to KSI
 service, the simplest is to request a trial account here [https://guardtime.com/blockchain-developers](https://guardtime.com/blockchain-developers).
-Add the KSI configuration to the file "ksi-api/src/test/resources/integrationtest.properties" (see file 
+Add the KSI configuration to the file "ksi-api/src/test/resources/integrationtest.properties" (see file
 "ksi-api/src/test/resources/integrationtest.properties.sample" for more information).
 
 You can also skip the integration tests by executing the following command:

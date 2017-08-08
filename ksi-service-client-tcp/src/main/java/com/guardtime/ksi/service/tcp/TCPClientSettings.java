@@ -47,7 +47,7 @@ public class TCPClientSettings {
      * @param tcpTransactionTimeoutSec Maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
      */
     public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials) {
-        this(endpoint, tcpTransactionTimeoutSec, serviceCredentials, PduVersion.V1);
+        this(endpoint, tcpTransactionTimeoutSec, serviceCredentials, PduVersion.V2);
     }
 
     public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials, PduVersion pduVersion) {

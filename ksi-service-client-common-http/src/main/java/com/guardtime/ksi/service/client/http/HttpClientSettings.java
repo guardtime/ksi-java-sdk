@@ -53,7 +53,7 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
      *         service credentials
      */
     public HttpClientSettings(String signingUrl, String extendingUrl, String publicationsFileUrl, ServiceCredentials credentials) {
-        this(signingUrl, extendingUrl, publicationsFileUrl, credentials, PduVersion.V1);
+        this(signingUrl, extendingUrl, publicationsFileUrl, credentials, PduVersion.V2);
     }
     /**
      * Create HTTP Service settings with provided parameters.

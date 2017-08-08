@@ -23,6 +23,7 @@ Version 4.10
 * IMPROVEMENT: Verification error codes are unified.
 * IMPROVEMENT: Logging of unknown skipped PDUv2 responses.
 * IMPROVEMENT: Renewed and cleaned test resources and improved test coverage.
+* IMPROVEMENT: Set PDU version 2 as default PDU version
 * BUGFIX: RFC3161 record index rule code error code and messages corrected.
 * BUGFIX: Removed registration time from KSISignature and CalendarHashChain.
 * BUGFIX: Removed addAggregationHashChain from KSISignature.

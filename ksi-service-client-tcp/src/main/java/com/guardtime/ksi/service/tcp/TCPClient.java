@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 /**
  * KSI TCP client for signing.
@@ -59,7 +60,8 @@ public class TCPClient implements KSISigningClient {
         }
 
         try {
-            return new KSITCPRequestFuture(request, tcpSession, tcpClientSettings.getTcpTransactionTimeoutSec());
+            return new KSITCPRequestFuture(request, tcpSession,
+                    TimeUnit.SECONDS.toMillis(tcpClientSettings.getTcpTransactionTimeoutSec()));
         } catch (Throwable e) {
             throw new KSITCPTransactionException("There was a problem with initiating a TCP signing transaction with endpoint " +
                     tcpClientSettings.getEndpoint() + ".", e);

@@ -160,8 +160,8 @@ class KSITCPSigningTransaction {
         ActiveTransactionsHolder.remove(this);
     }
 
-    TLVElement waitResponse(int timeoutSeconds) throws InterruptedException {
-        return availableResponse.poll(timeoutSeconds, TimeUnit.SECONDS);
+    TLVElement waitResponse(long timeoutMs) throws InterruptedException {
+        return availableResponse.poll(timeoutMs, TimeUnit.MILLISECONDS);
     }
 
     WriteFuture send(IoSession session) {

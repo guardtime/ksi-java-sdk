@@ -18,7 +18,11 @@
  */
 package com.guardtime.ksi.util;
 
+import com.guardtime.ksi.exceptions.KSIException;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,7 +33,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Collection;
@@ -676,8 +682,39 @@ public final class Util {
     }
 
     /**
+     * Returns the default location of Java Runtime Environment certificate store.
+     *
+     * @return default certificate store location
+     */
+    public static String getDefaultTrustStore() {
+        return System.getProperty("java.home") + File.separatorChar + "lib" + File.separatorChar
+                + "security" + File.separatorChar + "cacerts";
+    }
+
+    /**
+     * Loads and returns the {@link java.security.KeyStore} from the file system.
+     */
+    public static KeyStore loadKeyStore(File file, String password) throws KSIException {
+        notNull(file, "Trust store file");
+        FileInputStream input = null;
+        KeyStore keyStore = null;
+        try {
+            keyStore = KeyStore.getInstance("JKS");
+            char[] passwordCharArray = password == null ? null : password.toCharArray();
+            input = new FileInputStream(file);
+            keyStore.load(input, passwordCharArray);
+        } catch (GeneralSecurityException e) {
+            throw new KSIException("Loading java key store with path " + file + " failed", e);
+        } catch (IOException e) {
+            throw new KSIException("Loading java key store with path " + file + " failed", e);
+        } finally {
+            closeQuietly(input);
+        }
+        return keyStore;
+    }
+
+    /**
      * This class should not be instantiated.
      */
-    private Util() {
-    }
+    private Util() {}
 }

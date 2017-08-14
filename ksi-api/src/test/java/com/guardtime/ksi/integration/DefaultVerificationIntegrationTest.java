@@ -28,18 +28,23 @@ import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
-import com.guardtime.ksi.unisignature.verifier.policies.*;
+import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.Policy;
+import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
 import com.guardtime.ksi.util.Util;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_TOO_LONG;
+import static com.guardtime.ksi.CommonTestUtil.loadFile;
 import static com.guardtime.ksi.Resources.SIGNATURE_CHANGED_CHAINS;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_TOO_LONG;
 import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE;
 import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR;
 import static com.guardtime.ksi.Resources.SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE;
-import static com.guardtime.ksi.TestUtil.loadFile;
 
 public class DefaultVerificationIntegrationTest extends AbstractCommonIntegrationTest {
     private static KSIBuilder ksiBuilder;
@@ -91,6 +96,11 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         Policy policy = new KeyBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
         ksiTest.read(loadFile(SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE));
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*Unsupported default verification policy.*")
+    public void testUserProvidedPublicationBasedVerificationAsDefaultVerificationPolicy() throws Exception {
+        ksiBuilder.setDefaultVerificationPolicy(new UserProvidedPublicationBasedVerificationPolicy()).build();
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Aggregation hash chain root hash and calendar database hash chain input hash mismatch.*")

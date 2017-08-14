@@ -59,7 +59,7 @@ public abstract class AbstractRuleTest {
         KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
         Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V2);
         builder.setPublicationsFile(trustStore).setExtenderClient(mockedExtenderClient).setUserPublication(publication);
-        return builder.setSignature(signature).setDocumentHash(documentHash).setInputHashLevel(level).createVerificationContext();
+        return builder.setSignature(signature).setDocumentHash(documentHash, level).createVerificationContext();
     }
 
 

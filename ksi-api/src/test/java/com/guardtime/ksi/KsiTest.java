@@ -43,9 +43,9 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
+import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE;
 import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE_PASSWORD;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
-import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE;
 
 public class KsiTest {
 
@@ -95,7 +95,7 @@ public class KsiTest {
                 setPduIdentifierProvider(mockedIdentifierProvider).build();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI signing client must be present")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KSI signing service can not be null")
     public void testCreateKsiInstanceWithoutSigningClient_ThrowsKsiException() throws Exception {
         new KSIBuilder().
                 setKsiProtocolExtenderClient(mockedExtenderClient).
@@ -103,7 +103,7 @@ public class KsiTest {
                 setPublicationsFileTrustedCertSelector(certSelector).build();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI publications file client must be present")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KSI publications file can not be null")
     public void testCreateKsiInstanceWithoutPublicationsFileClient_ThrowsKsiException() throws Exception {
         new KSIBuilder().
                 setKsiProtocolSignerClient(mockedSigningClient).
@@ -111,7 +111,7 @@ public class KsiTest {
                 setPublicationsFileTrustedCertSelector(certSelector).build();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI extender client must be present")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KSI extending service can not be null")
     public void testCreateKsiInstanceWithoutExtenderClient_ThrowsKsiException() throws Exception {
         new KSIBuilder().
                 setKsiProtocolSignerClient(mockedSigningClient).
@@ -119,7 +119,7 @@ public class KsiTest {
                 setPublicationsFileTrustedCertSelector(certSelector).build();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI publications file trusted certificate selector must be present")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KSI publications file trusted certificate selector can not be null")
     public void testCreateKsiInstanceWithoutPublicationsFileTrustedCertSelector_ThrowsKsiException() throws Exception {
         new KSIBuilder().
                 setKsiProtocolSignerClient(mockedSigningClient).
@@ -132,27 +132,27 @@ public class KsiTest {
         ksi.read(new File("not-present-signature.ksig"));
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. File can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "File can not be null")
     public void testReadUniSignatureUsingInvalidFileInput_ThrowsKSIException() throws Exception {
         ksi.read((File) null);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Byte array can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Byte array can not be null")
     public void testReadUniSignatureUsingInvalidByteArrayInput_ThrowsKSIException() throws Exception {
         ksi.read((byte[]) null);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Input stream can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Input stream can not be null")
     public void testReadUniSignatureUsingInvalidInputStream_ThrowsKSIException() throws Exception {
         ksi.read((InputStream) null);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Data hash must not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Data hash can not be null")
     public void testSignMissingDataHash_ThrowsKSIException() throws Exception {
         ksi.sign((DataHash) null);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. File must not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "File can not be null")
     public void testSignMissingFile_ThrowsKSIException() throws Exception {
         ksi.sign((File) null);
     }

@@ -35,9 +35,9 @@ public class TCPClientSettings {
 
     private URI uri;
     private InetSocketAddress endpoint;
-    private int tcpTransactionTimeoutSec;
-    private ServiceCredentials serviceCredentials;
-    private PduVersion pduVersion;
+    private final int tcpTransactionTimeoutSec;
+    private final ServiceCredentials serviceCredentials;
+    private final PduVersion pduVersion;
 
     /**
      * Settings for TCP client.

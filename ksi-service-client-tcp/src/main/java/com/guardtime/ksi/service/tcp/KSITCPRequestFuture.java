@@ -71,9 +71,9 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
 
     private TLVElement blockUntilTransactionFinished() throws KSITCPTransactionException {
         try {
-            boolean written = writeFuture.await(timeoutMs, TimeUnit.SECONDS);
+            boolean written = writeFuture.await(timeoutMs, TimeUnit.MILLISECONDS);
             if (!written) {
-                throw saveException(new TCPTimeoutException("TCP request sending could not be completed in " + timeoutMs + " seconds"));
+                throw saveException(new TCPTimeoutException("TCP request sending could not be completed in " + timeoutMs + " ms"));
             }
 
             long timeoutMs = getMsLeftBeforeTimeout();
@@ -82,7 +82,7 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
             if (response != null) {
                 return response;
             } else {
-                throw saveException(new TCPTimeoutException("Response was not received in " + this.timeoutMs + " seconds"));
+                throw saveException(new TCPTimeoutException("Response was not received in " + this.timeoutMs + " ms"));
             }
         } catch (InterruptedException e) {
             throw saveException(new KSITCPTransactionException("TCP transaction was interrupted", e));

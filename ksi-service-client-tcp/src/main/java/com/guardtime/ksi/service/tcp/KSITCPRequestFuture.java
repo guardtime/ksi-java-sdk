@@ -99,7 +99,7 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
 
     private long getMsLeftBeforeTimeout() {
         long timePassed = System.currentTimeMillis() - transactionStartedMillis;
-        return Math.max(TimeUnit.SECONDS.toMillis(timeoutMs) - timePassed, 0);
+        return Math.max(timeoutMs - timePassed, 0);
     }
 
     /**

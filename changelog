@@ -19,7 +19,6 @@ Version 4.10
 * IMPROVEMENT: Chain index continuation check.
 * IMPROVEMENT: HMAC algorithm of incoming messages.
 * IMPROVEMENT: Now possible to verify input hash level, default value is 0, GEN-03 is returned in case of error.
-* IMPROVEMENT: TCPClients default threadpool size is now configurable through TCPClient initialization with custom ExecutorService.
 * FEATURE: KSI interface refactoring into separate interfaces.
 * IMPROVEMENT: Verification error codes are unified.
 * IMPROVEMENT: Logging of unknown skipped PDUv2 responses.

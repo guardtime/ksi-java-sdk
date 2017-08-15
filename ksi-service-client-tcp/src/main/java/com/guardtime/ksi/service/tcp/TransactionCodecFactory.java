@@ -28,8 +28,8 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
  */
 class TransactionCodecFactory implements ProtocolCodecFactory {
 
-    private ProtocolEncoder encoder;
-    private ProtocolDecoder decoder;
+    private final ProtocolEncoder encoder;
+    private final ProtocolDecoder decoder;
 
     TransactionCodecFactory() {
         encoder = new TransactionEncoder();

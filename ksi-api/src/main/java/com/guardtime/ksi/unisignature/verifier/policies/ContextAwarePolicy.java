@@ -16,22 +16,18 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.tcp;
 
-import com.guardtime.ksi.service.client.KSIClientException;
+package com.guardtime.ksi.unisignature.verifier.policies;
 
 /**
- * An exception that is thrown when anything goes wrong with KSI TCP request.
+ * {@link ContextAwarePolicy} extends the {@link Policy} interface to support context. This context
+ * provides access to resources needed by some policies to work properly.
  */
-public class KSITCPTransactionException extends KSIClientException {
+public interface ContextAwarePolicy extends Policy {
 
-    private static final long serialVersionUID = 1;
+    /**
+     * Returns the context of the policy
+     */
+    PolicyContext getPolicyContext();
 
-    KSITCPTransactionException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    KSITCPTransactionException(String message) {
-        super(message);
-    }
 }

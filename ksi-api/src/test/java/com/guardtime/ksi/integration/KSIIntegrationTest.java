@@ -92,7 +92,6 @@ public class KSIIntegrationTest extends AbstractCommonIntegrationTest {
     @Test
     public void testVerifyExtendedSignatureWithFileHashAndPublicationDataAndWithoutContext_OK() throws Exception {
         KSISignature signature = ksi.read(TestUtil.load(EXTENDED_SIGNATURE_2017_03_14));
-        PublicationData publicationData = new PublicationData(new Date(1410739200000L), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("C1679EDC2E2A23D1BA9B4F49845C7607AEEF48AD1A344A1572A70907A86FF040")));
         DataHash documentHash = new DataHash(HashAlgorithm.SHA2_256, Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D"));
         VerificationResult result = ksi.verify(signature, new PublicationsFileBasedVerificationPolicy(), documentHash);
         Assert.assertTrue(result.isOk());
@@ -104,7 +103,7 @@ public class KSIIntegrationTest extends AbstractCommonIntegrationTest {
         ksi.extend(signature);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
     public void testExtendingSignatureWithOlderPublicationRecord_ThrowsKSIException() throws Exception {
         KSISignature signature = ksi.sign("Random Text That Will Be Signed".getBytes());
         PublicationData publicationData = new PublicationData(new Date(1410739200000L), new DataHash(HashAlgorithm.SHA2_256, Base16.decode("C1679EDC2E2A23D1BA9B4F49845C7607AEEF48AD1A344A1572A70907A86FF040")));

@@ -19,8 +19,12 @@
 package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.CommonTestUtil;
+import com.guardtime.ksi.Extender;
+import com.guardtime.ksi.ExtenderBuilder;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.KSIBuilder;
+import com.guardtime.ksi.PublicationsHandler;
+import com.guardtime.ksi.PublicationsHandlerBuilder;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
@@ -55,7 +59,7 @@ import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 
 import java.io.BufferedReader;
@@ -99,8 +103,8 @@ public abstract class AbstractCommonIntegrationTest {
     protected SimpleHttpClient simpleHttpClient;
 
 
-    @BeforeMethod
-    public void setUp() throws Exception {
+    @BeforeClass
+    protected void setUp() throws Exception {
         this.simpleHttpClient = new SimpleHttpClient(loadHTTPSettings());
         this.ksi = createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient);
     }
@@ -223,6 +227,22 @@ public abstract class AbstractCommonIntegrationTest {
                 setKsiProtocolSignerClient(signingClient).
                 setPublicationsFilePkiTrustStore(createKeyStore()).
                 setPublicationsFileTrustedCertSelector(createCertSelector());
+    }
+
+    protected PublicationsHandler getPublicationsHandler(KSIPublicationsFileClient publicationsFileClient) throws Exception {
+        return new PublicationsHandlerBuilder().setKsiProtocolPublicationsFileClient(publicationsFileClient)
+                .setPublicationsFileCacheExpirationTime(10000L)
+                .setPublicationsFilePkiTrustStore(createKeyStore())
+                .setPublicationsFileCertificateConstraints(createCertSelector()).build();
+    }
+
+    protected Extender getExtender(KSIExtendingService extendingService, KSIPublicationsFileClient publicationsFileClient) throws Exception {
+        return new ExtenderBuilder()
+                .setExtendingService(extendingService)
+                .setKsiProtocolPublicationsFileClient(publicationsFileClient)
+                .setPublicationsFileCacheExpirationTime(10000L)
+                .setPublicationsFilePkiTrustStore(createKeyStore())
+                .setPublicationsFileCertificateConstraints(createCertSelector()).build();
     }
 
     protected static KSI createKsi(KSIExtendingService extendingService, KSISigningService signingService, KSIPublicationsFileClient

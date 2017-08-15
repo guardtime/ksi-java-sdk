@@ -16,22 +16,23 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.tcp;
 
-import com.guardtime.ksi.service.client.KSIClientException;
+package com.guardtime.ksi;
+
+import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.publication.PublicationsFile;
 
 /**
- * An exception that is thrown when anything goes wrong with KSI TCP request.
+ * An instance of this class can be obtained using {@link PublicationsHandlerBuilder} class.
  */
-public class KSITCPTransactionException extends KSIClientException {
+public interface PublicationsHandler {
+    /**
+     * This method is used to get the publications file. Uses the {@link com.guardtime.ksi.service.client.KSIPublicationsFileClient}
+     * to download the publications file.
+     *
+     * @return instance of the {@link PublicationsFile}
+     * @throws KSIException when error occurs (e.g when communication with KSI service fails)
+     */
+    PublicationsFile getPublicationsFile() throws KSIException;
 
-    private static final long serialVersionUID = 1;
-
-    KSITCPTransactionException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    KSITCPTransactionException(String message) {
-        super(message);
-    }
 }

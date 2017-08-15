@@ -49,6 +49,7 @@ class KSITCPSigningTransaction {
     private long correlationId;
     private TLVElement request;
     private TLVElement response;
+    private static final Object CONF_REQUEST_LOCK = new Object();
     private static Long confRequestId = 0L;
 
     private KSITCPSigningTransaction() {
@@ -62,16 +63,16 @@ class KSITCPSigningTransaction {
         return transaction;
     }
 
-    static KSITCPSigningTransaction fromResponse(IoBuffer ioBuffer) throws IOException, KSIException {
+    static KSITCPSigningTransaction fromResponse(IoBuffer ioBuffer) throws KSIException {
         KSITCPSigningTransaction transaction = new KSITCPSigningTransaction();
         byte[] responseData = new byte[ioBuffer.remaining()];
         ioBuffer.get(responseData);
         TLVElement tlv = parse(responseData);
 
         if (isConfigurationPayload(tlv)) {
-            synchronized (confRequestId) {
+            synchronized (CONF_REQUEST_LOCK) {
                 transaction.correlationId = confRequestId;
-                confRequestId = confRequestId+1;
+                confRequestId = confRequestId + 1;
             }
         } else {
             transaction.correlationId = extractTransactionIdFromResponseTLV(tlv);
@@ -82,13 +83,13 @@ class KSITCPSigningTransaction {
         return transaction;
     }
 
-    static long getNewConfId() {
-        synchronized (confRequestId) {
+    private static long getNewConfId() {
+        synchronized (CONF_REQUEST_LOCK) {
             return --confRequestId;
         }
     }
 
-    static TLVElement parse(byte[] data) throws KSIProtocolException {
+    private static TLVElement parse(byte[] data) throws KSIProtocolException {
         try {
             return TLVElement.create(data);
         } catch (MultipleTLVElementException e) {
@@ -109,11 +110,9 @@ class KSITCPSigningTransaction {
     private static long extractTransactionIdFromRequestTLV(TLVElement tlvData) throws KSITCPTransactionException {
         try {
             if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2) {
-                return tlvData.getFirstChildElement(PDU_V2_PAYLOAD_ELEMENT_TAG).getFirstChildElement(REQ_ID_TAG).getDecodedLong();
+                return extractRequestId(tlvData, PDU_V2_PAYLOAD_ELEMENT_TAG);
             }
-
-
-            return getRequestId(tlvData, REQUEST_WRAPPER_TAG);
+            return extractRequestId(tlvData, REQUEST_WRAPPER_TAG);
         } catch (Exception e) {
             throw new KSITCPTransactionException("Request TLV was corrupt. Could not parse request ID.", e);
         }
@@ -122,16 +121,24 @@ class KSITCPSigningTransaction {
     private static long extractTransactionIdFromResponseTLV(TLVElement tlvData) throws KSITCPTransactionException {
         try {
             if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2) {
-                return tlvData.getFirstChildElement(PDU_V2_PAYLOAD_ELEMENT_TAG).getFirstChildElement(REQ_ID_TAG).getDecodedLong();
+                return extractRequestId(tlvData, PDU_V2_PAYLOAD_ELEMENT_TAG);
             }
-            return getRequestId(tlvData, RESPONSE_WRAPPER_TAG);
+            return extractRequestId(tlvData, RESPONSE_WRAPPER_TAG);
         } catch (Exception e) {
             throw new KSITCPTransactionException("Response TLV was corrupt. Could not parse request ID.", e);
         }
     }
 
-    private static Long getRequestId(TLVElement tlvData, int outerLayerTagName) throws TLVParserException {
-        return tlvData.getFirstChildElement(outerLayerTagName).getFirstChildElement(REQ_ID_TAG).getDecodedLong();
+    private static long extractRequestId(TLVElement tlvData, int outerLayerTagName) throws TLVParserException {
+        TLVElement payloadElementTag = tlvData.getFirstChildElement(outerLayerTagName);
+        if (payloadElementTag == null) {
+            throw new IllegalStateException("TLV does not contain payload element tag");
+        }
+        TLVElement reqIdTag = payloadElementTag.getFirstChildElement(REQ_ID_TAG);
+        if (reqIdTag == null) {
+            throw new IllegalStateException("Payload element tag does not contain request ID tag");
+        }
+        return reqIdTag.getDecodedLong();
     }
 
     long getCorrelationId() {
@@ -150,34 +157,14 @@ class KSITCPSigningTransaction {
     void responseReceived(TLVElement response) {
         this.response = response;
         availableResponse.offer(response);
+        ActiveTransactionsHolder.remove(this);
     }
 
-    void waitResponse(int timeoutSeconds) throws InterruptedException {
-        availableResponse.poll(timeoutSeconds, TimeUnit.SECONDS);
+    TLVElement waitResponse(long timeoutMs) throws InterruptedException {
+        return availableResponse.poll(timeoutMs, TimeUnit.MILLISECONDS);
     }
 
     WriteFuture send(IoSession session) {
-        ActiveTransactionsHolder.put(this);
         return session.write(this);
-    }
-
-    void blockUntilResponseOrTimeout(WriteFuture writeFuture, int timeoutSec) throws KSITCPTransactionException {
-        try {
-            if (!writeFuture.await(timeoutSec, TimeUnit.SECONDS)) {
-                throw new TCPTimeoutException("Request could not be sent in " + timeoutSec + " seconds.");
-            }
-            if (writeFuture.getException() != null) {
-                throw new KSITCPTransactionException("An exception occurred with the TCP transaction.", writeFuture.getException());
-            }
-            waitResponse(timeoutSec);
-            if (response == null) {
-                throw new TCPTimeoutException("Response was not received in " + timeoutSec + " seconds.");
-            }
-
-        } catch (InterruptedException e) {
-            throw new KSITCPTransactionException("Waiting for TCP response was interrupted.", e);
-        } finally {
-            ActiveTransactionsHolder.remove(this);
-        }
     }
 }

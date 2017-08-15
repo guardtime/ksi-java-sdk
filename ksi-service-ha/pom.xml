@@ -9,7 +9,7 @@
     <parent>
         <artifactId>ksi</artifactId>
         <groupId>com.guardtime</groupId>
-        <version>4.10.110-SNAPSHOT</version>
+        <version>4.10.112-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

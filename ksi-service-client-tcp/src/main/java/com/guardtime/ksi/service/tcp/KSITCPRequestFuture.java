@@ -18,21 +18,38 @@
  */
 package com.guardtime.ksi.service.tcp;
 
-import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.tlv.TLVElement;
+import org.apache.mina.core.future.WriteFuture;
+import org.apache.mina.core.session.IoSession;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class that hold the initiated TCP request and from which the response can be asked for.
  */
 class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement> {
 
-    private Future<TLVElement> responseFuture;
+    private KSITCPSigningTransaction transaction;
+    private final long timeoutMs;
+    private WriteFuture writeFuture;
+    private long transactionStartedMillis;
+    private TLVElement response;
+    private KSITCPTransactionException exception;
+    private boolean finished;
 
-    public KSITCPRequestFuture(Future<TLVElement> responseFuture) {
-        this.responseFuture = responseFuture;
+    KSITCPRequestFuture(InputStream request, IoSession tcpSession, long timeoutMs) throws IOException, KSIException {
+        this.timeoutMs = timeoutMs;
+        startTransaction(tcpSession, request);
+    }
+
+    private void startTransaction(IoSession tcpSession, InputStream request) throws IOException, KSIException {
+        this.transaction = KSITCPSigningTransaction.fromRequest(request);
+        transactionStartedMillis = System.currentTimeMillis();
+        this.writeFuture = transaction.send(tcpSession);
+        ActiveTransactionsHolder.put(transaction);
     }
 
     /**
@@ -40,22 +57,59 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
      *
      * @return Bytes of the TCP response.
      */
-    public TLVElement getResult() throws KSIProtocolException, KSITCPTransactionException {
-        try {
-            return responseFuture.get();
-        } catch (InterruptedException e) {
-            responseFuture.cancel(true);
-            throw new KSITCPTransactionException("TCP transaction response waiting thread was interrupted.", e);
-        } catch (ExecutionException e) {
-            responseFuture.cancel(true);
-            throw new KSITCPTransactionException("An exception occurred while executing TCP transaction.", e);
+    public synchronized TLVElement getResult() throws KSITCPTransactionException {
+        if (finished) {
+            if (response != null) {
+                return response;
+            }
+            if (exception != null) {
+                throw exception;
+            }
         }
+        return blockUntilTransactionFinished();
+    }
+
+    private TLVElement blockUntilTransactionFinished() throws KSITCPTransactionException {
+        try {
+            boolean written = writeFuture.await(timeoutMs, TimeUnit.MILLISECONDS);
+            if (!written) {
+                throw saveException(new TCPTimeoutException("TCP request sending could not be completed in " + timeoutMs + " ms"));
+            }
+
+            long timeoutMs = getMsLeftBeforeTimeout();
+            response = transaction.waitResponse(timeoutMs);
+
+            if (response != null) {
+                return response;
+            } else {
+                throw saveException(new TCPTimeoutException("Response was not received in " + this.timeoutMs + " ms"));
+            }
+        } catch (InterruptedException e) {
+            throw saveException(new KSITCPTransactionException("TCP transaction was interrupted", e));
+        } finally {
+            finished = true;
+            ActiveTransactionsHolder.remove(transaction);
+        }
+    }
+
+    private KSITCPTransactionException saveException(KSITCPTransactionException e) {
+        this.exception = e;
+        return e;
+    }
+
+    private long getMsLeftBeforeTimeout() {
+        long timePassed = System.currentTimeMillis() - transactionStartedMillis;
+        return Math.max(timeoutMs - timePassed, 0);
     }
 
     /**
      * @return Is the TCP request finished.
      */
     public boolean isFinished() {
-        return responseFuture.isDone();
+        if (finished) {
+            return true;
+        }
+        // If following is true, it means that it's now safe to call getResult() because it will time out immediately even if it is not ready
+        return (System.currentTimeMillis() - transactionStartedMillis) > timeoutMs;
     }
 }

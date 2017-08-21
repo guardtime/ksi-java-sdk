@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -679,6 +681,20 @@ public final class Util {
             }
         }
         return false;
+    }
+
+    /**
+     * Creates a URL object from the String representation.
+     *
+     * @param url the String to parse as a URL.
+     * @return a Uniform Resource Locator object
+     */
+    public static URL toUrl(String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Malformed URL '" + url + "'", e);
+        }
     }
 
     /**

@@ -16,32 +16,36 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-package com.guardtime.ksi.service.client.http;
+package com.guardtime.ksi.service.http.simple;
 
 import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
-import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.util.Util;
+import com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings;
+
+import java.io.InputStream;
 
 /**
- * Common class for all KSI HTTP clients
+ * Simple HTTP client for extension operation.
  */
-public abstract class AbstractHttpClient implements KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
+public class SimpleHttpExtenderClient extends AbstractSimpleHttpClient implements KSIExtenderClient {
 
-    public static final String HEADER_APPLICATION_KSI_REQUEST = "application/ksi-request";
-    public static final String HEADER_NAME_CONTENT_TYPE = "Content-Type";
+    private CredentialsAwareHttpSettings settings;
 
-    protected AbstractHttpClientSettings settings;
-
-    public AbstractHttpClient(AbstractHttpClientSettings settings) {
-        Util.notNull(settings, "HttpClient.settings");
+    public SimpleHttpExtenderClient(CredentialsAwareHttpSettings settings) {
+        super(settings);
         this.settings = settings;
     }
 
-    public AbstractHttpClient() {
+    /**
+     * @see com.guardtime.ksi.service.client.KSIExtenderClient.extend
+     */
+    public SimpleHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
+        return post(request);
     }
+
+    public void close() {}
 
     public ServiceCredentials getServiceCredentials() {
         return settings.getCredentials();
@@ -50,5 +54,4 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
     public PduVersion getPduVersion() {
         return settings.getPduVersion();
     }
-
 }

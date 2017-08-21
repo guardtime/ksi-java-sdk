@@ -22,17 +22,16 @@ import com.guardtime.ksi.AsyncContext;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
-
 import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.ConfigurationListener;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.HAService;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
@@ -45,7 +44,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
     private HAService haServiceV1;
     private KSI ksiV2;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
         super.setUp();
         SimpleHttpClient simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));

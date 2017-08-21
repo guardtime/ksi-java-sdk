@@ -26,6 +26,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -178,6 +180,16 @@ public class UtilTest {
     @Test
     public void testIntArrayDoesNotContainsGivenKey() {
         Assert.assertFalse(Util.containsInt(new int[] {1, 2, 3, 4, 5}, 8));
+    }
+
+    @Test
+    public void testToUrlOk() throws MalformedURLException {
+        Assert.assertEquals(Util.toUrl("http://verify.guardtime.com"), new URL("http://verify.guardtime.com"));
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Malformed URL 'wrongURL'")
+    public void testToUrlMalformedUrl() throws MalformedURLException {
+        Util.toUrl("wrongURL");
     }
 
 }

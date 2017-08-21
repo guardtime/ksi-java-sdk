@@ -39,10 +39,15 @@ import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
+import com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
+import com.guardtime.ksi.service.client.http.HttpSettings;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
 import com.guardtime.ksi.service.ha.HAService;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpExtenderClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpPublicationsFileClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpSigningClient;
 import com.guardtime.ksi.service.tcp.TCPClient;
 import com.guardtime.ksi.service.tcp.TCPClientSettings;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
@@ -131,6 +136,12 @@ public abstract class AbstractCommonIntegrationTest {
         if (failingClient == null) {
             failingClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
         }
+        SimpleHttpSigningClient simpleHttpSigningClient = new SimpleHttpSigningClient(
+                new CredentialsAwareHttpSettings(httpSettings.getSigningUrl().toString(), httpSettings.getCredentials()));
+        SimpleHttpExtenderClient simpleHttpExtenderClient = new SimpleHttpExtenderClient(
+                new CredentialsAwareHttpSettings(httpSettings.getExtendingUrl().toString(), httpSettings.getCredentials()));
+        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient =
+                new SimpleHttpPublicationsFileClient(new HttpSettings(httpSettings.getPublicationsFileUrl().toString()));
 
         if (tcpClient == null) {
             TCPClientSettings tcpSettings = loadTCPSettings();
@@ -161,7 +172,7 @@ public abstract class AbstractCommonIntegrationTest {
                 .build();
 
         return new Object[][] {
-                new Object[] {createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient)},
+                new Object[] {createKsi(simpleHttpExtenderClient, simpleHttpSigningClient, simpleHttpPublicationsFileClient)},
                 new Object[] {createKsi(apacheHttpClient, apacheHttpClient, apacheHttpClient)},
                 new Object[] {createKsi(apacheHttpClient, tcpClient, apacheHttpClient)},
                 new Object[] {createKsi(haService, haService, simpleHttpClient)}

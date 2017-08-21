@@ -97,11 +97,16 @@ public abstract class AbstractCommonIntegrationTest {
     protected KSI ksi;
     protected SimpleHttpClient simpleHttpClient;
 
+    private static HttpClientSettings httpSettings;
+    protected static ApacheHttpClient apacheHttpClient;
+    private static ApacheHttpClient failingClient;
+    private static KSISigningClient tcpClient;
 
     @BeforeClass
     protected void setUp() throws Exception {
-        this.simpleHttpClient = new SimpleHttpClient(loadHTTPSettings());
-        this.ksi = createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient);
+        httpSettings = loadHTTPSettings();
+        simpleHttpClient = new SimpleHttpClient(httpSettings);
+        ksi = createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient);
     }
 
     public static DataHash getFileHash(String fileName, String name) throws Exception {
@@ -120,15 +125,21 @@ public abstract class AbstractCommonIntegrationTest {
 
     @DataProvider(name = KSI_DATA_GROUP_NAME)
     public static Object[][] transportProtocols() throws Exception {
-        HttpClientSettings httpSettings = loadHTTPSettings();
-        SimpleHttpClient simpleHttpClient = new SimpleHttpClient(httpSettings);
-        ApacheHttpClient apacheHttpClient = new ApacheHttpClient(httpSettings);
+        if (apacheHttpClient == null) {
+            apacheHttpClient = new ApacheHttpClient(httpSettings);
+        }
+        if (failingClient == null) {
+            failingClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
+        }
 
-        TCPClientSettings tcpSettings = loadTCPSettings();
-        KSISigningClient tcpClient = new TCPClient(tcpSettings);
+        if (tcpClient == null) {
+            TCPClientSettings tcpSettings = loadTCPSettings();
+            tcpClient = new TCPClient(tcpSettings);
+        }
+
+        SimpleHttpClient simpleHttpClient = new SimpleHttpClient(httpSettings);
 
         PendingKSIService pendingKSIService = new PendingKSIService();
-        ApacheHttpClient failingClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
 
         List<KSISigningClient> signingClientsForHa = new ArrayList<KSISigningClient>();
         signingClientsForHa.add(failingClient);

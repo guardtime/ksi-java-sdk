@@ -33,7 +33,8 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -56,13 +57,24 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
             "alyPaM4eymvMn6Di8VIhEvUpJqfay5REg016NWopK0WfpU6ZcA" +
             "EX9g4vu0futr1JlGz5UoUAhS0AHRIz62ucr0k88aZI9YHlvJ6Y"; //Length: 252
 
-    private ApacheHttpClient httpClient;
+    private static ApacheHttpClient httpClient;
+    private static KSISigningClient tcpClient;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
-        KSISigningClient tcpClient = new TCPClient(loadTCPSettings());
-        this.httpClient = new ApacheHttpClient(loadHTTPSettings());
+        tcpClient = new TCPClient(loadTCPSettings());
+        httpClient = new ApacheHttpClient(loadHTTPSettings());
         this.ksi = createKsi(httpClient, tcpClient, httpClient);
+    }
+
+    @AfterClass
+    public void closeClients() throws IOException {
+        if (httpClient != null) {
+            httpClient.close();
+        }
+        if (tcpClient != null) {
+            tcpClient.close();
+        }
     }
 
     @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION)
@@ -138,7 +150,6 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
 
     @DataProvider(name = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER)
     private static Object[][] credentialsTransportProtocols() throws Exception {
-        ApacheHttpClient apacheHttpClient = new ApacheHttpClient(loadHTTPSettings());
         TCPClientSettings emptyTcpSettings = loadTCPSettings(EMPTY_LOGIN_ID, EMPTY_LOGIN_ID);
         TCPClientSettings shortTcpSettings = loadTCPSettings(SHORT_LOGIN_ID, SHORT_LOGIN_ID);
         TCPClientSettings longTcpSettings = loadTCPSettings(LONG_LOGIN_ID, LONG_LOGIN_ID);
@@ -147,9 +158,9 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         KSISigningClient longTcpClient = new TCPClient(longTcpSettings);
 
         return new Object[][]{
-                createKsiObject(apacheHttpClient, emptyTcpClient, apacheHttpClient),
-                createKsiObject(apacheHttpClient, shortTcpClient, apacheHttpClient),
-                createKsiObject(apacheHttpClient, longTcpClient, apacheHttpClient)
+                createKsiObject(httpClient, emptyTcpClient, httpClient),
+                createKsiObject(httpClient, shortTcpClient, httpClient),
+                createKsiObject(httpClient, longTcpClient, httpClient)
         };
     }
 

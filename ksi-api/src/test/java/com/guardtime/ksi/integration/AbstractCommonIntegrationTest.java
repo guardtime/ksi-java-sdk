@@ -229,7 +229,7 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     public static HttpClientSettings loadHTTPSettings() throws IOException {
-        return loadHTTPSettings(PduVersion.V1);
+        return loadHTTPSettings(PduVersion.V2);
     }
 
     protected static Object[] createKsiObject(KSIExtenderClient extenderClient, KSISigningClient signingClient,

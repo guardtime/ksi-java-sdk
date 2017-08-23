@@ -84,7 +84,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         return hashAlgorithms.toArray(objects);
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client.*")
     public void testCreateSignatureLargeAggregationTree() throws Exception {
         KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
         builder.add(DATA_HASH, 254L, metadata);

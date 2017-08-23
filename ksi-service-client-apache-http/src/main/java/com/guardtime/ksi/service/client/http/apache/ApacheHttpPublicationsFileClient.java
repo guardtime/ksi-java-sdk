@@ -32,7 +32,7 @@ public class ApacheHttpPublicationsFileClient extends AbstractApacheHttpClient i
      *
      * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}
      */
-    ApacheHttpPublicationsFileClient(HttpSettings settings) {
+    public ApacheHttpPublicationsFileClient(HttpSettings settings) {
         super(settings);
     }
 
@@ -42,7 +42,7 @@ public class ApacheHttpPublicationsFileClient extends AbstractApacheHttpClient i
      * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}
      * @param asyncConfiguration - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
      */
-    ApacheHttpPublicationsFileClient(HttpSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
+    public ApacheHttpPublicationsFileClient(HttpSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         super(settings, asyncConfiguration);
     }
 

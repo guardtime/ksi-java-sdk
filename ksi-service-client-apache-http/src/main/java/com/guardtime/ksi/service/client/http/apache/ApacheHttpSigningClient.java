@@ -38,7 +38,7 @@ public class ApacheHttpSigningClient extends AbstractApacheHttpClient implements
      *
      * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings}
      */
-    ApacheHttpSigningClient(CredentialsAwareHttpSettings settings) {
+    public ApacheHttpSigningClient(CredentialsAwareHttpSettings settings) {
         super(settings);
         this.settings = settings;
     }
@@ -49,7 +49,7 @@ public class ApacheHttpSigningClient extends AbstractApacheHttpClient implements
      * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings}
      * @param asyncConfiguration - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
      */
-    ApacheHttpSigningClient(CredentialsAwareHttpSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
+    public ApacheHttpSigningClient(CredentialsAwareHttpSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         super(settings, asyncConfiguration);
         this.settings = settings;
     }

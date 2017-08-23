@@ -43,6 +43,9 @@ import com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.client.http.HttpSettings;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
+import com.guardtime.ksi.service.client.http.apache.ApacheHttpExtenderClient;
+import com.guardtime.ksi.service.client.http.apache.ApacheHttpPublicationsFileClient;
+import com.guardtime.ksi.service.client.http.apache.ApacheHttpSigningClient;
 import com.guardtime.ksi.service.ha.HAService;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpExtenderClient;
@@ -104,6 +107,9 @@ public abstract class AbstractCommonIntegrationTest {
 
     private static HttpClientSettings httpSettings;
     protected static ApacheHttpClient apacheHttpClient;
+    private static ApacheHttpSigningClient apacheHttpSigningClient;
+    private static ApacheHttpExtenderClient apacheHttpExtenderClient;
+    private static ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient;
     private static ApacheHttpClient failingClient;
     private static KSISigningClient tcpClient;
 
@@ -136,12 +142,25 @@ public abstract class AbstractCommonIntegrationTest {
         if (failingClient == null) {
             failingClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
         }
-        SimpleHttpSigningClient simpleHttpSigningClient = new SimpleHttpSigningClient(
-                new CredentialsAwareHttpSettings(httpSettings.getSigningUrl().toString(), httpSettings.getCredentials()));
-        SimpleHttpExtenderClient simpleHttpExtenderClient = new SimpleHttpExtenderClient(
-                new CredentialsAwareHttpSettings(httpSettings.getExtendingUrl().toString(), httpSettings.getCredentials()));
-        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient =
-                new SimpleHttpPublicationsFileClient(new HttpSettings(httpSettings.getPublicationsFileUrl().toString()));
+
+        CredentialsAwareHttpSettings signingSettings = new CredentialsAwareHttpSettings(httpSettings.getSigningUrl().toString(), httpSettings.getCredentials());
+        CredentialsAwareHttpSettings extenderSettings = new CredentialsAwareHttpSettings(httpSettings.getExtendingUrl().toString(), httpSettings.getCredentials());
+        HttpSettings PublicationSettings = new HttpSettings(httpSettings.getPublicationsFileUrl().toString());
+
+        SimpleHttpSigningClient simpleHttpSigningClient = new SimpleHttpSigningClient(signingSettings);
+        if (apacheHttpSigningClient == null) {
+            apacheHttpSigningClient = new ApacheHttpSigningClient(signingSettings);
+        }
+
+        SimpleHttpExtenderClient simpleHttpExtenderClient = new SimpleHttpExtenderClient(extenderSettings);
+        if (apacheHttpExtenderClient == null) {
+            apacheHttpExtenderClient = new ApacheHttpExtenderClient(extenderSettings);
+        }
+
+        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient = new SimpleHttpPublicationsFileClient(PublicationSettings);
+        if (apacheHttpPublicationsFileClient == null) {
+            apacheHttpPublicationsFileClient = new ApacheHttpPublicationsFileClient(PublicationSettings);
+        }
 
         if (tcpClient == null) {
             TCPClientSettings tcpSettings = loadTCPSettings();
@@ -173,6 +192,7 @@ public abstract class AbstractCommonIntegrationTest {
 
         return new Object[][] {
                 new Object[] {createKsi(simpleHttpExtenderClient, simpleHttpSigningClient, simpleHttpPublicationsFileClient)},
+                new Object[] {createKsi(apacheHttpExtenderClient, apacheHttpSigningClient, apacheHttpPublicationsFileClient)},
                 new Object[] {createKsi(apacheHttpClient, apacheHttpClient, apacheHttpClient)},
                 new Object[] {createKsi(apacheHttpClient, tcpClient, apacheHttpClient)},
                 new Object[] {createKsi(haService, haService, simpleHttpClient)}
@@ -218,7 +238,7 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     public static HttpClientSettings loadHTTPSettings() throws IOException {
-        return loadHTTPSettings(PduVersion.V1);
+        return loadHTTPSettings(PduVersion.V2);
     }
 
     protected static Object[] createKsiObject(KSIExtenderClient extenderClient, KSISigningClient signingClient,

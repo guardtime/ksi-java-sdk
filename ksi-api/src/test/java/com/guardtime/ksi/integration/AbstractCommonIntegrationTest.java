@@ -107,6 +107,9 @@ public abstract class AbstractCommonIntegrationTest {
 
     private static HttpClientSettings httpSettings;
     protected static ApacheHttpClient apacheHttpClient;
+    private static ApacheHttpSigningClient apacheHttpSigningClient;
+    private static ApacheHttpExtenderClient apacheHttpExtenderClient;
+    private static ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient;
     private static ApacheHttpClient failingClient;
     private static KSISigningClient tcpClient;
 
@@ -145,13 +148,19 @@ public abstract class AbstractCommonIntegrationTest {
         HttpSettings PublicationSettings = new HttpSettings(httpSettings.getPublicationsFileUrl().toString());
 
         SimpleHttpSigningClient simpleHttpSigningClient = new SimpleHttpSigningClient(signingSettings);
-        ApacheHttpSigningClient apacheHttpSigningClient = new ApacheHttpSigningClient(signingSettings);
+        if (apacheHttpSigningClient == null) {
+            apacheHttpSigningClient = new ApacheHttpSigningClient(signingSettings);
+        }
 
         SimpleHttpExtenderClient simpleHttpExtenderClient = new SimpleHttpExtenderClient(extenderSettings);
-        ApacheHttpExtenderClient apacheHttpExtenderClient = new ApacheHttpExtenderClient(extenderSettings);
+        if (apacheHttpExtenderClient == null) {
+            apacheHttpExtenderClient = new ApacheHttpExtenderClient(extenderSettings);
+        }
 
         SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient = new SimpleHttpPublicationsFileClient(PublicationSettings);
-        ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient = new ApacheHttpPublicationsFileClient(PublicationSettings);
+        if (apacheHttpPublicationsFileClient == null) {
+            apacheHttpPublicationsFileClient = new ApacheHttpPublicationsFileClient(PublicationSettings);
+        }
 
         if (tcpClient == null) {
             TCPClientSettings tcpSettings = loadTCPSettings();

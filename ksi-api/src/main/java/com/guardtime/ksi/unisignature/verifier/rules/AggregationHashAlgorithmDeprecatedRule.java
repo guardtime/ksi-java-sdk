@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -20,38 +20,26 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 /**
- * Verifies the index of the RFC3161 record.
+ * This rule verifies if the aggregation hash chain uses a hash algorithm that was deprecated at the aggregation time.
  */
-public class Rfc3161RecordIndexRule extends BaseRule {
+public class AggregationHashAlgorithmDeprecatedRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(Rfc3161RecordIndexRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(AggregationHashAlgorithmDeprecatedRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
-        if (context.getRfc3161Record() != null) {
-            return verifyIndexes(context.getRfc3161Record().getChainIndex(), context.getAggregationHashChains()[0].getChainIndex());
-        }
-        return VerificationResultCode.OK;
-    }
-
-    private VerificationResultCode verifyIndexes(List<Long> rfc3161ChainIndex, List<Long> aggregationChainIndex) {
-        if (rfc3161ChainIndex.size() != aggregationChainIndex.size()) {
-            logger.info("Aggregation hash chain and RFC3161 chain index mismatch. Aggregation chain index length is {}, RFC3161 chain index length is {}", aggregationChainIndex.size(), rfc3161ChainIndex.size());
-            return VerificationResultCode.FAIL;
-        }
-        for (int i = 0; i < rfc3161ChainIndex.size(); i++) {
-            Long rfc3161index = rfc3161ChainIndex.get(i);
-            Long aggregationIndex = aggregationChainIndex.get(i);
-            if (!rfc3161index.equals(aggregationIndex)) {
-                logger.info("Aggregation hash chain and RFC3161 chain index mismatch. At position {} aggregation index value is {} and RFC3161 index value is {}", i, aggregationIndex, rfc3161index);
+        AggregationHashChain[] chains = context.getAggregationHashChains();
+        for (AggregationHashChain chain : chains) {
+            if (chain.getAggregationAlgorithm().isDeprecated(chain.getAggregationTime())) {
+                logger.info("Aggregation hash chain aggregation algorithm {} is deprecated",
+                        chain.getAggregationAlgorithm().getName());
                 return VerificationResultCode.FAIL;
             }
         }
@@ -59,6 +47,7 @@ public class Rfc3161RecordIndexRule extends BaseRule {
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.INT_12;
+        return VerificationErrorCode.INT_15;
     }
+
 }

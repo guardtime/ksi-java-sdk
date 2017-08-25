@@ -132,6 +132,7 @@ public final class SignerBuilder {
 
         public Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException {
             notNull(dataHash, "Data hash");
+            dataHash.getAlgorithm().checkExpiration();
             Future<AggregationResponse> aggregationResponseFuture = signingService.sign(dataHash, DEFAULT_LEVEL);
             return new SigningFuture(aggregationResponseFuture, signatureFactory, dataHash);
         }

@@ -65,4 +65,14 @@ public interface RFC3161Record {
      * Returns the aggregation time of the RFC3161 record
      */
     Date getAggregationTime();
+
+    /**
+     * Returns the TSTInfo structure hash algorithm of the RFC3161 record
+     */
+    HashAlgorithm getTstInfoAlgorithm();
+
+    /**
+     * Returns the hash algorithm of the RFC3161 record signed attributes
+     */
+    HashAlgorithm getSignedAttributesAlgorithm();
 }

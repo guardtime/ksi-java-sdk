@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -29,25 +29,29 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Verifies that RFC3161 record aggregation time equals to first aggregation chain aggregation time.
+ * This rule is used to verify that calendar hash chain aggregation(derived from the right link) hash algorithms were
+ * obsolete at the publication time. If calendar hash chain is missing then status {@link
+ * VerificationResultCode#OK} will be returned.
  */
-public class Rfc3161RecordTimeRule extends BaseRule {
+public class CalendarHashChainAggregationAlgorithmRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(Rfc3161RecordTimeRule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CalendarHashChainAggregationAlgorithmRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
-        if (context.getRfc3161Record() != null) {
-            Date rfc3161AggregationTime = context.getRfc3161Record().getAggregationTime();
-            Date aggregationChainAggregationTime = context.getAggregationHashChains()[0].getAggregationTime();
-            if (!rfc3161AggregationTime.equals(aggregationChainAggregationTime)) {
-                logger.info("Aggregation hash chain time and RFC 3161 aggregation time mismatch.");
-                return VerificationResultCode.FAIL;
-            }
+        if (context.getCalendarHashChain() == null) {
+            return VerificationResultCode.OK;
         }
-        return VerificationResultCode.OK;
+
+        Date publicationTime = context.getCalendarHashChain().getPublicationTime();
+        if (!context.getCalendarHashChain().getInputHash().getAlgorithm().isObsolete(publicationTime)) {
+            return VerificationResultCode.OK;
+        }
+        LOGGER.info("Calendar hash chain aggregation hash algorithms is obsolete at {}", publicationTime.getTime());
+        return VerificationResultCode.FAIL;
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.INT_02;
+        return VerificationErrorCode.INT_16;
     }
+
 }

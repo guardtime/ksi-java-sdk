@@ -27,6 +27,7 @@ import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashChainLinkMet
 import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashChainTimeConsistencyRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecordAggregationHashRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecordAggregationTimeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAggregationAlgorithmRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAggregationTimeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainInputHashVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainRegistrationTimeRule;
@@ -69,6 +70,7 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new CalendarHashChainInputHashVerificationRule());
         rules.add(new CalendarHashChainAggregationTimeRule());
         rules.add(new CalendarHashChainRegistrationTimeRule());
+        rules.add(new CalendarHashChainAggregationAlgorithmRule());
 
         // verify calendar authentication record (if present)
         rules.add(new CalendarAuthenticationRecordAggregationHashRule());

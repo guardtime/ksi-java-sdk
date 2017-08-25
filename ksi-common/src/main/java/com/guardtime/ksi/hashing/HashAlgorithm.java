@@ -18,7 +18,10 @@
  */
 package com.guardtime.ksi.hashing;
 
+import com.guardtime.ksi.util.Util;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +30,7 @@ import java.util.Map;
  * List of supported hash functions and also some convenience functions.
  */
 public enum HashAlgorithm {
-    SHA1("SHA1", 0x00, 20, Status.NORMAL),
+    SHA1("SHA1", 0x00, 20, Status.NORMAL, new String[] {}, new Date(1467320400862L)/* 01.07.2016 */, null),
     SHA2_256("SHA-256", 0x01, 32, Status.NORMAL, new String[]{"SHA2-256", "SHA2", "DEFAULT"}),
     RIPEMD_160("RIPEMD160", 0x02, 20, Status.NORMAL),
     SHA2_384("SHA-384", 0x04, 48, Status.NORMAL, new String[]{"SHA2-384"}),
@@ -72,6 +75,16 @@ public enum HashAlgorithm {
     private final String[] alternatives;
 
     /**
+     * the function is deprecated since the given date due to the loss of collision resistance
+     */
+    private final Date deprecatedSince;
+
+    /**
+     * the function is obsolete since the given date due to loss of 2nd pre-image resistance
+     */
+    private final Date obsoleteSince;
+
+    /**
      * Constructor which initiates HashAlgorithm.
      *
      * @param name   algorithm name
@@ -80,7 +93,7 @@ public enum HashAlgorithm {
      * @param status status of algorithm
      */
     HashAlgorithm(String name, int id, int length, Status status) {
-        this(name, id, length, status, new String[]{});
+        this(name, id, length, status, new String[]{}, null, null);
     }
 
     /**
@@ -93,11 +106,27 @@ public enum HashAlgorithm {
      * @param alternatives alternative names of algorithm
      */
     HashAlgorithm(String name, int id, int length, Status status, String[] alternatives) {
+        this(name, id, length, status, alternatives, null, null);
+    }
+
+    /**
+     * Constructor which initiates HashAlgorithm with alternative names.
+     *
+     * @param name         algorithm name
+     * @param id           algorithm id
+     * @param length       algorithm hash length
+     * @param status       status of algorithm
+     * @param alternatives alternative names of algorithm
+     */
+    HashAlgorithm(String name, int id, int length, Status status, String[] alternatives, Date deprecatedSince,
+            Date obsoleteSince) {
         this.id = id;
         this.name = name;
         this.length = length;
         this.status = status;
         this.alternatives = alternatives;
+        this.deprecatedSince = deprecatedSince;
+        this.obsoleteSince = obsoleteSince;
     }
 
     /**
@@ -212,6 +241,40 @@ public enum HashAlgorithm {
      */
     public boolean isImplemented() {
         return !Status.NOT_IMPLEMENTED.equals(this.status);
+    }
+
+    /**
+     * Returns true if the given date is before the hash algorithm deprecation date.
+     */
+    public boolean isDeprecated(Date givenDate) {
+        Util.notNull(givenDate, "Given date");
+        return this.deprecatedSince != null && givenDate.before(this.deprecatedSince);
+    }
+
+    /**
+     * Returns true if the given date is before the hash algorithm obsolete date.
+     */
+    public boolean isObsolete(Date givenDate) {
+        Util.notNull(givenDate, "Given date");
+        return this.obsoleteSince != null && givenDate.before(this.obsoleteSince);
+    }
+
+    /**
+     * Checks if hash algorithm is not marked obsolete or deprecated in the given date.
+     */
+    public void checkExpiration(Date givenDate) {
+        if (isObsolete(givenDate)) {
+            throw new IllegalArgumentException("Hash algorithm " + this.name + " is marked obsolete");
+        } else if (isDeprecated(givenDate)) {
+            throw new IllegalArgumentException("Hash algorithm " + this.name + " is marked deprecated");
+        }
+    }
+
+    /**
+     * Checks if hash algorithm is not marked obsolete or deprecated in current moment.
+     */
+    public void checkExpiration() {
+        checkExpiration(new Date());
     }
 
     /**

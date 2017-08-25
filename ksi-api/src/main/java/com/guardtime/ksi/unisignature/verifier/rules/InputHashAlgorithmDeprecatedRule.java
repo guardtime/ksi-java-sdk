@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -29,25 +29,31 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Verifies that RFC3161 record aggregation time equals to first aggregation chain aggregation time.
+ * This rule verifies that user provided input hash algorithm is not deprecated at aggregation time.
  */
-public class Rfc3161RecordTimeRule extends BaseRule {
+public class InputHashAlgorithmDeprecatedRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(Rfc3161RecordTimeRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(InputHashAlgorithmDeprecatedRule.class);
 
-    public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
+    VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         if (context.getRfc3161Record() != null) {
             Date rfc3161AggregationTime = context.getRfc3161Record().getAggregationTime();
-            Date aggregationChainAggregationTime = context.getAggregationHashChains()[0].getAggregationTime();
-            if (!rfc3161AggregationTime.equals(aggregationChainAggregationTime)) {
-                logger.info("Aggregation hash chain time and RFC 3161 aggregation time mismatch.");
+            if (context.getRfc3161Record().getInputHash().getAlgorithm().isDeprecated(rfc3161AggregationTime)) {
+                logger.info("RFC 3161 record input hash algorithm {} is deprecated.",
+                        context.getRfc3161Record().getInputHash().getAlgorithm().getName());
                 return VerificationResultCode.FAIL;
             }
+        }
+        Date aggregationChainAggregationTime = context.getAggregationHashChains()[0].getAggregationTime();
+        if (context.getAggregationHashChains()[0].getAggregationAlgorithm().isDeprecated(aggregationChainAggregationTime)) {
+            logger.info("Input hash algorithm {} of the first aggregation hash chain is deprecated.",
+                    context.getAggregationHashChains()[0].getAggregationAlgorithm().getName());
+            return VerificationResultCode.FAIL;
         }
         return VerificationResultCode.OK;
     }
 
-    public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.INT_02;
+    VerificationErrorCode getErrorCode() {
+        return VerificationErrorCode.INT_13;
     }
 }

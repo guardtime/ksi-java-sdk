@@ -19,7 +19,6 @@
 package com.guardtime.ksi.hashing;
 
 import com.guardtime.ksi.util.Util;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
@@ -80,6 +79,8 @@ public class DataHasher {
         if (HashAlgorithm.Status.NOT_IMPLEMENTED.equals(algorithm.getStatus())) {
             throw new IllegalArgumentException("Hash algorithm " + algorithm.name() + " is not implemented");
         }
+
+        algorithm.checkExpiration();
 
         this.algorithm = algorithm;
 

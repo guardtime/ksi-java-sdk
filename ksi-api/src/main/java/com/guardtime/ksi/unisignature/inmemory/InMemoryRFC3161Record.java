@@ -184,4 +184,12 @@ class InMemoryRFC3161Record extends TLVStructure implements RFC3161Record {
         return ELEMENT_TYPE;
     }
 
+    public HashAlgorithm getTstInfoAlgorithm() {
+        return HashAlgorithm.getById(tstInfoAlgorithm.intValue());
+    }
+
+    public HashAlgorithm getSignedAttributesAlgorithm() {
+        return HashAlgorithm.getById(signedAttributesAlgorithm.intValue());
+    }
+
 }

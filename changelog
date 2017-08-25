@@ -11,13 +11,13 @@ Version 4.10
 * IMPROVEMENT: Renewed and cleaned test resources and improved test coverage.
 * IMPROVEMENT: Set PDU version 2 as default PDU version.
 * IMPROVEMENT: TCP client now uses only Apache MINAs concurrency mechanisms. Removed additional thread pool.
-* IMPROVEMENT: Verification error codes are unified.
 * FEATURE: HAService (High-availability service) is a service that combines multiple KSISigningServices and KSIExtenderServices to achieve redundancy.
-* BUGFIX: KSI interface refactoring into separate interfaces.
+* FEATURE: KSI interface refactoring into separate interfaces.
 * BUGFIX: Removed addAggregationHashChain from KSISignature.
 * BUGFIX: Removed registration time from KSISignature and CalendarHashChain.
 * BUGFIX: RFC3161 record index rule code error code and messages corrected.
 * BUGFIX: Signature type is no longer ignored in Calendar Authentication Records.
+* BUGFIX: Verification error codes are unified.
 
 Version 4.9
 

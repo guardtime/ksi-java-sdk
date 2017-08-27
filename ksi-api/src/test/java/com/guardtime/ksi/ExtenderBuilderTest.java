@@ -3,8 +3,6 @@ package com.guardtime.ksi;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.KSISigningService;
-import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
-import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -12,17 +10,15 @@ import org.testng.annotations.Test;
 
 public class ExtenderBuilderTest {
 
-    private X509CertificateSubjectRdnSelector certSelector;
     private KSIExtendingService mockedExtendingService;
     private KSISigningService mockedSigningService;
-    private KSIPublicationsFileClient mockedPublicationsFileClient;
+    private PublicationsHandler mockedPublicationsHandler;
 
     @BeforeClass
     public void setUp() throws Exception {
-        this.certSelector = new X509CertificateSubjectRdnSelector("E=publications@guardtime.com");
         mockedExtendingService = Mockito.mock(KSIExtendingService.class);
         mockedSigningService = Mockito.mock(KSISigningService.class);
-        mockedPublicationsFileClient = Mockito.mock(KSIPublicationsFileClient.class);
+        mockedPublicationsHandler = Mockito.mock(PublicationsHandler.class);
     }
 
     @Test(expectedExceptions = {NullPointerException.class}, expectedExceptionsMessageRegExp = "KSI extending service can not be null")
@@ -30,18 +26,10 @@ public class ExtenderBuilderTest {
         new ExtenderBuilder().build();
     }
 
-    @Test(expectedExceptions = {NullPointerException.class}, expectedExceptionsMessageRegExp = "KSI publications file can not be null")
-    public void testExtenderBuilderWithoutPublicationsFileClient() throws KSIException {
+    @Test(expectedExceptions = {NullPointerException.class}, expectedExceptionsMessageRegExp = "KSI publications handler can not be null")
+    public void testExtenderBuilderWithoutPublicationsHandler() throws KSIException {
         new ExtenderBuilder()
                 .setExtendingService(mockedExtendingService)
-                .build();
-    }
-
-    @Test(expectedExceptions = {NullPointerException.class}, expectedExceptionsMessageRegExp = "KSI publications file trusted certificate selector can not be null")
-    public void testExtenderBuilderWithoutCertSelector() throws KSIException {
-        new ExtenderBuilder()
-                .setExtendingService(mockedExtendingService)
-                .setKsiProtocolPublicationsFileClient(mockedPublicationsFileClient)
                 .build();
     }
 
@@ -49,8 +37,7 @@ public class ExtenderBuilderTest {
     public void testExtenderBuilderOk() throws KSIException {
         Extender extender = new ExtenderBuilder()
                 .setExtendingService(mockedExtendingService)
-                .setKsiProtocolPublicationsFileClient(mockedPublicationsFileClient)
-                .setPublicationsFileCertificateConstraints(certSelector)
+                .setPublicationsHandler(mockedPublicationsHandler)
                 .build();
         Assert.assertNotNull(extender);
     }

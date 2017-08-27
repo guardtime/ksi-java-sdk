@@ -316,10 +316,7 @@ public final class KSIBuilder {
                 .setSigningService(signingService).build();
         Extender extender = new ExtenderBuilder().setDefaultVerificationPolicy(contextAwarePolicy)
                 .setExtendingService(extendingService)
-                .setKsiProtocolPublicationsFileClient(publicationsFileClient)
-                .setPublicationsFileCacheExpirationTime(publicationsFileCacheExpirationTime)
-                .setPublicationsFilePkiTrustStore(trustStore)
-                .setPublicationsFileCertificateConstraints(certSelector).build();
+                .setPublicationsHandler(publicationsHandler).build();
         return new KSIImpl(reader, signer, extender, publicationsHandler);
     }
 

@@ -270,10 +270,7 @@ public abstract class AbstractCommonIntegrationTest {
     protected Extender getExtender(KSIExtendingService extendingService, KSIPublicationsFileClient publicationsFileClient) throws Exception {
         return new ExtenderBuilder()
                 .setExtendingService(extendingService)
-                .setKsiProtocolPublicationsFileClient(publicationsFileClient)
-                .setPublicationsFileCacheExpirationTime(10000L)
-                .setPublicationsFilePkiTrustStore(createKeyStore())
-                .setPublicationsFileCertificateConstraints(createCertSelector()).build();
+                .setPublicationsHandler(getPublicationsHandler(publicationsFileClient)).build();
     }
 
     protected static KSI createKsi(KSIExtendingService extendingService, KSISigningService signingService, KSIPublicationsFileClient

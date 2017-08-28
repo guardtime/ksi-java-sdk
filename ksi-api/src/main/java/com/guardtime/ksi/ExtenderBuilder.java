@@ -23,17 +23,8 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.publication.PublicationRecord;
-import com.guardtime.ksi.publication.PublicationsFileFactory;
-import com.guardtime.ksi.publication.adapter.CachingPublicationsFileClientAdapter;
-import com.guardtime.ksi.publication.adapter.NonCachingPublicationsFileClientAdapter;
-import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
-import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIExtendingService;
-import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
-import com.guardtime.ksi.trust.JKSTrustStore;
-import com.guardtime.ksi.trust.PKITrustStore;
-import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
@@ -44,13 +35,8 @@ import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.util.Util;
 
-import java.io.File;
 import java.io.IOException;
-import java.security.KeyStore;
-import java.security.cert.CertSelector;
 
-import static com.guardtime.ksi.util.Util.getDefaultTrustStore;
-import static com.guardtime.ksi.util.Util.loadKeyStore;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
@@ -59,10 +45,7 @@ import static com.guardtime.ksi.util.Util.notNull;
  */
 public final class ExtenderBuilder {
     private KSIExtendingService extendingService;
-    private CertSelector certSelector;
-    private KSIPublicationsFileClient publicationsFileClient;
-    private KeyStore trustStore;
-    private long publicationsFileCacheExpirationTime = 0L;
+    private PublicationsHandler publicationsHandler;
     private ContextAwarePolicy policy;
 
     /**
@@ -74,55 +57,10 @@ public final class ExtenderBuilder {
     }
 
     /**
-     * Sets the publications file client to be used to download publications file.
+     * Sets the publications file handler to be used to download publications file.
      */
-    public ExtenderBuilder setKsiProtocolPublicationsFileClient(KSIPublicationsFileClient publicationsFileClient) {
-        this.publicationsFileClient = publicationsFileClient;
-        return this;
-    }
-
-    /**
-     * Sets the {@link KeyStore} to be used as trust store to verify the certificate that was used to sign the
-     * publications file. If not set then the default java key store is used.
-     */
-    public ExtenderBuilder setPublicationsFilePkiTrustStore(KeyStore trustStore) {
-        this.trustStore = trustStore;
-        return this;
-    }
-
-    /**
-     * Loads the {@link KeyStore} from the file system and sets the {@link KeyStore} to be used as trust store to verify
-     * the certificate that was used to sign the publications file.
-     *
-     * @param file     key store file on disk. not null.
-     * @param password password of the key store. null if key store isn't protected by password.
-     * @return instance of builder
-     * @throws KSIException when error occurs
-     */
-    public ExtenderBuilder setPublicationsFilePkiTrustStore(File file, String password) throws KSIException {
-        this.trustStore = loadKeyStore(file, password);
-        return this;
-    }
-
-    /**
-     * This method is used to set the {@link CertSelector} to be used to verify the certificate that was used to sign
-     * the publications file. {@link java.security.cert.X509CertSelector} can be used to instead of {@link
-     * X509CertificateSubjectRdnSelector}
-     *
-     * @param certSelector instance of {@link CertSelector}.
-     * @return instance of builder
-     * @see java.security.cert.X509CertSelector
-     */
-    public ExtenderBuilder setPublicationsFileCertificateConstraints(CertSelector certSelector) {
-        this.certSelector = certSelector;
-        return this;
-    }
-
-    /**
-     * This method can be used to set the publications file expiration time. Default value is 0.
-     */
-    public ExtenderBuilder setPublicationsFileCacheExpirationTime(long expirationTime) {
-        this.publicationsFileCacheExpirationTime = expirationTime;
+    public ExtenderBuilder setPublicationsHandler(PublicationsHandler publicationsHandler) {
+        this.publicationsHandler = publicationsHandler;
         return this;
     }
 
@@ -142,50 +80,36 @@ public final class ExtenderBuilder {
     }
 
     /**
-     * Builds the {@link Extender} instance. Checks that the extender, publications file client and
-     * KSI publications file trusted certificate selector are set. If not configured {@link NullPointerException} is thrown.
+     * Builds the {@link Extender} instance. Checks that the extender, publications file handler are set.
+     * If not configured {@link NullPointerException} is thrown.
      *
      * @return instance of {@link Extender} class
      * @throws KSIException will be thrown when errors occur on {@link Extender} class initialization.
      */
     public Extender build() throws KSIException {
         Util.notNull(extendingService, "KSI extending service");
-        Util.notNull(publicationsFileClient, "KSI publications file");
-        Util.notNull(certSelector, "KSI publications file trusted certificate selector");
-        if (trustStore == null) {
-            this.setPublicationsFilePkiTrustStore(new File(getDefaultTrustStore()), null);
-        }
+        Util.notNull(publicationsHandler, "KSI publications handler");
         if (policy == null) {
             this.policy = ContextAwarePolicyAdapter.createInternalPolicy();
         }
-        PKITrustStore jksTrustStore = new JKSTrustStore(trustStore, certSelector);
-        PublicationsFileFactory publicationsFileFactory = new InMemoryPublicationsFileFactory(jksTrustStore);
-        PublicationsFileClientAdapter publicationsFileAdapter = createPublicationsFileAdapter(publicationsFileClient, publicationsFileFactory, publicationsFileCacheExpirationTime);
         KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
         KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory(policy, signatureComponentFactory);
-        return new ExtenderImpl(extendingService, publicationsFileAdapter, signatureFactory, signatureComponentFactory);
-    }
-
-    private PublicationsFileClientAdapter createPublicationsFileAdapter(KSIPublicationsFileClient publicationsFileClient, PublicationsFileFactory publicationsFileFactory, long expirationTime) {
-        if (expirationTime > 0) {
-            return new CachingPublicationsFileClientAdapter(publicationsFileClient, publicationsFileFactory, expirationTime);
-        }
-        return new NonCachingPublicationsFileClientAdapter(publicationsFileClient, publicationsFileFactory);
+        return new ExtenderImpl(extendingService, publicationsHandler, signatureFactory, signatureComponentFactory);
     }
 
     private class ExtenderImpl implements Extender {
         private final KSISignatureFactory signatureFactory;
         private final KSISignatureComponentFactory signatureComponentFactory;
         private final KSIExtendingService extendingService;
-        private final PublicationsFileClientAdapter publicationsFileAdapter;
+        private final PublicationsHandler publicationsHandler;
 
         public ExtenderImpl(KSIExtendingService extendingService,
-                            PublicationsFileClientAdapter publicationsFileAdapter, KSISignatureFactory signatureFactory,
+                PublicationsHandler publicationsHandler, KSISignatureFactory signatureFactory,
                             KSISignatureComponentFactory signatureComponentFactory) {
             this.signatureFactory = signatureFactory;
             this.signatureComponentFactory = signatureComponentFactory;
             this.extendingService = extendingService;
-            this.publicationsFileAdapter = publicationsFileAdapter;
+            this.publicationsHandler = publicationsHandler;
         }
 
         public KSISignature extend(KSISignature signature) throws KSIException {
@@ -200,7 +124,7 @@ public final class ExtenderBuilder {
 
         public Future<KSISignature> asyncExtend(KSISignature signature) throws KSIException {
             notNull(signature, "KSI signature");
-            PublicationRecord publicationRecord = publicationsFileAdapter.getPublicationsFile().getPublicationRecord(signature.getAggregationTime());
+            PublicationRecord publicationRecord = publicationsHandler.getPublicationsFile().getPublicationRecord(signature.getAggregationTime());
             if (publicationRecord == null) {
                 throw new KSIException("No suitable publication yet");
             }
@@ -228,7 +152,6 @@ public final class ExtenderBuilder {
 
         public void close() throws IOException {
             extendingService.close();
-            publicationsFileClient.close();
         }
 
     }

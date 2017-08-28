@@ -36,27 +36,12 @@ In order to get trial access to the KSI platform, go to [https://guardtime.com/b
 
 A simple example how to obtain a signature:
 ```java
-HttpClientSettings clientSettings = new HttpClientSettings(
-                "signing-service-url",
-                "extending-service-url",
-                "publications-file-url",
-                KSIServiceCredentials,
-                PduVersion);
+CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings("signing-service-url", KSIServiceCredentials);
+SimpleHttpSigningClient signingClient = new SimpleHttpSigningClient(settings);
 
-SimpleHttpClient simpleHttpClient = new SimpleHttpClient(clientSettings);
+Signer signer = new SignerBuilder().setSigningService(new KSISigningClientServiceAdapter(signingClient)).build();
 
-KSI ksi = new KSIBuilder()
-    .setKsiProtocolSignerClient(simpleHttpClient)
-    .setKsiProtocolExtenderClient(simpleHttpClient)
-    .setKsiProtocolPublicationsFileClient(simpleHttpClient)
-    .setPublicationsFileTrustedCertSelector(new X509CertificateSubjectRdnSelector("E=test@test.com"))
-    .build();
-
-// synchronous signing
-KSISignature sig1 = ksi.sign(new File("file.txt"));
-// asynchronous signing
-Future<KSISignature> future = ksi.asyncSign(new File("asyncFile.txt"));
-KSISignature sig2 = future.getResult();
+KSISignature signature = signer.sign(new File("file.txt"));
 ```
 The API full reference is available here [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
 

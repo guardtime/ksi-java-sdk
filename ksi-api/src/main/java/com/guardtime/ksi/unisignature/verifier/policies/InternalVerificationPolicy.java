@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature.verifier.policies;
 
 import com.guardtime.ksi.unisignature.verifier.rules.AggregationChainInputHashVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashAlgorithmDeprecatedRule;
 import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashChainConsistencyRule;
 import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashChainIndexConsistencyRule;
 import com.guardtime.ksi.unisignature.verifier.rules.AggregationHashChainIndexSuccessorRule;
@@ -32,7 +33,10 @@ import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAggregatio
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainInputHashVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainRegistrationTimeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.DocumentHashVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.InputHashAlgorithmDeprecatedRule;
+import com.guardtime.ksi.unisignature.verifier.rules.InputHashAlgorithmVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.InputHashLevelVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.InternalHashAlgorithmsDeprecatedRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161RecordIndexRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161RecordTimeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
@@ -55,15 +59,23 @@ public class InternalVerificationPolicy implements Policy {
     private Policy fallbackPolicy;
 
     public InternalVerificationPolicy() {
-        rules.add(new AggregationChainInputHashVerificationRule());
-        rules.add(new Rfc3161RecordTimeRule());
-        rules.add(new Rfc3161RecordIndexRule());
+        rules.add(new InputHashAlgorithmVerificationRule());
+        rules.add(new DocumentHashVerificationRule());
+        rules.add(new InputHashLevelVerificationRule());
+        rules.add(new InputHashAlgorithmDeprecatedRule());
 
-        // verify aggregation hash chains
+        rules.add(new InternalHashAlgorithmsDeprecatedRule());
+        rules.add(new Rfc3161RecordIndexRule());
         rules.add(new AggregationHashChainIndexSuccessorRule());
+
         rules.add(new AggregationHashChainLinkMetadataRule());
+        rules.add(new AggregationHashAlgorithmDeprecatedRule());
+
+        rules.add(new AggregationChainInputHashVerificationRule());
         rules.add(new AggregationHashChainConsistencyRule());
+        rules.add(new Rfc3161RecordTimeRule());
         rules.add(new AggregationHashChainTimeConsistencyRule());
+
         rules.add(new AggregationHashChainIndexConsistencyRule());
 
         // verify calendar hash chain (if present)
@@ -72,19 +84,15 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new CalendarHashChainRegistrationTimeRule());
         rules.add(new CalendarHashChainAggregationAlgorithmRule());
 
-        // verify calendar authentication record (if present)
-        rules.add(new CalendarAuthenticationRecordAggregationHashRule());
-        rules.add(new CalendarAuthenticationRecordAggregationTimeRule());
-
         // verify publication record (if present)
         rules.add(new SignaturePublicationRecordPublicationHashRule());
         rules.add(new SignaturePublicationRecordPublicationTimeRule());
 
-        // verify level
-        rules.add(new InputHashLevelVerificationRule());
+        // verify calendar authentication record (if present)
+        rules.add(new CalendarAuthenticationRecordAggregationHashRule());
+        rules.add(new CalendarAuthenticationRecordAggregationTimeRule());
 
-        // verify document hash
-        rules.add(new DocumentHashVerificationRule());
+
     }
 
     /**

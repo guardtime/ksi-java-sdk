@@ -27,6 +27,7 @@ public enum VerificationErrorCode {
     GEN_01("GEN-01", "Wrong document"),
     GEN_02("GEN-02", "Verification inconclusive"),
     GEN_03("GEN-03", "Input hash level too large"),
+    GEN_04("GEN-04", "Input hash level too large"),
     INT_01("INT-01", "Inconsistent aggregation hash chains"),
     INT_02("INT-02", "Inconsistent aggregation hash chain aggregation times"),
     INT_03("INT-03", "Calendar hash chain input hash mismatch"),

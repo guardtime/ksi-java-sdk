@@ -40,6 +40,7 @@ The KSI SDK Java project contains the following modules:
     </li>
     <li>ksi-service-client-tcp - KSI TCP signing service client implementation.</li>
     <li>ksi-service-ha - KSI High-availability service implementation (Implements KSISigningService and KSIExtenderService).</li>
+    <li>ksi-blocksigner - module for signing multiple data hashes as a block, in one operation.</li>
     <li>ksi-api - main module</li>
 </ul>
 
@@ -160,10 +161,13 @@ and custom trust store:
 Method <em>setDefaultSigningHashAlgorithm(HashAlgorithm algorithm)</em> from <em>com.guardtime.ksi.KSIBuilder</em> class
 is used to specify the default signing hash algorithm.
 
+For all the following operations, KSI object can be used. There are also separate interfaces created. The following examples cover
+usage of KSI interface and also operation specific one.
 
 <h3>Read Signature</h3>
 The following code can be used to read signature:
 <pre><code>
+    //KSI
     KSI ksi = ...
 
     // read signature from disk
@@ -175,11 +179,17 @@ The following code can be used to read signature:
     // read using byte array
     byte[] bytes = getSignatureBytes();
     KSISignature signature3 = ksi.read(bytes);
+    
+    
+    //using Reader interface
+    Reader reader = new SignatureReader();
+    KSISignature signature = reader.read(new File("signature.ksig"));
 
 </code></pre>
 <h3>Create Signature</h3>
 The following code can be used to create signature:
 <pre><code>
+    //KSI
     KSI ksi = ...
 
     // synchronous signing
@@ -187,6 +197,15 @@ The following code can be used to create signature:
     // asynchronous signing
     Future&lt;KSISignature&gt; future = ksi.asyncSign(new File("asyncFile.txt"));
     KSISignature signature2 = future.getResult();
+
+
+    //using Signer interface
+    CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings("signing-service-url", KSIServiceCredentials);
+    SimpleHttpSigningClient signingClient = new SimpleHttpSigningClient(settings);
+
+    Signer signer = new SignerBuilder().setSigningService(new KSISigningClientServiceAdapter(signingClient)).build();
+
+    KSISignature signature = signer.sign(new File("file.txt"));
 
 </code></pre>
 <h3>Extend Signature</h3>
@@ -203,6 +222,16 @@ The following code can be used to extend signature:
     // asynchronous extending
     Future&lt;KSISignature&gt; future = ksi.asyncExtend(signature);
     KSISignature extendedSignature2 = future.getResult();
+    
+    
+    //using Extender interface
+    CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings("extender-service-url", KSIServiceCredentials);
+    SimpleHttpExtenderClient extenderClient = new SimpleHttpExtenderClient(settings);
+
+    Extender extender = new ExtenderBuilder().setExtendingService(new KSIExtendingClientServiceAdapter(extenderClient))
+                                             .setPublicationsHandler(publicationsHandler).build();
+
+    KSISignature extendedSignature = extender.extend(signature);
 
 </code></pre>
 <h3>Verify Signature</h3>
@@ -257,6 +286,12 @@ The following code can be used to verify signature:
     VerificationContext context = ...
     Policy policy = new KeyBasedVerificationPolicy();
     VerificationResult result = ksi.verify(context, policy);
+    
+    
+    //using Verifier interface
+    Verifier verifier = new SignatureVerifier();
+      
+    VerificationResult result = verifier.verify(signature, ContextAwarePolicyAdapter.createKeyPolicy(publicationsHandler));
 
 </code></pre>
 

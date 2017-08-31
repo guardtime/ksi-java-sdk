@@ -52,9 +52,9 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
         SimpleHttpClient simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
         this.simpleHttpClientV1 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V1));
         haServiceV2 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClientV2))
-                .setExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV2)).build();
+                .addExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV2)).build();
         haServiceV1 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClientV1))
-                .setExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV1)).build();
+                .addExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV1)).build();
         this.ksiV2 = createKsi(simpleHttpClientV2, simpleHttpClientV2, simpleHttpClientV2);
         this.ksiV1 = createKsi(simpleHttpClientV1, simpleHttpClientV1, simpleHttpClientV1);
     }

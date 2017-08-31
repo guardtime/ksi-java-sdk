@@ -342,31 +342,33 @@ Alternatively the <i>HTTPConnectionParameters</i> class can be used to configure
 <b>NB! When the proxy server uses username/password for authentication then the <i>HTTPConnectionParameters</i> class must be used to configure proxy.</b>
 
 <h2>HAService Configuration</h2>
-More redundant connection to gateway can be achieved using HAService.
-HAService combines multiple other services, sends requests to all of them in parallel and gives back the first successful one.
+<p>More redundant connection to gateway can be achieved using HAService.
+HAService combines multiple other services, sends requests to all of them in parallel and gives back the first successful one.</p>
 
-<ul>
-    <li>
-        http.proxyHost=PROXY_URL_OR_IP
-    </li>
-    <li>
-        http.proxyPort=PROXY_PORT
-    </li>
-</ul>
-Alternatively the <i>HTTPConnectionParameters</i> class can be used to configure HTTP proxy. The following code creates the
-<i>SimpleHttpClient</i> using the proxy with given configuration.
-<pre><code>
-    KSIServiceCredentials credentials = new KSIServiceCredentials("user", "key");
-    HttpClientSettings settings = new HttpClientSettings("signing_url", "extending_url",
-    "publications_file_url", credentials);
-    HTTPConnectionParameters parameters = new HTTPConnectionParameters();
-    parameters.setProxyUrl(new URL("proxy_url"));
-    parameters.setProxyUser("proxy_username");
-    parameters.setProxyPassword("proxy_password");
-    settings.setParameters(parameters);
-    SimpleHttpClient httpClient = new SimpleHttpClient(settings);
-</code></pre>
-<b>NB! When the proxy server uses username/password for authentication then the <i>HTTPConnectionParameters</i> class must be used to configure proxy.</b>
+<p>To configure HAService, initialize the services it uses and build a HA services with those instances:</p>
+
+<pre>
+    KSISigningClient signingClient1 = ...
+    KSISigningClient signingClient2 = ...
+    KSISigningClient signingClient3 = ...
+
+    KSIExtenderClient extenderClient1 = ...
+    KSIExtenderClient extenderClient2 = ...
+    KSIExtenderClient extenderClient3 = ...
+
+    SigningHAService signingHaService = new SigningHAService.Builder()
+                            .addClients(Arrays.asList(signingClient1, signingClient2, signingClient3))
+                            .build();
+    ExtendingHaService extendingHaService = new ExtendingHAService.Builder()
+                            .addClients(Arrays.asList(extenderClient1, extenderClient2, extenderClient3))
+                            .build();
+
+    KSI ksi = new KSIBuilder()
+                            .setSigningService(signingHaService)
+                            .setExtendingService(extendingHaService)
+                            // set everything else
+                            .build();
+</pre>
 
 
 <h2>Acknowledgements</h2>

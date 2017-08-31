@@ -19,6 +19,8 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAlgorithmDeprecatedExtenderResponseRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAlgorithmDeprecatedRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CompositeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.ExtendingPermittedVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.PublicationsFileContainsPublicationRule;
@@ -40,11 +42,13 @@ public class PublicationsFileBasedVerificationPolicy extends InternalVerificatio
 
         Rule signaturePublicationPresentInPubFileRule = new CompositeRule(false,
                 new SignaturePublicationRecordExistenceRule(),
-                new PublicationsFileContainsSignaturePublicationRule());
+                new PublicationsFileContainsSignaturePublicationRule(),
+                new CalendarHashChainAlgorithmDeprecatedRule());
 
         Rule useExtendingRule = new CompositeRule(false,
                 new PublicationsFileContainsPublicationRule(),
                 new ExtendingPermittedVerificationRule(),
+                new CalendarHashChainAlgorithmDeprecatedExtenderResponseRule(),
                 new PublicationsFilePublicationHashMatchesExtenderResponseRule(),
                 new PublicationsFilePublicationTimeMatchesExtenderResponseRule(),
                 new PublicationsFileExtendedSignatureInputHashRule()

@@ -24,7 +24,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.ConfigurationListener;
-import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
@@ -53,9 +52,9 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
         this.simpleHttpClientV1 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V1));
 
         haServiceV2 = new HAService.Builder().addSigningClients(Collections.<KSISigningClient>singletonList(simpleHttpClientV2))
-                .setExtenderClients(Collections.<KSIExtenderClient>singletonList(simpleHttpClientV2)).build();
+                .addExtenderClients(Collections.<KSIExtenderClient>singletonList(simpleHttpClientV2)).build();
         haServiceV1 = new HAService.Builder().addSigningClients(Collections.<KSISigningClient>singletonList(simpleHttpClientV1))
-                .setExtenderClients(Collections.<KSIExtenderClient>singletonList(simpleHttpClientV1)).build();
+                .addExtenderClients(Collections.<KSIExtenderClient>singletonList(simpleHttpClientV1)).build();
         this.ksiV2 = createKsi(simpleHttpClientV2, simpleHttpClientV2, simpleHttpClientV2);
         this.ksiV1 = createKsi(simpleHttpClientV1, simpleHttpClientV1, simpleHttpClientV1);
     }

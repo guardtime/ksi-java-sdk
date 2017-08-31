@@ -150,7 +150,7 @@ public class HAServiceTest {
         extendingServices.add(initFailingExtenderClient("Failure!"));
         extendingServices.add(initSucceedingExtenderClient(mock(ExtensionResponse.class)));
 
-        HAService haService = new HAService.Builder().addSigningServices(signingServices).setExtendingServices(extendingServices).build();
+        HAService haService = new HAService.Builder().addSigningServices(signingServices).addExtenderServices(extendingServices).build();
         List<KSIExtendingService> requestedExtenderClients = haService.getSubExtendingServices();
         List<KSISigningService> requestedSigningClients = haService.getSubSigningServices();
 

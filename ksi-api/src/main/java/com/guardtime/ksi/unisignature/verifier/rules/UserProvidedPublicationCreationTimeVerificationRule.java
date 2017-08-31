@@ -32,15 +32,15 @@ import java.util.Date;
 public class UserProvidedPublicationCreationTimeVerificationRule extends BaseRule {
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
-        Date registrationTime = context.getCalendarHashChain().getRegistrationTime();
+        Date registrationTime = context.getCalendarHashChain().getAggregationTime();
         Date userPublicationTime = context.getUserProvidedPublication().getPublicationTime();
-        if (!registrationTime.before(userPublicationTime)) {
+        if (registrationTime.after(userPublicationTime)) {
             return VerificationResultCode.NA;
         }
         return VerificationResultCode.OK;
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.GEN_2;
+        return VerificationErrorCode.GEN_02;
     }
 }

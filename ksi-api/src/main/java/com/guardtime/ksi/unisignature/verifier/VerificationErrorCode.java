@@ -24,16 +24,17 @@ package com.guardtime.ksi.unisignature.verifier;
  */
 public enum VerificationErrorCode {
 
-    GEN_1("GEN-1", "Wrong document"),
-    GEN_2("GEN-2", "Verification inconclusive"),
+    GEN_01("GEN-01", "Wrong document"),
+    GEN_02("GEN-02", "Verification inconclusive"),
+    GEN_03("GEN-03", "Input hash level too large"),
     INT_01("INT-01", "Inconsistent aggregation hash chains"),
     INT_02("INT-02", "Inconsistent aggregation hash chain aggregation times"),
     INT_03("INT-03", "Calendar hash chain input hash mismatch"),
     INT_04("INT-04", "Calendar hash chain aggregation time mismatch"),
     INT_05("INT-05", "Calendar hash chain shape inconsistent with aggregation time"),
-    INT_06("INT-06", "Calendar hash chain time inconsistent with calendar auth record time"),
+    INT_06("INT-06", "Calendar hash chain time inconsistent with calendar authentication record time"),
     INT_07("INT-07", "Calendar hash chain time inconsistent with publication time"),
-    INT_08("INT-08", "Calendar hash chain root hash is inconsistent with calendar auth record input hash"),
+    INT_08("INT-08", "Calendar hash chain root hash is inconsistent with calendar authentication record input hash"),
     INT_09("INT-09", "Calendar hash chain root hash is inconsistent with published hash value"),
     INT_10("INT-10", "Aggregation hash chain chain index mismatch"),
     INT_11("INT-11", "The metadata record in the aggregation hash chain may not be trusted"),

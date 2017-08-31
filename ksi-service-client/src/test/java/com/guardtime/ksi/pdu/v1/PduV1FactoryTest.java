@@ -18,6 +18,7 @@
  */
 package com.guardtime.ksi.pdu.v1;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
@@ -25,8 +26,9 @@ import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
@@ -34,98 +36,115 @@ import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 public class PduV1FactoryTest {
 
     private static final long DEFAULT_LEVEL = 0L;
-    public static final KSIServiceCredentials CREDENTIALS = new KSIServiceCredentials("anon", "anon");
+    private static final KSIServiceCredentials CREDENTIALS = new KSIServiceCredentials("anon", "anon");
     private KSIRequestContext extensionContext;
     private PduV1Factory pduFactory = new PduV1Factory();
     private DataHash dataHash;
     private KSIRequestContext requestContext;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
         this.dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
-        this.requestContext = new KSIRequestContext(CREDENTIALS, 42275443333883166L, 42L, 42L);
-        this.extensionContext = new KSIRequestContext(CREDENTIALS, 5546551786909961666L, 42L, 42L);
+        this.requestContext = new KSIRequestContext(42275443333883166L, 42L, 42L);
+        this.extensionContext = new KSIRequestContext(5546551786909961666L, 42L, 42L);
     }
 
     @Test
     public void testCreateAggregationRequest_Ok() throws Exception {
-        AggregationRequest request = pduFactory.createAggregationRequest(requestContext, dataHash, DEFAULT_LEVEL);
+        AggregationRequest request = pduFactory.createAggregationRequest(requestContext, CREDENTIALS, dataHash, DEFAULT_LEVEL);
         Assert.assertNotNull(request);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KsiRequestContext can not be null")
     public void testCreateAggregationRequestWithoutContext_ThrowsNullPointerException() throws Exception {
-        pduFactory.createAggregationRequest(null, dataHash, DEFAULT_LEVEL);
+        pduFactory.createAggregationRequest(null, CREDENTIALS, dataHash, DEFAULT_LEVEL);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "ServiceCredentials can not be null")
+    public void testCreateAggregationRequestWithoutCredentials_ThrowsNullPointerException() throws Exception {
+        pduFactory.createAggregationRequest(requestContext, null, dataHash, DEFAULT_LEVEL);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "DataHash can not be null")
     public void testCreateAggregationRequestWithoutDataHash_ThrowsNullPointerException() throws Exception {
-        pduFactory.createAggregationRequest(requestContext, null, DEFAULT_LEVEL);
+        pduFactory.createAggregationRequest(requestContext, CREDENTIALS, null, DEFAULT_LEVEL);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Only non-negative integer values are allowed")
     public void testCreateAggregationRequestWithNegativeLevel_ThrowsNullPointerException() throws Exception {
-        pduFactory.createAggregationRequest(requestContext, dataHash, -42L);
+        pduFactory.createAggregationRequest(requestContext, CREDENTIALS, dataHash, -42L);
     }
 
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testAggregationResponseContainsInvalidMac_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v1-invalid-mac.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v1-invalid-mac.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*request IDs do not match, sent .* received .*")
     public void testAggregationResponseContainsInvalidRequestId_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 1L, 42L, 42L), loadTlv("pdu/aggregation/aggregation-response-v1.tlv"));
+        pduFactory.readAggregationResponse(new KSIRequestContext(1L, 42L, 42L), CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v1.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Response message does not contain response payload element")
     public void testAggregationResponseDoesNotContainResponseTlvTag_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v1-missing-response-tag.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v1-missing-response-tag.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(5\\):Response error 5: Invalid request format")
     public void testAggregationResponseContains203ErrorMessage_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v1-203-error.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v1-203-error.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(769\\):Server error")
     public void testAggregationResponseContainsErrorMessageInside202TLVMessage_ThrowsKSIProtocolException() throws Exception {
-        pduFactory.readAggregationResponse(requestContext, loadTlv("pdu/aggregation/aggregation-response-v1-202-error.tlv"));
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v1-202-error.tlv"));
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "HMAC algorithm mismatch. Expected SHA-512, received SHA-256")
+    public void testAggregationResponseContainsAnotherMacAlgorithm_ThrowsKSIException() throws Exception {
+        ServiceCredentials credentials = new KSIServiceCredentials("anon", "anon".getBytes("UTF-8"), HashAlgorithm.SHA2_512);
+        pduFactory.readAggregationResponse(requestContext, credentials, loadTlv("pdu/aggregation/aggregation-response-v1.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v2 response to PDU v1 request. Configure the SDK to use PDU v2 format for the given Aggregator")
     public void testReadV2AggregationResponse() throws Exception {
-        pduFactory.readAggregationResponse(extensionContext, loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
+        pduFactory.readAggregationResponse(extensionContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
     }
 
     @Test(expectedExceptions = InvalidMessageAuthenticationCodeException.class, expectedExceptionsMessageRegExp = "Invalid MAC code. Expected.*")
     public void testExtensionResponseInvalidHMAC_ThrowsInvalidMessageAuthenticationCodeException() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v1-invalid-hmac.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-invalid-hmac.tlv"));
+    }
+
+    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "HMAC algorithm mismatch. Expected SHA-512, received SHA-256")
+    public void testExtensionResponseContainsAnotherMacAlgorithm_ThrowsKSIException() throws Exception {
+        ServiceCredentials credentials = new KSIServiceCredentials("anon", "anon".getBytes("UTF-8"), HashAlgorithm.SHA2_512);
+        pduFactory.readExtensionResponse(extensionContext, credentials, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*request IDs do not match, sent \\'[0-9]+\\' received \\'4321\\'")
     public void testExtensionRequestIdsMismatch() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*Response message does not contain response payload element")
     public void testExtensionResponseEmpty() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v1-missing-response-payload.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-missing-response-payload.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(404\\):Not found")
     public void testExtensionRequest404ErrorWithResponse() throws Exception {
-        pduFactory.readExtensionResponse(new KSIRequestContext(new KSIServiceCredentials("anon", "anon"), 4321L, 42L, 42L), loadTlv("pdu/extension/extension-response-v1-with-error-payload.tlv"));
+        pduFactory.readExtensionResponse(new KSIRequestContext(4321L, 42L, 42L), CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-with-error-payload.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*\\(404\\):Response error 404: Not found")
     public void testExtensionResponseWithError() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v1-header-error.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-header-error.tlv"));
     }
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v2 response to PDU v1 request. Configure the SDK to use PDU v2 format for the given Extender")
     public void testReadV2ExtensionResponse() throws Exception {
-        pduFactory.readExtensionResponse(extensionContext, loadTlv("pdu/extension/extension-response-v2-with-error.tlv"));
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-with-error.tlv"));
     }
 
 }

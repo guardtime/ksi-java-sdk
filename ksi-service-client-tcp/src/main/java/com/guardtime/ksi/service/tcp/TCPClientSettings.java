@@ -35,10 +35,9 @@ public class TCPClientSettings {
 
     private URI uri;
     private InetSocketAddress endpoint;
-    private int tcpTransactionTimeoutSec;
-    private int tcpTransactionThreadPoolSize;
-    private ServiceCredentials serviceCredentials;
-    private PduVersion pduVersion;
+    private final int tcpTransactionTimeoutSec;
+    private final ServiceCredentials serviceCredentials;
+    private final PduVersion pduVersion;
 
     /**
      * Settings for TCP client.
@@ -46,16 +45,14 @@ public class TCPClientSettings {
      * @param endpoint TCP signer endpoint address.
      * @param serviceCredentials Credentials for authenticating the client to the TCP signer.
      * @param tcpTransactionTimeoutSec Maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
-     * @param tcpTransactionThreadPoolSize Size of the thread pool for parallel TCP requests.
      */
-    public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, int tcpTransactionThreadPoolSize, ServiceCredentials serviceCredentials) {
-        this(endpoint, tcpTransactionTimeoutSec, tcpTransactionThreadPoolSize, serviceCredentials, PduVersion.V1);
+    public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials) {
+        this(endpoint, tcpTransactionTimeoutSec, serviceCredentials, PduVersion.V2);
     }
 
-    public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, int tcpTransactionThreadPoolSize, ServiceCredentials serviceCredentials, PduVersion pduVersion) {
+    public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials, PduVersion pduVersion) {
         this.endpoint = endpoint;
         this.tcpTransactionTimeoutSec = tcpTransactionTimeoutSec;
-        this.tcpTransactionThreadPoolSize = tcpTransactionThreadPoolSize;
         this.serviceCredentials = serviceCredentials;
         this.pduVersion = pduVersion;
     }
@@ -66,14 +63,12 @@ public class TCPClientSettings {
      *
      * @param uri                             String containing the URI of endpoint. Must be in format: <protocol>://<host>:<port>
      * @param tcpTransactionTimeoutSec        Maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
-     * @param tcpTransactionThreadPoolSize    Size of the thread pool for parallel TCP requests.
      * @param serviceCredentials              Credentials for authenticating the client to the TCP signer.
      * @param pduVersion                      PDU version used for communication.
      */
-    public TCPClientSettings(String uri, int tcpTransactionTimeoutSec, int tcpTransactionThreadPoolSize, ServiceCredentials serviceCredentials, PduVersion pduVersion) throws IllegalArgumentException {
+    public TCPClientSettings(String uri, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials, PduVersion pduVersion) throws IllegalArgumentException {
         this.uri = getVerifiedUri(uri);
         this.tcpTransactionTimeoutSec = tcpTransactionTimeoutSec;
-        this.tcpTransactionThreadPoolSize = tcpTransactionThreadPoolSize;
         this.serviceCredentials = serviceCredentials;
         this.pduVersion = pduVersion;
     }
@@ -95,10 +90,6 @@ public class TCPClientSettings {
 
     public int getTcpTransactionTimeoutSec() {
         return tcpTransactionTimeoutSec;
-    }
-
-    public int getTcpTransactionThreadPoolSize() {
-        return tcpTransactionThreadPoolSize;
     }
 
     public ServiceCredentials getServiceCredentials() {

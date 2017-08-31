@@ -21,7 +21,6 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
@@ -44,7 +43,9 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
-import static com.guardtime.ksi.TestUtil.PUBLICATIONS_FILE_27_07_2016;
+import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE;
+import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE_PASSWORD;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 
 public class KsiTest {
 
@@ -54,13 +55,11 @@ public class KsiTest {
     private KSIExtenderClient mockedExtenderClient;
     private KSIPublicationsFileClient mockedPublicationsFileClient;
     private PKITrustStore mockedTrustStore;
-    private Future mockedResponse;
     private Future mockedPublicationsFileResponse;
 
     private PduIdentifierProvider mockedIdentifierProvider;
 
     private KSI ksi;
-    private DataHash defaultDataHash;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -71,25 +70,20 @@ public class KsiTest {
         mockedTrustStore = Mockito.mock(PKITrustStore.class);
         mockedIdentifierProvider = Mockito.mock(PduIdentifierProvider.class);
 
+        Mockito.when(mockedSigningClient.getPduVersion()).thenReturn(PduVersion.V2);
+        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V2);
         Mockito.when(mockedIdentifierProvider.getInstanceId()).thenReturn(42L);
         Mockito.when(mockedIdentifierProvider.nextMessageId()).thenReturn(42L);
         Mockito.when(mockedIdentifierProvider.nextRequestId()).thenReturn(42275443333883166L);
-        Mockito.when(mockedSigningClient.getServiceCredentials()).thenReturn(TestUtil.CREDENTIALS_ANONYMOUS);
-        Mockito.when(mockedExtenderClient.getServiceCredentials()).thenReturn(TestUtil.CREDENTIALS_ANONYMOUS);
-        Mockito.when(mockedSigningClient.getPduVersion()).thenReturn(PduVersion.V1);
-        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V1);
 
         Mockito.when(mockedTrustStore.isTrusted(Mockito.any(X509Certificate.class), Mockito.any(Store.class))).thenReturn(true);
-        mockedResponse = Mockito.mock(Future.class);
 
         mockedPublicationsFileResponse = Mockito.mock(Future.class);
-        Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load(PUBLICATIONS_FILE_27_07_2016))));
+        Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load(PUBLICATIONS_FILE))));
         Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(mockedPublicationsFileResponse);
 
-        this.defaultDataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
-
         KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(TestUtil.load("ksi-truststore.jks"), "changeit".toCharArray());
+        keyStore.load(TestUtil.load(KSI_TRUSTSTORE), KSI_TRUSTSTORE_PASSWORD.toCharArray());
 
         this.ksi = new KSIBuilder().
                 setKsiProtocolExtenderClient(mockedExtenderClient).
@@ -101,7 +95,7 @@ public class KsiTest {
                 setPduIdentifierProvider(mockedIdentifierProvider).build();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI signing client must be present")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KSI signing service can not be null")
     public void testCreateKsiInstanceWithoutSigningClient_ThrowsKsiException() throws Exception {
         new KSIBuilder().
                 setKsiProtocolExtenderClient(mockedExtenderClient).
@@ -109,7 +103,7 @@ public class KsiTest {
                 setPublicationsFileTrustedCertSelector(certSelector).build();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI publications file client must be present")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KSI publications file can not be null")
     public void testCreateKsiInstanceWithoutPublicationsFileClient_ThrowsKsiException() throws Exception {
         new KSIBuilder().
                 setKsiProtocolSignerClient(mockedSigningClient).
@@ -117,7 +111,7 @@ public class KsiTest {
                 setPublicationsFileTrustedCertSelector(certSelector).build();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI extender client must be present")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KSI extending service can not be null")
     public void testCreateKsiInstanceWithoutExtenderClient_ThrowsKsiException() throws Exception {
         new KSIBuilder().
                 setKsiProtocolSignerClient(mockedSigningClient).
@@ -125,7 +119,7 @@ public class KsiTest {
                 setPublicationsFileTrustedCertSelector(certSelector).build();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. KSI publications file trusted certificate selector must be present")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KSI publications file trusted certificate selector can not be null")
     public void testCreateKsiInstanceWithoutPublicationsFileTrustedCertSelector_ThrowsKsiException() throws Exception {
         new KSIBuilder().
                 setKsiProtocolSignerClient(mockedSigningClient).
@@ -138,27 +132,27 @@ public class KsiTest {
         ksi.read(new File("not-present-signature.ksig"));
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. File can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "File can not be null")
     public void testReadUniSignatureUsingInvalidFileInput_ThrowsKSIException() throws Exception {
         ksi.read((File) null);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Byte array can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Byte array can not be null")
     public void testReadUniSignatureUsingInvalidByteArrayInput_ThrowsKSIException() throws Exception {
         ksi.read((byte[]) null);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Input stream can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Input stream can not be null")
     public void testReadUniSignatureUsingInvalidInputStream_ThrowsKSIException() throws Exception {
         ksi.read((InputStream) null);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. Data hash must not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Data hash can not be null")
     public void testSignMissingDataHash_ThrowsKSIException() throws Exception {
         ksi.sign((DataHash) null);
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Invalid input parameter. File must not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "File can not be null")
     public void testSignMissingFile_ThrowsKSIException() throws Exception {
         ksi.sign((File) null);
     }

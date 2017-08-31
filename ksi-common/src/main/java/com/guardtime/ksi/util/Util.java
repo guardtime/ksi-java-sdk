@@ -18,20 +18,34 @@
  */
 package com.guardtime.ksi.util;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import com.guardtime.ksi.exceptions.KSIException;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.*;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CodingErrorAction;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Collection;
 import java.util.Random;
 import java.util.zip.CRC32;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * A collection of miscellaneous, commonly used utility functions.
@@ -634,9 +648,89 @@ public final class Util {
     }
 
     /**
-     * This class should not be instantiated.
+     * Checks if two objects are equal. It's safe to pass null objects.
+     * @param o1 first input object
+     * @param o2 second input object
+     * @return true if both inputs are null or equal to each other
      */
-    private Util() {
+    public static boolean equals(Object o1, Object o2) {
+        return (o1 == null && o2 == null) || (o1 != null && o2 != null && o1.equals(o2));
     }
 
+    /**
+     * Checks if two collections are equal ignoring the order of components. It's safe to pass collections that might be null.
+     * @param c1 first collection
+     * @param c2 second collection
+     * @return true if both lists are null or if they have exactly the same components.
+     */
+    public static boolean equalsIgnoreOrder(Collection<?> c1, Collection<?> c2) {
+        return (c1 == null && c2 == null) || (c1 != null && c2 != null  && c1.size() == c2.size() && c1.containsAll(c2) && c2.containsAll(c1));
+    }
+
+    /**
+     * Method for checking if an element is present in int array.
+     *
+     * @param array an array of int values
+     * @param key a primitive int value
+     * @return if element is present in array
+     */
+    public static boolean containsInt(final int[] array, final int key) {
+        for (int element : array) {
+            if (element == key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a URL object from the String representation.
+     *
+     * @param url the String to parse as a URL.
+     * @return a Uniform Resource Locator object
+     */
+    public static URL toUrl(String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Malformed URL '" + url + "'", e);
+        }
+    }
+
+    /**
+     * Returns the default location of Java Runtime Environment certificate store.
+     *
+     * @return default certificate store location
+     */
+    public static String getDefaultTrustStore() {
+        return System.getProperty("java.home") + File.separatorChar + "lib" + File.separatorChar
+                + "security" + File.separatorChar + "cacerts";
+    }
+
+    /**
+     * Loads and returns the {@link java.security.KeyStore} from the file system.
+     */
+    public static KeyStore loadKeyStore(File file, String password) throws KSIException {
+        notNull(file, "Trust store file");
+        FileInputStream input = null;
+        KeyStore keyStore = null;
+        try {
+            keyStore = KeyStore.getInstance("JKS");
+            char[] passwordCharArray = password == null ? null : password.toCharArray();
+            input = new FileInputStream(file);
+            keyStore.load(input, passwordCharArray);
+        } catch (GeneralSecurityException e) {
+            throw new KSIException("Loading java key store with path " + file + " failed", e);
+        } catch (IOException e) {
+            throw new KSIException("Loading java key store with path " + file + " failed", e);
+        } finally {
+            closeQuietly(input);
+        }
+        return keyStore;
+    }
+
+    /**
+     * This class should not be instantiated.
+     */
+    private Util() {}
 }

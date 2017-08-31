@@ -31,6 +31,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+
 public class SignatureVerifierTest {
 
     private SignatureVerifier verifier;
@@ -44,7 +46,7 @@ public class SignatureVerifierTest {
         this.fallbackPolicy = Mockito.mock(Policy.class);
         this.verifier = new KSISignatureVerifier();
         this.context = Mockito.mock(VerificationContext.class);
-        Mockito.when(context.getSignature()).thenReturn(TestUtil.loadSignature("ok-sig-2014-06-2.ksig"));
+        Mockito.when(context.getSignature()).thenReturn(TestUtil.loadSignature(SIGNATURE_2017_03_14));
     }
 
     @Test
@@ -96,7 +98,7 @@ public class SignatureVerifierTest {
     public void testFallbackPolicy() throws Exception {
         Rule mockedRule = Mockito.mock(Rule.class);
         RuleResult mockedResult = Mockito.mock(RuleResult.class);
-        Mockito.when(mockedResult.getErrorCode()).thenReturn(VerificationErrorCode.GEN_1);
+        Mockito.when(mockedResult.getErrorCode()).thenReturn(VerificationErrorCode.GEN_01);
         Mockito.when(mockedResult.getResultCode()).thenReturn(VerificationResultCode.NA);
         Mockito.when(mockedRule.verify(Mockito.any(KSIVerificationContext.class))).thenReturn(mockedResult);
 

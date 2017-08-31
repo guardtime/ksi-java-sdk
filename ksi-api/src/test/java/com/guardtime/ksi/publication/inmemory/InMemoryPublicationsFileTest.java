@@ -29,17 +29,27 @@ import org.testng.annotations.Test;
 import java.io.ByteArrayInputStream;
 import java.util.Date;
 
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CERT_AND_PUBLICATION_RECORD_MISSING;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_CERT;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_HEADER;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD2;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN_WITH_NON_CIRITCAL_ELEMENTS;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_HAS_CRITICAL_ELEMENT;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_HAS_UNKNOWN_ELEMENT;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_HEADER_MISSING;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_INVALID_HASH_LENGTH;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_MULTI_HEADER;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN_WITH_CIRITCAL_ELEMENTS;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_REFERENCE_AFTER_SIGNATURE;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_REORDERED;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_SIGANTURE_MISSING;
+
 public class InMemoryPublicationsFileTest {
 
-    public static final String PUBLICATIONS_FILE_OK = "publications.tlv";
-    public static final String PUBLICATIONS_FILE_INVALID_ORDER = "publications-file/publications-file-reordered.tlv";
-    public static final String PUBLICATIONS_FILE_HEADER_MISSING = "publications-file/publications-file-header-missing.tlv";
-    public static final String PUBLICATIONS_FILE_SIGNATURE_MISSING = "publications-file/publications-file-signature-missing.tlv";
-    public static final String PUBLICATIONS_FILE_ELEMENT_AFTER_SIGNATURE = "publications-file/publications-file-reference-after-signature.tlv";
-    public static final String PUBLICATIONS_FILE_CONTAINS_UNKNOWN_ELEMENT = "publications-file/publications-file-contains-unknown-element.tlv";
-    public static final String PUBLICATIONS_FILE_CONTAINS_CRITICAL_UNKNOWN_ELEMENT = "publications-file/publications-file-contains-critical-unknown-element.tlv";
-    private static final String PUBLICATION_FILE_RECORD_INVALID_PUBLICATION_HASH_LENGTH = "publications-file/publication-one-cert-one-record-invalid-hash-length.tlv";
-    private static final String PUBLICATION_FILE_RECORD_TWO_HEADERS = "publications-file/publication-one-cert-one-record-multi-header.tlv";
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "InputStream can not be null when creating publications file")
     public void testCreatePublicationsFileUsingInvalidInputStream_ThrowsInvalidPublicationsFileException() throws Exception {
@@ -53,7 +63,7 @@ public class InMemoryPublicationsFileTest {
 
     @Test
     public void testCreatePublicationsFile_Ok() throws Exception {
-        InMemoryPublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_OK));
+        InMemoryPublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE));
         Assert.assertNotNull(publication.getVersion());
         Assert.assertNotNull(publication.getCreationTime());
         Assert.assertNull(publication.getRepositoryUri());
@@ -68,69 +78,107 @@ public class InMemoryPublicationsFileTest {
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file CMS signature is missing")
     public void testCreatePublicationsFileWithoutCmsSignature_ThrowsInvalidPublicationsFileException() throws Exception {
-        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_SIGNATURE_MISSING));
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_SIGANTURE_MISSING));
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file order is incorrect")
     public void testCreatePublicationsFileWithIncorrectElementOrder_ThrowsInvalidPublicationsFileException() throws Exception {
-        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_INVALID_ORDER));
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_REORDERED));
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = ".*Publications file order is incorrect")
     public void testCreatePublicationsFileWithElementAfterSignature_ThrowsInvalidPublicationsFileException() throws Exception {
-        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_ELEMENT_AFTER_SIGNATURE));
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_REFERENCE_AFTER_SIGNATURE));
     }
 
     @Test
     public void testCreatePublicationsFileWithoutCertificateAndPublicationRecords_Ok() throws Exception {
-        PublicationsFile publicationFile = new InMemoryPublicationsFile(TestUtil.load("publications-file/publications-file-cert-and-pub-records-missing.tlv"));
+        PublicationsFile publicationFile = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CERT_AND_PUBLICATION_RECORD_MISSING));
         Assert.assertNotNull(publicationFile);
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x2")
     public void testCreatePublicationsFileWithUnknownElement_ThrowsInvalidPublicationsFileException() throws Exception {
-        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CONTAINS_UNKNOWN_ELEMENT));
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_HAS_UNKNOWN_ELEMENT));
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x2")
     public void testCreatePublicationsFileWithCriticalUnknownElement_ThrowsInvalidPublicationsFileException() throws Exception {
-        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CONTAINS_CRITICAL_UNKNOWN_ELEMENT));
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_HAS_CRITICAL_ELEMENT));
     }
 
     @Test
     public void testGetCertificateFromPublicationsFile_Ok() throws Exception {
-        PublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_OK));
+        PublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE));
         Assert.assertNotNull(publication.findCertificateById(new byte[]{-102, 101, -126, -108}));
     }
 
     @Test(expectedExceptions = CertificateNotFoundException.class, expectedExceptionsMessageRegExp = "Certificate with id AAAAAAAAAAAAAAAAAAAAAAAAAA== not found from pubFile=.*")
     public void testGetUnknownCertificateFromPublicationsFile_ThrowsCertificateNotFoundException() throws Exception {
-        PublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_OK));
+        PublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE));
         publication.findCertificateById(new byte[19]);
     }
 
     @Test(expectedExceptions = CertificateNotFoundException.class, expectedExceptionsMessageRegExp = "Certificate with id null not found from pubFile=.*")
     public void testGetCertificateFromPublicationsFileUsingInvalidCertificateId_ThrowsCertificateNotFoundException() throws Exception {
-        PublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_OK));
+        PublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE));
         publication.findCertificateById(null);
     }
 
     @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Publications file contains multiple header components")
     public void testDecodePublicationsFileWithTwoHeaders_ThrowsInvalidPublicationsFileException() throws Exception {
-        new InMemoryPublicationsFile(TestUtil.load(PUBLICATION_FILE_RECORD_TWO_HEADERS));
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_MULTI_HEADER));
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Invalid DataHash content")
     public void testDecodePublicationsFileWithInvalidHashLength_ThrowsTLVParserException() throws Exception {
-        new InMemoryPublicationsFile(TestUtil.load(PUBLICATION_FILE_RECORD_INVALID_PUBLICATION_HASH_LENGTH));
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_INVALID_HASH_LENGTH));
     }
 
     @Test
     public void testVerifyThatActualLatestPublicationRecordIsFound_OK() throws Exception {
-        PublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_OK));
+        PublicationsFile publication = new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE));
         PublicationData latest = publication.getLatestPublication().getPublicationData();
         Assert.assertEquals(latest, publication.getPublicationRecord(new Date(latest.getPublicationTime().getTime() - 100000L)).getPublicationData());
         Assert.assertNull(publication.getPublicationRecord(new Date(latest.getPublicationTime().getTime() + 1000L)));
     }
 
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x1 encountered")
+    public void testDecodePublicationsFileWithUnknownCriticalElementInRecord() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD));
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x5 encountered")
+    public void testDecodePublicationsFileWithUnknownCriticalElementInRecord2() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_RECORD2));
+    }
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
+    public void testDecodePublicationsFileWithUnknownCriticalNestedTlv() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN));
+    }
+
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
+    public void testDecodePublicationsFileWithUnknownCriticalNestedTlvWithNonCriticalChild() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_NESTED_ELEMENT_IN_MAIN_WITH_NON_CIRITCAL_ELEMENTS));
+    }
+
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
+    public void testDecodePublicationsFileWithUnknownNonCriticalElementInMain() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN));
+    }
+
+    @Test(expectedExceptions = InvalidPublicationsFileException.class, expectedExceptionsMessageRegExp = "Invalid publications file element type=0x708")
+    public void testDecodePublicationsFileWithNonCriticalNestedTlvWithCriticalChild() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_MAIN_WITH_CIRITCAL_ELEMENTS));
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x5 encountered")
+    public void testDecodePublicationsFileWithCriticalElementInCertificateRecord() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_CERT));
+    }
+
+    @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=0x5 encountered")
+    public void testDecodePublicationsFileWithCriticalElementInPublicationHeader() throws Exception {
+        new InMemoryPublicationsFile(TestUtil.load(PUBLICATIONS_FILE_CRITICAL_ELEMENT_IN_HEADER));
+    }
 }

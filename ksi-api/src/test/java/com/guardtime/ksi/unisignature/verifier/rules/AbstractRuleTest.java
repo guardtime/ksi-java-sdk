@@ -21,6 +21,7 @@ package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -29,33 +30,36 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import org.mockito.Mockito;
 
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+
 public abstract class AbstractRuleTest {
 
-    protected static final String SIGNATURE_WITH_RFC3161_RECORD_INVALID_AGGREGATION_TIME = "signature/signature-with-rfc3161-record-invalid-aggregation-time.ksig";
-    protected static final String SIGNATURE_WITH_RFC3161_RECORD_INVALID_CHAIN_INDEX = "signature/signature-with-rfc3161-record-invalid-chain-index.ksig";
-    protected static final String SIGNATURE_WITH_RFC3161_RECORD = "signature/signature-with-rfc3161-record-ok.ksig";
-
     protected VerificationContext build(KSISignature signature) throws Exception {
-        return build(signature, null, TestUtil.loadPublicationsFile("publications.tlv"), null);
+        return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null, null);
     }
 
     protected VerificationContext build(KSISignature signature, PublicationData publication) throws Exception {
-        return build(signature, null, TestUtil.loadPublicationsFile("publications.tlv"), publication);
+        return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), publication, null);
     }
 
     protected VerificationContext build(KSISignature signature, PublicationsFile trustStore) throws Exception {
-        return build(signature, null, trustStore, null);
+        return build(signature, null, trustStore, null, null);
     }
 
     protected VerificationContext build(KSISignature signature, DataHash documentHash) throws Exception {
-        return build(signature, documentHash, TestUtil.loadPublicationsFile("publications.tlv"), null);
+        return build(signature, documentHash, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null, null);
     }
 
-    protected VerificationContext build(KSISignature signature, DataHash documentHash, PublicationsFile trustStore, PublicationData publication) throws Exception {
+    protected VerificationContext build(KSISignature signature, Long level) throws Exception {
+        return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null, level);
+    }
+
+    protected VerificationContext build(KSISignature signature, DataHash documentHash, PublicationsFile trustStore, PublicationData publication, Long level) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
+        Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V2);
         builder.setPublicationsFile(trustStore).setExtenderClient(mockedExtenderClient).setUserPublication(publication);
-        return builder.setSignature(signature).setDocumentHash(documentHash).createVerificationContext();
+        return builder.setSignature(signature).setDocumentHash(documentHash, level).createVerificationContext();
     }
 
 

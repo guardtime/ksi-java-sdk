@@ -26,21 +26,24 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
+import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE_INVALID_CHAIN_INDEX;
+
 public class Rfc3161RecordIndexRuleTest extends AbstractRuleTest {
 
     private Rfc3161RecordIndexRule rule = new Rfc3161RecordIndexRule();
 
     @Test
     public void testSignatureContainsInvalidRfc3161Index() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_WITH_RFC3161_RECORD_INVALID_CHAIN_INDEX)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE_INVALID_CHAIN_INDEX)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_10);
+        Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_12);
     }
 
     @Test
     public void testSignatureContainsValidRfc3161Index() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_WITH_RFC3161_RECORD)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }

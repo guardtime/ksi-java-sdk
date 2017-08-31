@@ -29,13 +29,17 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.INPUT_FILE;
+import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+
 public class DocumentHashVerificationRuleTest extends AbstractRuleTest {
 
     private Rule rule = new DocumentHashVerificationRule();
 
     @Test
     public void testSignatureVerificationWithoutDocumentHashReturnsOkStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertNull(result.getErrorCode());
@@ -44,22 +48,22 @@ public class DocumentHashVerificationRuleTest extends AbstractRuleTest {
     @Test
     public void testSignatureVerificationWithValidDocumentHashReturnsOkStatus_Ok() throws Exception {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
-        hasher.addData(TestUtil.loadFile("infile"));
-        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig"), hasher.getHash())).getResultCode(), VerificationResultCode.OK);
+        hasher.addData(TestUtil.loadFile(INPUT_FILE));
+        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14), hasher.getHash())).getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
     public void testSignatureVerificationWithInvalidDocumentHashReturnsOkStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig"), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_1);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_01);
     }
 
     @Test
     public void testSignatureVerificationWithInvalidRfc3161OutputHashReturnsFailStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("signature/signature-with-rfc3161-record-ok.ksig"), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_1);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_01);
     }
 
 }

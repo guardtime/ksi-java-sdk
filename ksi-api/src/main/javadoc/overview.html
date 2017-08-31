@@ -39,6 +39,8 @@ The KSI SDK Java project contains the following modules:
         with the server.
     </li>
     <li>ksi-service-client-tcp - KSI TCP signing service client implementation.</li>
+    <li>ksi-service-ha - KSI High-availability service implementation (Implements KSISigningService and KSIExtenderService).</li>
+    <li>ksi-blocksigner - module for signing multiple data hashes as a block, in one operation.</li>
     <li>ksi-api - main module</li>
 </ul>
 
@@ -121,6 +123,9 @@ The following clients are currently implemented:
     <li>
         <em>TCPClient</em> - uses TCP protocol. NB! Only signing is supported!
     </li>
+    <li>
+        <em>HAService</em> - Combines one to many KSISigningServices and one to many KSIExtenderClients or KSIExtenderServices to achieve redundancy. NB! Only signing and extending is supported!
+    </li>
 </ul>
 Method <em>setPublicationsFilePkiTrustStore(trustStore)</em> from <em>com.guardtime.ksi.KSIBuilder</em> class can be
 used to specify the default Java Key Store to be used when verifying the publications file. This key store is
@@ -156,10 +161,13 @@ and custom trust store:
 Method <em>setDefaultSigningHashAlgorithm(HashAlgorithm algorithm)</em> from <em>com.guardtime.ksi.KSIBuilder</em> class
 is used to specify the default signing hash algorithm.
 
+For all the following operations, KSI object can be used. There are also separate interfaces created. The following examples cover
+usage of KSI interface and also operation specific one.
 
 <h3>Read Signature</h3>
 The following code can be used to read signature:
 <pre><code>
+    //KSI
     KSI ksi = ...
 
     // read signature from disk
@@ -171,11 +179,17 @@ The following code can be used to read signature:
     // read using byte array
     byte[] bytes = getSignatureBytes();
     KSISignature signature3 = ksi.read(bytes);
+    
+    
+    //using Reader interface
+    Reader reader = new SignatureReader();
+    KSISignature signature = reader.read(new File("signature.ksig"));
 
 </code></pre>
 <h3>Create Signature</h3>
 The following code can be used to create signature:
 <pre><code>
+    //KSI
     KSI ksi = ...
 
     // synchronous signing
@@ -183,6 +197,15 @@ The following code can be used to create signature:
     // asynchronous signing
     Future&lt;KSISignature&gt; future = ksi.asyncSign(new File("asyncFile.txt"));
     KSISignature signature2 = future.getResult();
+
+
+    //using Signer interface
+    CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings("signing-service-url", KSIServiceCredentials);
+    SimpleHttpSigningClient signingClient = new SimpleHttpSigningClient(settings);
+
+    Signer signer = new SignerBuilder().setSigningService(new KSISigningClientServiceAdapter(signingClient)).build();
+
+    KSISignature signature = signer.sign(new File("file.txt"));
 
 </code></pre>
 <h3>Extend Signature</h3>
@@ -199,6 +222,16 @@ The following code can be used to extend signature:
     // asynchronous extending
     Future&lt;KSISignature&gt; future = ksi.asyncExtend(signature);
     KSISignature extendedSignature2 = future.getResult();
+    
+    
+    //using Extender interface
+    CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings("extender-service-url", KSIServiceCredentials);
+    SimpleHttpExtenderClient extenderClient = new SimpleHttpExtenderClient(settings);
+
+    Extender extender = new ExtenderBuilder().setExtendingService(new KSIExtendingClientServiceAdapter(extenderClient))
+                                             .setPublicationsHandler(publicationsHandler).build();
+
+    KSISignature extendedSignature = extender.extend(signature);
 
 </code></pre>
 <h3>Verify Signature</h3>
@@ -253,32 +286,89 @@ The following code can be used to verify signature:
     VerificationContext context = ...
     Policy policy = new KeyBasedVerificationPolicy();
     VerificationResult result = ksi.verify(context, policy);
+    
+    
+    //using Verifier interface
+    Verifier verifier = new SignatureVerifier();
+      
+    VerificationResult result = verifier.verify(signature, ContextAwarePolicyAdapter.createKeyPolicy(publicationsHandler));
 
 </code></pre>
+
+<h3>Get info about configuration</h3>
+
+KSI SDK can be used to get information about KSISigningService's or KSIExtenderService's configuration. If the service is connected to a single gateway then it represents the configuration of this gateway.
+If the service composes of multiple other clients then their configurations are consolidated into one. To get information about a services configuration one should register a configuration update listener.
+Configuration updates can be pushed by gateways without client explicitly asking for them and they can be invoked by service also. Following is the example how to register a listener for aggregator
+configuration updates and how to call for an update (works similarly with KSIExtenderClient):
+
+<pre><code>
+    KSISigningClient signingClient = ...
+    signingClient.registerAggregatorConfigurationListener(new ConfigurationListener&lt;AggregatorConfiguration&gt; {
+        public void updated(AggregatorConfiguration aggregatorConfiguration) {
+            // do something with the updated configuration
+        }
+
+        public void updateFailed(Throwable t) {
+            // do something with the exception that made the configuration update fail
+        }
+    });
+    signingClient.getAggregationConfiguration(); // Invokes a configuration request. Does not block until it responds. Gives back a Future which can be used as an alternative way in addition to listeners to access the result.
+</code></pre>
+
 <h2>HTTP Proxy Configuration</h2>
 By adding the following JVM arguments to Java, KSI SDK will use the proxy to create HTTP requests.
 <ul>
     <li>
-        http.proxyHost=MY_PROXY_URL_OR_IP
+        http.proxyHost=PROXY_URL_OR_IP
     </li>
     <li>
-        http.proxyPort=MY_PROXY_PORT
+        http.proxyPort=PROXY_PORT
     </li>
 </ul>
 Alternatively the <i>HTTPConnectionParameters</i> class can be used to configure HTTP proxy. The following code creates the
 <i>SimpleHttpClient</i> using the proxy with given configuration.
 <pre><code>
-    KSIServiceCredentials credentials = new KSIServiceCredentials("anon", "anon");
-    HttpClientSettings settings = new HttpClientSettings("my_signing_url", "my_extending_url",
-    "my_publications_file_url", credentials);
+    KSIServiceCredentials credentials = new KSIServiceCredentials("user", "key");
+    HttpClientSettings settings = new HttpClientSettings("signing_url", "extending_url",
+    "publications_file_url", credentials);
     HTTPConnectionParameters parameters = new HTTPConnectionParameters();
-    parameters.setProxyUrl(new URL("my_proxy_url"));
+    parameters.setProxyUrl(new URL("proxy_url"));
     parameters.setProxyUser("proxy_username");
     parameters.setProxyPassword("proxy_password");
     settings.setParameters(parameters);
     SimpleHttpClient httpClient = new SimpleHttpClient(settings);
 </code></pre>
 <b>NB! When the proxy server uses username/password for authentication then the <i>HTTPConnectionParameters</i> class must be used to configure proxy.</b>
+
+<h2>HAService Configuration</h2>
+<p>More redundant connection to gateway can be achieved using HAService.
+HAService combines multiple other services, sends requests to all of them in parallel and gives back the first successful one.</p>
+
+<p>To configure HAService, initialize the services it uses and build a HA services with those instances:</p>
+
+<pre>
+    KSISigningClient signingClient1 = ...
+    KSISigningClient signingClient2 = ...
+    KSISigningClient signingClient3 = ...
+
+    KSIExtenderClient extenderClient1 = ...
+    KSIExtenderClient extenderClient2 = ...
+    KSIExtenderClient extenderClient3 = ...
+
+    SigningHAService signingHaService = new SigningHAService.Builder()
+                            .addClients(Arrays.asList(signingClient1, signingClient2, signingClient3))
+                            .build();
+    ExtendingHaService extendingHaService = new ExtendingHAService.Builder()
+                            .addClients(Arrays.asList(extenderClient1, extenderClient2, extenderClient3))
+                            .build();
+
+    KSI ksi = new KSIBuilder()
+                            .setSigningService(signingHaService)
+                            .setExtendingService(extendingHaService)
+                            // set everything else
+                            .build();
+</pre>
 
 
 <h2>Acknowledgements</h2>

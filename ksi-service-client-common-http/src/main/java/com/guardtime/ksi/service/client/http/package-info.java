@@ -17,6 +17,6 @@
  * reserves and retains all trademark rights.
  */
 /**
- * KSI HTTP clinet
+ * KSI HTTP client
  */
 package com.guardtime.ksi.service.client.http;

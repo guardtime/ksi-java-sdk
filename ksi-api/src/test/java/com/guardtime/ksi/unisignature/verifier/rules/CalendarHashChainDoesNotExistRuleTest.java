@@ -52,7 +52,7 @@ public class CalendarHashChainDoesNotExistRuleTest {
         Mockito.when(mockedContext.getCalendarHashChain()).thenReturn(Mockito.mock(CalendarHashChain.class));
         RuleResult result = rule.verify(mockedContext);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_2);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
 
     }
 

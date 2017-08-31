@@ -24,11 +24,11 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.PduMessageHeader;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
 import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.util.Util;
-import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,12 +38,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.guardtime.ksi.util.Util.containsInt;
+
 /**
  * Common PDU implementation for aggregation and extension request/response classes
  */
 abstract class PduV2 extends TLVStructure {
 
     private static final Logger logger = LoggerFactory.getLogger(PduV2.class);
+
+    private static final int[] PUSHABLE_ELEMENT_TYPES = new int[] {0x04};
 
     protected List<TLVElement> payloads = new LinkedList<TLVElement>();
     private PduMessageHeader header;
@@ -79,9 +83,9 @@ abstract class PduV2 extends TLVStructure {
     /**
      * Constructor for reading a response PDU message
      */
-    public PduV2(TLVElement rootElement, byte[] loginKey) throws KSIException {
+    public PduV2(TLVElement rootElement, ServiceCredentials credentials) throws KSIException {
         super(rootElement);
-        readMac(rootElement, loginKey);
+        readMac(rootElement, credentials);
         readHeader(rootElement);
         readPayloads(rootElement);
         if (payloads.isEmpty()) {
@@ -115,6 +119,8 @@ abstract class PduV2 extends TLVStructure {
         for (TLVElement payload : payloads) {
             if (payload.getType() == tlvType) {
                 payloadElements.add(payload);
+            } else if (!isPushableElement(payload)) {
+                logger.warn("Non-pushable payload with type=0x{} encountered", Integer.toHexString(payload.getType()));
             }
         }
         return payloadElements;
@@ -168,20 +174,26 @@ abstract class PduV2 extends TLVStructure {
                 payloads.add(element);
             } else {
                 verifyCriticalFlag(element);
+                logger.info("Unknown non-critical TLV element with tag=0x{} encountered", Integer.toHexString(element.getType()));
             }
         }
     }
 
     private boolean isSupportedPayloadElement(TLVElement element) {
         int type = element.getType();
-        return Arrays.contains(getSupportedPayloadTypes(), type);
+        return containsInt(getSupportedPayloadTypes(), type);
     }
 
-    private void readMac(TLVElement rootElement, byte[] loginKey) throws KSIException {
+    private boolean isPushableElement(TLVElement element) {
+        int type = element.getType();
+        return containsInt(PUSHABLE_ELEMENT_TYPES, type);
+    }
+
+    private void readMac(TLVElement rootElement, ServiceCredentials credentials) throws KSIException {
         TLVElement lastChild = rootElement.getLastChildElement();
         if (lastChild != null && lastChild.getType() == MessageMac.ELEMENT_TYPE) {
             this.mac = new MessageMac(lastChild);
-            verifyMac(loginKey);
+            verifyMac(credentials);
         } else {
             TLVElement errorElement = rootElement.getFirstChildElement(getErrorPayloadType());
             if (errorElement != null) {
@@ -192,9 +204,13 @@ abstract class PduV2 extends TLVStructure {
         }
     }
 
-    private void verifyMac(byte[] loginKey) throws KSIException {
+    private void verifyMac(ServiceCredentials credentials) throws KSIException {
         DataHash macValue = mac.getMac();
-        DataHash messageMac = calculateMac(macValue.getAlgorithm(), loginKey);
+        if (macValue.getAlgorithm() != credentials.getHmacAlgorithm()) {
+            throw new KSIException(
+                    "HMAC algorithm mismatch. Expected " + credentials.getHmacAlgorithm().getName() + ", received " + macValue.getAlgorithm().getName());
+        }
+        DataHash messageMac = calculateMac(macValue.getAlgorithm(), credentials.getLoginKey());
         if (!macValue.equals(messageMac)) {
             throw new InvalidMessageAuthenticationCodeException("Invalid MAC code. Expected " + macValue + ", calculated " + messageMac);
         }

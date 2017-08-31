@@ -30,7 +30,6 @@ import com.guardtime.ksi.unisignature.CalendarHashChainLink;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Calendar hash chains are represented by `calendar chain' structures that consist of: <ul> <li>index fields:
@@ -90,7 +89,6 @@ class InMemoryCalendarHashChain extends TLVStructure implements CalendarHashChai
             throw new InvalidCalendarHashChainException("Calendar hash chain does not contain link elements");
         }
 
-        this.registrationTime = new Date(calculateRegistrationTime() * 1000);
         this.outputHash = calculateCalendarHashChainHash();
     }
 
@@ -103,66 +101,12 @@ class InMemoryCalendarHashChain extends TLVStructure implements CalendarHashChai
     }
 
     /**
-     * Calculates the time when the signature was registered in the KSI hash calendar. See the KSI specification chapter
-     * 4.1.4 "Time Verification Algorithm".
-     */
-    long calculateRegistrationTime() throws InvalidCalendarHashChainException {
-        long r = publicationTime.getTime() / 1000; // publication time in seconds
-        long t = 0;
-        // iterate over the chain in reverse
-        ListIterator<CalendarHashChainLink> li = chain.listIterator(chain.size());
-        while (li.hasPrevious()) {
-            if (r <= 0) {
-                throw new InvalidCalendarHashChainException("Calendar hash chain shape is inconsistent with publication time");
-            }
-            CalendarHashChainLink link = li.previous();
-
-            if (!link.isRightLink()) {
-                r = highBit(r) - 1;
-            } else {
-                t = t + highBit(r);
-                r = r - highBit(r);
-            }
-        }
-
-        if (r != 0) {
-            throw new InvalidCalendarHashChainException("Calendar hash chain shape inconsistent with publication time");
-        }
-
-        return t;
-    }
-
-    /**
-     * Returns the time when the signature was registered in the KSI hash calendar.
-     * <p/>
-     * For an internally consistent signature, this is the same as the value of the aggregation time field.
-     *
-     * @return the registration time.
-     * @see #getAggregationTime()
-     */
-    public Date getRegistrationTime() {
-        return registrationTime;
-    }
-
-    /**
      * Returns the hash chain links. List is ordered.
      *
      * @return list of {@link CalendarHashChainLink} elements. always presents.
      */
     public List<CalendarHashChainLink> getChainLinks() {
         return chain;
-    }
-
-    /**
-     * Returns the value of the highest 1-bit in r, which is also the highest integral power of 2 that is less than or
-     * equal to r, or 2^floor(log2(r)).
-     *
-     * @param r
-     *         input value
-     * @return value of the highest 1-bit in r
-     */
-    private long highBit(long r) {
-        return 1L << (63 - Long.numberOfLeadingZeros(r));
     }
 
     /**

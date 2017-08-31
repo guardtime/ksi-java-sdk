@@ -49,8 +49,8 @@ public class UserProvidedPublicationTimeMatchesExtendedResponseRule extends Base
             return VerificationResultCode.FAIL;
         }
         // calculate round time and check that it matches with aggregation hash chain aggregation time
-        if (!signature.getAggregationTime().equals(extendedCalendarHashChain.getRegistrationTime())) {
-            LOGGER.info("Signature aggregation hash chain aggregation time does not math with extender registration time. Expected {}, got {}", signature.getAggregationTime(), extendedCalendarHashChain.getRegistrationTime());
+        if (!signature.getAggregationTime().equals(extendedCalendarHashChain.getAggregationTime())) {
+            LOGGER.info("Signature aggregation hash chain aggregation time does not math with extender registration time. Expected {}, got {}", signature.getAggregationTime(), extendedCalendarHashChain.getAggregationTime());
             return VerificationResultCode.FAIL;
         }
 

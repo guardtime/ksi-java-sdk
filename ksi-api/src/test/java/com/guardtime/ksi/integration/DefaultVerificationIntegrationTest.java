@@ -28,13 +28,23 @@ import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
-import com.guardtime.ksi.unisignature.verifier.policies.*;
+import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.Policy;
+import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
 import com.guardtime.ksi.util.Util;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.TestUtil.loadFile;
+import static com.guardtime.ksi.CommonTestUtil.loadFile;
+import static com.guardtime.ksi.Resources.SIGNATURE_CHANGED_CHAINS;
+import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_TOO_LONG;
+import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE;
+import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR;
+import static com.guardtime.ksi.Resources.SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE;
 
 public class DefaultVerificationIntegrationTest extends AbstractCommonIntegrationTest {
     private static KSIBuilder ksiBuilder;
@@ -54,7 +64,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
             ksiTest.sign(new byte[32]);
         } catch (InvalidSignatureContentException e) {
             Assert.assertNotNull(e.getSignature(), "Signature is not provided with exception.");
-            Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.GEN_2);
+            Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.GEN_02);
             throw e;
         }
     }
@@ -62,7 +72,7 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Calendar hash chain input hash mismatch.*")
     public void testExtendInvalidSignature_InvalidSignatureContentException_INT3() throws Exception {
         KSI ksiTest = ksiBuilder.build();
-        KSISignature signature = ksiTest.read(loadFile("calendar-based-verification/all-wrong-hash-chains-in-signature.ksig"));
+        KSISignature signature = ksiTest.read(loadFile(SIGNATURE_CHANGED_CHAINS));
 
         PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData("AAAAAA-CX5TF7-IAOXTG-6N4TGI-AIGLHG-ZD2NOX-WHGLYG-HHOXAD-XJ3FIN-GXJSGS-72NPRL-3ECEBJ"));
         try {
@@ -78,27 +88,32 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     public void testInternalVerificationAsDefaultPolicy_InvalidSignatureContentException_INT11() throws Exception {
         Policy policy = new InternalVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile("aggregation-hash-chain-metadata/metadata-padding-too-long.ksig"));
+        ksiTest.read(loadFile(SIGNATURE_METADATA_PADDING_TOO_LONG));
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Certificate not found.*")
     public void testKeyBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_KEY1() throws Exception {
         Policy policy = new KeyBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile("internal-verification-authentication-records/NewSignature-CalAuth-WrongCertID.ksig"));
+        ksiTest.read(loadFile(SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE));
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*Unsupported default verification policy.*")
+    public void testUserProvidedPublicationBasedVerificationAsDefaultVerificationPolicy() throws Exception {
+        ksiBuilder.setDefaultVerificationPolicy(new UserProvidedPublicationBasedVerificationPolicy()).build();
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Aggregation hash chain root hash and calendar database hash chain input hash mismatch.*")
     public void testCalendarBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_CAL2() throws Exception {
         Policy policy = new CalendarBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile("calendar-based-verification/all-wrong-hash-chains-in-signature.ksig"));
+        ksiTest.read(loadFile(SIGNATURE_OTHER_CORE));
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Extender response input hash mismatch.*")
     public void testPublicationFileBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_PUB3() throws Exception {
         Policy policy = new PublicationsFileBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile("calendar-based-verification/all-wrong-hash-chains-in-signature.ksig"));
+        ksiTest.read(loadFile(SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR));
     }
 }

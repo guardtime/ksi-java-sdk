@@ -20,6 +20,7 @@ package com.guardtime.ksi.pdu;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
 
 import java.util.Date;
@@ -32,31 +33,31 @@ public interface PduFactory {
     /**
      * Creates a new aggregation request PDU message.
      */
-    AggregationRequest createAggregationRequest(KSIRequestContext context, DataHash imprint, Long level) throws KSIException;
+    AggregationRequest createAggregationRequest(KSIRequestContext context, ServiceCredentials credentials, DataHash imprint, Long level) throws KSIException;
 
     /**
      * Reads an aggregation response.
      */
-    AggregationResponse readAggregationResponse(KSIRequestContext context, TLVElement input) throws KSIException;
+    AggregationResponse readAggregationResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException;
 
     /**
      * Creates a new extension request.
      */
-    ExtensionRequest createExtensionRequest(KSIRequestContext context, Date aggregationTime, Date publicationTime) throws KSIException;
+    ExtensionRequest createExtensionRequest(KSIRequestContext context, ServiceCredentials credentials, Date aggregationTime, Date publicationTime) throws KSIException;
 
     /**
      * Reads an extension response.
      */
-    ExtensionResponse readExtensionResponse(KSIRequestContext context, TLVElement input) throws KSIException;
+    ExtensionResponse readExtensionResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException;
 
-    AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext requestContext) throws KSIException;
+    AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext requestContext, ServiceCredentials credentials) throws KSIException;
 
-    AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext requestContext, TLVElement input) throws KSIException;
+    AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext requestContext, ServiceCredentials credentials, TLVElement input) throws KSIException;
 
     /**
      * This method can be used to create an extension configuration request
      */
-    ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext requestContext) throws KSIException;
+    ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext requestContext, ServiceCredentials credentials) throws KSIException;
 
-    ExtenderConfiguration readExtenderConfigurationResponse(KSIRequestContext context, TLVElement input) throws KSIException;
+    ExtenderConfiguration readExtenderConfigurationResponse(ServiceCredentials credentials, TLVElement input) throws KSIException;
 }

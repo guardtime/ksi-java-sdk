@@ -19,95 +19,74 @@
 package com.guardtime.ksi.service.http.simple;
 
 import com.guardtime.ksi.service.client.KSIClientException;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
-import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
-import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.http.AbstractHttpClient;
 import com.guardtime.ksi.service.client.http.AbstractHttpClientSettings;
-import com.guardtime.ksi.util.Base64;
-import com.guardtime.ksi.util.Util;
+import com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings;
+import com.guardtime.ksi.service.client.http.HTTPConnectionParameters;
+import com.guardtime.ksi.service.client.http.HttpSettings;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.*;
 
 /**
  * Simple HTTP client
  */
-public class SimpleHttpClient extends AbstractHttpClient implements KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
+public class SimpleHttpClient extends AbstractHttpClient {
+
+    private SimpleHttpSigningClient signingClient;
+    private SimpleHttpExtenderClient extenderClient;
+    private SimpleHttpPublicationsFileClient publicationsFileClient;
+
+
+    public SimpleHttpClient(SimpleHttpSigningClient signingClient, SimpleHttpExtenderClient extenderClient,
+            SimpleHttpPublicationsFileClient publicationsFileClient) {
+        this.signingClient = signingClient;
+        this.extenderClient = extenderClient;
+        this.publicationsFileClient = publicationsFileClient;
+    }
 
     public SimpleHttpClient(AbstractHttpClientSettings settings) {
         super(settings);
+        HTTPConnectionParameters params =
+                new HTTPConnectionParameters(settings.getConnectionTimeout(), settings.getReadTimeout());
+        params.setProxyUrl(settings.getProxyUrl());
+        params.setProxyUser(settings.getProxyUser());
+        params.setProxyPassword(settings.getProxyPassword());
+        signingClient = new SimpleHttpSigningClient(
+                new CredentialsAwareHttpSettings(settings.getSigningUrl().toString(), settings.getCredentials(), params));
+        extenderClient = new SimpleHttpExtenderClient(
+                new CredentialsAwareHttpSettings(settings.getExtendingUrl().toString(), settings.getCredentials(), params));
+        publicationsFileClient =
+                new SimpleHttpPublicationsFileClient(new HttpSettings(settings.getPublicationsFileUrl().toString()));
+
     }
 
     public SimpleHttpPostRequestFuture sign(InputStream request) throws KSIClientException {
-        return post(request, settings.getSigningUrl(), settings);
+        return signingClient.sign(request);
     }
 
     public SimpleHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
-        return post(request, settings.getExtendingUrl(), settings);
+        return extenderClient.extend(request);
     }
 
     public SimpleHttpGetRequestFuture getPublicationsFile() throws KSIClientException {
-        HttpURLConnection connection;
-        try {
-            connection = getConnection(settings.getPublicationsFileUrl(), settings);
-            connection.setRequestMethod("GET");
-            return new SimpleHttpGetRequestFuture(connection);
-        } catch (IOException e) {
-            throw new KSIClientException("HTTP request failed", e);
-        }
-    }
-
-    private SimpleHttpPostRequestFuture post(InputStream request, URL url, AbstractHttpClientSettings settings) throws KSIClientException {
-        OutputStream outputStream = null;
-        try {
-            HttpURLConnection connection = getConnection(url, settings);
-            connection.setRequestProperty(HEADER_NAME_CONTENT_TYPE, HEADER_APPLICATION_KSI_REQUEST);
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            outputStream = connection.getOutputStream();
-            Util.copyData(request, outputStream);
-
-            return new SimpleHttpPostRequestFuture(connection);
-        } catch (IOException e) {
-            throw new KSIClientException("HTTP request failed", e);
-        } finally {
-            Util.closeQuietly(outputStream);
-        }
-    }
-
-    public HttpURLConnection getConnection(URL url, AbstractHttpClientSettings settings) throws IOException {
-        URLConnection connection;
-        if (settings.getProxyUrl() != null) {
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(settings.getProxyUrl().getHost(), settings.getProxyUrl().getPort()));
-            connection = url.openConnection(proxy);
-        } else {
-            connection = url.openConnection();
-        }
-
-        if (!(connection instanceof HttpURLConnection)) {
-            throw new ProtocolException("Not an HTTP URL: " + url);
-        }
-
-        if (settings.getConnectionTimeout() != -1) {
-            connection.setConnectTimeout(settings.getConnectionTimeout());
-        }
-
-        if (settings.getReadTimeout() != -1) {
-            connection.setReadTimeout(settings.getReadTimeout());
-        }
-
-        if (settings.getProxyUser() != null && !"".equals(settings.getProxyUser())) {
-            String auth = "Basic " + Base64.encode(Util.toByteArray(settings.getProxyUser() + ":" + settings.getProxyPassword()));
-            connection.setRequestProperty("Proxy-Authorization", auth);
-        }
-
-        return ((HttpURLConnection) connection);
+        return publicationsFileClient.getPublicationsFile();
     }
 
     public void close() {
+        signingClient.close();
+        extenderClient.close();
+        publicationsFileClient.close();
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleHttpClient{Gateway='" + signingClient.getUrl()
+            + "', Extender='" + extenderClient.getUrl()
+            + "', Publications='" + publicationsFileClient.getUrl()
+            + "', Signer LoginID='" + signingClient.getServiceCredentials().getLoginId()
+            + "', Extender LoginID='" + extenderClient.getServiceCredentials().getLoginId()
+            + "', Signer PDUVersion='" + signingClient.getPduVersion()
+            + "', Extender PDUVersion='" + signingClient.getPduVersion() +"'}";
     }
 
 }

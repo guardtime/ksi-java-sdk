@@ -31,6 +31,10 @@ import org.testng.annotations.Test;
 
 import java.util.Date;
 
+import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+
 public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTest {
 
     private PublicationsFileContainsPublicationRule rule = new PublicationsFileContainsPublicationRule();
@@ -40,25 +44,25 @@ public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTes
     @BeforeMethod
     public void setUp() throws Exception {
         this.context = Mockito.mock(VerificationContext.class);
-        Mockito.when(context.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile("publications.tlv"));
+        Mockito.when(context.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile(PUBLICATIONS_FILE));
     }
 
     @Test
     public void testPublicationFileContainsPublication_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2-extended.ksig"), TestUtil.loadPublicationsFile("publications.tlv")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14), TestUtil.loadPublicationsFile(PUBLICATIONS_FILE)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
-    public void testPublicationFileDoesntContainsPublication_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("publication-based-verification/ExtendedSignature-NoPubRec.ksig"), TestUtil.loadPublicationsFile("publications.tlv")));
+    public void testSignatureDoesNotContainPublicationRecordButSuitableInPublicationsFile_Ok() throws Exception {
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14), TestUtil.loadPublicationsFile(PUBLICATIONS_FILE)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
     }
 
     @Test
-    public void testPublicationFileDoesNotContainPublication_Ok() throws Exception {
+    public void testPublicationFileDoesNotContainPublication_NA() throws Exception {
         CalendarHashChain mockedChain = Mockito.mock(CalendarHashChain.class);
-        Mockito.when(mockedChain.getRegistrationTime()).thenReturn(new Date());
+        Mockito.when(mockedChain.getAggregationTime()).thenReturn(new Date());
         Mockito.when(context.getCalendarHashChain()).thenReturn(mockedChain);
         Assert.assertEquals(rule.verify(context).getResultCode(), VerificationResultCode.NA);
     }

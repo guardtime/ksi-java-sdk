@@ -23,6 +23,7 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.util.Util;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -32,9 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * KSI TCP client for signing.
@@ -44,15 +43,13 @@ public class TCPClient implements KSISigningClient {
     private static final Logger logger = LoggerFactory.getLogger(TCPClient.class);
 
     private IoSession tcpSession;
-    private ExecutorService executorService;
-    private TCPClientSettings tcpClientSettings;
-    private NioSocketConnector connector;
+    private final TCPClientSettings tcpClientSettings;
+    private final NioSocketConnector connector;
 
     public TCPClient(TCPClientSettings tcpClientSettings) {
+        Util.notNull(tcpClientSettings, "TCPClientSettings.tcpClientSettings");
         this.tcpClientSettings = tcpClientSettings;
         this.connector = createConnector();
-        executorService = Executors.newCachedThreadPool();
-        ((ThreadPoolExecutor) executorService).setMaximumPoolSize(tcpClientSettings.getTcpTransactionThreadPoolSize());
     }
 
     public Future<TLVElement> sign(InputStream request) throws KSITCPTransactionException {
@@ -63,8 +60,8 @@ public class TCPClient implements KSISigningClient {
         }
 
         try {
-            return new KSITCPRequestFuture(executorService.submit(new TCPTransactionHolder(request, tcpSession,
-                    tcpClientSettings.getTcpTransactionTimeoutSec())));
+            return new KSITCPRequestFuture(request, tcpSession,
+                    TimeUnit.SECONDS.toMillis(tcpClientSettings.getTcpTransactionTimeoutSec()));
         } catch (Throwable e) {
             throw new KSITCPTransactionException("There was a problem with initiating a TCP signing transaction with endpoint " +
                     tcpClientSettings.getEndpoint() + ".", e);
@@ -106,6 +103,15 @@ public class TCPClient implements KSISigningClient {
         connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TransactionCodecFactory()));
         connector.setHandler(new TCPSessionHandler());
         return connector;
+    }
+
+    @Override
+    public String toString() {
+        return "TCPClient{" +
+                "Gateway='" + tcpClientSettings.getEndpoint() + "', " +
+                "LoginID='" + tcpClientSettings.getServiceCredentials().getLoginId() + "', " +
+                "PDUVersion='" + tcpClientSettings.getPduVersion() +
+                "'}";
     }
 
 }

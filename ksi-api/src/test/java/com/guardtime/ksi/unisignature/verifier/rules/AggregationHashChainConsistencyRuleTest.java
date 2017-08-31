@@ -26,13 +26,16 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_INVALID_INPUT_HASH;
+
 public class AggregationHashChainConsistencyRuleTest extends AbstractRuleTest {
 
     private AggregationHashChainConsistencyRule rule = new AggregationHashChainConsistencyRule();
 
     @Test
     public void testSignatureWithInconsistentAggregationChainsReturnsFailedStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("bad-aggregation-chain.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_AGGREGATION_HASH_CHAIN_INVALID_INPUT_HASH)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(rule.getErrorCode(), VerificationErrorCode.INT_01);
@@ -40,7 +43,7 @@ public class AggregationHashChainConsistencyRuleTest extends AbstractRuleTest {
 
     @Test
     public void testSignatureWithCorrectAggregationChainsReturnsOkStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature("ok-sig-2014-06-2.ksig")));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
         Assert.assertNull(result.getErrorCode());
     }

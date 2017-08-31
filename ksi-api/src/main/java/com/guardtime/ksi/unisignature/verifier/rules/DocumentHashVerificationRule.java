@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * THis rule is used to verify document hash. If RFC3161 record is present then the document hash must equal to RFC3161
+ * This rule is used to verify document hash. If RFC3161 record is present then the document hash must equal to RFC3161
  * input hash. If RFC3161 record isn't present then document hash must equal to first aggregation hash chain input hash.
  * If document hash isn't provided the status {@link VerificationResultCode#OK} will be returned.
  */
@@ -57,7 +57,7 @@ public class DocumentHashVerificationRule extends BaseRule {
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.GEN_1;
+        return VerificationErrorCode.GEN_01;
     }
 
 }

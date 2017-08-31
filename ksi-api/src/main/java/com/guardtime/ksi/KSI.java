@@ -21,13 +21,7 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.AggregatorConfiguration;
-import com.guardtime.ksi.pdu.ExtenderConfiguration;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.publication.PublicationRecord;
-import com.guardtime.ksi.publication.PublicationsFile;
-import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -36,181 +30,11 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 
 import java.io.Closeable;
-import java.io.File;
-import java.io.InputStream;
 
 /**
  * An instance of this class can be obtained using {@link KSIBuilder} class.
  */
-public interface KSI extends Closeable {
-
-    /**
-     * This method can be used to createSignature keyless signature from input stream.
-     *
-     * @param input
-     *         the {@link InputStream} to createSignature from. must not be null.
-     * @return instance of {@link KSISignature}
-     * @throws KSIException
-     *         when error occurs (e.g file contains invalid TLV structures)
-     */
-    KSISignature read(InputStream input) throws KSIException;
-
-    /**
-     * This method can be used to convert byte array to {@link KSISignature} instance.
-     *
-     * @param bytes
-     *         bytes to createSignature. must not be null.
-     * @return instance of {@link KSISignature}
-     * @throws KSIException
-     *         when error occurs (e.g file contains invalid TLV structures)
-     */
-    KSISignature read(byte[] bytes) throws KSIException;
-
-    /**
-     * This method can be used to createSignature {@link KSISignature} from file.
-     *
-     * @param file
-     *         file to createSignature
-     * @return instance of {@link KSISignature}
-     * @throws KSIException
-     *         when error occurs (e.g file contains invalid TLV structures)
-     */
-    KSISignature read(File file) throws KSIException;
-
-    /**
-     * This method is used to sign data hash.
-     *
-     * @param dataHash
-     *         instance of {@link DataHash} to sign. not null.
-     * @return instance of {@link KSISignature}
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    KSISignature sign(DataHash dataHash) throws KSIException;
-
-    /**
-     * This method is used to sign a file. Uses hash algorithm defined by method {@link
-     * KSIBuilder#setDefaultSigningHashAlgorithm(HashAlgorithm)}.
-     *
-     * @param file
-     *         file to sign. not null.
-     * @return instance of {@link KSISignature}
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    KSISignature sign(File file) throws KSIException;
-
-    /**
-     * This method is used to sign a byte array. Uses hash algorithm defined by method {@link
-     * KSIBuilder#setDefaultSigningHashAlgorithm(HashAlgorithm)}.
-     *
-     * @param bytes
-     *         bytes to sign. not null.
-     * @return instance of {@link KSISignature}
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    KSISignature sign(byte[] bytes) throws KSIException;
-
-    /**
-     * GetAggregatorConfiguration method is used to ask aggregation configuration from KSI gateway/aggregator.Only supported
-     * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
-     */
-    AggregatorConfiguration getAggregatorConfiguration() throws KSIException;
-
-    /**
-     * GetExtenderConfiguration method is used to ask extender configuration from KSI gateway/aggregator. Only supported
-     * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
-     */
-    ExtenderConfiguration getExtenderConfiguration() throws KSIException;
-
-    /**
-     * This method is used to sign data hash asynchronously. Use method {@link Future#getResult()} to get keyless
-     * signature.
-     *
-     * @param dataHash
-     *         instance of {@link DataHash} to sign. not null.
-     * @return instance of {@link Future}
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException;
-
-    /**
-     * This method is used to sign a file asynchronously. Use method {@link Future#getResult()} to get keyless
-     * signature.  Uses hash algorithm defined by method {@link KSIBuilder#setDefaultSigningHashAlgorithm(HashAlgorithm)}.
-     *
-     * @param file
-     *         file to sign. not null.
-     * @return instance of {@link Future}
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    Future<KSISignature> asyncSign(File file) throws KSIException;
-
-    /**
-     * This method is used to sign a byte array asynchronously. Use method {@link Future#getResult()} to get keyless
-     * signature.  Uses hash algorithm defined by method {@link KSIBuilder#setDefaultSigningHashAlgorithm(HashAlgorithm)}.
-     *
-     * @param bytes
-     *         file to sign. not null.
-     * @return instance of {@link Future}
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    Future<KSISignature> asyncSign(byte[] bytes) throws KSIException;
-
-    /**
-     * Extends signature to the "closest" publication in publication file.
-     *
-     * @param signature
-     *         signature to be extended. not null.
-     * @return KSISignature extended keyless signature
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    KSISignature extend(KSISignature signature) throws KSIException;
-
-    /**
-     * Extends the signature to specified publication record. The publication time of the publication record must be
-     * after signature aggregation time. When signature is extended then the old calendar hash chain and publication
-     * record is removed.
-     *
-     * @param signature
-     *         signature to be extended. not null.
-     * @param publicationRecord
-     *         publication record to extend. not null.
-     * @return extended keyless signature with extended calendar hash chain and publication record
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    KSISignature extend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException;
-
-    /**
-     * This method is used to extend signature asynchronously to closes publication. Use method {@link
-     * Future#getResult()} to get the extended keyless signature.
-     *
-     * @param signature
-     *         instance of {@link KSISignature} to extend. not null.
-     * @return instance of {@link Future} future
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    Future<KSISignature> asyncExtend(KSISignature signature) throws KSIException;
-
-    /**
-     * This method is used to extend signature asynchronously to the given publication. Use method {@link
-     * Future#getResult()} to get the extended keyless signature.
-     *
-     * @param signature
-     *         instance of {@link KSISignature} to extend. not null.
-     * @param publicationRecord
-     *         instance of {@link PublicationRecord} to extend the signature.
-     * @return instance of {@link Future} future
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    Future<KSISignature> asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException;
+public interface KSI extends Signer, Extender, Reader, Verifier, PublicationsHandler, Closeable {
 
     /**
      * This method is used to verify the keyless signature.
@@ -284,15 +108,4 @@ public interface KSI extends Closeable {
      * @see KSI#verify(VerificationContext, Policy)
      */
     VerificationResult verify(KSISignature signature, Policy policy, DataHash documentHash, PublicationData publicationData) throws KSIException;
-
-    /**
-     * This method is used to get the publications file. Uses the {@link com.guardtime.ksi.service.client.KSIPublicationsFileClient}
-     * to download the publications file.
-     *
-     * @return instance of the {@link PublicationsFile}
-     * @throws KSIException
-     *         when error occurs (e.g when communication with KSI service fails)
-     */
-    PublicationsFile getPublicationsFile() throws KSIException;
-
 }

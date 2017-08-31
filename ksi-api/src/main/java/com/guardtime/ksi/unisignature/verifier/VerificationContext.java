@@ -16,7 +16,6 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
-
 package com.guardtime.ksi.unisignature.verifier;
 
 import com.guardtime.ksi.exceptions.KSIException;
@@ -72,6 +71,11 @@ public interface VerificationContext {
     DataHash getDocumentHash();
 
     /**
+     * Returns the input hash level provided by the user. Returns null if not provided.
+     */
+    Long getInputHashLevel();
+
+    /**
      * True when extending is allowed when using {@link com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy}
      * or {@link com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy}
      */
@@ -123,7 +127,10 @@ public interface VerificationContext {
 
     /**
      * Sets the pdu factory used in verification process
+     *
+     * @deprecated Deprecated since 4.10. Has no effect since PduFactory is defined in the KSIExtendingService level.
      */
+    @Deprecated
     void setPduFactory(PduFactory pduFactory);
 
     /**

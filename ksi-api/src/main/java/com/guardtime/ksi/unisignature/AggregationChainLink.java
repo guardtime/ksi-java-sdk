@@ -50,4 +50,9 @@ public interface AggregationChainLink {
     LinkMetadata getMetadata();
 
     byte[] getSiblingData() throws KSIException;
+
+    /**
+     * @return will return link level correction or 0 if level correction isn't present.
+     */
+    Long getLevelCorrection();
 }

@@ -111,8 +111,8 @@ public class PduMessageHeader extends TLVStructure {
     /**
      * Constructor for creating a new message header object with given {@link KSIRequestContext}
      */
-    public PduMessageHeader(KSIRequestContext context) throws KSIException {
-        this(context.getLoginId(), context.getInstanceId(), context.getMessageId());
+    public PduMessageHeader(String loginId, KSIRequestContext context) throws KSIException {
+        this(loginId, context.getInstanceId(), context.getMessageId());
     }
 
     /**

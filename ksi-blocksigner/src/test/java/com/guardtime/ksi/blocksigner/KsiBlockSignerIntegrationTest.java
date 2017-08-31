@@ -23,7 +23,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
-import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -31,7 +30,7 @@ import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFact
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.mockito.Mockito;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -60,7 +59,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     private DataHash dataHashRipemd160;
 
     @Override
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
         super.setUp();
         metadata = new IdentityMetadata("test1");
@@ -85,7 +84,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         return hashAlgorithms.toArray(objects);
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client.*")
     public void testCreateSignatureLargeAggregationTree() throws Exception {
         KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
         builder.add(DATA_HASH, 254L, metadata);
@@ -145,7 +144,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
                         mockAdapter,
                         simpleHttpClient,
                         false,
-                        new PduV1Factory(),
                         new InMemoryKsiSignatureComponentFactory()
                 )).build();
 
@@ -171,7 +169,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
                         mockAdapter,
                         simpleHttpClient,
                         false,
-                        new PduV1Factory(),
                         new InMemoryKsiSignatureComponentFactory()
                         )).build();
 
@@ -194,7 +191,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
                         mockAdapter,
                         simpleHttpClient,
                         false,
-                        new PduV1Factory(),
                         new InMemoryKsiSignatureComponentFactory()
                         )).build();
 

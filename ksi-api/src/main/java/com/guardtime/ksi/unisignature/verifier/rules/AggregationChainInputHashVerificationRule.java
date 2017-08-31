@@ -49,7 +49,7 @@ public class AggregationChainInputHashVerificationRule extends BaseRule {
         DataHash rfc3161OutputHash = rfc3161Record.getOutputHash(inputHash.getAlgorithm());
 
         if (!inputHash.equals(rfc3161OutputHash)) {
-            LOGGER.info("Inconsistent RFC3161 and aggregation chain record. Expected aggregation input hash {}, calculated hash from RFC3131 record was {}, ", signature.getCalendarHashChain().getInputHash(), rfc3161OutputHash);
+            LOGGER.info("Inconsistent RFC3161 and aggregation chain record. Expected aggregation input hash {}, calculated hash from RFC3131 record was {}, ", signature.getAggregationHashChains()[0].getInputHash(), rfc3161OutputHash);
             return VerificationResultCode.FAIL;
         }
         return VerificationResultCode.OK;

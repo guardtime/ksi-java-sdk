@@ -20,8 +20,7 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.DataHasher;
-import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
@@ -37,14 +36,14 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.util.Util;
 import org.bouncycastle.util.Store;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
+
+import static org.testng.AssertJUnit.fail;
 
 public final class TestUtil extends CommonTestUtil {
 
     public static final KSIServiceCredentials CREDENTIALS_ANONYMOUS = new KSIServiceCredentials("anon", "anon");
-    public static final String PUBLICATIONS_FILE_27_07_2016 = "ksi-publications-27-07-2016.bin";
 
     private static InMemoryKsiSignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private static InMemoryPublicationsFileFactory publicationsFileFactory;
@@ -76,10 +75,10 @@ public final class TestUtil extends CommonTestUtil {
         return publicationsFileFactory.create(new TLVInputStream(load(file)));
     }
 
-    public static DataHash getFileHash(File file, String name) throws Exception {
-        DataHasher dataHasher = new DataHasher(HashAlgorithm.getByName(name));
-        dataHasher.addData(file);
-        return dataHasher.getHash();
+    public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtendingService extendingService, DataHash documentHash) throws Exception {
+        VerificationContextBuilder builder = new VerificationContextBuilder();
+        builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtendingService(extendingService);
+        return builder.setDocumentHash(documentHash).createVerificationContext();
     }
 
     public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtenderClient extenderClient, DataHash documentHash) throws Exception {
@@ -100,11 +99,17 @@ public final class TestUtil extends CommonTestUtil {
         return builder.setUserPublication(publicationData).setExtendingAllowed(allowExtending).createVerificationContext();
     }
 
-    public static VerificationContext buildContext(KSISignature sig, KSI ksi, KSIExtenderClient extenderClient, DataHash fileHash, PublicationsFile pub) throws KSIException {
-        VerificationContextBuilder builder = new VerificationContextBuilder();
-        builder.setSignature(sig).setPublicationsFile(pub).setExtenderClient(extenderClient);
-        return builder.setDocumentHash(fileHash).createVerificationContext();
+    /**
+     * Asserts that {@param thrown} or it's cause (or it's causes cause and so on) is of type {@param expectedClass} and with
+     * message {@param expectedMessage}.
+     */
+    public static void assertCause(Class<? extends Exception> expectedClass, String expectedMessage, Throwable thrown) {
+        if (thrown == null) {
+            fail("Expected thrown exception to be caused by " + expectedClass + "(\"" + expectedMessage + "\"), but that was not the case.");
+        }
+        if (!expectedClass.isAssignableFrom(thrown.getClass()) || !expectedMessage.equals(thrown.getMessage())) {
+            assertCause(expectedClass, expectedMessage, thrown.getCause());
+        }
     }
-
 
 }

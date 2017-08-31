@@ -1,5 +1,7 @@
 Version 4.10
 
+2017-08-31 4.10.117
+
 * IMPROVEMENT: Added KSISigningService and KSIExtendingService which act as a more high level alternatives to KSISigningClient and KSIExtenderClient. Both clients can be converted to services via KSISigningClientServiceAdapter and KSIExtendingClientServiceAdapter.
 * IMPROVEMENT: All the API components which used to be initializable with clients are now also initializable with services.
 * IMPROVEMENT: Chain index continuation check in internal verification is done now earlier.

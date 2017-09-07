@@ -43,8 +43,8 @@ Signer signer = new SignerBuilder().setSigningService(new KSISigningClientServic
 
 KSISignature signature = signer.sign(new File("file.txt"));
 ```
-The API full reference is available here [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
-Sample codes for signing, extending and verification are available here
+The API full reference is available at [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
+Sample codes for signing, extending and verification are available at
 [https://github.com/guardtime/ksi-sdk-samples](https://github.com/guardtime/ksi-sdk-samples).
 
 

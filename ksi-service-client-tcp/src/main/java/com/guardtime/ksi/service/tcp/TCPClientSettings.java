@@ -42,8 +42,8 @@ public class TCPClientSettings {
     /**
      * Settings for TCP client.
      *
-     * @param endpoint TCP signer endpoint address.
-     * @param serviceCredentials Credentials for authenticating the client to the TCP signer.
+     * @param endpoint TCP gateway endpoint address.
+     * @param serviceCredentials Credentials for authenticating the client to the TCP gateway.
      * @param tcpTransactionTimeoutSec Maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
      */
     public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials) {
@@ -63,7 +63,7 @@ public class TCPClientSettings {
      *
      * @param uri                             String containing the URI of endpoint. Must be in format: <protocol>://<host>:<port>
      * @param tcpTransactionTimeoutSec        Maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
-     * @param serviceCredentials              Credentials for authenticating the client to the TCP signer.
+     * @param serviceCredentials              Credentials for authenticating the client to the TCP gateway.
      * @param pduVersion                      PDU version used for communication.
      */
     public TCPClientSettings(String uri, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials, PduVersion pduVersion) throws IllegalArgumentException {

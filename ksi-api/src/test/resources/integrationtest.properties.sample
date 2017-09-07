@@ -26,6 +26,8 @@ javaKeyStorePath=src/test/resources/truststore.jks
 
 tcp.signerIP=tcp.signing.service.ip
 tcp.signerPort=tcp-singing-service-port
+tcp.extenderIP=tcp.extender.service.ip
+tcp.extenderPort=tcp-extender-service-port
 tcp.transactionTimeoutSec=transaction-Timeout-Sec
 tcp.loginId=tcp-login-id
 tcp.loginKey=tcp-login-key

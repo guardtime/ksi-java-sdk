@@ -156,15 +156,14 @@ public abstract class AbstractCommonIntegrationTest {
         if (apacheHttpExtenderClient == null) {
             apacheHttpExtenderClient = new ApacheHttpExtenderClient(extenderSettings);
         }
-
         SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient = new SimpleHttpPublicationsFileClient(PublicationSettings);
         if (apacheHttpPublicationsFileClient == null) {
             apacheHttpPublicationsFileClient = new ApacheHttpPublicationsFileClient(PublicationSettings);
         }
+        ApacheHttpClient mixedClient = new ApacheHttpClient(apacheHttpSigningClient, apacheHttpExtenderClient, apacheHttpPublicationsFileClient);
 
         if (tcpClient == null) {
-            TCPClientSettings tcpSettings = loadTCPSettings();
-            tcpClient = new TCPClient(tcpSettings);
+            tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
         }
 
         SimpleHttpClient simpleHttpClient = new SimpleHttpClient(httpSettings);
@@ -172,14 +171,14 @@ public abstract class AbstractCommonIntegrationTest {
         PendingKSIService pendingKSIService = new PendingKSIService();
 
         List<KSISigningClient> signingClientsForHa = new ArrayList<KSISigningClient>();
-        signingClientsForHa.add(failingClient);
-        signingClientsForHa.add(simpleHttpClient);
+        signingClientsForHa.add(mixedClient);
+        signingClientsForHa.add(mixedClient);
         List<KSISigningService> signingServicesForHa = new ArrayList<KSISigningService>();
         signingServicesForHa.add(pendingKSIService);
 
         List<KSIExtenderClient> extenderClientsForHa = new ArrayList<KSIExtenderClient>();
-        extenderClientsForHa.add(failingClient);
-        extenderClientsForHa.add(simpleHttpClient);
+        extenderClientsForHa.add(mixedClient);
+        extenderClientsForHa.add(mixedClient);
         List<KSIExtendingService> extendingServicesForHa = new ArrayList<KSIExtendingService>();
         extendingServicesForHa.add(pendingKSIService);
 
@@ -194,16 +193,29 @@ public abstract class AbstractCommonIntegrationTest {
                 new Object[] {createKsi(simpleHttpExtenderClient, simpleHttpSigningClient, simpleHttpPublicationsFileClient)},
                 new Object[] {createKsi(apacheHttpExtenderClient, apacheHttpSigningClient, apacheHttpPublicationsFileClient)},
                 new Object[] {createKsi(apacheHttpClient, apacheHttpClient, apacheHttpClient)},
-                new Object[] {createKsi(apacheHttpClient, tcpClient, apacheHttpClient)},
+                new Object[] {createKsi((KSIExtenderClient) tcpClient, tcpClient, apacheHttpClient)},
                 new Object[] {createKsi(haService, haService, simpleHttpClient)}
         };
     }
 
-    protected static TCPClientSettings loadTCPSettings() throws IOException {
+    protected static TCPClientSettings loadTCPSigningSettings() throws IOException {
         Properties prop = new Properties();
         prop.load(load(PROPERTIES_INTEGRATION_TEST));
         String signerIP = prop.getProperty("tcp.signerIP");
         int signerPort = Integer.parseInt(prop.getProperty("tcp.signerPort"));
+        int tcpTransactionTimeoutSec = Integer.parseInt(prop.getProperty("tcp.transactionTimeoutSec"));
+        String loginId = prop.getProperty("tcp.loginId");
+        String loginKey = prop.getProperty("tcp.loginKey");
+        ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
+        return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec,
+                serviceCredentials);
+    }
+
+    protected static TCPClientSettings loadTCPExtendingSettings() throws IOException {
+        Properties prop = new Properties();
+        prop.load(load(PROPERTIES_INTEGRATION_TEST));
+        String signerIP = prop.getProperty("tcp.extenderIp");
+        int signerPort = Integer.parseInt(prop.getProperty("tcp.extenderPort"));
         int tcpTransactionTimeoutSec = Integer.parseInt(prop.getProperty("tcp.transactionTimeoutSec"));
         String loginId = prop.getProperty("tcp.loginId");
         String loginKey = prop.getProperty("tcp.loginKey");

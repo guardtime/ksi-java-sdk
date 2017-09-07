@@ -28,6 +28,7 @@ import com.guardtime.ksi.util.Util;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
+import org.bouncycastle.util.encoders.Hex;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -109,7 +110,8 @@ class KSITCPSigningTransaction {
 
     private static long extractTransactionIdFromRequestTLV(TLVElement tlvData) throws KSITCPTransactionException {
         try {
-            if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2) {
+            if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2
+                    || tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_REQUEST_PDU_V2) {
                 return extractRequestId(tlvData, PDU_V2_PAYLOAD_ELEMENT_TAG);
             }
             return extractRequestId(tlvData, REQUEST_WRAPPER_TAG);
@@ -120,7 +122,8 @@ class KSITCPSigningTransaction {
 
     private static long extractTransactionIdFromResponseTLV(TLVElement tlvData) throws KSITCPTransactionException {
         try {
-            if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2) {
+            if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2
+                    || tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_RESPONSE_PDU_V2) {
                 return extractRequestId(tlvData, PDU_V2_PAYLOAD_ELEMENT_TAG);
             }
             return extractRequestId(tlvData, RESPONSE_WRAPPER_TAG);

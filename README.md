@@ -46,7 +46,7 @@ KSISignature signature = signer.sign(new File("file.txt"));
 The API full reference is available here [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
 
 ## Compiling the Code ##
-To compile the code you need JDK 1.5 (or later) and [Maven](https://maven.apache.org/). 
+To compile the code you need JDK 1.7 (or later) and [Maven](https://maven.apache.org/). 
 The project can be built via the command line by executing the following maven command: 
 ```
 mvn clean install

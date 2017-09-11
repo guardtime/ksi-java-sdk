@@ -64,6 +64,16 @@ public class TCPClient implements KSISigningClient, KSIExtenderClient {
     public TCPClient(TCPClientSettings signingSettings, TCPClientSettings extendingSettings) {
         Util.notNull(signingSettings, "TCPClientSettings.signingSettings");
         Util.notNull(signingSettings, "TCPClientSettings.extendingSettings");
+        if (signingSettings.getPduVersion() != extendingSettings.getPduVersion()) {
+            throw new IllegalArgumentException("TCPClient.signingSettings.pduVersion and " +
+                    "TCPClient.extendingSettings.pduVersion must match. Use SigningTCPClient and ExtenderTCPClient " +
+                    "if they do not match");
+        }
+        if (!signingSettings.getServiceCredentials().equals(extendingSettings.getServiceCredentials())) {
+            throw new IllegalArgumentException("TCPClient.signingSettings.serviceCredentials and " +
+                    "TCPClient.extendingSettings.serviceCredentials must match. Use SigningTCPClient and ExtenderTCPClient " +
+                    "if they do not match");
+        }
         this.signingTCPClient = new SigningTCPClient(signingSettings);
         this.extenderTCPClient = new ExtenderTCPClient(extendingSettings);
     }
@@ -83,12 +93,14 @@ public class TCPClient implements KSISigningClient, KSIExtenderClient {
             throw new KSIClientException("Extender connection is not configured. This means that you have used the deprecated " +
                     "constructor to initialize this client. If you'd like to use TCPClient for both signing and extending use " +
                     "constructor TCPClient(TCPClientSettings signingSettings, TCPClientSettings extendingSettings) or if you'd " +
-                    "like to use TCP client for only signing, use SigningTCPClient");
+                    "like to use TCP client only for signing, use SigningTCPClient");
         }
         return extenderTCPClient.extend(request);
     }
 
     /**
+     * Closes both the signing client and extending client.
+     *
      * @see SigningTCPClient#close()
      * @see ExtenderTCPClient#close()
      */
@@ -103,12 +115,16 @@ public class TCPClient implements KSISigningClient, KSIExtenderClient {
         }
     }
 
-    @Deprecated
+    /**
+     * @return Service credentials of gateway. Those apply both to extender and aggregator.
+     */
     public ServiceCredentials getServiceCredentials() {
         return signingTCPClient.getServiceCredentials();
     }
 
-    @Deprecated
+    /**
+     * @return PDU version of gateway. This applies both to extender and aggregator.
+     */
     public PduVersion getPduVersion() {
         return signingTCPClient.getPduVersion();
     }

@@ -17,6 +17,9 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Client for doing KSI+TCP communication (either for aggregation or extension) with a single endpoint.
+ */
 class KSITCPClient implements Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(TCPClient.class);

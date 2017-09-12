@@ -1,5 +1,7 @@
 Version 4.11
 
+* FEATURE: Now Possible to extend with TCPClient. Also possible to initialize SigingTCPClient and ExtenderTCPClient separately. Deprecated TCPClient(TCPClientSettings) constructor.
+
 Version 4.10
 
 2017-08-31 4.10.117

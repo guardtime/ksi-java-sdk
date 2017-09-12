@@ -37,7 +37,7 @@ The KSI Java SDK project contains the following modules:
     <li>ksi-service-client-simple-http - KSI HTTP service client implementation, uses Java standard API to communicate
         with the server
     </li>
-    <li>ksi-service-client-tcp - KSI TCP signing service client implementation</li>
+    <li>ksi-service-client-tcp -  KSI TCP signing and extending service client implementation.</li>
     <li>ksi-service-ha - KSI High-availability service implementation (Implements KSISigningService and KSIExtenderService)</li>
     <li>ksi-blocksigner - module for signing multiple data hashes as a block, in one operation</li>
 </ul>
@@ -118,7 +118,7 @@ The following clients are currently implemented:
         <em>ApacheHttpClient</em> - uses Apache HTTP client to communicate with the server
     </li>
     <li>
-        <em>TCPClient</em> - uses TCP protocol. NB! Only signing is supported!
+        <em>TCPClient</em> - uses TCP protocol. NB! Only signing and extending are supported! Can not be used to download publications file!
     </li>
     <li>
         <em>HAService</em> - Combines one to many KSISigningServices and one to many KSIExtenderClients or KSIExtenderServices to achieve redundancy. NB! Only signing and extending are supported!

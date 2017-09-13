@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This rule verifies that document hash provided and it's hash algorithm does not match with the hash algorithm of
+ * This rule verifies that document hash provided and it's hash algorithm match with the hash algorithm of
  * the input hash of the first aggregation chain or RFC-3161 record if present.
  */
 public class InputHashAlgorithmVerificationRule extends BaseRule {

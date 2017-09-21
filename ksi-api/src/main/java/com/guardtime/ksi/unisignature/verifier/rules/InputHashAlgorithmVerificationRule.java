@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Guardtime, Inc.
+ * Copyright 2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -48,7 +48,7 @@ public class InputHashAlgorithmVerificationRule extends BaseRule {
                 return VerificationResultCode.FAIL;
             }
         }
-        HashAlgorithm algorithm = context.getAggregationHashChains()[0].getAggregationAlgorithm();
+        HashAlgorithm algorithm = context.getAggregationHashChains()[0].getInputHash().getAlgorithm();
         if (algorithm != context.getDocumentHash().getAlgorithm()) {
             logger.info(
                     "Document hash algorithm {} does not match with the input hash algorithm {} of the first aggragation chain.",

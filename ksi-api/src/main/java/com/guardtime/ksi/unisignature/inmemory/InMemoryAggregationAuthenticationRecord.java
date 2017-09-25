@@ -41,7 +41,7 @@ class InMemoryAggregationAuthenticationRecord extends TLVStructure implements Ag
     private static final int ELEMENT_TYPE_INPUT_HASH = 0x05;
 
     private Date aggregationTime;
-    private List<Long> index = new LinkedList<Long>();
+    private List<Long> index = new LinkedList<>();
     private DataHash inputHash;
     private InMemorySignatureData signatureData;
 

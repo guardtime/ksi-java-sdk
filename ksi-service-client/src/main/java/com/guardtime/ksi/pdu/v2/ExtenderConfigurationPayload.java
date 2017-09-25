@@ -39,7 +39,7 @@ public class ExtenderConfigurationPayload extends TLVStructure implements Extend
     private static final int TYPE_CALENDAR_LAST_TIME = 0x12;
 
     private Long maximumRequests;
-    private List<String> parents = new LinkedList<String>();
+    private List<String> parents = new LinkedList<>();
     private Date calendarFirstTime;
     private Date calendarLastTime;
 

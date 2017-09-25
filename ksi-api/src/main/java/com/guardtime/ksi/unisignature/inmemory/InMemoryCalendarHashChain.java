@@ -49,7 +49,7 @@ class InMemoryCalendarHashChain extends TLVStructure implements CalendarHashChai
     private Date publicationTime;
     private Date aggregationTime;
     private DataHash inputHash;
-    private List<CalendarHashChainLink> chain = new LinkedList<CalendarHashChainLink>();
+    private List<CalendarHashChainLink> chain = new LinkedList<>();
 
     public InMemoryCalendarHashChain(TLVElement rootElement) throws KSIException {
         super(rootElement);

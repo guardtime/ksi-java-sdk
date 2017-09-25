@@ -58,6 +58,7 @@ public class CMSSignatureVerifier {
         this.trustStore = trustStore;
     }
 
+    @SuppressWarnings("unchecked")
     public void verify(CMSSignature signature) throws CryptoException {
         Store certStore = signature.getSignedDataCertificates();
         SignerInformationStore signerInformationStore = signature.getSignerInformationStore();
@@ -93,9 +94,7 @@ public class CMSSignatureVerifier {
             }
         } catch (CMSException e) {
             throw new InvalidCmsSignatureException("Invalid CMS signature. " + e.getMessage(), e);
-        } catch (OperatorCreationException e) {
-            throw new InvalidCmsSignatureException("CMS signature validation failed. " + e.getMessage(), e);
-        } catch (CertificateException e) {
+        } catch (OperatorCreationException | CertificateException e) {
             throw new InvalidCmsSignatureException("CMS signature validation failed. " + e.getMessage(), e);
         }
     }

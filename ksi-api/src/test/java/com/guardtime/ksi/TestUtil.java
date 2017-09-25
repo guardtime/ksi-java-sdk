@@ -78,25 +78,25 @@ public final class TestUtil extends CommonTestUtil {
     public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtendingService extendingService, DataHash documentHash) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtendingService(extendingService);
-        return builder.setDocumentHash(documentHash).createVerificationContext();
+        return builder.setDocumentHash(documentHash).build();
     }
 
     public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtenderClient extenderClient, DataHash documentHash) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtenderClient(extenderClient);
-        return builder.setDocumentHash(documentHash).createVerificationContext();
+        return builder.setDocumentHash(documentHash).build();
     }
 
     public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtenderClient extenderClient, PublicationData publicationData) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtenderClient(extenderClient);
-        return builder.setUserPublication(publicationData).createVerificationContext();
+        return builder.setUserPublication(publicationData).build();
     }
 
     public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtenderClient extenderClient, PublicationData publicationData, boolean allowExtending) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtenderClient(extenderClient);
-        return builder.setUserPublication(publicationData).setExtendingAllowed(allowExtending).createVerificationContext();
+        return builder.setUserPublication(publicationData).setExtendingAllowed(allowExtending).build();
     }
 
     /**

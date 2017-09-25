@@ -74,7 +74,7 @@ public class CompositeRule implements Rule {
      */
     private class CompositeRuleResult implements RuleResult {
 
-        private Map<Rule, RuleResult> results = new LinkedHashMap<Rule, RuleResult>();
+        private Map<Rule, RuleResult> results = new LinkedHashMap<>();
         private RuleResult lastFailedResult;
         private RuleResult lastNaResult;
         private boolean skipOnFirstAppliedRule;

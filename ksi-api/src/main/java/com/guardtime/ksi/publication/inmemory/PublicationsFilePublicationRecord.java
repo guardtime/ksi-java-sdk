@@ -47,8 +47,8 @@ public class PublicationsFilePublicationRecord extends TLVStructure implements P
     private static final int ELEMENT_TAG_PUBLICATION_REPOSITORY_URI = 0x0A;
 
     private PublicationData publicationData;
-    private final List<String> publicationReferences = new LinkedList<String>();
-    private final List<String> publicationRepositoryURIs = new LinkedList<String>();
+    private final List<String> publicationReferences = new LinkedList<>();
+    private final List<String> publicationRepositoryURIs = new LinkedList<>();
 
     /**
      * Reads publication record from TLV element.

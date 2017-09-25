@@ -64,13 +64,13 @@ class InMemoryPublicationsFile implements PublicationsFile {
 
     private PublicationsFileHeader header;
 
-    private final List<InMemoryCertificateRecord> certificateRecords = new LinkedList<InMemoryCertificateRecord>();
+    private final List<InMemoryCertificateRecord> certificateRecords = new LinkedList<>();
 
-    private final List<PublicationRecord> publicationRecords = new LinkedList<PublicationRecord>();
+    private final List<PublicationRecord> publicationRecords = new LinkedList<>();
 
     private byte[] cmsSignature;
 
-    private List<TLVElement> elements = new LinkedList<TLVElement>();
+    private List<TLVElement> elements = new LinkedList<>();
 
     /**
      * Creates a new instance of publications file from given input stream. Decodes and validates the TLV structure

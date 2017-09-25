@@ -30,13 +30,13 @@ import java.util.List;
  */
 class SigningHAServiceConfigurationListener extends AbstractHAConfigurationListener<AggregatorConfiguration> {
 
-    private final List<SubServiceConfListener<AggregatorConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<AggregatorConfiguration>>();
+    private final List<SubServiceConfListener<AggregatorConfiguration>> subServiceConfListeners = new ArrayList<>();
     private final List<KSISigningService> subservices;
 
     SigningHAServiceConfigurationListener(List<KSISigningService> subservices) {
         this.subservices = subservices;
         for (KSISigningService subservice : subservices) {
-            SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), this);
+            SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<>(subservice.toString(), this);
             subservice.registerAggregatorConfigurationListener(listener);
             subServiceConfListeners.add(listener);
         }
@@ -67,7 +67,7 @@ class SigningHAServiceConfigurationListener extends AbstractHAConfigurationListe
      * @return {@link Future} which eventually provides subconfigurations consolidation result.
      */
     Future<AggregatorConfiguration> getAggregationConfiguration() {
-        return new HAConfFuture<AggregatorConfiguration>(invokeSubServiceConfUpdates(),
+        return new HAConfFuture<>(invokeSubServiceConfUpdates(),
                 new HAConfFuture.ConfResultSupplier<ConsolidatedResult<AggregatorConfiguration>>() {
                     public ConsolidatedResult<AggregatorConfiguration> get() {
                         return lastConsolidatedConfiguration;
@@ -76,7 +76,7 @@ class SigningHAServiceConfigurationListener extends AbstractHAConfigurationListe
     }
 
     private List<Future<AggregatorConfiguration>> invokeSubServiceConfUpdates() {
-        List<Future<AggregatorConfiguration>> confFutures = new ArrayList<Future<AggregatorConfiguration>>();
+        List<Future<AggregatorConfiguration>> confFutures = new ArrayList<>();
         for (KSISigningService service : subservices) {
             confFutures.add(service.getAggregationConfiguration());
         }

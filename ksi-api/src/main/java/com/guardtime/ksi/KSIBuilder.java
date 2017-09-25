@@ -197,9 +197,7 @@ public final class KSIBuilder {
             char[] passwordCharArray = password == null ? null : password.toCharArray();
             input = new FileInputStream(file);
             trustStore.load(input, passwordCharArray);
-        } catch (GeneralSecurityException e) {
-            throw new KSIException("Loading java key store with path " + file + " failed", e);
-        } catch (IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
             throw new KSIException("Loading java key store with path " + file + " failed", e);
         } finally {
             Util.closeQuietly(input);
@@ -433,7 +431,7 @@ public final class KSIBuilder {
             VerificationContextBuilder builder = new VerificationContextBuilder();
             builder.setDocumentHash(documentHash).setSignature(signature);
             builder.setExtendingService(extendingService).setExtendingAllowed(true).setUserPublication(publicationData);
-            VerificationContext context = builder.setPublicationsFile(getPublicationsFile()).createVerificationContext();
+            VerificationContext context = builder.setPublicationsFile(getPublicationsFile()).build();
             return verify(context, policy);
         }
 

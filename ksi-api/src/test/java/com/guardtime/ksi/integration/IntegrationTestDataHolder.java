@@ -24,7 +24,6 @@ import com.guardtime.ksi.KSIBuilder;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
@@ -137,7 +136,6 @@ public class IntegrationTestDataHolder {
                 setPublicationsFilePkiTrustStore(createKeyStore()).
                 setPublicationsFileTrustedCertSelector(createCertSelector()).
                 setDefaultVerificationPolicy(new AlwaysSuccessfulPolicy()).
-                setPduIdentifierProvider(new DefaultPduIdentifierProvider()).
                 setDefaultSigningHashAlgorithm(HashAlgorithm.SHA2_256);
 
         if (responseFile != null) {
@@ -163,7 +161,7 @@ public class IntegrationTestDataHolder {
                 setUserPublication(userPublication).
                 setExtendingAllowed(extendingPermitted).
                 setDocumentHash(inputHash, inputHashLevel);
-        VerificationContext context = builder.createVerificationContext();
+        VerificationContext context = builder.build();
         context.setKsiSignatureComponentFactory(new InMemoryKsiSignatureComponentFactory());
         return context;
     }

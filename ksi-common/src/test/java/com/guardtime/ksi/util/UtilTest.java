@@ -169,7 +169,7 @@ public class UtilTest {
 
     @Test
     public void testEqualsIgnoreOrderSameContentsDifferentOrder() {
-        Assert.assertTrue(Util.equalsIgnoreOrder(new ArrayList<String>(Arrays.asList("1", "2", "3")), new LinkedList<String>(Arrays.asList("2", "1", "3"))));
+        Assert.assertTrue(Util.equalsIgnoreOrder(new ArrayList<>(Arrays.asList("1", "2", "3")), new LinkedList<>(Arrays.asList("2", "1", "3"))));
     }
 
     @Test

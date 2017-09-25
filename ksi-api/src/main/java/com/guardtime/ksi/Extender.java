@@ -36,65 +36,63 @@ import java.io.Closeable;
 public interface Extender extends Closeable {
 
     /**
-     * Extends signature to the "closest" publication in publication file.
+     * Extends signature to the "closest" publication in publications file.
      *
-     * @param signature signature to be extended. not null.
-     * @return KSISignature extended keyless signature
-     * @throws KSIException when error occurs (e.g when communication with KSI service fails)
+     * @param signature {@link KSISignature} to be extended, not null.
+     * @return Extended keyless signature ({@link KSISignature}).
+     * @throws KSIException when error occurs (e.g. when communication with KSI service fails).
      */
     KSISignature extend(KSISignature signature) throws KSIException;
 
     /**
      * Extends the signature to specified publication record. The publication time of the publication record must be
-     * after signature aggregation time. When signature is extended then the old calendar hash chain and publication
+     * after signature aggregation time. When signature is extended, the old calendar hash chain and publication
      * record is removed.
      *
-     * @param signature         signature to be extended. not null.
-     * @param publicationRecord publication record to extend. not null.
-     * @return extended keyless signature with extended calendar hash chain and publication record
-     * @throws KSIException when error occurs (e.g when communication with KSI service fails)
+     * @param signature         {@link KSISignature} to be extended, not null.
+     * @param publicationRecord publication record ({@link PublicationRecord}) to extend to, not null.
+     * @return Extended keyless signature with extended calendar hash chain and publication record.
+     * @throws KSIException when error occurs (e.g. when communication with KSI service fails).
      */
     KSISignature extend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException;
 
     /**
-     * This method is used to extend signature asynchronously to closest publication. Use method {@link
+     * Extends the signature asynchronously to the "closest" publication in publications file. Use method {@link
      * Future#getResult()} to get the extended keyless signature.
      *
-     * @param signature instance of {@link KSISignature} to extend. not null.
-     * @return instance of {@link Future} future
-     * @throws KSIException when error occurs (e.g when communication with KSI service fails)
+     * @param signature {@link KSISignature} to be extended, not null.
+     * @return Instance of {@link Future} future.
+     * @throws KSIException when error occurs (e.g. when communication with KSI service fails).
      */
     Future<KSISignature> asyncExtend(KSISignature signature) throws KSIException;
 
     /**
-     * This method is used to extend signature asynchronously to the given publication. Use method {@link
+     * Extends the signature asynchronously to the specified publication record. Use method {@link
      * Future#getResult()} to get the extended keyless signature.
      *
-     * @param signature         instance of {@link KSISignature} to extend. not null.
-     * @param publicationRecord instance of {@link PublicationRecord} to extend the signature.
-     * @return instance of {@link Future} future
-     * @throws KSIException when error occurs (e.g when communication with KSI service fails)
+     * @param signature         {@link KSISignature} to be extended, not null.
+     * @param publicationRecord publication record ({@link PublicationRecord}) to extend the signature to.
+     * @return Instance of {@link Future} future.
+     * @throws KSIException when error occurs (e.g. when communication with KSI service fails).
      */
     Future<KSISignature> asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException;
 
     /**
-     * This method is used to get the extender service that the SDK was initialized with. One could use the extender service to get
-     * access to its configuration for example.
+     * Gets the extender service that the SDK was initialized with. E.g. to get access to extender's configuration.
      */
     KSIExtendingService getExtendingService();
 
     /**
-     * GetExtenderConfiguration method is used to ask extender configuration from KSI gateway/aggregator. Only supported
+     * Asks the extender configuration from KSI gateway/aggregator. Only supported
      * if {@link com.guardtime.ksi.pdu.PduVersion#V2} is used.
      *
      * @deprecated Deprecated since 4.10. Use {@link KSIExtendingService#getExtendingConfiguration()}
      *      in pair with {@link KSIExtendingService#registerExtenderConfigurationListener(ConfigurationListener)} instead.
-     *      One can acquire instance of {@link KSIExtendingService} which a {@link KSI} instance uses by calling
+     *      The {@link KSIExtendingService} which a {@link KSI} instance uses can be acquired by calling
      *      {@link KSI#getExtendingService()}.
      *
-     * @throws UnsupportedOperationException If KSI is initialized with a service not a client.
+     * @throws UnsupportedOperationException if KSI is initialized with a service not a client.
      */
     @Deprecated
     ExtenderConfiguration getExtenderConfiguration() throws KSIException;
 }
-

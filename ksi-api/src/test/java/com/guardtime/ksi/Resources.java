@@ -74,6 +74,12 @@ public class Resources {
     public static final String RFC3161_SIGNATURE_INVALID_CHAIN_INDEX = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-chain-index-int-value-wrong.tlv";
     public static final String RFC3161_SIGNATURE_INVALID_AGGREGATION_TIME = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-aggr-time-future-value.tlv";
     public static final String RFC3161_SIGNATURE_WRONG_RECORD_OUTPUT_HASH = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-input-hash-wrong.tlv";
+    public static final String RFC3161_SHA1_INPUT_HASH_2016 = VALID_SIGNATURES + "rfc3161-sha1-as-input-hash-2016-01-1.ksig";
+    public static final String RFC3161_SHA1_SIG_ATR_2016 = VALID_SIGNATURES + "rfc3161-sha1-in-sig-atr-2016-01-1.ksig";
+    public static final String RFC3161_SHA1_TST_ALGORITHM_2016 = VALID_SIGNATURES + "rfc3161-sha1-in-tst-algo-2016-01-1.ksig";
+    public static final String RFC3161_SHA1_INPUT_HASH_2017 = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-sha1-as-input-hash-2017-1.tlv";
+    public static final String RFC3161_SHA1_SIG_ATR_2017 = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-sha1-in-sig-atr-2017-1.tlv";
+    public static final String RFC3161_SHA1_TST_ALGORITHM_2017 = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-sha1-in-tst-algo-2017-1.tlv";
     //Extended
     public static final String EXTENDED_SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14-extended.ksig";
@@ -87,6 +93,8 @@ public class Resources {
     public static final String SIGNATURE_NO_CALENDAR_AUTH_RECORD = VALID_SIGNATURES + "signature-one-aggregation-chain-and-chc.ksig";
     public static final String SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS =  VALID_SIGNATURES + "signature-only-aggregation-chains.ksig";
     public static final String SIGNATURE_INPUT_HASH_LEVEL_5 =  VALID_SIGNATURES + "signature-provided-input-hash-level-is-5.ksig";
+    public static final String SIGNATURE_SHA1_INPUT_HASH_OK =  VALID_SIGNATURES + "sha1-as-input-algorithm-2016-01.ksig";
+    public static final String SIGNATURE_SHA1_AGGREGATION_LINK_OK =  VALID_SIGNATURES + "sha1-as-aggregation-algo-2016-01-1.ksig";
     //Aggregation Hash Chains
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_OK = SIGNATURES + "single-long-aggregation-hash-chain-ok.tlv";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INDEX = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-missing-tag.tlv";
@@ -100,6 +108,8 @@ public class Resources {
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_CHANGED_CHAIN_ORDER =  SIGNATURES + "signature-with-mixed-aggregation-chains.ksig";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_MISSING_CHAIN_INDEX = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-missing-tag.tlv";
     public static final String SIGANTURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-no-aggregation-chains.tlv";
+    public static final String SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRECATED_INPUT_ALGORITHM = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-aggr-algo-sha1-2017.ksig";
+    public static final String SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRECATED_ALGORITHM = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-sha1-as-aggregation-algo-2017.tlv";
     //Aggregation Hash Chains -> METADATA
     public static final String SIGNATURE_METADATA_MATCHING_HASH_IMPRINT = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-matches-imprint.tlv";
     public static final String SIGNATURE_METADATA_MISSING_PADDING = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-missing-tag.tlv";

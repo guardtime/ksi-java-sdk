@@ -29,7 +29,7 @@ aggregation-chain/invalid-signature-aggr-chain-input-hash-missing-tag.tlv;parsin
 aggregation-chain/invalid-signature-aggr-chain-aggr-algo-int-value-wrong.tlv;internal;INT-03;Calendar hash chain input hash mismatch;0;;;;;;;;false;;;
 aggregation-chain/invalid-signature-aggr-chain-aggr-algo-text-value.tlv;parsing;;;0;;;;;;;;false;;;
 aggregation-chain/invalid-signature-aggr-chain-aggr-algo-datahash-value.tlv;parsing;;;0;;;;;;;;false;;;
-aggregation-chain/invalid-signature-aggr-chain-aggr-algo-no-value.tlv;internal;INT-03;Calendar hash chain input hash mismatch;0;;;;;;;;false;;;
+aggregation-chain/invalid-signature-aggr-chain-aggr-algo-no-value.tlv;internal;INT-15;Aggregation hash chain uses hash algorithm that was deprecated at the time of signing;0;;;;;;;;false;;;
 aggregation-chain/invalid-signature-aggr-chain-aggr-algo-has-child-element.tlv;parsing;;;0;;;;;;;;false;;;
 aggregation-chain/invalid-signature-aggr-chain-aggr-algo-multiple-tags.tlv;parsing;;;0;;;;;;;;false;;;
 aggregation-chain/invalid-signature-aggr-chain-aggr-algo-missing-tag.tlv;parsing;;;0;;;;;;;;false;;;
@@ -206,7 +206,7 @@ rfc3161-record/invalid-signature-rfc3161-tst-info-suffix-missing-tag.tlv;parsing
 rfc3161-record/invalid-signature-rfc3161-tst-info-algo-int-value.tlv;internal;INT-01;Inconsistent aggregation hash chains;0;;;;;;;;false;;;
 rfc3161-record/invalid-signature-rfc3161-tst-info-algo-text-value.tlv;parsing;;;0;;;;;;;;false;;;
 rfc3161-record/invalid-signature-rfc3161-tst-info-algo-datahash-value-wrong.tlv;parsing;;;0;;;;;;;;false;;;
-rfc3161-record/invalid-signature-rfc3161-tst-info-algo-no-value.tlv;internal;INT-01;Inconsistent aggregation hash chains;0;;;;;;;;false;;;
+rfc3161-record/invalid-signature-rfc3161-tst-info-algo-no-value.tlv;internal;INT-14;RFC3161 compatibility record composed of hash algorithms that where deprecated at the time of signing;0;;;;;;;;false;;;
 rfc3161-record/invalid-signature-rfc3161-tst-info-algo-has-child-element.tlv;parsing;;;0;;;;;;;;false;;;
 rfc3161-record/invalid-signature-rfc3161-tst-info-algo-multiple-tags.tlv;parsing;;;0;;;;;;;;false;;;
 rfc3161-record/invalid-signature-rfc3161-tst-info-algo-missing-tag.tlv;parsing;;;0;;;;;;;;false;;;
@@ -227,7 +227,7 @@ rfc3161-record/invalid-signature-rfc3161-sig-attr-suffix-missing-tag.tlv;parsing
 rfc3161-record/invalid-signature-rfc3161-sig-attr-algo-int-value.tlv;internal;INT-01;Inconsistent aggregation hash chains;0;;;;;;;;false;;;
 rfc3161-record/invalid-signature-rfc3161-sig-attr-algo-text-value.tlv;parsing;;;0;;;;;;;;false;;;
 rfc3161-record/invalid-signature-rfc3161-sig-attr-algo-datahash-value-wrong.tlv;parsing;;;0;;;;;;;;false;;;
-rfc3161-record/invalid-signature-rfc3161-sig-attr-algo-no-value.tlv;internal;INT-01;Inconsistent aggregation hash chains;0;;;;;;;;false;;;
+rfc3161-record/invalid-signature-rfc3161-sig-attr-algo-no-value.tlv;internal;INT-14;RFC3161 compatibility record composed of hash algorithms that where deprecated at the time of signing;0;;;;;;;;false;;;
 rfc3161-record/invalid-signature-rfc3161-sig-attr-algo-has-child-element.tlv;parsing;;;0;;;;;;;;false;;;
 rfc3161-record/invalid-signature-rfc3161-sig-attr-algo-multiple-tags.tlv;parsing;;;0;;;;;;;;false;;;
 rfc3161-record/invalid-signature-rfc3161-sig-attr-algo-missing-tag.tlv;parsing;;;0;;;;;;;;false;;;

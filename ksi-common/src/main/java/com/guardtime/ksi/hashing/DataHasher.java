@@ -70,6 +70,18 @@ public class DataHasher {
      * @throws NullPointerException     when input algorithm is null
      */
     public DataHasher(HashAlgorithm algorithm) {
+        this(algorithm, true);
+    }
+
+    /**
+     * Create new data hasher for specified algorithm.
+     *
+     * @param algorithm HashAlgorithm describing the algorithm to be used in hashing.
+     * @param checkExpiration Boolean flag to check, if algorithm is deprecated or obsolete
+     * @throws IllegalArgumentException when hash algorithm is unknown, isn't implemented, is deprecated or is obsolete
+     * @throws NullPointerException     when input algorithm is null
+     */
+    public DataHasher(HashAlgorithm algorithm, boolean checkExpiration) {
         Util.notNull(algorithm, "Hash algorithm");
 
         /*
@@ -80,7 +92,9 @@ public class DataHasher {
             throw new IllegalArgumentException("Hash algorithm " + algorithm.name() + " is not implemented");
         }
 
-        algorithm.checkExpiration();
+        if (checkExpiration) {
+            algorithm.checkExpiration();
+        }
 
         this.algorithm = algorithm;
 

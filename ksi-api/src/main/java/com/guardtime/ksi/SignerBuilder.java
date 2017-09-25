@@ -92,6 +92,7 @@ public final class SignerBuilder {
         if (defaultHashAlgorithm == null) {
             this.defaultHashAlgorithm = HashAlgorithm.SHA2_256;
         }
+        defaultHashAlgorithm.checkExpiration();
         if (policy == null) {
             this.policy = ContextAwarePolicyAdapter.createInternalPolicy();
         }

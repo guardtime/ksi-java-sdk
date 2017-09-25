@@ -40,6 +40,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.guardtime.ksi.Resources.INPUT_FILE;
@@ -136,8 +137,9 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
     private static Object[][] hashAlgorithmProvider() {
         List<HashAlgorithm> hashAlgorithms = new ArrayList<HashAlgorithm>();
         HashAlgorithm[] allAlgorithms = HashAlgorithm.values();
+        Date currentDate = new Date();
         for (HashAlgorithm algorithm : allAlgorithms) {
-            if (HashAlgorithm.Status.NORMAL.equals(algorithm.getStatus())) {
+            if (HashAlgorithm.Status.NORMAL.equals(algorithm.getStatus()) && !algorithm.isDeprecated(currentDate)) {
                 hashAlgorithms.add(algorithm);
             }
         }

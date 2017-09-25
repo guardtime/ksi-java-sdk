@@ -45,9 +45,9 @@ public class InputHashAlgorithmDeprecatedRule extends BaseRule {
             }
         }
         Date aggregationChainAggregationTime = context.getAggregationHashChains()[0].getAggregationTime();
-        if (context.getAggregationHashChains()[0].getAggregationAlgorithm().isDeprecated(aggregationChainAggregationTime)) {
+        if (context.getAggregationHashChains()[0].getInputHash().getAlgorithm().isDeprecated(aggregationChainAggregationTime)) {
             logger.info("Input hash algorithm {} of the first aggregation hash chain is deprecated.",
-                    context.getAggregationHashChains()[0].getAggregationAlgorithm().getName());
+                    context.getAggregationHashChains()[0].getInputHash().getAlgorithm().getName());
             return VerificationResultCode.FAIL;
         }
         return VerificationResultCode.OK;

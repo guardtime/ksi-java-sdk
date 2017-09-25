@@ -244,19 +244,19 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Returns true if the given date is before the hash algorithm deprecation date.
+     * Returns true if the given date is after the hash algorithm deprecation date.
      */
     public boolean isDeprecated(Date givenDate) {
         Util.notNull(givenDate, "Given date");
-        return this.deprecatedSince != null && givenDate.before(this.deprecatedSince);
+        return this.deprecatedSince != null && givenDate.after(this.deprecatedSince);
     }
 
     /**
-     * Returns true if the given date is before the hash algorithm obsolete date.
+     * Returns true if the given date is after the hash algorithm obsolete date.
      */
     public boolean isObsolete(Date givenDate) {
         Util.notNull(givenDate, "Given date");
-        return this.obsoleteSince != null && givenDate.before(this.obsoleteSince);
+        return this.obsoleteSince != null && givenDate.after(this.obsoleteSince);
     }
 
     /**

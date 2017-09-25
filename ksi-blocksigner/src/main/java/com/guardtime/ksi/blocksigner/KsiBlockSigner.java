@@ -24,15 +24,22 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
-import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.AggregationChainLink;
+import com.guardtime.ksi.unisignature.AggregationHashChain;
+import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
+import com.guardtime.ksi.unisignature.KSISignatureFactory;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Util;
@@ -188,6 +195,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      */
     public boolean add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException {
         notNull(dataHash, "DataHash");
+        dataHash.getAlgorithm().checkExpiration();
         if (level < 0 || level > MAXIMUM_LEVEL) {
             throw new IllegalStateException("Level must be between 0 and 255");
         }

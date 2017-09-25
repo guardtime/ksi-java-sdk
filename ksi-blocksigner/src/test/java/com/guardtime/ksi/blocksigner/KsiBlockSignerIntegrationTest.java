@@ -35,6 +35,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
@@ -75,8 +76,9 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     @DataProvider(name = WORKING_HASH_ALGORITHMS)
     public Object[][] hashAlgorithms() {
         List<Object[]> hashAlgorithms = new ArrayList<Object[]>();
+        Date currentDate = new Date();
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
-            if (HashAlgorithm.Status.NOT_IMPLEMENTED != algorithm.getStatus()) {
+            if (HashAlgorithm.Status.NOT_IMPLEMENTED != algorithm.getStatus() && !algorithm.isDeprecated(currentDate)) {
                 hashAlgorithms.add(new Object[]{algorithm});
             }
         }
@@ -112,11 +114,23 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     public void testBlockSignerWithAllWorkingHashAlgorithms(HashAlgorithm algorithm) throws Exception {
         KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setDefaultHashAlgorithm(algorithm).build();
         blockSigner.add(dataHashSha512, metadata4);
-        blockSigner.add(dataHashSha1, metadata);
         blockSigner.add(dataHashRipemd160, metadata2);
         blockSigner.add(dataHashSha386, metadata3);
 
-        signAndVerify(blockSigner, 4);
+        signAndVerify(blockSigner, 3);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated")
+    public void testBlockSignerWithDeprecatedHashAlgorithms() throws Exception {
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        blockSigner.add(dataHashSha1, metadata);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated")
+    public void testInitBlockSignerWithDeprecatedHashAlgorithm() throws Exception {
+        new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setDefaultHashAlgorithm(HashAlgorithm.SHA1).build();
     }
 
     @Test

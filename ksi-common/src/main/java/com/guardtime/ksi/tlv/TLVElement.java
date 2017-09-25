@@ -64,7 +64,7 @@ public final class TLVElement {
      */
     private int type;
 
-    private List<TLVElement> children = new LinkedList<TLVElement>();
+    private List<TLVElement> children = new LinkedList<>();
     private byte[] content = new byte[0];
 
     public TLVElement(boolean nonCritical, boolean forwarded, int type) {
@@ -331,7 +331,7 @@ public final class TLVElement {
      * @return the List of {@link TLVElement}'s with specified tag or empty List
      */
     public List<TLVElement> getChildElements(int tag) {
-        List<TLVElement> elements = new LinkedList<TLVElement>();
+        List<TLVElement> elements = new LinkedList<>();
         for (TLVElement element : children) {
             if (tag == element.getType()) {
                 elements.add(element);
@@ -345,7 +345,7 @@ public final class TLVElement {
     }
 
     public List<TLVElement> getChildElements(int... tags) {
-        List<TLVElement> elements = new LinkedList<TLVElement>();
+        List<TLVElement> elements = new LinkedList<>();
         for (TLVElement element : children) {
             for (int tag : tags) {
                 if (tag == element.getType()) {

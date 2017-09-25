@@ -43,7 +43,7 @@ public class AggregatorConfigurationPayload extends TLVStructure implements Aggr
     private HashAlgorithm aggregationAlgorithm;
     private Long aggregationPeriod;
     private Long maximumRequests;
-    private List<String> parentUris = new ArrayList<String>();
+    private List<String> parentUris = new ArrayList<>();
 
     public AggregatorConfigurationPayload(TLVElement element) throws TLVParserException {
         super(element);

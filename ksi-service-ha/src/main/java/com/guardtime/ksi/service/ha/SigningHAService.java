@@ -70,12 +70,12 @@ public class SigningHAService implements KSISigningService {
     public Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException {
         Util.notNull(dataHash, "dataHash");
         Util.notNull(level, "level");
-        final Collection<Callable<AggregationResponse>> tasks = new ArrayList<Callable<AggregationResponse>>(subservices.size());
+        final Collection<Callable<AggregationResponse>> tasks = new ArrayList<>(subservices.size());
         for (KSISigningService subservice : subservices) {
             tasks.add(new SigningTask(subservice, dataHash, level));
         }
-        return new ServiceCallFuture<AggregationResponse>(
-                executorService.submit(new ServiceCallsTask<AggregationResponse>(executorService, tasks))
+        return new ServiceCallFuture<>(
+                executorService.submit(new ServiceCallsTask<>(executorService, tasks))
         );
     }
 
@@ -132,7 +132,7 @@ public class SigningHAService implements KSISigningService {
      */
     public static class Builder {
 
-        private List<KSISigningService> services = new ArrayList<KSISigningService>();
+        private List<KSISigningService> services = new ArrayList<>();
         private ExecutorService executorService = DefaultExecutorServiceProvider.getExecutorService();
 
         /**
@@ -200,7 +200,7 @@ public class SigningHAService implements KSISigningService {
          * {@link KSISigningClientServiceAdapter}s
          */
         private List<KSISigningService> clientsToServices(List<KSISigningClient> clients) {
-            List<KSISigningService> services = new ArrayList<KSISigningService>(clients.size());
+            List<KSISigningService> services = new ArrayList<>(clients.size());
             for (KSISigningClient client : clients) {
                 services.add(new KSISigningClientServiceAdapter(client));
             }

@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AsyncContext {
 
     private CountDownLatch countDownLatch = new CountDownLatch(1);
-    private AtomicReference<AssertionError> potentialFailure = new AtomicReference<AssertionError>();
+    private AtomicReference<AssertionError> potentialFailure = new AtomicReference<>();
 
     public void succeed() {
         countDownLatch.countDown();

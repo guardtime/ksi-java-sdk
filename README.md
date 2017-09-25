@@ -49,8 +49,8 @@ Sample codes for signing, extending and verification are available at
 
 
 ## Compiling the Code ##
-To compile the code you need JDK 1.7 (or later) and [Maven](https://maven.apache.org/). 
-The project can be built via the command line by executing the following maven command: 
+To compile the code you need JDK 1.7 (or later) and [Maven](https://maven.apache.org/).
+The project can be built via the command line by executing the following maven command:
 ```
 mvn clean install
 ```
@@ -79,7 +79,7 @@ mvn dependency:tree
 
 ## Compatibility ##
 
-Java 1.5 or newer.
+Java 1.7 or newer.
 
 ## Contributing ##
 

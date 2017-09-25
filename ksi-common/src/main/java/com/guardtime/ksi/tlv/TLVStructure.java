@@ -28,7 +28,7 @@ import java.util.Set;
 public abstract class TLVStructure {
 
     protected TLVElement rootElement;
-    private Set<Integer> processedElements = new HashSet<Integer>();
+    private Set<Integer> processedElements = new HashSet<>();
 
     /**
      * Constructor for decoding TLV element.

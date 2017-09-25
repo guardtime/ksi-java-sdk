@@ -47,7 +47,7 @@ public class ApacheHttpPublicationsFileClient extends AbstractApacheHttpClient i
     }
 
     /**
-     * @see com.guardtime.ksi.service.client.KSIPublicationsFileClient.getPublicationsFile
+     * @see KSIPublicationsFileClient#getPublicationsFile()
      */
     public ApacheHttpGetRequestFuture getPublicationsFile() throws KSIClientException {
         return get();

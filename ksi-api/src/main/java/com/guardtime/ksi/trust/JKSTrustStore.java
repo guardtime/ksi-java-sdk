@@ -91,9 +91,7 @@ public class JKSTrustStore implements PKITrustStore {
             input = loadFile(keyStorePath);
             keyStore.load(input, password);
             this.certSelector = certSelector;
-        } catch (GeneralSecurityException e) {
-            throw new InvalidKeyStoreException("Loading java key store with path " + keyStorePath + " failed", e);
-        } catch (IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
             throw new InvalidKeyStoreException("Loading java key store with path " + keyStorePath + " failed", e);
         } finally {
             Util.closeQuietly(input);

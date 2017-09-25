@@ -28,7 +28,6 @@ import com.guardtime.ksi.util.Util;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
-import org.bouncycastle.util.encoders.Hex;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +45,7 @@ class KSITCPSigningTransaction {
     private static final int REQ_ID_TAG = 0x1;
     private static final int PDU_V2_PAYLOAD_ELEMENT_TAG = 0x02;
 
-    private final BlockingQueue<TLVElement> availableResponse = new ArrayBlockingQueue<TLVElement>(1);
+    private final BlockingQueue<TLVElement> availableResponse = new ArrayBlockingQueue<>(1);
     private long correlationId;
     private TLVElement request;
     private TLVElement response;

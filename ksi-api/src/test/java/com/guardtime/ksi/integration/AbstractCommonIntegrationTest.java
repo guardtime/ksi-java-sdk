@@ -160,7 +160,6 @@ public abstract class AbstractCommonIntegrationTest {
         if (apacheHttpPublicationsFileClient == null) {
             apacheHttpPublicationsFileClient = new ApacheHttpPublicationsFileClient(PublicationSettings);
         }
-        ApacheHttpClient mixedClient = new ApacheHttpClient(apacheHttpSigningClient, apacheHttpExtenderClient, apacheHttpPublicationsFileClient);
 
         if (tcpClient == null) {
             tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
@@ -170,16 +169,16 @@ public abstract class AbstractCommonIntegrationTest {
 
         PendingKSIService pendingKSIService = new PendingKSIService();
 
-        List<KSISigningClient> signingClientsForHa = new ArrayList<>();
-        signingClientsForHa.add(mixedClient);
-        signingClientsForHa.add(mixedClient);
-        List<KSISigningService> signingServicesForHa = new ArrayList<>();
+        List<KSISigningClient> signingClientsForHa = new ArrayList<KSISigningClient>();
+        signingClientsForHa.add(apacheHttpSigningClient);
+        signingClientsForHa.add(apacheHttpSigningClient);
+        List<KSISigningService> signingServicesForHa = new ArrayList<KSISigningService>();
         signingServicesForHa.add(pendingKSIService);
 
-        List<KSIExtenderClient> extenderClientsForHa = new ArrayList<>();
-        extenderClientsForHa.add(mixedClient);
-        extenderClientsForHa.add(mixedClient);
-        List<KSIExtendingService> extendingServicesForHa = new ArrayList<>();
+        List<KSIExtenderClient> extenderClientsForHa = new ArrayList<KSIExtenderClient>();
+        extenderClientsForHa.add(apacheHttpExtenderClient);
+        extenderClientsForHa.add(apacheHttpExtenderClient);
+        List<KSIExtendingService> extendingServicesForHa = new ArrayList<KSIExtendingService>();
         extendingServicesForHa.add(pendingKSIService);
 
         HAService haService = new HAService.Builder()
@@ -214,13 +213,13 @@ public abstract class AbstractCommonIntegrationTest {
     protected static TCPClientSettings loadTCPExtendingSettings() throws IOException {
         Properties prop = new Properties();
         prop.load(load(PROPERTIES_INTEGRATION_TEST));
-        String signerIP = prop.getProperty("tcp.extenderIp");
-        int signerPort = Integer.parseInt(prop.getProperty("tcp.extenderPort"));
+        String extenderIp = prop.getProperty("tcp.extenderIp");
+        int extenderPort = Integer.parseInt(prop.getProperty("tcp.extenderPort"));
         int tcpTransactionTimeoutSec = Integer.parseInt(prop.getProperty("tcp.transactionTimeoutSec"));
         String loginId = prop.getProperty("tcp.loginId");
         String loginKey = prop.getProperty("tcp.loginKey");
         ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
-        return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec,
+        return new TCPClientSettings(new InetSocketAddress(extenderIp, extenderPort), tcpTransactionTimeoutSec,
                 serviceCredentials);
     }
 

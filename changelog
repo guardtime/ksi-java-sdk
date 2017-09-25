@@ -5,8 +5,11 @@ Version 4.11
 * IMPROVEMENT: Upgraded maven-javadoc-plugin plugin dependency from version 2.10.3 to 3.0.0-M1
 * IMPROVEMENT: Upgraded maven-source-plugin plugin dependency from version  2.4 to 3.0.1
 * IMPROVEMENT: Upgraded maven-jar-plugin dependency plugin from version 2.6 to 3.0.2
+* FEATURE: Now Possible to extend with TCPClient. Also possible to initialize SigingTCPClient and ExtenderTCPClient separately. Deprecated TCPClient(TCPClientSettings) constructor.
 
 Version 4.10
+
+* BUGFIX: Removed complex HTTP client initializing option using sub-clients.
 
 2017-08-31 4.10.117
 

@@ -42,7 +42,7 @@ public class TCPClient implements KSISigningClient, KSIExtenderClient {
     private final ExtenderTCPClient extenderTCPClient;
 
     /**
-     * @deprecated use {@link SigningTCPClient#(TCPClientSettings)} or {@link TCPClient#(TCPClientSettings, TCPClientSettings)}
+     * @deprecated use {@link SigningTCPClient#(com.guardtime.ksi.service.tcp.TCPClientSettings)} or {@link TCPClient#(com.guardtime.ksi.service.tcp.TCPClientSettings, com.guardtime.ksi.service.tcp.TCPClientSettings)}
      * instead.
      *
      * WARNING! Using this constructor only configures the aggregator connection and the extending will not be usable.

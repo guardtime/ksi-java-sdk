@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -18,6 +18,8 @@
  */
 
 /**
- * Common classes for KSI Apache HTTP client and KSI Simple HTTP client
+ *
+ * PDU exception classes
+ *
  */
-package com.guardtime.ksi.service.client.http;
+package com.guardtime.ksi.pdu.exceptions;

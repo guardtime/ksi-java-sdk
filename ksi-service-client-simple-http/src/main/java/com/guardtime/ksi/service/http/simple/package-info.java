@@ -16,7 +16,8 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+
 /**
- * Simple HTTP Client
+ * Simple HTTP client for KSI
  */
 package com.guardtime.ksi.service.http.simple;

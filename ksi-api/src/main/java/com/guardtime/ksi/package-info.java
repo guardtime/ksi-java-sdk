@@ -16,7 +16,8 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+
 /**
- * KSI API interface.
+ * KSI API interface
  */
 package com.guardtime.ksi;

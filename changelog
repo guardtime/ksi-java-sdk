@@ -1,3 +1,7 @@
+Version 4.11
+
+* IMPROVEMENT: Handling of deprecated and obsolete hash functions
+
 Version 4.10
 
 * IMPROVEMENT: TCP client now uses only Apache MINAs concurrency mechanisms. Removed additional thread pool.

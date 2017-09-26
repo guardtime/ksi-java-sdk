@@ -18,6 +18,6 @@
  */
 
 /**
- * This package contains classes and interfaces used to build a hash tree.
+ * Classes and interfaces to build a hash tree
  */
 package com.guardtime.ksi.tree;

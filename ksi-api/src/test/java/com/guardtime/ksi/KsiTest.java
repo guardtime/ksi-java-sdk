@@ -91,8 +91,8 @@ public class KsiTest {
                 setPublicationsFileTrustedCertSelector(certSelector).
                 setKsiProtocolSignerClient(mockedSigningClient).
                 setPublicationsFilePkiTrustStore(keyStore).
-                setDefaultVerificationPolicy(new AlwaysSuccessfulPolicy()).
-                setPduIdentifierProvider(mockedIdentifierProvider).build();
+                setDefaultVerificationPolicy(new AlwaysSuccessfulPolicy())
+                .build();
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "KSI signing service can not be null")

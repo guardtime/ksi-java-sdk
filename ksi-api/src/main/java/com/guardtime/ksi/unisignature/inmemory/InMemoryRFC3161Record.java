@@ -61,7 +61,7 @@ class InMemoryRFC3161Record extends TLVStructure implements RFC3161Record {
 
     private Date aggregationTime;
 
-    private List<Long> chainIndex = new LinkedList<Long>();
+    private List<Long> chainIndex = new LinkedList<>();
 
     private DataHash inputHash;
 

@@ -312,7 +312,7 @@ public abstract class AbstractCommonIntegrationTest {
             KSIException {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setExtendingService(extendingService).setPublicationsFile(ksi.getPublicationsFile());
-        return ksi.verify(builder.createVerificationContext(), policy);
+        return ksi.verify(builder.build(), policy);
     }
 
     public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy, boolean
@@ -320,7 +320,7 @@ public abstract class AbstractCommonIntegrationTest {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setExtenderClient(extenderClient).setPublicationsFile(ksi.getPublicationsFile());
         builder.setExtendingAllowed(extendingAllowed);
-        return ksi.verify(builder.createVerificationContext(), policy);
+        return ksi.verify(builder.build(), policy);
     }
 
     public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy,
@@ -329,7 +329,7 @@ public abstract class AbstractCommonIntegrationTest {
         builder.setSignature(signature).setExtenderClient(extenderClient).setPublicationsFile(ksi.getPublicationsFile());
         builder.setUserPublication(userPublication);
         builder.setExtendingAllowed(extendingAllowed);
-        return ksi.verify(builder.createVerificationContext(), policy);
+        return ksi.verify(builder.build(), policy);
     }
 
     @DataProvider(name = VALID_SIGNATURES)
@@ -363,7 +363,7 @@ public abstract class AbstractCommonIntegrationTest {
         BufferedReader fileReader = null;
         try {
             fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(CommonTestUtil.loadFile(path + fileName))));
-            ArrayList<String> lines = new ArrayList<String>();
+            ArrayList<String> lines = new ArrayList<>();
             String line;
             while ((line = fileReader.readLine()) != null) {
                 if (!line.startsWith("#") && line.trim().length() > 17 && !line.contains(IntegrationTestAction.NOT_IMPLEMENTED.getName())) {

@@ -25,7 +25,7 @@ import com.guardtime.ksi.unisignature.verifier.rules.Rule;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 /**
  * A policy used in tests. Always returns {@link VerificationResultCode#OK}
@@ -50,7 +50,7 @@ public class AlwaysSuccessfulPolicy implements Policy {
                 };
             }
         };
-        return asList(r);
+        return singletonList(r);
     }
 
     public String getName() {

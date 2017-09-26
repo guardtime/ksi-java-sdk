@@ -49,9 +49,9 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
     private static final int ELEMENT_TYPE_INPUT_HASH = 0x05;
     private static final int ELEMENT_TYPE_AGGREGATION_ALGORITHM = 0x06;
 
-    protected LinkedList<AggregationChainLink> chain = new LinkedList<AggregationChainLink>();
+    protected LinkedList<AggregationChainLink> chain = new LinkedList<>();
     private Date aggregationTime;
-    private List<Long> chainIndex = new LinkedList<Long>();
+    private List<Long> chainIndex = new LinkedList<>();
     @SuppressWarnings("unused")
     private byte[] inputData;
     private DataHash inputHash;
@@ -185,7 +185,8 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
 
         for (int i = chain.size()-1; i >=0 ; i--) {
             AggregationChainLink aggregationChainLink = chain.get(i);
-            String id = aggregationChainLink.getIdentity();
+            Identity linkIdentity = aggregationChainLink.getLinkIdentity();
+            String id = linkIdentity == null ? "" : linkIdentity.getDecodedClientId();
             if (identity.length() > 0 && id.length() > 0) {
                 identity.append(separator);
             }
@@ -195,7 +196,7 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
     }
 
     public Identity[] getIdentity() {
-        List<Identity> identities = new LinkedList<Identity>();
+        List<Identity> identities = new LinkedList<>();
         for (int i = chain.size()-1; i >=0 ; i--) {
             AggregationChainLink aggregationChainLink = chain.get(i);
             Identity linkIdentity = aggregationChainLink.getLinkIdentity();

@@ -54,11 +54,7 @@ public class ApacheHttpGetRequestFuture extends HttpGetRequestFuture {
             validateHttpResponse(statusCode, responseMessage);
             inputStream = response.getEntity().getContent();
             return ByteBuffer.wrap(Util.toByteArray(inputStream));
-        } catch (InterruptedException e) {
-            throw new KSIClientException("Getting KSI response failed", e);
-        } catch (ExecutionException e) {
-            throw new KSIClientException("Getting KSI response failed", e);
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException | ExecutionException e) {
             throw new KSIClientException("Getting KSI response failed", e);
         } finally {
             Util.closeQuietly(inputStream);

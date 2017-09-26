@@ -61,6 +61,6 @@ public class PublicationsFileIntegrationTest extends AbstractCommonIntegrationTe
         KSISignature signature = TestUtil.loadSignature(signatureFile);
         build.setSignature(signature).setExtenderClient(extenderClient);
         build.setExtendingAllowed(extendingAllowed);
-        return ksi.verify(build.createVerificationContext(), policy);
+        return ksi.verify(build.build(), policy);
     }
 }

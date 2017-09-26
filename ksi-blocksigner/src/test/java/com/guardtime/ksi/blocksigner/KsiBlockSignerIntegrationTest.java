@@ -74,7 +74,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
     @DataProvider(name = WORKING_HASH_ALGORITHMS)
     public Object[][] hashAlgorithms() {
-        List<Object[]> hashAlgorithms = new ArrayList<Object[]>();
+        List<Object[]> hashAlgorithms = new ArrayList<>();
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (HashAlgorithm.Status.NOT_IMPLEMENTED != algorithm.getStatus()) {
                 hashAlgorithms.add(new Object[]{algorithm});

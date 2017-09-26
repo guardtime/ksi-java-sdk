@@ -26,7 +26,7 @@ import java.util.Map;
 
 public final class PduFactoryProvider {
 
-    private static final Map<PduVersion, PduFactory> pduFactories = new HashMap<PduVersion, PduFactory>();
+    private static final Map<PduVersion, PduFactory> pduFactories = new HashMap<>();
 
     static {
         pduFactories.put(PduVersion.V1, new PduV1Factory());

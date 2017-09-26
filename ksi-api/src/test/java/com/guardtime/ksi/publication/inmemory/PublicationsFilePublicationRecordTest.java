@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Collections;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 import static com.guardtime.ksi.Resources.PUBLICATION_RECORD_IN_FILE_OK;
@@ -65,7 +66,7 @@ public class PublicationsFilePublicationRecordTest {
 
     @Test
     public void testCreateNewPublicationFileRecord_Ok() throws Exception {
-        PublicationsFilePublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(PUBLICATION_STRING), asList("ref1", "ref2"), asList("uri1"));
+        PublicationsFilePublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(PUBLICATION_STRING), asList("ref1", "ref2"), Collections.singletonList("uri1"));
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationReferences());
         Assert.assertNotNull(publicationRecord.getRootElement());

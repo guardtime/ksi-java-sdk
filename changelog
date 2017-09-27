@@ -7,6 +7,7 @@ Version 4.11
 * IMPROVEMENT: Upgraded maven-jar-plugin dependency plugin from version 2.6 to 3.0.2
 * FEATURE: Now Possible to extend with TCPClient. Also possible to initialize SigingTCPClient and ExtenderTCPClient separately. Deprecated TCPClient(TCPClientSettings) constructor.
 * IMPROVEMENT: No support for Java 5 and Java 6 anymore.
+* IMPROVEMENT: Verification of the validity of the signing certificate during aggregation time.
 
 Version 4.10
 

@@ -26,15 +26,15 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class PolicyContextTest {
 
     @Test
     public void testPolicyContextWithoutParams() {
         PolicyContext pc = new PolicyContext();
-        assertFalse(pc.isExtendingAllowed());
+        assertTrue(pc.isExtendingAllowed());
         assertNull(pc.getExtendingService());
         assertNull(pc.getPublicationsHandler());
         assertNull(pc.getUserPublication());
@@ -59,8 +59,17 @@ public class PolicyContextTest {
     }
 
     @Test
+    public void testPolicyContextWithPublicationData() {
+        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationData.class));
+        assertFalse(pc.isExtendingAllowed());
+        assertNull(pc.getExtendingService());
+        assertNull(pc.getPublicationsHandler());
+        assertNotNull(pc.getUserPublication());
+    }
+
+    @Test
     public void testPolicyContextWithPublicationDataExtender() {
-        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationData.class), Mockito.mock(KSIExtendingService.class));
+        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationData.class), Mockito.mock(KSIExtendingService.class), true);
         assertTrue(pc.isExtendingAllowed());
         assertNotNull(pc.getExtendingService());
         assertNull(pc.getPublicationsHandler());

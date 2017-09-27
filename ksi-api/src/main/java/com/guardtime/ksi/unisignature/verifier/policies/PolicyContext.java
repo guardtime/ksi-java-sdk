@@ -29,6 +29,7 @@ public class PolicyContext {
     private PublicationsHandler publicationsHandler;
     private KSIExtendingService extendingService;
     private PublicationData userPublication;
+    private boolean extendingAllowed = true;
 
     public PolicyContext() {}
 
@@ -43,10 +44,18 @@ public class PolicyContext {
         this.extendingService = extendingService;
     }
 
-    public PolicyContext(PublicationData publicationData, KSIExtendingService extendingService) {
+    public PolicyContext(PublicationData publicationData) {
+        this(publicationData, null, false);
+    }
+
+    public PolicyContext(PublicationData publicationData, KSIExtendingService extendingService, boolean extendingAllowed) {
         Util.notNull(publicationData, "Publication data");
+        if (extendingAllowed) {
+            Util.notNull(extendingService, "Extending service");
+        }
         this.userPublication = publicationData;
         this.extendingService = extendingService;
+        this.extendingAllowed = extendingAllowed;
     }
 
     public PublicationsHandler getPublicationsHandler() {
@@ -58,7 +67,7 @@ public class PolicyContext {
     }
 
     public boolean isExtendingAllowed() {
-        return extendingService != null;
+        return extendingAllowed;
     }
 
     public PublicationData getUserPublication() {

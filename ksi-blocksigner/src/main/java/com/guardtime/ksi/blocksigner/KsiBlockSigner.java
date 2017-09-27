@@ -89,7 +89,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     private static final String DEFAULT_CLIENT_ID_LOCAL_AGGREGATION = "local-aggregation";
     protected static final int MAXIMUM_LEVEL = 255;
 
-    private final Map<LeafKey, AggregationChainLink> chains = new HashMap<LeafKey, AggregationChainLink>();
+    private final Map<LeafKey, AggregationChainLink> chains = new HashMap<>();
     private final HashTreeBuilder treeBuilder;
 
     private final KSISigningService signingService;
@@ -243,9 +243,9 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         rootNodeSignature.writeTo(output);
 
-        List<KSISignature> signatures = new LinkedList<KSISignature>();
+        List<KSISignature> signatures = new LinkedList<>();
         for (LeafKey leafKey : this.chains.keySet()) {
-            LinkedList<AggregationChainLink> links = new LinkedList<AggregationChainLink>();
+            LinkedList<AggregationChainLink> links = new LinkedList<>();
             links.add(this.chains.get(leafKey)); // Add metadata link
             TreeNode node = leafKey.getLeaf();
 
@@ -255,10 +255,10 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
                 node = parent;
             }
 
-            LinkedList<Long> chainIndex = new LinkedList<Long>(firstChain.getChainIndex());
+            LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
             chainIndex.add(calculateIndex(links));
             AggregationHashChain aggregationHashChain = SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(leafKey.getInputDataHash(), firstChain.getAggregationTime(), chainIndex, links, algorithm);
-            List<AggregationHashChain> aggregationHashChains = new LinkedList<AggregationHashChain>();
+            List<AggregationHashChain> aggregationHashChains = new LinkedList<>();
             aggregationHashChains.add(aggregationHashChain);
             aggregationHashChains.addAll(asList(rootNodeSignature.getAggregationHashChains()));
             KSISignature signature = signatureFactory.createSignature(aggregationHashChains, rootNodeSignature.getCalendarHashChain(), rootNodeSignature.getCalendarAuthenticationRecord(), rootNodeSignature.getPublicationRecord(), rootNodeSignature.getRfc3161Record());

@@ -32,7 +32,7 @@ class ActiveTransactionsHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(ActiveTransactionsHolder.class);
 
-    private static final ConcurrentMap<Long, KSITCPSigningTransaction> ACTIVE_TRANSACTIONS = new ConcurrentHashMap<Long, KSITCPSigningTransaction>();
+    private static final ConcurrentMap<Long, KSITCPSigningTransaction> ACTIVE_TRANSACTIONS = new ConcurrentHashMap<>();
 
     synchronized static void put(KSITCPSigningTransaction transaction) {
         ACTIVE_TRANSACTIONS.put(transaction.getCorrelationId(), transaction);

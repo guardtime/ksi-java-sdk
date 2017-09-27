@@ -26,6 +26,7 @@ import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFact
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
+import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.util.Util;
 
 import java.io.ByteArrayInputStream;
@@ -44,10 +45,18 @@ public class SignatureReader implements Reader {
 
     private final KSISignatureFactory signatureFactory;
 
+    /**
+     * Allocates a SignatureReader object and initializes it so {@link InternalVerificationPolicy} is used for
+     * {@link KSISignature} consistency verification.
+     */
     public SignatureReader() {
         this(ContextAwarePolicyAdapter.createInternalPolicy());
     }
 
+    /**
+     * Allocates a SignatureReader object and initializes it so user provided {@link ContextAwarePolicy} is used for
+     * {@link KSISignature} consistency verification.
+     */
     public SignatureReader(ContextAwarePolicy policy) {
         signatureFactory = new InMemoryKsiSignatureFactory(policy, new InMemoryKsiSignatureComponentFactory());
     }

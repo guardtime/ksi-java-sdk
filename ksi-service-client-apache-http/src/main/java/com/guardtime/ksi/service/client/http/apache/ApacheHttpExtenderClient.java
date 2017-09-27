@@ -37,7 +37,7 @@ public class ApacheHttpExtenderClient extends AbstractApacheHttpClient implement
      *
      * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings}
      */
-    ApacheHttpExtenderClient(CredentialsAwareHttpSettings settings) {
+    public ApacheHttpExtenderClient(CredentialsAwareHttpSettings settings) {
         super(settings);
         this.settings = settings;
     }
@@ -48,13 +48,13 @@ public class ApacheHttpExtenderClient extends AbstractApacheHttpClient implement
      * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}
      * @param asyncConfiguration - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
      */
-    ApacheHttpExtenderClient(CredentialsAwareHttpSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
+    public ApacheHttpExtenderClient(CredentialsAwareHttpSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         super(settings, asyncConfiguration);
         this.settings = settings;
     }
 
     /**
-     * @see com.guardtime.ksi.service.client.KSIExtenderClient.extend
+     * @see com.guardtime.ksi.service.client.KSIExtenderClient#extend(InputStream)
      */
     public ApacheHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
         return post(request);

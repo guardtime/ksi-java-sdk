@@ -57,7 +57,7 @@ final class KSIVerificationContext implements VerificationContext {
     private boolean extendingAllowed;
     private DataHash documentHash;
     private Long inputHashLevel;
-    private Map<Date, CalendarHashChain> extendedSignatures = new HashMap<Date, CalendarHashChain>();
+    private Map<Date, CalendarHashChain> extendedSignatures = new HashMap<>();
     private CalendarHashChain calendarExtendedToHead;
 
     private KSISignatureComponentFactory signatureComponentFactory;

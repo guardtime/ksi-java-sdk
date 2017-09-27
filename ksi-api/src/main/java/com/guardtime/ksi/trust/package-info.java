@@ -16,7 +16,8 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+
 /**
- * Trust provider classes.
+ * Trust provider classes
  */
 package com.guardtime.ksi.trust;

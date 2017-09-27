@@ -75,7 +75,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
     @DataProvider(name = WORKING_HASH_ALGORITHMS)
     public Object[][] hashAlgorithms() {
-        List<Object[]> hashAlgorithms = new ArrayList<Object[]>();
+        List<Object[]> hashAlgorithms = new ArrayList<>();
         Date currentDate = new Date();
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (HashAlgorithm.Status.NOT_IMPLEMENTED != algorithm.getStatus() && !algorithm.isDeprecated(currentDate)) {
@@ -86,7 +86,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         return hashAlgorithms.toArray(objects);
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client.*")
     public void testCreateSignatureLargeAggregationTree() throws Exception {
         KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
         builder.add(DATA_HASH, 254L, metadata);

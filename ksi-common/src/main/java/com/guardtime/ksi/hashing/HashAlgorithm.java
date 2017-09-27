@@ -42,7 +42,7 @@ public enum HashAlgorithm {
     SM3("SM3", 0x0B, 32, Status.NOT_IMPLEMENTED),;
 
     // lookup table for algorithms
-    private static Map<String, HashAlgorithm> lookup = new HashMap<String, HashAlgorithm>();
+    private static Map<String, HashAlgorithm> lookup = new HashMap<>();
 
     static {
         for (HashAlgorithm algorithm : values()) {
@@ -178,7 +178,7 @@ public enum HashAlgorithm {
      * com.guardtime.ksi.hashing.HashAlgorithm.Status#NORMAL} or {@link com.guardtime.ksi.hashing.HashAlgorithm.Status#NOT_TRUSTED}
      */
     public static List<HashAlgorithm> getImplementedHashAlgorithms() {
-        List<HashAlgorithm> algorithms = new ArrayList<HashAlgorithm>();
+        List<HashAlgorithm> algorithms = new ArrayList<>();
         for (HashAlgorithm algorithm : values()) {
             if (!Status.NOT_IMPLEMENTED.equals(algorithm.getStatus())) {
                 algorithms.add(algorithm);

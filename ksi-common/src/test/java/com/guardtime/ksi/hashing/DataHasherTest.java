@@ -209,7 +209,7 @@ public class DataHasherTest {
     }
 
     private Object[][] getHashAlgorithmsByStatus(Status... allowedStatuses) {
-        List<Object[]> objectsList = new ArrayList<Object[]>();
+        List<Object[]> objectsList = new ArrayList<>();
         List<Status> statusList = Arrays.asList(allowedStatuses);
         Date currentDate = new Date();
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {

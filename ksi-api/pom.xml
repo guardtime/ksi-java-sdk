@@ -27,7 +27,7 @@
 	<parent>
 		<groupId>com.guardtime</groupId>
 		<artifactId>ksi</artifactId>
-		<version>4.10.112-SNAPSHOT</version>
+		<version>4.11.124-SNAPSHOT</version>
 	</parent>
 
 	<name>KSI Java SDK</name>
@@ -64,7 +64,7 @@
 		<dependency>
 			<groupId>com.guardtime</groupId>
 			<artifactId>ksi-common</artifactId>
-			<version>4.10.112-SNAPSHOT</version>
+			<version>4.11.124-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
@@ -154,7 +154,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.0.2</version>
 
 				<executions>
 					<execution>

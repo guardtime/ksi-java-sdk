@@ -59,7 +59,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
     public InMemoryKsiSignature(TLVElement element) throws KSIException {
         super(element);
         List<TLVElement> children = element.getChildElements();
-        List<AggregationHashChain> aggregations = new ArrayList<AggregationHashChain>();
+        List<AggregationHashChain> aggregations = new ArrayList<>();
         for (TLVElement child : children) {
             switch (child.getType()) {
                 case InMemoryAggregationHashChain.ELEMENT_TYPE:
@@ -99,18 +99,26 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
     }
 
     private String parseIdentity() throws KSIException {
-        String identity = "";
+        StringBuilder identity = new StringBuilder();
         for (int i = aggregationChains.size()-1; i>=0 ; i--) {
             AggregationHashChain chain = aggregationChains.get(i);
-            String id = chain.getChainIdentity(IDENTITY_SEPARATOR);
+            Identity[] idn = chain.getIdentity();
+            StringBuilder sb = new StringBuilder();
+            for (int identityIdx = 0; identityIdx < idn.length; identityIdx++) {
+                sb.append(idn[identityIdx].getDecodedClientId());
+                if (identityIdx != idn.length - 1) {
+                    sb.append(IDENTITY_SEPARATOR);
+                }
+            }
+            String id = sb.toString();
             if (id.length() > 0) {
                 if (identity.length() > 0) {
-                    identity += IDENTITY_SEPARATOR;
+                    identity.append(IDENTITY_SEPARATOR);
                 }
-                identity += id;
+                identity.append(id);
             }
         }
-        return identity;
+        return identity.toString();
     }
 
     /**
@@ -148,7 +156,7 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
     }
 
     public Identity[] getAggregationHashChainIdentity() {
-        List<Identity> identities = new LinkedList<Identity>();
+        List<Identity> identities = new LinkedList<>();
 
         for (int i = aggregationChains.size()-1; i>=0 ; i--) {
             AggregationHashChain chain = aggregationChains.get(i);

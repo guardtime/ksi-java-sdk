@@ -24,7 +24,7 @@
     <parent>
         <artifactId>ksi</artifactId>
         <groupId>com.guardtime</groupId>
-        <version>4.10.112-SNAPSHOT</version>
+        <version>4.11.124-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -59,12 +59,12 @@
         <dependency>
             <groupId>com.guardtime</groupId>
             <artifactId>ksi-api</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.guardtime</groupId>
             <artifactId>ksi-service-client</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
@@ -82,13 +82,13 @@
         <dependency>
             <groupId>com.guardtime</groupId>
             <artifactId>ksi-service-client-simple-http</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.guardtime</groupId>
             <artifactId>ksi-service-client-tcp</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -43,6 +43,9 @@ import com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.client.http.HttpSettings;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
+import com.guardtime.ksi.service.client.http.apache.ApacheHttpExtenderClient;
+import com.guardtime.ksi.service.client.http.apache.ApacheHttpPublicationsFileClient;
+import com.guardtime.ksi.service.client.http.apache.ApacheHttpSigningClient;
 import com.guardtime.ksi.service.ha.HAService;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpExtenderClient;
@@ -104,6 +107,9 @@ public abstract class AbstractCommonIntegrationTest {
 
     private static HttpClientSettings httpSettings;
     protected static ApacheHttpClient apacheHttpClient;
+    private static ApacheHttpSigningClient apacheHttpSigningClient;
+    private static ApacheHttpExtenderClient apacheHttpExtenderClient;
+    private static ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient;
     private static ApacheHttpClient failingClient;
     private static KSISigningClient tcpClient;
 
@@ -136,16 +142,27 @@ public abstract class AbstractCommonIntegrationTest {
         if (failingClient == null) {
             failingClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
         }
-        SimpleHttpSigningClient simpleHttpSigningClient = new SimpleHttpSigningClient(
-                new CredentialsAwareHttpSettings(httpSettings.getSigningUrl().toString(), httpSettings.getCredentials()));
-        SimpleHttpExtenderClient simpleHttpExtenderClient = new SimpleHttpExtenderClient(
-                new CredentialsAwareHttpSettings(httpSettings.getExtendingUrl().toString(), httpSettings.getCredentials()));
-        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient =
-                new SimpleHttpPublicationsFileClient(new HttpSettings(httpSettings.getPublicationsFileUrl().toString()));
+
+        CredentialsAwareHttpSettings signingSettings = new CredentialsAwareHttpSettings(httpSettings.getSigningUrl().toString(), httpSettings.getCredentials());
+        CredentialsAwareHttpSettings extenderSettings = new CredentialsAwareHttpSettings(httpSettings.getExtendingUrl().toString(), httpSettings.getCredentials());
+        HttpSettings PublicationSettings = new HttpSettings(httpSettings.getPublicationsFileUrl().toString());
+
+        SimpleHttpSigningClient simpleHttpSigningClient = new SimpleHttpSigningClient(signingSettings);
+        if (apacheHttpSigningClient == null) {
+            apacheHttpSigningClient = new ApacheHttpSigningClient(signingSettings);
+        }
+
+        SimpleHttpExtenderClient simpleHttpExtenderClient = new SimpleHttpExtenderClient(extenderSettings);
+        if (apacheHttpExtenderClient == null) {
+            apacheHttpExtenderClient = new ApacheHttpExtenderClient(extenderSettings);
+        }
+        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient = new SimpleHttpPublicationsFileClient(PublicationSettings);
+        if (apacheHttpPublicationsFileClient == null) {
+            apacheHttpPublicationsFileClient = new ApacheHttpPublicationsFileClient(PublicationSettings);
+        }
 
         if (tcpClient == null) {
-            TCPClientSettings tcpSettings = loadTCPSettings();
-            tcpClient = new TCPClient(tcpSettings);
+            tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
         }
 
         SimpleHttpClient simpleHttpClient = new SimpleHttpClient(httpSettings);
@@ -153,33 +170,34 @@ public abstract class AbstractCommonIntegrationTest {
         PendingKSIService pendingKSIService = new PendingKSIService();
 
         List<KSISigningClient> signingClientsForHa = new ArrayList<KSISigningClient>();
-        signingClientsForHa.add(failingClient);
-        signingClientsForHa.add(simpleHttpClient);
+        signingClientsForHa.add(apacheHttpSigningClient);
+        signingClientsForHa.add(apacheHttpSigningClient);
         List<KSISigningService> signingServicesForHa = new ArrayList<KSISigningService>();
         signingServicesForHa.add(pendingKSIService);
 
         List<KSIExtenderClient> extenderClientsForHa = new ArrayList<KSIExtenderClient>();
-        extenderClientsForHa.add(failingClient);
-        extenderClientsForHa.add(simpleHttpClient);
+        extenderClientsForHa.add(apacheHttpExtenderClient);
+        extenderClientsForHa.add(apacheHttpExtenderClient);
         List<KSIExtendingService> extendingServicesForHa = new ArrayList<KSIExtendingService>();
         extendingServicesForHa.add(pendingKSIService);
 
         HAService haService = new HAService.Builder()
                 .addSigningClients(signingClientsForHa)
                 .addSigningServices(signingServicesForHa).
-                setExtenderClients(extenderClientsForHa)
-                .setExtendingServices(extendingServicesForHa)
+                        addExtenderClients(extenderClientsForHa)
+                .addExtenderServices(extendingServicesForHa)
                 .build();
 
         return new Object[][] {
                 new Object[] {createKsi(simpleHttpExtenderClient, simpleHttpSigningClient, simpleHttpPublicationsFileClient)},
+                new Object[] {createKsi(apacheHttpExtenderClient, apacheHttpSigningClient, apacheHttpPublicationsFileClient)},
                 new Object[] {createKsi(apacheHttpClient, apacheHttpClient, apacheHttpClient)},
-                new Object[] {createKsi(apacheHttpClient, tcpClient, apacheHttpClient)},
+                new Object[] {createKsi((KSIExtenderClient) tcpClient, tcpClient, apacheHttpClient)},
                 new Object[] {createKsi(haService, haService, simpleHttpClient)}
         };
     }
 
-    protected static TCPClientSettings loadTCPSettings() throws IOException {
+    protected static TCPClientSettings loadTCPSigningSettings() throws IOException {
         Properties prop = new Properties();
         prop.load(load(PROPERTIES_INTEGRATION_TEST));
         String signerIP = prop.getProperty("tcp.signerIP");
@@ -189,6 +207,19 @@ public abstract class AbstractCommonIntegrationTest {
         String loginKey = prop.getProperty("tcp.loginKey");
         ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
         return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec,
+                serviceCredentials);
+    }
+
+    protected static TCPClientSettings loadTCPExtendingSettings() throws IOException {
+        Properties prop = new Properties();
+        prop.load(load(PROPERTIES_INTEGRATION_TEST));
+        String extenderIp = prop.getProperty("tcp.extenderIp");
+        int extenderPort = Integer.parseInt(prop.getProperty("tcp.extenderPort"));
+        int tcpTransactionTimeoutSec = Integer.parseInt(prop.getProperty("tcp.transactionTimeoutSec"));
+        String loginId = prop.getProperty("tcp.loginId");
+        String loginKey = prop.getProperty("tcp.loginKey");
+        ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
+        return new TCPClientSettings(new InetSocketAddress(extenderIp, extenderPort), tcpTransactionTimeoutSec,
                 serviceCredentials);
     }
 
@@ -218,7 +249,7 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     public static HttpClientSettings loadHTTPSettings() throws IOException {
-        return loadHTTPSettings(PduVersion.V1);
+        return loadHTTPSettings(PduVersion.V2);
     }
 
     protected static Object[] createKsiObject(KSIExtenderClient extenderClient, KSISigningClient signingClient,
@@ -250,10 +281,7 @@ public abstract class AbstractCommonIntegrationTest {
     protected Extender getExtender(KSIExtendingService extendingService, KSIPublicationsFileClient publicationsFileClient) throws Exception {
         return new ExtenderBuilder()
                 .setExtendingService(extendingService)
-                .setKsiProtocolPublicationsFileClient(publicationsFileClient)
-                .setPublicationsFileCacheExpirationTime(10000L)
-                .setPublicationsFilePkiTrustStore(createKeyStore())
-                .setPublicationsFileCertificateConstraints(createCertSelector()).build();
+                .setPublicationsHandler(getPublicationsHandler(publicationsFileClient)).build();
     }
 
     protected static KSI createKsi(KSIExtendingService extendingService, KSISigningService signingService, KSIPublicationsFileClient
@@ -284,7 +312,7 @@ public abstract class AbstractCommonIntegrationTest {
             KSIException {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setExtendingService(extendingService).setPublicationsFile(ksi.getPublicationsFile());
-        return ksi.verify(builder.createVerificationContext(), policy);
+        return ksi.verify(builder.build(), policy);
     }
 
     public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy, boolean
@@ -292,7 +320,7 @@ public abstract class AbstractCommonIntegrationTest {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setExtenderClient(extenderClient).setPublicationsFile(ksi.getPublicationsFile());
         builder.setExtendingAllowed(extendingAllowed);
-        return ksi.verify(builder.createVerificationContext(), policy);
+        return ksi.verify(builder.build(), policy);
     }
 
     public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy,
@@ -301,7 +329,7 @@ public abstract class AbstractCommonIntegrationTest {
         builder.setSignature(signature).setExtenderClient(extenderClient).setPublicationsFile(ksi.getPublicationsFile());
         builder.setUserPublication(userPublication);
         builder.setExtendingAllowed(extendingAllowed);
-        return ksi.verify(builder.createVerificationContext(), policy);
+        return ksi.verify(builder.build(), policy);
     }
 
     @DataProvider(name = VALID_SIGNATURES)
@@ -335,7 +363,7 @@ public abstract class AbstractCommonIntegrationTest {
         BufferedReader fileReader = null;
         try {
             fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(CommonTestUtil.loadFile(path + fileName))));
-            ArrayList<String> lines = new ArrayList<String>();
+            ArrayList<String> lines = new ArrayList<>();
             String line;
             while ((line = fileReader.readLine()) != null) {
                 if (!line.startsWith("#") && line.trim().length() > 17 && !line.contains(IntegrationTestAction.NOT_IMPLEMENTED.getName())) {

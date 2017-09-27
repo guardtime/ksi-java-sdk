@@ -36,7 +36,7 @@ public class HttpSettings {
     /**
      * Create HTTP Service settings with provided parameters.
      *
-     * @param signingUrl
+     * @param url
      *         URL of KSI service
      */
     public HttpSettings(String url) {

@@ -49,7 +49,7 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     /**
      * Queue for holding the head (root) nodes of hash subtrees.
      */
-    private final LinkedList<ImprintNode> heads = new LinkedList<ImprintNode>();
+    private final LinkedList<ImprintNode> heads = new LinkedList<>();
 
     /**
      * Hash algorithm used to calculate the tree hashes.
@@ -81,7 +81,7 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     }
 
     public long calculateHeight(ImprintNode node) throws HashException {
-        LinkedList<ImprintNode> tmpHeads = new LinkedList<ImprintNode>();
+        LinkedList<ImprintNode> tmpHeads = new LinkedList<>();
         for (ImprintNode in : heads) {
             tmpHeads.add(new ImprintNode(in));
         }

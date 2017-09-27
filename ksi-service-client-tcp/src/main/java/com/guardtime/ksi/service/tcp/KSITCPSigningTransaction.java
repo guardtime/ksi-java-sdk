@@ -45,7 +45,7 @@ class KSITCPSigningTransaction {
     private static final int REQ_ID_TAG = 0x1;
     private static final int PDU_V2_PAYLOAD_ELEMENT_TAG = 0x02;
 
-    private final BlockingQueue<TLVElement> availableResponse = new ArrayBlockingQueue<TLVElement>(1);
+    private final BlockingQueue<TLVElement> availableResponse = new ArrayBlockingQueue<>(1);
     private long correlationId;
     private TLVElement request;
     private TLVElement response;
@@ -109,7 +109,8 @@ class KSITCPSigningTransaction {
 
     private static long extractTransactionIdFromRequestTLV(TLVElement tlvData) throws KSITCPTransactionException {
         try {
-            if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2) {
+            if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2
+                    || tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_REQUEST_PDU_V2) {
                 return extractRequestId(tlvData, PDU_V2_PAYLOAD_ELEMENT_TAG);
             }
             return extractRequestId(tlvData, REQUEST_WRAPPER_TAG);
@@ -120,7 +121,8 @@ class KSITCPSigningTransaction {
 
     private static long extractTransactionIdFromResponseTLV(TLVElement tlvData) throws KSITCPTransactionException {
         try {
-            if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2) {
+            if (tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2
+                    || tlvData.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_RESPONSE_PDU_V2) {
                 return extractRequestId(tlvData, PDU_V2_PAYLOAD_ELEMENT_TAG);
             }
             return extractRequestId(tlvData, RESPONSE_WRAPPER_TAG);

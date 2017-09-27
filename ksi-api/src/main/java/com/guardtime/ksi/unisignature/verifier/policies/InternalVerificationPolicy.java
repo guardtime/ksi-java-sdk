@@ -55,7 +55,7 @@ public class InternalVerificationPolicy implements Policy {
 
     private static final String TYPE_INTERNAL_VERIFICATION_POLICY = "INTERNAL_VERIFICATION_POLICY";
 
-    private final List<Rule> rules = new LinkedList<Rule>();
+    private final List<Rule> rules = new LinkedList<>();
     private Policy fallbackPolicy;
 
     public InternalVerificationPolicy() {

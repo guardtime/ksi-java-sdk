@@ -40,9 +40,6 @@ public abstract class AbstractHttpClient implements KSISigningClient, KSIExtende
         this.settings = settings;
     }
 
-    public AbstractHttpClient() {
-    }
-
     public ServiceCredentials getServiceCredentials() {
         return settings.getCredentials();
     }

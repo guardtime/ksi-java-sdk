@@ -70,12 +70,12 @@ public class ExtendingHAService implements KSIExtendingService {
     public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException {
         Util.notNull(aggregationTime, "aggregationTime");
         Collection<KSIExtendingService> services = subservices;
-        Collection<Callable<ExtensionResponse>> tasks = new ArrayList<Callable<ExtensionResponse>>(services.size());
+        Collection<Callable<ExtensionResponse>> tasks = new ArrayList<>(services.size());
         for (KSIExtendingService service : services) {
             tasks.add(new ExtendingTask(service, aggregationTime, publicationTime));
         }
-        return new ServiceCallFuture<ExtensionResponse>(
-                executorService.submit(new ServiceCallsTask<ExtensionResponse>(executorService, tasks))
+        return new ServiceCallFuture<>(
+                executorService.submit(new ServiceCallsTask<>(executorService, tasks))
         );
     }
 
@@ -127,7 +127,7 @@ public class ExtendingHAService implements KSIExtendingService {
      */
     public static class Builder {
 
-        private List<KSIExtendingService> services = new ArrayList<KSIExtendingService>();
+        private List<KSIExtendingService> services = new ArrayList<>();
         private ExecutorService executorService = DefaultExecutorServiceProvider.getExecutorService();
 
         /**
@@ -190,7 +190,7 @@ public class ExtendingHAService implements KSIExtendingService {
          * {@link KSIExtendingClientServiceAdapter}s
          */
         private List<KSIExtendingService> clientsToServices(List<KSIExtenderClient> clients) {
-            List<KSIExtendingService> services = new ArrayList<KSIExtendingService>(clients.size());
+            List<KSIExtendingService> services = new ArrayList<>(clients.size());
             for (KSIExtenderClient client : clients) {
                 services.add(new KSIExtendingClientServiceAdapter(client));
             }

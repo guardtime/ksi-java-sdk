@@ -1,6 +1,7 @@
 Version 4.11
 
 * FEATURE: Now Possible to extend with TCPClient. Also possible to initialize SigingTCPClient and ExtenderTCPClient separately. Deprecated TCPClient(TCPClientSettings) constructor.
+* BUGFIX: Added extendingAllowed flag and made extender optional for publication code based verification.
 
 Version 4.10
 

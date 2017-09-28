@@ -40,8 +40,9 @@ import java.io.IOException;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * This class provides functionality to obtain {@link Extender} object(s) and offers multiple methods to configure an
- * {@link Extender} object. At least extending service and publication handler must be set to build the {@link Extender} object, otherwise the {@link NullPointerException} is thrown.
+ * Obtaining and configuring the {@link Extender} object(s).
+ * At least extending service and publication handler must be set to build the {@link Extender} object,
+ * otherwise the {@link NullPointerException} is thrown.
  */
 public final class ExtenderBuilder {
     private KSIExtendingService extendingService;

@@ -31,15 +31,15 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import java.io.Closeable;
 
 /**
- * An instance of this class can be obtained using {@link ExtenderBuilder} class.
+ * Extending a KSI signature. An instance of this class can be obtained using {@link ExtenderBuilder} class.
  */
 public interface Extender extends Closeable {
 
     /**
-     * Extends signature to the "closest" publication in publications file.
+     * Extends the signature to the "closest" publication in publications file.
      *
      * @param signature {@link KSISignature} to be extended, not null.
-     * @return Extended keyless signature ({@link KSISignature}).
+     * @return Extended KSI signature ({@link KSISignature}).
      * @throws KSIException when error occurs (e.g. when communication with KSI service fails).
      */
     KSISignature extend(KSISignature signature) throws KSIException;
@@ -51,28 +51,28 @@ public interface Extender extends Closeable {
      *
      * @param signature         {@link KSISignature} to be extended, not null.
      * @param publicationRecord publication record ({@link PublicationRecord}) to extend to, not null.
-     * @return Extended keyless signature with extended calendar hash chain and publication record.
+     * @return Extended KSI signature with extended calendar hash chain and publication record.
      * @throws KSIException when error occurs (e.g. when communication with KSI service fails).
      */
     KSISignature extend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException;
 
     /**
      * Extends the signature asynchronously to the "closest" publication in publications file. Use method {@link
-     * Future#getResult()} to get the extended keyless signature.
+     * Future#getResult()} to get the extended KSI signature.
      *
      * @param signature {@link KSISignature} to be extended, not null.
-     * @return Instance of {@link Future} future.
+     * @return Instance of {@link Future}.
      * @throws KSIException when error occurs (e.g. when communication with KSI service fails).
      */
     Future<KSISignature> asyncExtend(KSISignature signature) throws KSIException;
 
     /**
      * Extends the signature asynchronously to the specified publication record. Use method {@link
-     * Future#getResult()} to get the extended keyless signature.
+     * Future#getResult()} to get the extended KSI signature.
      *
      * @param signature         {@link KSISignature} to be extended, not null.
      * @param publicationRecord publication record ({@link PublicationRecord}) to extend the signature to.
-     * @return Instance of {@link Future} future.
+     * @return Instance of {@link Future}.
      * @throws KSIException when error occurs (e.g. when communication with KSI service fails).
      */
     Future<KSISignature> asyncExtend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException;
@@ -88,7 +88,7 @@ public interface Extender extends Closeable {
      *
      * @deprecated Deprecated since 4.10. Use {@link KSIExtendingService#getExtendingConfiguration()}
      *      in pair with {@link KSIExtendingService#registerExtenderConfigurationListener(ConfigurationListener)} instead.
-     *      The {@link KSIExtendingService} which a {@link KSI} instance uses can be acquired by calling
+     *      To acquire the {@link KSIExtendingService} which a {@link KSI} instance uses, call
      *      {@link KSI#getExtendingService()}.
      *
      * @throws UnsupportedOperationException if KSI is initialized with a service not a client.

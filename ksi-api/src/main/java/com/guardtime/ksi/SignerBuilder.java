@@ -103,6 +103,7 @@ public final class SignerBuilder {
     private class SignerImpl implements Signer {
 
         private final Long DEFAULT_LEVEL = 0L;
+        private static final int MAXIMUM_LEVEL = 255;
 
         private final KSISignatureFactory signatureFactory;
         private final HashAlgorithm defaultHashAlgorithm;
@@ -116,7 +117,11 @@ public final class SignerBuilder {
         }
 
         public KSISignature sign(DataHash dataHash) throws KSIException {
-            Future<KSISignature> future = asyncSign(dataHash);
+            return sign(dataHash, DEFAULT_LEVEL);
+        }
+
+        public KSISignature sign(DataHash dataHash, long level) throws KSIException {
+            Future<KSISignature> future = asyncSign(dataHash, level);
             return future.getResult();
         }
 
@@ -131,8 +136,15 @@ public final class SignerBuilder {
         }
 
         public Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException {
+            return asyncSign(dataHash, DEFAULT_LEVEL);
+        }
+
+        public Future<KSISignature> asyncSign(DataHash dataHash, long level) throws KSIException {
             notNull(dataHash, "Data hash");
-            Future<AggregationResponse> aggregationResponseFuture = signingService.sign(dataHash, DEFAULT_LEVEL);
+            if (level < 0 || level > MAXIMUM_LEVEL) {
+                throw new IllegalArgumentException("Level must be between 0 and 255");
+            }
+            Future<AggregationResponse> aggregationResponseFuture = signingService.sign(dataHash, level);
             return new SigningFuture(aggregationResponseFuture, signatureFactory, dataHash);
         }
 

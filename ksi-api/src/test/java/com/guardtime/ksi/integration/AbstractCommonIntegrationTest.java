@@ -25,7 +25,6 @@ import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.KSIBuilder;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.PublicationsHandlerBuilder;
-import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
@@ -77,6 +76,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
@@ -95,8 +95,6 @@ public abstract class AbstractCommonIntegrationTest {
     protected static final String VALID_SIGNATURES = "VALID_SIGNATURES";
     protected static final String DEFAULT_HASH_ALGORITHM = "DEFAULT";
     private static final int DEFAULT_TIMEOUT = 5000;
-    private static final String DEFAULT_SIGNING_URL = "http://stamper.guardtime.net/gt-signingservice";
-    private static final String DEFAULT_EXTENDER_URL = "http://verifier.guardtime.net/gt-extendingservice";
     private static final String DEFAULT_PUBFILE_URL = "http://verify.guardtime.com/gt-controlpublications.bin";
     protected static final HttpClientSettings FAULTY_HTTP_SETTINGS =
             new HttpClientSettings("http://.", "http://.", "http://.", new KSIServiceCredentials(".", "."));
@@ -112,6 +110,7 @@ public abstract class AbstractCommonIntegrationTest {
     private static ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient;
     private static ApacheHttpClient failingClient;
     private static KSISigningClient tcpClient;
+    private static Properties properties;
 
     @BeforeClass
     protected void setUp() throws Exception {
@@ -197,48 +196,42 @@ public abstract class AbstractCommonIntegrationTest {
         };
     }
 
-    protected static TCPClientSettings loadTCPSigningSettings() throws IOException {
-        Properties prop = new Properties();
-        prop.load(load(PROPERTIES_INTEGRATION_TEST));
-        String signerIP = prop.getProperty("tcp.signerIP");
-        int signerPort = Integer.parseInt(prop.getProperty("tcp.signerPort"));
-        int tcpTransactionTimeoutSec = Integer.parseInt(prop.getProperty("tcp.transactionTimeoutSec"));
-        String loginId = prop.getProperty("tcp.loginId");
-        String loginKey = prop.getProperty("tcp.loginKey");
+    protected static TCPClientSettings loadTCPSigningSettings() {
+        Properties props = loadProperties();
+        String signerIP = getProperty(props, "tcp.signerIP");
+        int signerPort = Integer.parseInt(getProperty(props, "tcp.signerPort"));
+        int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
+        String loginId = getProperty(props, "tcp.loginId");
+        String loginKey = getProperty(props, "tcp.loginKey");
         ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
         return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec,
                 serviceCredentials);
     }
 
-    protected static TCPClientSettings loadTCPExtendingSettings() throws IOException {
-        Properties prop = new Properties();
-        prop.load(load(PROPERTIES_INTEGRATION_TEST));
-        String extenderIp = prop.getProperty("tcp.extenderIp");
-        int extenderPort = Integer.parseInt(prop.getProperty("tcp.extenderPort"));
-        int tcpTransactionTimeoutSec = Integer.parseInt(prop.getProperty("tcp.transactionTimeoutSec"));
-        String loginId = prop.getProperty("tcp.loginId");
-        String loginKey = prop.getProperty("tcp.loginKey");
+    protected static TCPClientSettings loadTCPExtendingSettings(){
+        Properties props = loadProperties();
+        String extenderIp = getProperty(props, "tcp.extenderIp");
+        int extenderPort = Integer.parseInt(getProperty(props, "tcp.extenderPort"));
+        int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
+        String loginId = getProperty(props, "tcp.loginId");
+        String loginKey = getProperty(props, "tcp.loginKey");
         ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
         return new TCPClientSettings(new InetSocketAddress(extenderIp, extenderPort), tcpTransactionTimeoutSec,
                 serviceCredentials);
     }
 
-    public static HttpClientSettings loadHTTPSettings(PduVersion pduVersion) throws IOException {
-        Properties prop = new Properties();
-        prop.load(load(PROPERTIES_INTEGRATION_TEST));
-        String extenderUrl = prop.getProperty("extenderUrl", DEFAULT_EXTENDER_URL);
-        String publicationsFileUrl = prop.getProperty("pubfileUrl", DEFAULT_PUBFILE_URL);
-        String signingUrl = prop.getProperty("gatewayUrl", DEFAULT_SIGNING_URL);
-        String loginKey = prop.getProperty("loginKey", null);
-        String loginId = prop.getProperty("loginId", null);
+    public static HttpClientSettings loadHTTPSettings(PduVersion pduVersion){
+        Properties props = loadProperties();
+        String extenderUrl = getProperty(props, "extenderUrl");
+        String publicationsFileUrl = props.getProperty("pubfileUrl", DEFAULT_PUBFILE_URL);
+        String signingUrl = getProperty(props, "gatewayUrl");
+        String loginKey = getProperty(props, "loginKey");
+        String loginId = getProperty(props, "loginId");
 
-        ServiceCredentials credentials = TestUtil.CREDENTIALS_ANONYMOUS;
-        if (loginKey != null && loginId != null) {
-            credentials = new KSIServiceCredentials(loginId, loginKey);
-        }
+        ServiceCredentials credentials = new KSIServiceCredentials(loginId, loginKey);
 
-        if (prop.containsKey("javaKeyStorePath")) {
-            javaKeyStorePath = prop.getProperty("javaKeyStorePath");
+        if (props.containsKey("javaKeyStorePath")) {
+            javaKeyStorePath = getProperty(props, "javaKeyStorePath");
         }
 
         HttpClientSettings serviceSettings = new HttpClientSettings(signingUrl, extenderUrl, publicationsFileUrl, credentials,
@@ -246,6 +239,23 @@ public abstract class AbstractCommonIntegrationTest {
         serviceSettings.getParameters().setConnectionTimeout(DEFAULT_TIMEOUT);
         serviceSettings.getParameters().setReadTimeout(DEFAULT_TIMEOUT);
         return serviceSettings;
+    }
+
+    private static Properties loadProperties() {
+        if (properties == null) {
+            properties = new Properties();
+            try {
+                properties.load(load(PROPERTIES_INTEGRATION_TEST));
+            } catch (IOException e) {
+                throw new RuntimeException(PROPERTIES_INTEGRATION_TEST
+                        + " file must be added to folder 'ksi-api/src/test/resources' for running the integration tests");
+            }
+        }
+        return properties;
+    }
+
+    private static String getProperty(Properties prop, String key) {
+        return Objects.requireNonNull(prop.getProperty(key), key + " is missing in " + PROPERTIES_INTEGRATION_TEST);
     }
 
     public static HttpClientSettings loadHTTPSettings() throws IOException {

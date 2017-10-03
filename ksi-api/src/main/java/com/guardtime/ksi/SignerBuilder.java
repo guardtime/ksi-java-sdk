@@ -145,7 +145,7 @@ public final class SignerBuilder {
                 throw new IllegalArgumentException("Level must be between 0 and 255");
             }
             Future<AggregationResponse> aggregationResponseFuture = signingService.sign(dataHash, level);
-            return new SigningFuture(aggregationResponseFuture, signatureFactory, dataHash);
+            return new SigningFuture(aggregationResponseFuture, signatureFactory, dataHash, level);
         }
 
         public Future<KSISignature> asyncSign(File file) throws KSIException {

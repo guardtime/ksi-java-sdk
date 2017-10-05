@@ -21,7 +21,6 @@ package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureException;
 
 /**
  * AggregationChainLink structure contains the following information: <ul> <li>May contain level correction value.
@@ -36,12 +35,6 @@ import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureException;
 public interface AggregationChainLink {
 
     ChainResult calculateChainStep(byte[] lastStepImprint, long length, HashAlgorithm algorithm) throws KSIException;
-
-    /**
-     * @deprecated use {@link AggregationChainLink#getLinkIdentity()} instead
-     */
-    @Deprecated
-    String getIdentity() throws InvalidSignatureException;
 
     Identity getLinkIdentity();
 

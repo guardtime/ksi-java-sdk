@@ -39,6 +39,7 @@ public enum VerificationErrorCode {
     INT_10("INT-10", "Aggregation hash chain chain index mismatch"),
     INT_11("INT-11", "The metadata record in the aggregation hash chain may not be trusted"),
     INT_12("INT-12", "Inconsistent chain indexes"),
+    INT_17("INT-17", "The RFC3161 compatibility record output hash algorithm was deprecated at the time of signing"),
     PUB_01("PUB-01", "Extender response calendar root hash mismatch"),
     PUB_02("PUB-02", "Extender response inconsistent"),
     PUB_03("PUB-03", "Extender response input hash mismatch"),

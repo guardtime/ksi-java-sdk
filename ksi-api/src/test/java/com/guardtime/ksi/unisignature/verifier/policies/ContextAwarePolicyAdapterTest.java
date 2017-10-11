@@ -45,7 +45,7 @@ public class ContextAwarePolicyAdapterTest {
         assertNull(policy.getPolicyContext().getExtendingService());
         assertNull(policy.getPolicyContext().getPublicationsHandler());
         assertNull(policy.getPolicyContext().getUserPublication());
-        assertFalse(policy.getPolicyContext().isExtendingAllowed());
+        assertTrue(policy.getPolicyContext().isExtendingAllowed());
     }
 
     @Test
@@ -59,7 +59,7 @@ public class ContextAwarePolicyAdapterTest {
         assertNull(policy.getPolicyContext().getExtendingService());
         assertNotNull(policy.getPolicyContext().getPublicationsHandler());
         assertNull(policy.getPolicyContext().getUserPublication());
-        assertFalse(policy.getPolicyContext().isExtendingAllowed());
+        assertTrue(policy.getPolicyContext().isExtendingAllowed());
     }
 
     @Test(expectedExceptions = NullPointerException.class,
@@ -80,7 +80,7 @@ public class ContextAwarePolicyAdapterTest {
         assertNull(policy.getPolicyContext().getExtendingService());
         assertNotNull(policy.getPolicyContext().getPublicationsHandler());
         assertNull(policy.getPolicyContext().getUserPublication());
-        assertFalse(policy.getPolicyContext().isExtendingAllowed());
+        assertTrue(policy.getPolicyContext().isExtendingAllowed());
     }
 
     @Test(expectedExceptions = NullPointerException.class,
@@ -115,7 +115,24 @@ public class ContextAwarePolicyAdapterTest {
         Extender extender = Mockito.mock(Extender.class);
         Mockito.when(extender.getExtendingService()).thenReturn(Mockito.mock(KSIExtendingService.class));
         ContextAwarePolicy policy = ContextAwarePolicyAdapter
-                .createUserProvidedPublicationPolicy(Mockito.mock(PublicationData.class), extender);
+                .createUserProvidedPublicationPolicy(Mockito.mock(PublicationData.class));
+        assertNotNull(policy);
+        assertEquals(policy.getName(), "User provided publication based verification policy");
+        assertNotNull(policy.getType());
+        assertNotNull(policy.getRules());
+        assertNotNull(policy.getPolicyContext());
+        assertNull(policy.getPolicyContext().getExtendingService());
+        assertNull(policy.getPolicyContext().getPublicationsHandler());
+        assertNotNull(policy.getPolicyContext().getUserPublication());
+        assertFalse(policy.getPolicyContext().isExtendingAllowed());
+    }
+
+    @Test
+    public void testUserProvidedPublicationBasedVerificationPolicyFullCreation() {
+        Extender extender = Mockito.mock(Extender.class);
+        Mockito.when(extender.getExtendingService()).thenReturn(Mockito.mock(KSIExtendingService.class));
+        ContextAwarePolicy policy = ContextAwarePolicyAdapter
+                .createUserProvidedPublicationPolicy(Mockito.mock(PublicationData.class), extender, true);
         assertNotNull(policy);
         assertEquals(policy.getName(), "User provided publication based verification policy");
         assertNotNull(policy.getType());
@@ -130,13 +147,13 @@ public class ContextAwarePolicyAdapterTest {
     @Test(expectedExceptions = NullPointerException.class,
             expectedExceptionsMessageRegExp = "Publication data can not be null")
     public void testUserProvidedPublicationBasedVerificationPolicyCreationNoPublicationData() {
-        ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(null, Mockito.mock(Extender.class));
+        ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(null, Mockito.mock(Extender.class), true);
     }
 
     @Test(expectedExceptions = NullPointerException.class,
             expectedExceptionsMessageRegExp = "Extender can not be null")
     public void testUserProvidedPublicationBasedVerificationPolicyCreationNoExtender() {
-        ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(Mockito.mock(PublicationData.class), null);
+        ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(Mockito.mock(PublicationData.class), null, true);
     }
 
     @Test

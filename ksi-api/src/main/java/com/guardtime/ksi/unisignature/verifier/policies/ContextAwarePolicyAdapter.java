@@ -103,20 +103,37 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     }
 
     /**
-     * Method creating context aware policy using {@link UserProvidedPublicationBasedVerificationPolicy} for verification. Since
-     * extender is provided, then extending is allowed when verifying signature.
+     * Method creating context aware policy using {@link UserProvidedPublicationBasedVerificationPolicy} for verification. Only
+     * user provided publication data is used for verification.
+     *
+     * @param publicationData
+     *      User provided publication data.
+     * @return User provided publication based verification policy with suitable context.
+     */
+    public static ContextAwarePolicy createUserProvidedPublicationPolicy(PublicationData publicationData) {
+        return createUserProvidedPublicationPolicy(publicationData, null, false);
+    }
+
+    /**
+     * Method creating context aware policy using {@link UserProvidedPublicationBasedVerificationPolicy} for verification.
+     * If "extendingAllowed" flag is set to true, extender is mandatory.
      *
      * @param publicationData
      *      User provided publication data.
      * @param extender
      *      Extender.
+     * @param extendingAllowed
+     *      Publication-Based verification flag, if extending is allowed or not.
      * @return User provided publication based verification policy with suitable context.
      */
-    public static ContextAwarePolicy createUserProvidedPublicationPolicy(PublicationData publicationData, Extender extender) {
+    public static ContextAwarePolicy createUserProvidedPublicationPolicy(PublicationData publicationData, Extender extender,
+            boolean extendingAllowed) {
         Util.notNull(publicationData, "Publication data");
-        Util.notNull(extender, "Extender");
+        if (extendingAllowed) {
+            Util.notNull(extender, "Extender");
+        }
         return new ContextAwarePolicyAdapter(new UserProvidedPublicationBasedVerificationPolicy(),
-                new PolicyContext(publicationData, extender.getExtendingService()));
+                new PolicyContext(publicationData, extender != null ? extender.getExtendingService() : null, extendingAllowed));
     }
 
     /**

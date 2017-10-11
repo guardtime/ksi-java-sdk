@@ -42,6 +42,9 @@ public class PolicyContext {
         Util.notNull(publicationsHandler, "Publications handler");
         this.publicationsHandler = publicationsHandler;
         this.extendingService = extendingService;
+        if (extendingService == null) {
+            this.extendingAllowed = false;
+        }
     }
 
     public PolicyContext(PublicationData publicationData) {

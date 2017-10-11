@@ -74,6 +74,8 @@ public class Resources {
     public static final String RFC3161_SIGNATURE_INVALID_CHAIN_INDEX = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-chain-index-int-value-wrong.tlv";
     public static final String RFC3161_SIGNATURE_INVALID_AGGREGATION_TIME = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-aggr-time-future-value.tlv";
     public static final String RFC3161_SIGNATURE_WRONG_RECORD_OUTPUT_HASH = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-input-hash-wrong.tlv";
+    public static final String RFC3161_SIGNATURE_DEPRECATED_OUTPUT_HASH = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-and-aggregation-input-hash-has-deprecated-algorithm.tlv";
+
     //Extended
     public static final String EXTENDED_SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14-extended.ksig";

@@ -21,11 +21,13 @@ package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
+import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
+import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE_DEPRECATED_OUTPUT_HASH;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 public class Rfc3161OutputHashAlgorithmDeprecatedRuleTest extends AbstractRuleTest {
@@ -47,6 +49,12 @@ public class Rfc3161OutputHashAlgorithmDeprecatedRuleTest extends AbstractRuleTe
         Assert.assertEquals(result.getRuleName(), Rfc3161OutputHashAlgorithmDeprecatedRule.class.getSimpleName());
     }
 
-    // TODO! Add negative case for SHA-1
+    @Test
+    public void testSignatureRfc3161OutputHashDeprecated() throws Exception {
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE_DEPRECATED_OUTPUT_HASH)));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_17);
+    }
 
 }

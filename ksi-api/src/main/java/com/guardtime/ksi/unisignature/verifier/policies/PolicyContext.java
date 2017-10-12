@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -29,7 +29,6 @@ public class PolicyContext {
     private PublicationsHandler publicationsHandler;
     private KSIExtendingService extendingService;
     private PublicationData userPublication;
-    private boolean extendingAllowed = true;
 
     public PolicyContext() {}
 
@@ -42,23 +41,16 @@ public class PolicyContext {
         Util.notNull(publicationsHandler, "Publications handler");
         this.publicationsHandler = publicationsHandler;
         this.extendingService = extendingService;
-        if (extendingService == null) {
-            this.extendingAllowed = false;
-        }
     }
 
     public PolicyContext(PublicationData publicationData) {
-        this(publicationData, null, false);
+        this(publicationData, null);
     }
 
-    public PolicyContext(PublicationData publicationData, KSIExtendingService extendingService, boolean extendingAllowed) {
+    public PolicyContext(PublicationData publicationData, KSIExtendingService extendingService) {
         Util.notNull(publicationData, "Publication data");
-        if (extendingAllowed) {
-            Util.notNull(extendingService, "Extending service");
-        }
         this.userPublication = publicationData;
         this.extendingService = extendingService;
-        this.extendingAllowed = extendingAllowed;
     }
 
     public PublicationsHandler getPublicationsHandler() {
@@ -70,7 +62,7 @@ public class PolicyContext {
     }
 
     public boolean isExtendingAllowed() {
-        return extendingAllowed;
+        return extendingService != null;
     }
 
     public PublicationData getUserPublication() {

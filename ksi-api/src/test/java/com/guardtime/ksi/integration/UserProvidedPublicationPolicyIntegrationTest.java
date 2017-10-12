@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -73,7 +73,6 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
             throws Exception {
         Extender extender = getExtender(ksi.getExtendingService(), simpleHttpClient);
         return ksi.verify(signature,
-                ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(userPublication, extendingAllowed ? extender : null,
-                        extendingAllowed));
+                ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(userPublication, extendingAllowed ? extender : null));
     }
 }

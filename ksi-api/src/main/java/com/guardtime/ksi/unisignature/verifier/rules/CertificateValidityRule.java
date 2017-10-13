@@ -44,25 +44,20 @@ public class CertificateValidityRule extends BaseRule {
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         Date validAt = context.getSignature().getCalendarHashChain().getAggregationTime();
-        if (validAt == null) {
-            validAt = context.getSignature().getCalendarHashChain().getPublicationTime();
-        }
+
         SignatureData signatureData = context.getCalendarAuthenticationRecord().getSignatureData();
         Certificate certificate = context.getCertificate(signatureData.getCertificateId());
         if (certificate instanceof X509Certificate) {
             try {
                 ((X509Certificate) certificate).checkValidity(validAt);
                 return VerificationResultCode.OK;
-            } catch (CertificateExpiredException e) {
-                LOGGER.info("Certificate id {} has expired with respect to {}",
+            } catch (CertificateExpiredException | CertificateNotYetValidException e) {
+                LOGGER.info("Certificate id {} was not valid at the aggregation time {}",
                         Base16.encode(signatureData.getCertificateId()), validAt);
-            } catch (CertificateNotYetValidException e) {
-                LOGGER.info("Certificate id {} is not yet valid at {}", Base16.encode(signatureData.getCertificateId()),
-                        validAt);
             }
-        } else {
-            LOGGER.info("Unable to check certificate validity, id = {}", Base16.encode(signatureData.getCertificateId()));
         }
+
+        LOGGER.info("Unable to check certificate validity, id = {}", Base16.encode(signatureData.getCertificateId()));
         return VerificationResultCode.FAIL;
     }
 

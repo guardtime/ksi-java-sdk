@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -34,7 +34,7 @@ public class PolicyContextTest {
     @Test
     public void testPolicyContextWithoutParams() {
         PolicyContext pc = new PolicyContext();
-        assertTrue(pc.isExtendingAllowed());
+        assertFalse(pc.isExtendingAllowed());
         assertNull(pc.getExtendingService());
         assertNull(pc.getPublicationsHandler());
         assertNull(pc.getUserPublication());
@@ -69,7 +69,7 @@ public class PolicyContextTest {
 
     @Test
     public void testPolicyContextWithPublicationDataExtender() {
-        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationData.class), Mockito.mock(KSIExtendingService.class), true);
+        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationData.class), Mockito.mock(KSIExtendingService.class));
         assertTrue(pc.isExtendingAllowed());
         assertNotNull(pc.getExtendingService());
         assertNull(pc.getPublicationsHandler());

@@ -10,6 +10,7 @@ Version 4.11
 * BUGFIX: Made extender optional for publication code based verification.
 * IMPROVEMENT: Added general context aware verification policy.
 * IMPROVEMENT: Hash level to signing interface.
+* BUGFIX: Fixed test resource loading functionality.
 
 Version 4.10
 

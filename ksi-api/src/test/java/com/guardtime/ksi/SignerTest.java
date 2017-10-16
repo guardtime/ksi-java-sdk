@@ -35,4 +35,33 @@ public class SignerTest {
         Signer signer = new SignerBuilder().setSigningService(mockedSigningService).build();
         signer.asyncSign(new DataHash(HashAlgorithm.SHA1, new byte[20]));
     }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Level must be between 0 and 255")
+    public void testSignWithNegativeLevel() throws KSIException {
+        Signer signer = new SignerBuilder().setSigningService(mockedSigningService).build();
+        signer.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), -2);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Level must be between 0 and 255")
+    public void testSignWithLargeLevel() throws KSIException {
+        Signer signer = new SignerBuilder().setSigningService(mockedSigningService).build();
+        signer.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), 300);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Level must be between 0 and 255")
+    public void testAsyncSignWithNegativeLevel() throws KSIException {
+        Signer signer = new SignerBuilder().setSigningService(mockedSigningService).build();
+        signer.asyncSign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), -2);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Level must be between 0 and 255")
+    public void testAsyncSignWithLargeLevel() throws KSIException {
+        Signer signer = new SignerBuilder().setSigningService(mockedSigningService).build();
+        signer.asyncSign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), 300);
+    }
+
 }

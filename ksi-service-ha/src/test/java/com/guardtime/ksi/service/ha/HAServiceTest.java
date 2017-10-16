@@ -140,12 +140,12 @@ public class HAServiceTest {
 
     @Test
     public void testGetSubclients() throws Exception {
-        List<KSISigningService> signingServices = new ArrayList<KSISigningService>();
+        List<KSISigningService> signingServices = new ArrayList<>();
         signingServices.add(initSlowSigningClient());
         signingServices.add(initFailingSigningClient("Failure!"));
         signingServices.add(initSucceedingSigningClient(mock(AggregationResponse.class)));
 
-        List<KSIExtendingService> extendingServices = new ArrayList<KSIExtendingService>();
+        List<KSIExtendingService> extendingServices = new ArrayList<>();
         extendingServices.add(initSlowExtenderClient());
         extendingServices.add(initFailingExtenderClient("Failure!"));
         extendingServices.add(initSucceedingExtenderClient(mock(ExtensionResponse.class)));
@@ -183,7 +183,7 @@ public class HAServiceTest {
     @Test
     public void testSigningConfigurationListening() throws Exception {
         final AsyncContext context = new AsyncContext(3);
-        List<KSISigningService> signingServices = new ArrayList<KSISigningService>();
+        List<KSISigningService> signingServices = new ArrayList<>();
         signingServices.add(new DummyClient(300L));
         signingServices.add(new DummyClient(200L));
         signingServices.add(new DummyClient(100L));
@@ -210,7 +210,7 @@ public class HAServiceTest {
     @Test
     public void testExtenderConfigurationListening() throws Exception {
         final AsyncContext context = new AsyncContext(3);
-        List<KSIExtendingService> extendingServices = new ArrayList<KSIExtendingService>();
+        List<KSIExtendingService> extendingServices = new ArrayList<>();
         extendingServices.add(new DummyClient(300L));
         extendingServices.add(new DummyClient(200L));
         extendingServices.add(new DummyClient(100L));
@@ -306,8 +306,8 @@ public class HAServiceTest {
 
     private static class DummyClient implements KSISigningService, KSIExtendingService {
 
-        private final ConfigurationHandler<AggregatorConfiguration> aggrConfHandler = new ConfigurationHandler<AggregatorConfiguration>(DefaultExecutorServiceProvider.getExecutorService());
-        private final ConfigurationHandler<ExtenderConfiguration> extenderConfHandler = new ConfigurationHandler<ExtenderConfiguration>(DefaultExecutorServiceProvider.getExecutorService());
+        private final ConfigurationHandler<AggregatorConfiguration> aggrConfHandler = new ConfigurationHandler<>(DefaultExecutorServiceProvider.getExecutorService());
+        private final ConfigurationHandler<ExtenderConfiguration> extenderConfHandler = new ConfigurationHandler<>(DefaultExecutorServiceProvider.getExecutorService());
 
         private final Long maxRequests;
 
@@ -395,7 +395,7 @@ public class HAServiceTest {
     private static class AsyncContext {
 
         private CountDownLatch countDownLatch;
-        private AtomicReference<AssertionError> potentialFailure = new AtomicReference<AssertionError>();
+        private AtomicReference<AssertionError> potentialFailure = new AtomicReference<>();
 
         AsyncContext(int initialLockCount) {
             this.countDownLatch = new CountDownLatch(initialLockCount);

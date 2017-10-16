@@ -18,6 +18,6 @@
  */
 
 /**
- * Common classes for KSI Apache HTTP client and KSI Simple HTTP client
+ * Classes and interfaces to sign and extend, basic version
  */
-package com.guardtime.ksi.service.client.http;
+package com.guardtime.ksi.service.client;

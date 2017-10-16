@@ -32,6 +32,7 @@ import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.tlv.TLVStructure;
+import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
@@ -49,6 +50,7 @@ import com.guardtime.ksi.util.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -122,7 +124,11 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     }
 
     public KSISignature createSignature(TLVElement element, DataHash inputHash) throws KSIException {
-        return createSignature(element, extendingAllowed, inputHash);
+        return createSignature(element, extendingAllowed, inputHash, 0L);
+    }
+
+    public KSISignature createSignature(TLVElement element, DataHash inputHash, long level) throws KSIException {
+        return createSignature(element, extendingAllowed, inputHash, level);
     }
 
     public KSISignature createSignature(List<AggregationHashChain> aggregationHashChains,
@@ -146,18 +152,40 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     }
 
     private KSISignature createSignature(TLVElement element, boolean extendingAllowed) throws KSIException {
-        return createSignature(element, extendingAllowed, null);
+        return createSignature(element, extendingAllowed, null, 0L);
     }
 
-    private KSISignature createSignature(TLVElement element, boolean extendingAllowed, DataHash inputHash) throws KSIException {
+    private KSISignature createSignature(TLVElement element, boolean extendingAllowed, DataHash inputHash, long level) throws KSIException {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(element);
+        if (level > 0) {
+            AggregationHashChain firstChain = signature.getAggregationHashChains()[0];
+            LinkedList<AggregationChainLink> links = new LinkedList<>();
+            AggregationChainLink leftAggregationChainLink = signatureComponentFactory.createLeftAggregationChainLink(firstChain.getChainLinks().get(0).getMetadata(), level);
+            links.add(leftAggregationChainLink);
+
+            LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
+            for (int i = 1; i < firstChain.getChainLinks().size(); i++) {
+                links.add(firstChain.getChainLinks().get(i));
+            }
+
+            AggregationHashChain aggregationHashChain = signatureComponentFactory.createAggregationHashChain(inputHash, firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
+            List<AggregationHashChain> aggregationHashChains = new LinkedList<>();
+            aggregationHashChains.add(aggregationHashChain);
+
+            for (int i = 1; i < signature.getAggregationHashChains().length; i++) {
+                aggregationHashChains.add(signature.getAggregationHashChains()[i]);
+            }
+
+            signature = (InMemoryKsiSignature) createSignature(aggregationHashChains, signature.getCalendarHashChain(),
+                    signature.getCalendarAuthenticationRecord(), signature.getPublicationRecord(), signature.getRfc3161Record());
+        }
         if (verifySignatures) {
             VerificationContextBuilder builder = new VerificationContextBuilder();
             builder.setSignature(signature).setExtendingService(extendingService)
                     .setPublicationsFile(getPublicationsFile(publicationsHandler))
                     .setExtendingAllowed(extendingAllowed);
             if (inputHash != null) {
-                builder.setDocumentHash(inputHash);
+                builder.setDocumentHash(inputHash, level);
             }
             VerificationContext context = builder.build();
             context.setKsiSignatureComponentFactory(signatureComponentFactory);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -18,6 +18,6 @@
  */
 
 /**
- * Common classes for KSI Apache HTTP client and KSI Simple HTTP client
+ * Adapters for publications file client
  */
-package com.guardtime.ksi.service.client.http;
+package com.guardtime.ksi.publication.adapter;

@@ -156,7 +156,7 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
 
     @DataProvider(name = VALID_HASH_ALGORITHMS_DATA_PROVIDER)
     private static Object[][] hashAlgorithmProvider() {
-        List<HashAlgorithm> hashAlgorithms = new ArrayList<HashAlgorithm>();
+        List<HashAlgorithm> hashAlgorithms = new ArrayList<>();
         HashAlgorithm[] allAlgorithms = HashAlgorithm.values();
         for (HashAlgorithm algorithm : allAlgorithms) {
             if (HashAlgorithm.Status.NORMAL.equals(algorithm.getStatus())) {

@@ -18,6 +18,6 @@
  */
 
 /**
- * Common classes for KSI Apache HTTP client and KSI Simple HTTP client
+ * KSI exception classes
  */
-package com.guardtime.ksi.service.client.http;
+package com.guardtime.ksi.exceptions;

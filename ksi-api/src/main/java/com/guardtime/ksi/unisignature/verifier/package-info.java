@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2013-2016 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
@@ -18,6 +18,6 @@
  */
 
 /**
- * Provides classes and interfaces to verify KSI signatures
+ * Classes and interfaces to verify KSI signatures
  */
 package com.guardtime.ksi.unisignature.verifier;

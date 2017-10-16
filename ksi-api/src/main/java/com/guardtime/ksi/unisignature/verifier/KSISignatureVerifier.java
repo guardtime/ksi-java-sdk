@@ -78,7 +78,7 @@ public final class KSISignatureVerifier implements SignatureVerifier {
 
         private final Policy policy;
         private VerificationResultCode policyStatus = VerificationResultCode.NA;
-        private Map<Rule, RuleResult> ruleResults = new LinkedHashMap<Rule, RuleResult>();
+        private Map<Rule, RuleResult> ruleResults = new LinkedHashMap<>();
         private VerificationErrorCode errorCode;
 
         public KSIPolicyVerificationResult(Policy policy) {
@@ -123,7 +123,7 @@ public final class KSISignatureVerifier implements SignatureVerifier {
 
     private class KSIVerificationResult implements VerificationResult {
 
-        private List<PolicyVerificationResult> policyResults = new LinkedList<PolicyVerificationResult>();
+        private List<PolicyVerificationResult> policyResults = new LinkedList<>();
         private VerificationErrorCode errorCode;
 
         public void addPolicyResult(PolicyVerificationResult result) {

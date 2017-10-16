@@ -719,9 +719,7 @@ public final class Util {
             char[] passwordCharArray = password == null ? null : password.toCharArray();
             input = new FileInputStream(file);
             keyStore.load(input, passwordCharArray);
-        } catch (GeneralSecurityException e) {
-            throw new KSIException("Loading java key store with path " + file + " failed", e);
-        } catch (IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
             throw new KSIException("Loading java key store with path " + file + " failed", e);
         } finally {
             closeQuietly(input);

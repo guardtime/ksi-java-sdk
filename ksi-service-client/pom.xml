@@ -27,7 +27,7 @@
     <parent>
         <groupId>com.guardtime</groupId>
         <artifactId>ksi</artifactId>
-        <version>4.11.122-SNAPSHOT</version>
+        <version>4.11.127-SNAPSHOT</version>
     </parent>
 
     <name>KSI Service Client</name>
@@ -89,7 +89,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.0.2</version>
 
                 <executions>
                     <execution>

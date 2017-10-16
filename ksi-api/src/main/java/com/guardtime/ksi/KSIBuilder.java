@@ -197,9 +197,7 @@ public final class KSIBuilder {
             char[] passwordCharArray = password == null ? null : password.toCharArray();
             input = new FileInputStream(file);
             trustStore.load(input, passwordCharArray);
-        } catch (GeneralSecurityException e) {
-            throw new KSIException("Loading java key store with path " + file + " failed", e);
-        } catch (IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
             throw new KSIException("Loading java key store with path " + file + " failed", e);
         } finally {
             Util.closeQuietly(input);
@@ -353,6 +351,10 @@ public final class KSIBuilder {
             return signer.sign(dataHash);
         }
 
+        public KSISignature sign(DataHash dataHash, long level) throws KSIException {
+            return signer.sign(dataHash, level);
+        }
+
         public KSISignature sign(File file) throws KSIException {
             return signer.sign(file);
         }
@@ -363,6 +365,10 @@ public final class KSIBuilder {
 
         public Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException {
             return signer.asyncSign(dataHash);
+        }
+
+        public Future<KSISignature> asyncSign(DataHash dataHash, long level) throws KSIException {
+            return signer.asyncSign(dataHash, level);
         }
 
         public Future<KSISignature> asyncSign(File file) throws KSIException {
@@ -433,7 +439,7 @@ public final class KSIBuilder {
             VerificationContextBuilder builder = new VerificationContextBuilder();
             builder.setDocumentHash(documentHash).setSignature(signature);
             builder.setExtendingService(extendingService).setExtendingAllowed(true).setUserPublication(publicationData);
-            VerificationContext context = builder.setPublicationsFile(getPublicationsFile()).createVerificationContext();
+            VerificationContext context = builder.setPublicationsFile(getPublicationsFile()).build();
             return verify(context, policy);
         }
 

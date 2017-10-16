@@ -49,7 +49,7 @@ abstract class PduV2 extends TLVStructure {
 
     private static final int[] PUSHABLE_ELEMENT_TYPES = new int[] {0x04};
 
-    protected List<TLVElement> payloads = new LinkedList<TLVElement>();
+    protected List<TLVElement> payloads = new LinkedList<>();
     private PduMessageHeader header;
     private MessageMac mac;
 
@@ -115,7 +115,7 @@ abstract class PduV2 extends TLVStructure {
     }
 
     public List<TLVElement> getPayloads(int tlvType) throws TLVParserException {
-        List<TLVElement> payloadElements = new ArrayList<TLVElement>();
+        List<TLVElement> payloadElements = new ArrayList<>();
         for (TLVElement payload : payloads) {
             if (payload.getType() == tlvType) {
                 payloadElements.add(payload);

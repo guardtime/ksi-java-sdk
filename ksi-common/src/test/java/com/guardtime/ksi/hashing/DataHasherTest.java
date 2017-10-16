@@ -188,7 +188,7 @@ public class DataHasherTest {
     }
 
     private Object[][] getHashAlgorithmsByStatus(Status... allowedStatuses) {
-        List<Object[]> objectsList = new ArrayList<Object[]>();
+        List<Object[]> objectsList = new ArrayList<>();
         List<Status> statusList = Arrays.asList(allowedStatuses);
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (statusList.contains(algorithm.getStatus())) {

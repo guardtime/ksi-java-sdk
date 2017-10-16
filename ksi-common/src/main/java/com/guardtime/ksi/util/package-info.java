@@ -16,7 +16,8 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+
 /**
- * Internal utility classes.
+ * Internal utility classes
  */
 package com.guardtime.ksi.util;

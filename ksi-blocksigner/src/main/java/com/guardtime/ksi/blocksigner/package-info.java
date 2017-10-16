@@ -18,6 +18,6 @@
  */
 
 /**
- * This package contains classes and interfaces used to create block signatures
+ * Classes and interfaces to create block signatures
  */
 package com.guardtime.ksi.blocksigner;

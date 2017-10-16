@@ -9,6 +9,7 @@ Version 4.11
 * IMPROVEMENT: No support for Java 5 and Java 6 anymore.
 * BUGFIX: Made extender optional for publication code based verification.
 * IMPROVEMENT: Added general context aware verification policy.
+* IMPROVEMENT: Hash level to signing interface.
 
 Version 4.10
 

@@ -40,32 +40,32 @@ public class KSIServiceCredentials implements ServiceCredentials {
     private HashAlgorithm hmacAlgorithm = HashAlgorithm.SHA2_256;
 
     /**
-     * Create service credentials. Default HMAC algorithm (SHA-256) will be used.
+     * Creates service credentials. Default HMAC algorithm (SHA-256) will be used.
      *
      * Parameter loginKey will be converted to bytes using UTF-8 encoding, if this is
      * not desired, use other constructor.
      *
      * @param loginId
-     *            login ID
+     *            login ID.
      * @param loginKey
-     *            login Key
+     *            login key.
      */
     public KSIServiceCredentials(String loginId, String loginKey) {
         this(loginId, toBytes(loginKey), null);
     }
 
     /**
-     * Create service credentials. Default HMAC algorithm (SHA-256) will be used.
+     * Creates service credentials. Default HMAC algorithm (SHA-256) will be used.
      *
      * Parameter loginKey will be converted to bytes using UTF-8 encoding, if this is
      * not desired, use other constructor.
      *
      * @param loginId
-     *            login ID
+     *            login ID.
      * @param loginKey
-     *            login Key
+     *            login key.
      * @param hmacAlgorithm
-     *            HMAC algorithm of incoming messages
+     *            HMAC algorithm of incoming messages.
      */
     public KSIServiceCredentials(String loginId, String loginKey, HashAlgorithm hmacAlgorithm) {
         this(loginId, toBytes(loginKey), hmacAlgorithm);
@@ -73,12 +73,12 @@ public class KSIServiceCredentials implements ServiceCredentials {
 
     /**
     *
-    * Create service credentials. Default HMAC algorithm (SHA-256) will be used.
+    * Creates service credentials. Default HMAC algorithm (SHA-256) will be used.
     *
     * @param loginId
-    *            login ID
+    *            login ID.
     * @param loginKey
-    *            login Key
+    *            login key.
     */
     public KSIServiceCredentials(String loginId, byte[] loginKey) {
         this(loginId, loginKey, null);
@@ -86,14 +86,14 @@ public class KSIServiceCredentials implements ServiceCredentials {
 
     /**
      *
-     * Create service credentials.
+     * Creates service credentials.
      *
      * @param loginId
-     *            login ID
+     *            login ID.
      * @param loginKey
-     *            login Key
+     *            login key.
      * @param hmacAlgorithm
-     *            HMAC algorithm of incoming messages
+     *            HMAC algorithm of incoming messages.
      */
     public KSIServiceCredentials(String loginId, byte[] loginKey, HashAlgorithm hmacAlgorithm) {
         if (loginId == null) {
@@ -110,21 +110,21 @@ public class KSIServiceCredentials implements ServiceCredentials {
     }
 
     /**
-     * @return returns login id
+     * @return Login ID.
      */
     public String getLoginId() {
         return loginId;
     }
 
     /**
-     * @return returns login key
+     * @return Login key.
      */
     public byte[] getLoginKey() {
         return loginKey;
     }
 
     /**
-     * @return returns the algorithm for verifying the HMAC of incoming messages
+     * @return Verification algorithm for the HMAC of incoming messages.
      */
     public HashAlgorithm getHmacAlgorithm() {
         return hmacAlgorithm;

@@ -29,49 +29,49 @@ public class KSIProtocolException extends KSIException {
     private Long errorCode;
 
     /**
-     * Create service exception.
+     * Creates service exception.
      *
      * @param eCode
-     *         error code
+     *         error code.
      * @param msg
-     *         error message
+     *         error message.
      */
     public KSIProtocolException(Long eCode, String msg) {
         this(eCode, msg, null);
     }
 
     /**
-     * Create service exception.
+     * Creates service exception.
      *
      * @param eCode
-     *         error code
+     *         error code.
      * @param msg
-     *         error message
+     *         error message.
      * @param cause
-     *         error cause
+     *         error cause.
      */
     public KSIProtocolException(Long eCode, String msg, Throwable cause) {
         super("(" + eCode + "):" + msg, cause);
         this.errorCode = eCode;
     }
 
-    /**
-     * Create service exception
+    /**.
+     * Creates service exception.
      *
      * @param message
-     *         error message
+     *         error message.
      */
     public KSIProtocolException(String message) {
         super(message);
     }
 
     /**
-     * Create service exception
+     * Creates service exception.
      *
      * @param message
-     *         error message
+     *         error message.
      * @param cause
-     *         error cause
+     *         error cause.
      */
     public KSIProtocolException(String message, Throwable cause) {
         super(message, cause);
@@ -79,7 +79,7 @@ public class KSIProtocolException extends KSIException {
 
     /**
      *
-     * @return returns error code is present.
+     * @return Error code.
      */
     public long getErrorCode() {
         return errorCode;

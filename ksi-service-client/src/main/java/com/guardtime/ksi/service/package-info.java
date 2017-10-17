@@ -18,6 +18,6 @@
  */
 
 /**
- * Classes and interfaces to sign and extend, advanced version
+ * Classes and interfaces to sign and extend, advanced version.
  */
 package com.guardtime.ksi.service;

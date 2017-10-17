@@ -25,16 +25,16 @@ import com.guardtime.ksi.tlv.TLVElement;
 import java.io.InputStream;
 
 /**
- * KSI client for signing service
+ * KSI client for signing service.
  */
 public interface KSISigningClient extends KSICredentialsAwareClient {
 
     /**
-     * Used to create new signature.
+     * Creates new KSI signature.
      *
      * @param request
-     *         - instance of {@link InputStream} that contains request data.
-     * @return instance of {@link Future} containing KSI response data.
+     *         instance of {@link InputStream} that contains request.
+     * @return instance of {@link Future} containing KSI response.
      * @throws KSIClientException
      */
     Future<TLVElement> sign(InputStream request) throws KSIClientException;

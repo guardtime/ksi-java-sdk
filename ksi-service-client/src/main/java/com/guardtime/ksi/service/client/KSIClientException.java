@@ -22,7 +22,7 @@ package com.guardtime.ksi.service.client;
 import com.guardtime.ksi.exceptions.KSIException;
 
 /**
- * This exception is thrown when exception occurs turning KSI protocol request.
+ * Thrown when exception occurs during KSI protocol request.
  */
 public class KSIClientException extends KSIException {
 

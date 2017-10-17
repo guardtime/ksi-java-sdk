@@ -42,18 +42,18 @@ public class ConfigurationHandler<T> {
     private final ExecutorService executorService;
 
     /**
-     * Can be used to initialize ConfigurationHandler with a custom {@link ExecutorService}
+     * Initializes {@link ConfigurationHandler} with a custom {@link ExecutorService}.
      * @param executorService
-     *          {@link ExecutorService} that this configuration handler should use
+     *          {@link ExecutorService} that this configuration handler should use.
      */
     public ConfigurationHandler(ExecutorService executorService) {
         this.executorService = executorService;
     }
 
     /**
-     * For registering a new listener.
+     * Registers a new listener.
      *
-     * @param listener May not be null.
+     * @param listener may not be null.
      */
     public void registerListener(ConfigurationListener<T> listener) {
         Util.notNull(listener, "Configuration listener");
@@ -63,7 +63,7 @@ public class ConfigurationHandler<T> {
     /**
      * Invokes a configuration request and updates listeners asynchronously.
      *
-     * @param configurationRequest May not be null.
+     * @param configurationRequest may not be null.
      */
     public Future<T> doConfigurationUpdate(final ConfigurationRequest<T> configurationRequest) {
         Util.notNull(configurationRequest, "ConfigurationRequest passed to ConfigurationHandler");

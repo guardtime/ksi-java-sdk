@@ -18,6 +18,6 @@
  */
 
 /**
- * Internal utility classes
+ * Internal utility classes.
  */
 package com.guardtime.ksi.util;

@@ -18,7 +18,7 @@
  */
 
 /**
- * Classes and interfaces to decode and encode TLV elements
+ * Classes and interfaces to decode and encode TLV elements.
  */
 package com.guardtime.ksi.tlv;
 

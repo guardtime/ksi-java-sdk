@@ -18,6 +18,6 @@
  */
 
 /**
- * Classes for concurrency handling
+ * Classes for concurrency handling.
  */
 package com.guardtime.ksi.concurrency;

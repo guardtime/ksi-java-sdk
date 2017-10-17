@@ -26,15 +26,15 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 
 /**
- * Interface for clients that is used to get the publications file.
+ * Getting the publications file.
  */
 public interface KSIPublicationsFileClient extends Closeable {
 
     /**
-     * Used to get publications file.
+     * Gets the publications file.
      *
-     * @return instance of {@link Future} containing KSI Publication File data.
-     * @throws KSIClientException;
+     * @return instance of {@link Future} containing KSI publications file data.
+     * @throws KSIClientException
      */
     Future<ByteBuffer> getPublicationsFile() throws KSIClientException;
 

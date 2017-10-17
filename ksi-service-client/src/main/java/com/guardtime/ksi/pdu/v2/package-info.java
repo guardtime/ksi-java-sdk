@@ -18,6 +18,6 @@
  */
 
 /**
- * PDU v2 implementation
+ * PDU v2 implementation.
  */
 package com.guardtime.ksi.pdu.v2;

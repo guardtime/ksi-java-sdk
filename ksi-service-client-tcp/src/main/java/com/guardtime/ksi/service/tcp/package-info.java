@@ -18,6 +18,6 @@
  */
 
 /**
- * KSI TCP client
+ * KSI TCP client.
  */
 package com.guardtime.ksi.service.tcp;

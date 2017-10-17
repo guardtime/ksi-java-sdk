@@ -18,6 +18,6 @@
  */
 
 /**
- * Simple HTTP client for KSI
+ * Simple HTTP client for KSI.
  */
 package com.guardtime.ksi.service.http.simple;

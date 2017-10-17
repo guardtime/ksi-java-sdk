@@ -29,7 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 
 /**
- * This is a adapter for publications file client. The publications file is fetched over the network on each KSI request
+ * An adapter for publications file client. The publications file is fetched over the network on each KSI request
  * that needs a publication file.
  */
 public class NonCachingPublicationsFileClientAdapter implements PublicationsFileClientAdapter {

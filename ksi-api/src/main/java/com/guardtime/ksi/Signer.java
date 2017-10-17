@@ -48,6 +48,19 @@ public interface Signer extends Closeable {
     KSISignature sign(DataHash dataHash) throws KSIException;
 
     /**
+     * Signs the data hash with user provided aggregation tree height.
+     *
+     * @param dataHash
+     *         instance of {@link DataHash} to sign. not null.
+     * @param level
+     *         aggregation tree height.
+     * @return instance of {@link KSISignature}
+     * @throws KSIException
+     *         when error occurs (e.g when communication with KSI service fails)
+     */
+    KSISignature sign(DataHash dataHash, long level) throws KSIException;
+
+    /**
      * Signs the file. Uses hash algorithm defined by method {@link
      * KSIBuilder#setDefaultSigningHashAlgorithm(HashAlgorithm)}.
      *
@@ -82,6 +95,20 @@ public interface Signer extends Closeable {
      *         when error occurs (e.g. when communication with KSI service fails).
      */
     Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException;
+
+    /**
+     * This method is used to sign data hash asynchronously with user provided aggregation tree height.
+     * Use method {@link Future#getResult()} to get keyless signature.
+     *
+     * @param dataHash
+     *         instance of {@link DataHash} to sign. not null.
+     * @param level
+     *         aggregation tree height.
+     * @return instance of {@link Future}
+     * @throws KSIException
+     *         when error occurs (e.g when communication with KSI service fails)
+     */
+    Future<KSISignature> asyncSign(DataHash dataHash, long level) throws KSIException;
 
     /**
      * Signs the file asynchronously. Uses hash algorithm defined by method

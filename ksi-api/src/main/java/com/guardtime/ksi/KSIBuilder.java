@@ -351,6 +351,10 @@ public final class KSIBuilder {
             return signer.sign(dataHash);
         }
 
+        public KSISignature sign(DataHash dataHash, long level) throws KSIException {
+            return signer.sign(dataHash, level);
+        }
+
         public KSISignature sign(File file) throws KSIException {
             return signer.sign(file);
         }
@@ -361,6 +365,10 @@ public final class KSIBuilder {
 
         public Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException {
             return signer.asyncSign(dataHash);
+        }
+
+        public Future<KSISignature> asyncSign(DataHash dataHash, long level) throws KSIException {
+            return signer.asyncSign(dataHash, level);
         }
 
         public Future<KSISignature> asyncSign(File file) throws KSIException {

@@ -36,7 +36,7 @@ import java.io.Closeable;
 public interface Extender extends Closeable {
 
     /**
-     * Extends the signature to the "closest" publication in publications file.
+     * Extends the signature to the closest publication in publications file.
      *
      * @param signature {@link KSISignature} to be extended, not null.
      * @return Extended KSI signature ({@link KSISignature}).
@@ -57,7 +57,7 @@ public interface Extender extends Closeable {
     KSISignature extend(KSISignature signature, PublicationRecord publicationRecord) throws KSIException;
 
     /**
-     * Extends the signature asynchronously to the "closest" publication in publications file. Use method {@link
+     * Extends the signature asynchronously to the closest publication in publications file. Use method {@link
      * Future#getResult()} to get the extended KSI signature.
      *
      * @param signature {@link KSISignature} to be extended, not null.

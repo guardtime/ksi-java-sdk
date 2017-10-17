@@ -44,7 +44,7 @@ import static com.guardtime.ksi.util.Util.notNull;
 
 /**
  * Obtaining and configuring the {@link Signer} object(s). This class offers multiple methods to configure
- * {@link Signer} object. It is mandatory to set the signing client.
+ * {@link Signer} object. It is mandatory to set the signing service client.
  */
 public final class SignerBuilder {
     private HashAlgorithm defaultHashAlgorithm = HashAlgorithm.SHA2_256;

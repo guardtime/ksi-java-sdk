@@ -67,7 +67,7 @@ import static com.guardtime.ksi.util.Util.notNull;
 
 /**
  * <p>Obtaining and configuring the {@link KSI} object(s).</p>
- * <p>It is mandatory to set signing, extender and publications file client.</p>
+ * <p>It is mandatory to set signing, extender, publications file client and publications file trusted certificate selector.</p>
  */
 public final class KSIBuilder {
 

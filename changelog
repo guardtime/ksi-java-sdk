@@ -11,6 +11,7 @@ Version 4.11
 * IMPROVEMENT: Added general context aware verification policy.
 * IMPROVEMENT: Hash level to signing interface.
 * BUGFIX: Fixed test resource loading functionality.
+* IMPROVEMENT: BlockSigner returns signature in the same order as the data hashes were added to queue.
 
 Version 4.10
 

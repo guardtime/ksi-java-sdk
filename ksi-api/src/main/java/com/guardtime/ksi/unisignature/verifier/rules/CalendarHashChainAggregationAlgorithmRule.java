@@ -35,7 +35,7 @@ import java.util.Date;
  */
 public class CalendarHashChainAggregationAlgorithmRule extends BaseRule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CalendarHashChainAggregationAlgorithmRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(CalendarHashChainAggregationAlgorithmRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         if (context.getCalendarHashChain() == null) {
@@ -46,7 +46,7 @@ public class CalendarHashChainAggregationAlgorithmRule extends BaseRule {
         if (!context.getCalendarHashChain().getInputHash().getAlgorithm().isObsolete(publicationTime)) {
             return VerificationResultCode.OK;
         }
-        LOGGER.info("Calendar hash chain aggregation hash algorithms is obsolete at {}", publicationTime.getTime());
+        logger.info("Calendar hash chain aggregation hash algorithms is obsolete at {}", publicationTime.getTime());
         return VerificationResultCode.FAIL;
     }
 

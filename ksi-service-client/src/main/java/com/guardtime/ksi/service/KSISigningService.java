@@ -34,10 +34,10 @@ import java.util.List;
 public interface KSISigningService extends Closeable {
 
     /**
-     * Creates new KSI signature.
+     * Creates a new KSI signature.
      *
      * @param dataHash instance of {@link DataHash} to be signed.
-     * @param level level of the dataHash to be signed in the overall tree.
+     * @param level the dataHash's level in the local aggregation tree.
      *
      * @return Instance of {@link AggregationResponseFuture} containing Aggregation response data.
      * @throws KSIException
@@ -45,19 +45,33 @@ public interface KSISigningService extends Closeable {
     Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException;
 
     /**
+<<<<<<< HEAD
      * Gets subclients in case of the implementation that combines multiple clients. If the implementation
      * is a client that directly connects to a single gateway, an empty list will be returned.
+=======
+     * Gets all the subservices in case of the implementation that combines multiple KSISigningServices. If the implementation
+     * is a KSISigningService connecting directly to a single gateway, an empty list is returned.
+>>>>>>> develop
      */
     List<KSISigningService> getSubSigningServices();
 
     /**
+<<<<<<< HEAD
      * Registers a new {@link ConfigurationListener}&lt;{@link AggregatorConfiguration}&gt; for the client. Each time client's configuration is
+=======
+     * Registers a new {@link ConfigurationListener}&lt;{@link AggregatorConfiguration}&gt;
+     * for the KSISigningService. Each time KSISigningService's configuration is
+>>>>>>> develop
      * updated, this listener is called.
      */
     void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener);
 
     /**
+<<<<<<< HEAD
      * Makes the client ask for configuration update. On completion of the update the registered {@link ConfigurationListener}s
+=======
+     * Makes the KSISigningService ask for configuration update. On completion of the update, the registered {@link ConfigurationListener}s
+>>>>>>> develop
      * are called.
      *
      * @return Future of the {@link AggregatorConfiguration}.

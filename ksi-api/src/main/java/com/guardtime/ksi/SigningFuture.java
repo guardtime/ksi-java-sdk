@@ -32,7 +32,7 @@ import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import java.util.List;
 
 /**
- * Signing request response future.
+ * The future of the signing request's response.
  *
  * @see Future
  */

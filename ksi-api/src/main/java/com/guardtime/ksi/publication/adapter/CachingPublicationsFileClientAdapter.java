@@ -30,7 +30,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 
 /**
- * This is a adapter for publications file client. It's responsibility is to cache the publication file data so that it
+ * An adapter for publications file client. It's responsibility is to cache the publication file data so that it
  * would not be fetched again over the network on each KSI request that needs a publication file. Cache is loaded for
  * the first time lazily (e.g. it's not loaded until it's actually needed).
  */

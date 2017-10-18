@@ -28,6 +28,7 @@ import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
+import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeClass;
@@ -201,13 +202,25 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         signAndVerify(blockSigner, 3);
     }
 
+    @Test
+    public void testBlockSignerWithoutMetadata() throws Exception {
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        blockSigner.add(DATA_HASH);
+        blockSigner.add(DATA_HASH_2);
+        blockSigner.add(DATA_HASH);
+
+        signAndVerify(blockSigner, 3);
+    }
+
     private void signAndVerify(KsiBlockSigner signer, int size) throws KSIException {
         List<KSISignature> signatures = signer.sign();
         assertNotNull(signatures);
         assertFalse(signatures.isEmpty());
         assertEquals(signatures.size(), size);
         for (KSISignature signature : signatures) {
-            assertTrue(ksi.verify(signature, new KeyBasedVerificationPolicy()).isOk());
+            VerificationResult verificationResult = ksi.verify(signature, new KeyBasedVerificationPolicy());
+            System.out.println(verificationResult);
+            assertTrue(verificationResult.isOk());
         }
     }
 

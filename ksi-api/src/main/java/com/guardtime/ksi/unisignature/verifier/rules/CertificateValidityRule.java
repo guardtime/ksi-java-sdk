@@ -43,7 +43,7 @@ public class CertificateValidityRule extends BaseRule {
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateValidityRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
-        Date validAt = context.getSignature().getCalendarHashChain().getAggregationTime();
+        Date validAt = context.getSignature().getAggregationTime();
 
         SignatureData signatureData = context.getCalendarAuthenticationRecord().getSignatureData();
         Certificate certificate = context.getCertificate(signatureData.getCertificateId());

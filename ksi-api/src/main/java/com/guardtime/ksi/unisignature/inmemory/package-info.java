@@ -18,6 +18,6 @@
  */
 
 /**
- * Classes to decode and encode in-memory KSI signatures
+ * Implementation to decode and encode in-memory KSI signatures
  */
 package com.guardtime.ksi.unisignature.inmemory;

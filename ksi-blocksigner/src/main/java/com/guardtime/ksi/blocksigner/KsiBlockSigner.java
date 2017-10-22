@@ -59,7 +59,8 @@ import static java.util.Arrays.asList;
  * A signer class to create a list of unisigantures. Methods {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)},
  * {@link KsiBlockSigner#add(DataHash)} and/or {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)} can be used
  * to add new input hash to the block signer. Method {@link KsiBlockSigner#sign()} must be called to get the final
- * signatures. <p/> Current implementation returns one signature per input hash. <p/> Note that this class can not be
+ * signatures. The signatures are returned the same order as the data hashes were added to block signer. <p/>
+ * Current implementation returns one signature per input hash. <p/> Note that this class can not be
  * used multiple times. </p> The following sample shows how to use {@link KsiBlockSigner} class:
  * <p>
  * <pre>

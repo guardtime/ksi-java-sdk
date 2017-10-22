@@ -28,11 +28,21 @@ import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * An adapter for publications file client. The publications file is fetched over the network on each KSI request
+ * that needs a publication file.
+ */
 public class NonCachingPublicationsFileClientAdapter implements PublicationsFileClientAdapter {
 
     private final KSIPublicationsFileClient publicationsFileClient;
     private final PublicationsFileFactory publicationsFileFactory;
 
+    /**
+     * @param publicationsFileClient
+     *         The publications file client that fetches the file.
+     * @param publicationsFileFactory
+     *         factory to use to parse publications file
+     */
     public NonCachingPublicationsFileClientAdapter(KSIPublicationsFileClient publicationsFileClient, PublicationsFileFactory publicationsFileFactory) {
         this.publicationsFileClient = publicationsFileClient;
         this.publicationsFileFactory = publicationsFileFactory;

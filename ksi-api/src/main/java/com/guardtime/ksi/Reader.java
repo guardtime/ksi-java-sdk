@@ -26,40 +26,40 @@ import java.io.File;
 import java.io.InputStream;
 
 /**
- * Interface for parsing KSI signatures. An instance of this class can be obtained using {@link SignatureReader} class.
+ * Parsing of KSI signatures. An instance of this class can be obtained using {@link SignatureReader} class.
  */
 public interface Reader {
 
     /**
-     * This method can be used to create signature {@link KSISignature} from input stream.
+     * Creates {@link KSISignature} from input stream.
      *
      * @param input
-     *         the {@link InputStream} to create signature from. must not be null.
-     * @return instance of {@link KSISignature}
+     *         the {@link InputStream} to create KSI signature from, must not be null.
+     * @return KSI signature ({@link KSISignature}).
      * @throws KSIException
-     *         when error occurs (e.g file contains invalid TLV structures)
+     *         when error occurs (e.g. file contains invalid TLV structures).
      */
     KSISignature read(InputStream input) throws KSIException;
 
     /**
-     * This method can be used to convert byte array to {@link KSISignature} instance.
+     * Converts byte array to {@link KSISignature}.
      *
      * @param bytes
-     *         bytes to create signature from. must not be null.
-     * @return instance of {@link KSISignature}
+     *         bytes to create KSI signature from, must not be null.
+     * @return KSI signature ({@link KSISignature}).
      * @throws KSIException
-     *         when error occurs (e.g file contains invalid TLV structures)
+     *         when error occurs (e.g. file contains invalid TLV structures).
      */
     KSISignature read(byte[] bytes) throws KSIException;
 
     /**
-     * This method can be used to create signature {@link KSISignature} from file.
+     * Creates {@link KSISignature} from file.
      *
      * @param file
-     *         file to create signature from.
-     * @return instance of {@link KSISignature}
+     *         file to create the KSI signature from.
+     * @return KSI signature ({@link KSISignature}).
      * @throws KSIException
-     *         when error occurs (e.g file contains invalid TLV structures)
+     *         when error occurs (e.g. file contains invalid TLV structures).
      */
     KSISignature read(File file) throws KSIException;
 

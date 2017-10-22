@@ -29,6 +29,8 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeClass;
@@ -36,6 +38,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
@@ -206,10 +209,24 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     public void testBlockSignerWithoutMetadata() throws Exception {
         KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
         blockSigner.add(DATA_HASH);
-        blockSigner.add(DATA_HASH_2);
+        blockSigner.add(DATA_HASH);
+        blockSigner.add(DATA_HASH);
+        blockSigner.add(DATA_HASH);
         blockSigner.add(DATA_HASH);
 
-        signAndVerify(blockSigner, 3);
+        signAndVerify(blockSigner, 5);
+    }
+
+    @Test
+    public void testBlockSignerWithoutMetadataLevel() throws Exception {
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        List<HashWithLevel> hashes = Arrays.asList(new HashWithLevel(DATA_HASH, 2L), new HashWithLevel(DATA_HASH, 3L));
+
+        for (HashWithLevel hashWithLevel : hashes) {
+            blockSigner.add(hashWithLevel.getDataHash(), hashWithLevel.getLevel(), null);
+        }
+
+        signAndVerify1(blockSigner, hashes);
     }
 
     private void signAndVerify(KsiBlockSigner signer, int size) throws KSIException {
@@ -222,6 +239,41 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
             System.out.println(verificationResult);
             assertTrue(verificationResult.isOk());
         }
+    }
+
+    private void signAndVerify1(KsiBlockSigner signer, List<HashWithLevel> hashes) throws KSIException {
+        List<KSISignature> signatures = signer.sign();
+        assertNotNull(signatures);
+        assertFalse(signatures.isEmpty());
+        assertEquals(signatures.size(), hashes.size());
+        int i = 0;
+
+        ContextAwarePolicy policy = ContextAwarePolicyAdapter.createInternalPolicy();
+        for (KSISignature signature : signatures) {
+            VerificationResult verificationResult = ksi.verify(signature, hashes.get(i).getDataHash(), hashes.get(i).getLevel(), policy);
+            System.out.println(verificationResult);
+            assertTrue(verificationResult.isOk());
+            i++;
+        }
+    }
+
+    private static class HashWithLevel{
+        private DataHash dataHash;
+        private long level;
+
+        public HashWithLevel(DataHash dataHash, long level) {
+            this.dataHash = dataHash;
+            this.level = level;
+        }
+
+        public DataHash getDataHash() {
+            return dataHash;
+        }
+
+        public long getLevel() {
+            return level;
+        }
+
     }
 
 }

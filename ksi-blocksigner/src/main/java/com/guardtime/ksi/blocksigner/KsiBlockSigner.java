@@ -251,10 +251,6 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
             LinkedList<AggregationChainLink> links = new LinkedList<>();
             if (this.chains.get(leafKey) != null) { // if IdentityMetadata was added
                 links.add(this.chains.get(leafKey)); // Add metadata link
-            } else if (leafKey.getLeaf().getLevel() > 0) {
-                AggregationChainLink leftAggregationChainLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(
-                        firstChain.getChainLinks().get(0).getMetadata(), leafKey.getLeaf().getLevel());
-                links.add(leftAggregationChainLink); // Add level correction
             }
 
             TreeNode node = leafKey.getLeaf();
@@ -264,7 +260,6 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
                 links.add(createLink(node, parent));
                 node = parent;
             }
-
             LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
             chainIndex.add(calculateIndex(links));
             AggregationHashChain aggregationHashChain = SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(

@@ -224,10 +224,10 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         int index = 0;
         for (KSISignature signature : signatures) {
             assertTrue(ksi.verify(signature, new KeyBasedVerificationPolicy()).isOk());
-            assertEquals(signature.getAggregationHashChains()[0].getInputHash(), input.get(index).getDataHash());
+            assertEquals(signature.getInputHash(), input.get(index).getDataHash());
             assertEquals(signature.getAggregationHashChains()[0].getChainLinks().get(0).getLevelCorrection(),
                     input.get(index).getLevel());
-            assertEquals(new String(signature.getAggregationHashChains()[0].getChainLinks().get(0).getMetadata().getClientId()),
+            assertEquals(signature.getAggregationHashChainIdentity()[signature.getAggregationHashChainIdentity().length-1].getDecodedClientId(),
                     input.get(index).getMetadata().getClientId());
             index++;
         }

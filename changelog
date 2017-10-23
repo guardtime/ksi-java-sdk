@@ -6,6 +6,7 @@ Version 4.11
 * IMPROVEMENT: Upgraded maven-source-plugin plugin dependency from version  2.4 to 3.0.1
 * IMPROVEMENT: Upgraded maven-jar-plugin dependency plugin from version 2.6 to 3.0.2
 * FEATURE: Now Possible to extend with TCPClient. Also possible to initialize SigingTCPClient and ExtenderTCPClient separately. Deprecated TCPClient(TCPClientSettings) constructor.
+* BUGFIX: Made extender optional for publication code based verification.
 * IMPROVEMENT: No support for Java 5 and Java 6 anymore.
 * BUGFIX: Made extender optional for publication code based verification.
 * IMPROVEMENT: Added general context aware verification policy.

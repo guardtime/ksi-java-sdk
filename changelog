@@ -13,6 +13,7 @@ Version 4.11
 * BUGFIX: Fixed test resource loading functionality.
 * IMPROVEMENT: BlockSigner returns signature in the same order as the data hashes were added to queue.
 * IMPROVEMENT: Verification of the validity of the signing certificate during aggregation time.
+* IMPROVEMENT: Removed old deprecated methods.
 
 Version 4.10
 

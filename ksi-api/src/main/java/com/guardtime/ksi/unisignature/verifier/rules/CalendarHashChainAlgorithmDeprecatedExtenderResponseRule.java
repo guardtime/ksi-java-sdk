@@ -20,7 +20,6 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
@@ -45,7 +44,7 @@ public class CalendarHashChainAlgorithmDeprecatedExtenderResponseRule extends Ba
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         PublicationsFile publicationsFile = context.getPublicationsFile();
         PublicationRecord publicationRecord =
-                publicationsFile.getPublicationRecord(context.getCalendarHashChain().getAggregationTime());
+                publicationsFile.getPublicationRecord(context.getSignature().getAggregationTime());
         CalendarHashChain extendedCalendarHashChain =
                 context.getExtendedCalendarHashChain(publicationRecord.getPublicationTime());
         if (extendedCalendarHashChain == null
@@ -57,14 +56,12 @@ public class CalendarHashChainAlgorithmDeprecatedExtenderResponseRule extends Ba
 
     private boolean isAlgorithmsDeprecated(CalendarHashChain calendarHashChain, Date publicationTime)
             throws InvalidCalendarHashChainException {
-        DataHash input = calendarHashChain.getInputHash();
         for (CalendarHashChainLink link : calendarHashChain.getChainLinks()) {
             if (!link.isRightLink()) {
                 continue;
             }
-            input = link.calculateChainStep(input);
-            if (input.getAlgorithm().isDeprecated(publicationTime)) {
-                logger.info("Calendar hash chain aggregation hash algorithm {} is deprecated.", input.getAlgorithm().getName());
+            if (link.getDataHash().getAlgorithm().isDeprecated(publicationTime)) {
+                logger.info("Calendar hash chain aggregation hash algorithm {} is deprecated.", link.getDataHash().getAlgorithm().getName());
                 return true;
             }
         }

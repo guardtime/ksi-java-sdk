@@ -42,12 +42,12 @@ public class CalendarHashChainAggregationAlgorithmRule extends BaseRule {
             return VerificationResultCode.OK;
         }
 
-        Date publicationTime = context.getCalendarHashChain().getPublicationTime();
-        if (!context.getCalendarHashChain().getInputHash().getAlgorithm().isObsolete(publicationTime)) {
-            return VerificationResultCode.OK;
+        Date publicationTime = context.getSignature().getPublicationTime();
+        if (context.getCalendarHashChain().getInputHash().getAlgorithm().isObsolete(publicationTime)) {
+            logger.info("Calendar hash chain aggregation hash algorithms is obsolete at {}", publicationTime);
+            return VerificationResultCode.FAIL;
         }
-        logger.info("Calendar hash chain aggregation hash algorithms is obsolete at {}", publicationTime.getTime());
-        return VerificationResultCode.FAIL;
+        return VerificationResultCode.OK;
     }
 
     public VerificationErrorCode getErrorCode() {

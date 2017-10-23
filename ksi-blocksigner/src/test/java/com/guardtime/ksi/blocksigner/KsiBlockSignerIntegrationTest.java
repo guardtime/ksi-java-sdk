@@ -121,14 +121,14 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class,
-            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated")
+            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
     public void testBlockSignerWithDeprecatedHashAlgorithms() throws Exception {
         KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
         blockSigner.add(dataHashSha1, metadata);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class,
-            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated")
+            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
     public void testInitBlockSignerWithDeprecatedHashAlgorithm() throws Exception {
         new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setDefaultHashAlgorithm(HashAlgorithm.SHA1).build();
     }

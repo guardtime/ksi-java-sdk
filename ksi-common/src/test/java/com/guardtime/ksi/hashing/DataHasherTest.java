@@ -54,7 +54,7 @@ public class DataHasherTest {
         Assert.assertNotNull(hasher);
     }
 
-    @Test(dataProvider = "deprecatedAlgorithms", expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm .* is marked deprecated")
+    @Test(dataProvider = "deprecatedAlgorithms", expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm .* is marked deprecated since .*")
     public void testDeprecatedAlgorithms(HashAlgorithm algorithm) throws Exception {
         new DataHasher(algorithm, true);
     }

@@ -45,6 +45,10 @@ abstract class InMemoryCalendarHashChainLink extends TLVStructure implements Cal
 
     public abstract boolean isRightLink();
 
+    public DataHash getDataHash(){
+        return dataHash;
+    }
+
     protected DataHash calculateStep(byte[] imprintA, byte[] imprintB, HashAlgorithm algorithm) throws InvalidCalendarHashChainException {
         if (!algorithm.isImplemented()) {
             throw new InvalidCalendarHashChainException("Invalid calendar hash chain. Hash algorithm " +algorithm.getName() + " is not implemented");
@@ -58,9 +62,15 @@ abstract class InMemoryCalendarHashChainLink extends TLVStructure implements Cal
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
         InMemoryCalendarHashChainLink that = (InMemoryCalendarHashChainLink) o;
         return dataHash.equals(that.dataHash);
     }

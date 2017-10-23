@@ -264,9 +264,9 @@ public enum HashAlgorithm {
      */
     public void checkExpiration(Date givenDate) {
         if (isDeprecated(givenDate)) {
-            throw new IllegalArgumentException("Hash algorithm " + this.name + " is marked deprecated");
+            throw new IllegalArgumentException("Hash algorithm " + this.name + " is marked deprecated since " + this.deprecatedSince);
         } else if (isObsolete(givenDate)) {
-            throw new IllegalArgumentException("Hash algorithm " + this.name + " is marked obsolete");
+            throw new IllegalArgumentException("Hash algorithm " + this.name + " is marked obsolete since " + this.obsoleteSince);
         }
     }
 

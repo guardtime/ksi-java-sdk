@@ -38,8 +38,8 @@ public class AggregationHashAlgorithmDeprecatedRule extends BaseRule {
         AggregationHashChain[] chains = context.getAggregationHashChains();
         for (AggregationHashChain chain : chains) {
             if (chain.getAggregationAlgorithm().isDeprecated(chain.getAggregationTime())) {
-                logger.info("Aggregation hash chain aggregation algorithm {} is deprecated",
-                        chain.getAggregationAlgorithm().getName());
+                logger.info("Aggregation hash chain aggregation algorithm {} is deprecated at {}",
+                        chain.getAggregationAlgorithm().getName(), chain.getAggregationTime());
                 return VerificationResultCode.FAIL;
             }
         }

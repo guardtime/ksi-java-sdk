@@ -20,7 +20,6 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.CalendarHashChainLink;
 import com.guardtime.ksi.unisignature.inmemory.InvalidCalendarHashChainException;
@@ -47,14 +46,12 @@ public class CalendarHashChainAlgorithmDeprecatedRule extends BaseRule {
     }
 
     private boolean isAlgorithmsDeprecated(CalendarHashChain calendarHashChain) throws InvalidCalendarHashChainException {
-        DataHash input = calendarHashChain.getInputHash();
         for (CalendarHashChainLink link : calendarHashChain.getChainLinks()) {
             if (!link.isRightLink()) {
                 continue;
             }
-            input = link.calculateChainStep(input);
-            if (input.getAlgorithm().isDeprecated(calendarHashChain.getPublicationTime())) {
-                logger.info("Calendar hash chain aggregation hash algorithm {} is deprecated.", input.getAlgorithm().getName());
+            if (link.getDataHash().getAlgorithm().isDeprecated(calendarHashChain.getPublicationTime())) {
+                logger.info("Calendar hash chain aggregation hash algorithm {} is deprecated.", link.getDataHash().getAlgorithm().getName());
                 return true;
             }
         }

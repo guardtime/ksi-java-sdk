@@ -32,4 +32,6 @@ public interface CalendarHashChainLink {
     DataHash calculateChainStep(DataHash previous) throws InvalidCalendarHashChainException;
 
     boolean isRightLink();
+
+    DataHash getDataHash();
 }

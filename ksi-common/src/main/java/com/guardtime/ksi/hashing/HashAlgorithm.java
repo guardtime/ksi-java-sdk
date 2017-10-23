@@ -263,10 +263,10 @@ public enum HashAlgorithm {
      * Checks if hash algorithm is not marked obsolete or deprecated in the given date.
      */
     public void checkExpiration(Date givenDate) {
-        if (isObsolete(givenDate)) {
-            throw new IllegalArgumentException("Hash algorithm " + this.name + " is marked obsolete");
-        } else if (isDeprecated(givenDate)) {
+        if (isDeprecated(givenDate)) {
             throw new IllegalArgumentException("Hash algorithm " + this.name + " is marked deprecated");
+        } else if (isObsolete(givenDate)) {
+            throw new IllegalArgumentException("Hash algorithm " + this.name + " is marked obsolete");
         }
     }
 

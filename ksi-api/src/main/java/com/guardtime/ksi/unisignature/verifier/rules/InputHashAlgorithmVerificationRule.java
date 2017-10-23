@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This rule verifies that document hash provided and it's hash algorithm match with the hash algorithm of
+ * Verifies that document hash provided and it's hash algorithm match with the hash algorithm of
  * the input hash of the first aggregation chain or RFC-3161 record if present.
  */
 public class InputHashAlgorithmVerificationRule extends BaseRule {
@@ -39,20 +39,16 @@ public class InputHashAlgorithmVerificationRule extends BaseRule {
         if(context.getDocumentHash() == null){
             return VerificationResultCode.OK;
         }
-
-        if (context.getRfc3161Record() != null) {
-            HashAlgorithm rfc3161Algorithm = context.getRfc3161Record().getInputHash().getAlgorithm();
-            if (rfc3161Algorithm != context.getDocumentHash().getAlgorithm()) {
-                logger.info("Document hash algorithm {} does not match with the RFC 3161 record input hash algorithm {}.",
-                        context.getDocumentHash().getAlgorithm(), rfc3161Algorithm);
-                return VerificationResultCode.FAIL;
-            }
-        }
-        HashAlgorithm algorithm = context.getAggregationHashChains()[0].getInputHash().getAlgorithm();
+        HashAlgorithm algorithm = context.getSignature().getInputHash().getAlgorithm();
         if (algorithm != context.getDocumentHash().getAlgorithm()) {
-            logger.info(
-                    "Document hash algorithm {} does not match with the input hash algorithm {} of the first aggragation chain.",
-                    context.getDocumentHash().getAlgorithm(), algorithm);
+            if (context.getRfc3161Record() != null) {
+                logger.info("Document hash algorithm {} does not match with the RFC 3161 record input hash algorithm {}.",
+                        context.getDocumentHash().getAlgorithm(), algorithm);
+            } else {
+                logger.info(
+                        "Document hash algorithm {} does not match with the input hash algorithm {} of the first aggragation chain.",
+                        context.getDocumentHash().getAlgorithm(), algorithm);
+            }
             return VerificationResultCode.FAIL;
         }
         return VerificationResultCode.OK;

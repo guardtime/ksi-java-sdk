@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This rule verifies if the aggregation hash chain uses a hash algorithm that was deprecated at the aggregation time.
+ * Verifies if the aggregation hash chain uses a hash algorithm that was deprecated at the aggregation time.
  */
 public class AggregationHashAlgorithmDeprecatedRule extends BaseRule {
 

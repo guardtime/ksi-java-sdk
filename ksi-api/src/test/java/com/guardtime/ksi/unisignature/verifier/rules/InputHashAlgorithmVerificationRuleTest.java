@@ -21,15 +21,14 @@ package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
@@ -46,10 +45,9 @@ public class InputHashAlgorithmVerificationRuleTest extends AbstractRuleTest {
     }
 
     @Test
-    public void testSignatureVerificationWithValidDocumentHashReturnsOkStatus_Ok() throws Exception {
-        DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
-        hasher.addData(TestUtil.loadFile(INPUT_FILE));
-        Assert.assertEquals(rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14), hasher.getHash())).getResultCode(), VerificationResultCode.OK);
+    public void testSignatureVerificationWithValidDocumentHashReturnsOkStatus_Ok() throws Exception {;
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
+        Assert.assertEquals(rule.verify(build(signature, signature.getInputHash())).getResultCode(), VerificationResultCode.OK);
     }
 
     @Test

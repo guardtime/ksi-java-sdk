@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Rule to check if any of the calendar hash chain aggregation hash algorithms (derived from the right link)
+ * Verifies if any of the calendar hash chain aggregation hash algorithms (derived from the right link)
  * were deprecated at the publication time.
  */
 public class CalendarHashChainAlgorithmDeprecatedRule extends BaseRule {

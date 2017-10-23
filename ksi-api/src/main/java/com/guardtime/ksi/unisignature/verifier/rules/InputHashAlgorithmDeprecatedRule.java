@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
@@ -29,25 +30,24 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * This rule verifies that user provided input hash algorithm is not deprecated at aggregation time.
+ * Verifies that the hash algorithm of the input hash of the signature (input hash of the first aggregation hash chain or
+ * if present the input hash of the RFC-3161 record) is deprecated at the aggregation time.
  */
 public class InputHashAlgorithmDeprecatedRule extends BaseRule {
 
     private static final Logger logger = LoggerFactory.getLogger(InputHashAlgorithmDeprecatedRule.class);
 
     VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
-        if (context.getRfc3161Record() != null) {
-            Date rfc3161AggregationTime = context.getRfc3161Record().getAggregationTime();
-            if (context.getRfc3161Record().getInputHash().getAlgorithm().isDeprecated(rfc3161AggregationTime)) {
+        Date aggregationTime = context.getSignature().getAggregationTime();
+        HashAlgorithm algorithm = context.getSignature().getInputHash().getAlgorithm();
+        if (algorithm.isDeprecated(aggregationTime)) {
+            if (context.getRfc3161Record() != null) {
                 logger.info("RFC 3161 record input hash algorithm {} is deprecated.",
                         context.getRfc3161Record().getInputHash().getAlgorithm().getName());
-                return VerificationResultCode.FAIL;
+            } else {
+                logger.info("Input hash algorithm {} of the first aggregation hash chain is deprecated.",
+                        algorithm.getName());
             }
-        }
-        Date aggregationChainAggregationTime = context.getAggregationHashChains()[0].getAggregationTime();
-        if (context.getAggregationHashChains()[0].getInputHash().getAlgorithm().isDeprecated(aggregationChainAggregationTime)) {
-            logger.info("Input hash algorithm {} of the first aggregation hash chain is deprecated.",
-                    context.getAggregationHashChains()[0].getInputHash().getAlgorithm().getName());
             return VerificationResultCode.FAIL;
         }
         return VerificationResultCode.OK;

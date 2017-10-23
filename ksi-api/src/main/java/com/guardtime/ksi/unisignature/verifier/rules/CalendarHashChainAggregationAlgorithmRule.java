@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * This rule is used to verify that calendar hash chain aggregation(derived from the right link) hash algorithms were
+ * Verifies that calendar hash chain aggregation(derived from the right link) hash algorithms were
  * obsolete at the publication time. If calendar hash chain is missing then status {@link
  * VerificationResultCode#OK} will be returned.
  */

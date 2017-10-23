@@ -31,16 +31,17 @@ import java.util.Date;
 /**
  * Verifies if the RFC-3161 record uses internally a hash function that was deprecated at the aggregation time.
  */
-public class InternalHashAlgorithmsDeprecatedRule extends BaseRule {
+public class Rfc3161InternalHashAlgorithmsDeprecatedRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(InternalHashAlgorithmsDeprecatedRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(Rfc3161InternalHashAlgorithmsDeprecatedRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         if (context.getRfc3161Record() != null) {
-            Date rfc3161AggregationTime = context.getRfc3161Record().getAggregationTime();
+            Date rfc3161AggregationTime = context.getSignature().getAggregationTime();
             if (context.getRfc3161Record().getTstInfoAlgorithm().isDeprecated(rfc3161AggregationTime)
                     || context.getRfc3161Record().getSignedAttributesAlgorithm().isDeprecated(rfc3161AggregationTime)) {
-                logger.info("RFC-3161 record internal hash function is deprecated.");
+                logger.info(
+                        "RFC3161 compatibility record composed of hash algorithms that where deprecated at the time of signing");
                 return VerificationResultCode.FAIL;
             }
         }

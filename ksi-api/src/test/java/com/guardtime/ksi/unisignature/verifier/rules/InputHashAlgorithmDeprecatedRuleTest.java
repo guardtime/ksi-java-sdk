@@ -38,7 +38,7 @@ public class InputHashAlgorithmDeprecatedRuleTest extends AbstractRuleTest {
     private Rule rule = new InputHashAlgorithmDeprecatedRule();
 
     @Test
-    public void testSignatureVerificationWithNormalAlgorithm_Ok() throws Exception {
+    public void testSignatureVerificationWithNotDeprecatedAlgorithm_Ok() throws Exception {
         RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);

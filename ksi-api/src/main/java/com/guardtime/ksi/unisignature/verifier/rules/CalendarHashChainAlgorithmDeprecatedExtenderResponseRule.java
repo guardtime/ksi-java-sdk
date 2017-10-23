@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Rule to check if any of the response calendar hash chain aggregation hash algorithms (derived from the right link)
+ * Verifies if any of the response calendar hash chain aggregation hash algorithms (derived from the right link)
  * were deprecated at the publication time.
  */
 public class CalendarHashChainAlgorithmDeprecatedExtenderResponseRule extends BaseRule {

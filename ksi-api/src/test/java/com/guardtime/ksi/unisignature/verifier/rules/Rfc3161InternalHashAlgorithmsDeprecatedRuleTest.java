@@ -32,9 +32,9 @@ import static com.guardtime.ksi.Resources.RFC3161_SHA1_TST_ALGORITHM_2016;
 import static com.guardtime.ksi.Resources.RFC3161_SHA1_TST_ALGORITHM_2017;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
-public class InternalHashAlgorithmsDeprecatedRuleTest extends AbstractRuleTest {
+public class Rfc3161InternalHashAlgorithmsDeprecatedRuleTest extends AbstractRuleTest {
 
-    private Rule rule = new InternalHashAlgorithmsDeprecatedRule();
+    private Rule rule = new Rfc3161InternalHashAlgorithmsDeprecatedRule();
 
     @Test
     public void testSignatureVerification_Ok() throws Exception {

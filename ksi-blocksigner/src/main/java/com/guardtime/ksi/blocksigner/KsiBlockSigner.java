@@ -46,7 +46,6 @@ import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -243,32 +242,54 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         logger.debug("Root node calculated. {}(level={})", new DataHash(rootNode.getValue()), rootNode.getLevel());
         KSISignature rootNodeSignature = signRootNode(rootNode);
         AggregationHashChain firstChain = rootNodeSignature.getAggregationHashChains()[0];
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        rootNodeSignature.writeTo(output);
 
         List<KSISignature> signatures = new LinkedList<>();
         for (LeafKey leafKey : this.chains.keySet()) {
             List<AggregationHashChain> aggregationHashChains = new LinkedList<>();
             LinkedList<AggregationChainLink> links = new LinkedList<>();
+
+            long initialHashLevel = 0L;
             if (this.chains.get(leafKey) != null) { // if IdentityMetadata was added
                 links.add(this.chains.get(leafKey)); // Add metadata link
+            } else if (leafKey.getLeaf().getLevel() > 0) {
+                initialHashLevel = leafKey.getLeaf().getLevel();
             }
 
             TreeNode node = leafKey.getLeaf();
-
             while (!node.isRoot()) {
                 TreeNode parent = node.getParent();
-                links.add(createLink(node, parent));
+                links.add(createLink(node, parent, initialHashLevel));
+                initialHashLevel = 0L; //reset hash level, so only the first link gets the extra level correction
                 node = parent;
             }
-            LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
-            chainIndex.add(calculateIndex(links));
-            AggregationHashChain aggregationHashChain = SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(
-                    leafKey.getInputDataHash(), firstChain.getAggregationTime(), chainIndex, links, algorithm);
-            aggregationHashChains.add(aggregationHashChain);
 
-            aggregationHashChains.addAll(asList(rootNodeSignature.getAggregationHashChains()));
+            if (!links.isEmpty()) {
+                LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
+                chainIndex.add(calculateIndex(links));
+                AggregationHashChain aggregationHashChain = SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(
+                        leafKey.getInputDataHash(), firstChain.getAggregationTime(), chainIndex, links, algorithm);
+                aggregationHashChains.add(aggregationHashChain);
 
+                aggregationHashChains.addAll(asList(rootNodeSignature.getAggregationHashChains()));
+            } else { //situation, where only one hash without metadata is signed
+                AggregationChainLink leftAggregationChainLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(
+                        firstChain.getChainLinks().get(0).getMetadata(), leafKey.getLeaf().getLevel());
+                links.add(leftAggregationChainLink);
+
+                LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
+                for (int i = 1; i < firstChain.getChainLinks().size(); i++) {
+                    links.add(firstChain.getChainLinks().get(i));
+                }
+
+                AggregationHashChain aggregationHashChain =
+                        SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(leafKey.getInputDataHash(),
+                                firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
+                aggregationHashChains.add(aggregationHashChain);
+
+                for (int i = 1; i < rootNodeSignature.getAggregationHashChains().length; i++) {
+                    aggregationHashChains.add(rootNodeSignature.getAggregationHashChains()[i]);
+                }
+            }
 
             KSISignature signature = signatureFactory.createSignature(aggregationHashChains,
                     rootNodeSignature.getCalendarHashChain(), rootNodeSignature.getCalendarAuthenticationRecord(),
@@ -286,14 +307,14 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         return SigningFuture.getResult();
     }
 
-    private AggregationChainLink createLink(TreeNode node, TreeNode parent) throws KSIException {
+    private AggregationChainLink createLink(TreeNode node, TreeNode parent, long hashLevel) throws KSIException {
         AggregationChainLink link;
         long parentLevel = parent.getLevel();
         if (node.isLeft()) {
-            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getLeftChildNode());
+            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getLeftChildNode()) + hashLevel;
             link = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(new DataHash(parent.getRightChildNode().getValue()), levelCorrection);
         } else {
-            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getRightChildNode());
+            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getRightChildNode()) + hashLevel;
             link = SIGNATURE_COMPONENT_FACTORY.createRightAggregationChainLink(new DataHash(parent.getLeftChildNode().getValue()), levelCorrection);
         }
         return link;

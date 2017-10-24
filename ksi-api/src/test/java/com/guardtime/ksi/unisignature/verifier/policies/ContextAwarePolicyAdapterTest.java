@@ -167,7 +167,7 @@ public class ContextAwarePolicyAdapterTest {
 
     @Test
     public void testGeneralVerificationPolicyCreation() {
-        ContextAwarePolicy policy = ContextAwarePolicyAdapter.createGeneralPolicy(Mockito.mock(PublicationsHandler.class), null);
+        ContextAwarePolicy policy = ContextAwarePolicyAdapter.createDefaultPolicy(Mockito.mock(PublicationsHandler.class), null);
         assertNotNull(policy);
         assertEquals(policy.getName(), "Publications file based verification policy");
         assertNotNull(policy.getType());
@@ -177,23 +177,7 @@ public class ContextAwarePolicyAdapterTest {
         assertNotNull(policy.getPolicyContext().getPublicationsHandler());
         assertNull(policy.getPolicyContext().getUserPublication());
         assertFalse(policy.getPolicyContext().isExtendingAllowed());
-    }
-
-    @Test
-    public void testGeneralVerificationPolicyCreationWithUserPublication() {
-        Extender extender = Mockito.mock(Extender.class);
-        Mockito.when(extender.getExtendingService()).thenReturn(Mockito.mock(KSIExtendingService.class));
-        ContextAwarePolicy policy = ContextAwarePolicyAdapter.createGeneralPolicy(Mockito.mock(PublicationData.class),
-                Mockito.mock(PublicationsHandler.class), extender);
-        assertNotNull(policy);
-        assertEquals(policy.getName(), "User provided publication based verification policy");
-        assertNotNull(policy.getType());
-        assertNotNull(policy.getRules());
-        assertNotNull(policy.getPolicyContext());
-        assertNotNull(policy.getPolicyContext().getExtendingService());
-        assertNull(policy.getPolicyContext().getPublicationsHandler());
-        assertNotNull(policy.getPolicyContext().getUserPublication());
-        assertTrue(policy.getPolicyContext().isExtendingAllowed());
+        assertEquals(policy.getFallbackPolicy().getClass(), KeyBasedVerificationPolicy.class);
     }
 
     @Test

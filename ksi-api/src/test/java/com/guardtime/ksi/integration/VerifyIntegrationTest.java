@@ -181,6 +181,16 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(result.isOk());
     }
 
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureUsingContextPublicationsFilePolicyExtendingNotAllowed_NA(KSI ksi)
+            throws Exception {
+        KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
+        VerificationResult result =
+                ksi.verify(sig, ContextAwarePolicyAdapter.createPublicationsFilePolicy(getPublicationsHandler(simpleHttpClient)));
+        Assert.assertFalse(result.isOk());
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
+    }
+
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyOfflineExtendedKSIRfc3161SignatureUsingContextPublicationsFilePolicy_Ok() throws Exception {
         KSISignature sig = loadSignature(RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION);

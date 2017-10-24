@@ -8,7 +8,7 @@ Version 4.11
 * FEATURE: Now Possible to extend with TCPClient. Also possible to initialize SigingTCPClient and ExtenderTCPClient separately. Deprecated TCPClient(TCPClientSettings) constructor.
 * IMPROVEMENT: No support for Java 5 and Java 6 anymore.
 * BUGFIX: Made extender optional for publication code based verification.
-* IMPROVEMENT: Added default context aware verification policy.
+* IMPROVEMENT: Added default verification policy.
 
 Version 4.10
 

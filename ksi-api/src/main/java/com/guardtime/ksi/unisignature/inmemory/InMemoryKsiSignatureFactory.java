@@ -160,8 +160,8 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         if (level > 0) {
             AggregationHashChain firstChain = signature.getAggregationHashChains()[0];
             LinkedList<AggregationChainLink> links = new LinkedList<>();
-            AggregationChainLink leftAggregationChainLink = signatureComponentFactory.createLeftAggregationChainLink(firstChain.getChainLinks().get(0).getMetadata(), level);
-            links.add(leftAggregationChainLink);
+            AggregationChainLink link = addLevelCorrectionToLink(firstChain.getChainLinks().get(0), level);
+            links.add(link);
 
             LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
             for (int i = 1; i < firstChain.getChainLinks().size(); i++) {
@@ -217,5 +217,11 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         if (structure != null) {
             root.addChildElement(structure.getRootElement());
         }
+    }
+
+    private AggregationChainLink addLevelCorrectionToLink(AggregationChainLink link, long levelCorrection) throws KSIException {
+        levelCorrection = link.getLevelCorrection() + levelCorrection;
+        link.addLevelCorrection(levelCorrection);
+        return link;
     }
 }

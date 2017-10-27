@@ -242,7 +242,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testDefaultPolicyWithExtendedSignatureAndNoExtender_OK() throws Exception{
+    public void testDefaultPolicyWithExtendedSignatureAndInvalidExtender_OK() throws Exception{
         KSISignature signature = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
         VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(), createExtender("http://random.url.com:1234", new KSIServiceCredentials("user", "pass"))));
         Assert.assertTrue(result.isOk());
@@ -257,7 +257,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testDefaultPolicyWithExtendedSignatureAndErrorAtPublications_Fail() throws Exception{
+    public void testDefaultPolicyWithExtendedSignatureAndErrorAtPublicationRecord_Fail() throws Exception{
         KSISignature signature = loadSignature(SIGNATURE_PUBLICATION_RECORD_DOES_NOT_MATCH_PUBLICATION);
         VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(), null));
         Assert.assertFalse(result.isOk());
@@ -265,7 +265,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testDefaultPolicyWithNotExtendedSignatureAndErrorAt_Fail() throws Exception{
+    public void testDefaultPolicyWithNotExtendedSignatureAndErrorAtExtending_Fail() throws Exception{
         HttpClientSettings settings = loadHTTPSettings();
         KSISignature signature = loadSignature(SIGNATURE_OTHER_CORE);
         VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(), createExtender(settings.getExtendingUrl().toString(), settings.getCredentials())));

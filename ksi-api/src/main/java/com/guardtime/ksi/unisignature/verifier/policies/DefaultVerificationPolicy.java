@@ -39,6 +39,7 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 public class DefaultVerificationPolicy extends PublicationsFileBasedVerificationPolicy {
 
     private static final String TYPE_DEFAULT_POLICY = "DEFAULT_POLICY";
+    private Policy fallbackPolicy;
 
     public DefaultVerificationPolicy() {
         super();
@@ -47,6 +48,15 @@ public class DefaultVerificationPolicy extends PublicationsFileBasedVerification
 
     public String getName() {
         return "Default verification policy";
+    }
+
+    @Override
+    public final void setFallbackPolicy(Policy policy) {
+        if (getFallbackPolicy() != null) {
+            getFallbackPolicy().setFallbackPolicy(policy);
+        } else {
+            super.setFallbackPolicy(policy);
+        }
     }
 
     public String getType() {

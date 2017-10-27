@@ -268,7 +268,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     @Test
     public void testBlockSignerOneHashLevelWithoutMetadata() throws Exception {
         KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
-        List<Input> hashes = Arrays.asList(new Input(DATA_HASH, 2L, null));
+        List<Input> hashes = Collections.singletonList(new Input(DATA_HASH, 2L, null));
 
         for (Input hashWithLevel : hashes) {
             blockSigner.add(hashWithLevel.getDataHash(), hashWithLevel.getLevel(), null);
@@ -298,7 +298,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         for (KSISignature signature : signatures) {
             VerificationResult verificationResult =
                     ksi.verify(signature, hashes.get(i).getDataHash(), hashes.get(i).getLevel(), policy);
-            System.out.println(verificationResult);
             assertTrue(verificationResult.isOk());
             i++;
         }

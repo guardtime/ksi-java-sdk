@@ -131,22 +131,8 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     }
 
     /**
-     * Creates default verification policy. <br>
-     * Verification procedure:
-     * <ul>
-     * <li>If the signature is already extended, performs publication-based verification and reports the result.</li>
-     * <li>If the signature is not extended but is old enough to extend, tries to extend it.</li>
-     * <ul>
-     * <li>If extending fails for technical reasons, throws technical error.</li>
-     * <li>If extending fails for cryptographical reasons (extender response inconsistent with signature), reports the
-     * result.</li>
-     * <li>If extending succeeds, performs publication-based verification and reports the result.</li>
-     * </ul>
-     * <li>If publication-based verification results in NA, performs key-based verification and reports the result.</li>
-     * </ul>
-     *
-     * Note: Older signature verification may fail if extender is not provided because publications file does not
-     * contain old keys for key-based verification.
+     * Creates context aware policy using {@link DefaultVerificationPolicy} for verification.
+     * If extender is set, signature is extended within verification process.
      *
      * @param handler
      *      Publications handler.

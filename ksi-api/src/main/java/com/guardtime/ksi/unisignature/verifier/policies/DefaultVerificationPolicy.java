@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 Guardtime, Inc.
+ * Copyright 2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -39,15 +39,17 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 public class DefaultVerificationPolicy extends PublicationsFileBasedVerificationPolicy {
 
     private static final String TYPE_DEFAULT_POLICY = "DEFAULT_POLICY";
-    private Policy fallbackPolicy;
 
     public DefaultVerificationPolicy() {
-        super();
         setFallbackPolicy(new KeyBasedVerificationPolicy());
     }
 
     public String getName() {
         return "Default verification policy";
+    }
+
+    public String getType() {
+        return TYPE_DEFAULT_POLICY;
     }
 
     @Override
@@ -58,9 +60,4 @@ public class DefaultVerificationPolicy extends PublicationsFileBasedVerification
             super.setFallbackPolicy(policy);
         }
     }
-
-    public String getType() {
-        return TYPE_DEFAULT_POLICY;
-    }
-
 }

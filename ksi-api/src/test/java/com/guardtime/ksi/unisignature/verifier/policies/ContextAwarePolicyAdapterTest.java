@@ -166,7 +166,7 @@ public class ContextAwarePolicyAdapterTest {
     }
 
     @Test
-    public void testGeneralVerificationPolicyCreation() {
+    public void testDefaultVerificationPolicyCreation() {
         ContextAwarePolicy policy = ContextAwarePolicyAdapter.createDefaultPolicy(Mockito.mock(PublicationsHandler.class), null);
         assertNotNull(policy);
         assertEquals(policy.getName(), "Publications file based verification policy");

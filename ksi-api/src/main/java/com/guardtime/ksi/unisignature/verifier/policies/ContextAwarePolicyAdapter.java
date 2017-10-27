@@ -156,9 +156,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
      */
     public static ContextAwarePolicy createDefaultPolicy(PublicationsHandler handler, Extender extender) {
         Util.notNull(handler, "Publications handler");
-        PublicationsFileBasedVerificationPolicy publicationsPolicy = new PublicationsFileBasedVerificationPolicy();
-        publicationsPolicy.setFallbackPolicy(new KeyBasedVerificationPolicy());
-        return new ContextAwarePolicyAdapter(publicationsPolicy,
+        return new ContextAwarePolicyAdapter(new DefaultVerificationPolicy(),
                 new PolicyContext(handler, extender != null ? extender.getExtendingService() : null));
     }
 

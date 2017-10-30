@@ -84,6 +84,8 @@ class KSITCPTransaction {
 
 
         transaction.response = tlv;
+
+        logger.debug("KSITCPTransaction.fromResponse "+transaction.getCorrelationId());
         return transaction;
     }
 
@@ -162,15 +164,15 @@ class KSITCPTransaction {
 
     void responseReceived(TLVElement response) {
         this.response = response;
-        boolean offered = availableResponse.offer(response);
-        if (!offered) {
-            logger.debug("Response could not be added to availableResponse!!! " + availableResponse);
-        }
+        availableResponse.offer(response);
+        logger.debug("Response offer to availableResponse");
         ActiveTransactionsHolder.remove(this);
     }
 
     TLVElement waitResponse(long timeoutMs) throws InterruptedException {
-        return availableResponse.poll(timeoutMs, TimeUnit.MILLISECONDS);
+        TLVElement poll = availableResponse.poll(timeoutMs, TimeUnit.MILLISECONDS);
+        logger.debug("KSITCPTransaction.waitResponse "+poll==null? "null": "poll");
+        return poll;
     }
 
     WriteFuture send(IoSession session) {

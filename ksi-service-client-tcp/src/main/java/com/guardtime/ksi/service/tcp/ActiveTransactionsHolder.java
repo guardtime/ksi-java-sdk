@@ -36,10 +36,12 @@ class ActiveTransactionsHolder {
 
     synchronized static void put(KSITCPTransaction transaction) {
         ACTIVE_TRANSACTIONS.put(transaction.getCorrelationId(), transaction);
+        logger.debug("ActiveTransactionsHolder.put", transaction.getCorrelationId());
     }
 
     synchronized static void remove(KSITCPTransaction transaction) {
         ACTIVE_TRANSACTIONS.remove(transaction.getCorrelationId());
+        logger.debug("ActiveTransactionsHolder.remove", transaction.getCorrelationId());
     }
 
     synchronized static void responseReceived(KSITCPTransaction transaction) {
@@ -49,6 +51,6 @@ class ActiveTransactionsHolder {
         } else {
             logger.info("Received TCP response with id {}, but did not find corresponding request. It might have timed out.", correlationId);
         }
-
+        logger.debug("ActiveTransactionsHolder.responseReceived", transaction.getCorrelationId());
     }
 }

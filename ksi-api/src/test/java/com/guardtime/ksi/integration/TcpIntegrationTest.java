@@ -22,6 +22,13 @@ import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.ExtensionRequest;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.PduFactoryProvider;
+import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.pdu.RequestContextFactory;
+import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.KSISigningClient;
@@ -30,7 +37,9 @@ import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
 import com.guardtime.ksi.service.tcp.ExtenderTCPClient;
 import com.guardtime.ksi.service.tcp.KSITCPTransactionException;
 import com.guardtime.ksi.service.tcp.SigningTCPClient;
+import com.guardtime.ksi.service.tcp.TCPClient;
 import com.guardtime.ksi.service.tcp.TCPClientSettings;
+import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
@@ -40,8 +49,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.guardtime.ksi.Resources.INPUT_FILE;
@@ -146,6 +157,57 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         KSI tcpKsi = createKsi(tcpExtenderClient, tcpSigningClient, pubFileClient);
         tcpSigningClient.close();
         tcpKsi.extend(loadSignature(SIGNATURE_2014_06_02));
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testTcp() throws Exception {
+
+        final KSISignature signature = loadSignature(SIGNATURE_2014_06_02);
+        for (int i = 0; i < 1000; i++) {
+
+            TCPClient tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
+            RequestContextFactory requestContextFactory = RequestContextFactory.DEFAULT_FACTORY;
+            PduFactory pduFactory = PduFactoryProvider.get(PduVersion.V2);
+            KSIRequestContext requestContext = requestContextFactory.createContext();
+            ServiceCredentials credentials = tcpClient.getServiceCredentials();
+            ExtensionRequest request = pduFactory.createExtensionRequest(requestContext, credentials, signature.getAggregationTime(), signature.getPublicationTime());
+            ByteArrayInputStream bais = new ByteArrayInputStream(request.toByteArray());
+            long start = new Date().getTime();
+            Future<TLVElement> future = tcpClient.extend(bais);
+            long duration = new Date().getTime() - start;
+            if (duration > 100) {
+                System.out.println(i + ") Duration: " + duration +  "ms.");
+            }
+            Assert.assertNotNull(future);
+            Assert.assertNotNull(future.getResult());
+            tcpClient.close();
+        }
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testTcp1() throws Exception {
+
+        final KSISignature signature = loadSignature(SIGNATURE_2014_06_02);
+        TCPClient tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
+        RequestContextFactory requestContextFactory = RequestContextFactory.DEFAULT_FACTORY;
+        PduFactory pduFactory = PduFactoryProvider.get(PduVersion.V2);
+        KSIRequestContext requestContext = requestContextFactory.createContext();
+        ServiceCredentials credentials = tcpClient.getServiceCredentials();
+        for (int i = 0; i < 1000; i++) {
+
+            ExtensionRequest request = pduFactory.createExtensionRequest(requestContext, credentials, signature.getAggregationTime(), signature.getPublicationTime());
+            ByteArrayInputStream bais = new ByteArrayInputStream(request.toByteArray());
+            long start = new Date().getTime();
+            Future<TLVElement> future = tcpClient.extend(bais);
+            long duration = new Date().getTime() - start;
+            if (duration > 100) {
+                System.out.println(i + ") Duration: " + duration +  "ms.");
+            }
+            Assert.assertNotNull(future);
+            Assert.assertNotNull(future.getResult());
+            Thread.sleep(100);
+        }
+        tcpClient.close();
     }
 
     private VerificationResult signAndVerify(HashAlgorithm algorithm) throws Exception {

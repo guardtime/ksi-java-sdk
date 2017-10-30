@@ -191,10 +191,10 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         TCPClient tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
         RequestContextFactory requestContextFactory = RequestContextFactory.DEFAULT_FACTORY;
         PduFactory pduFactory = PduFactoryProvider.get(PduVersion.V2);
-        KSIRequestContext requestContext = requestContextFactory.createContext();
         ServiceCredentials credentials = tcpClient.getServiceCredentials();
         for (int i = 0; i < 1000; i++) {
 
+            KSIRequestContext requestContext = requestContextFactory.createContext();
             ExtensionRequest request = pduFactory.createExtensionRequest(requestContext, credentials, signature.getAggregationTime(), signature.getPublicationTime());
             ByteArrayInputStream bais = new ByteArrayInputStream(request.toByteArray());
             long start = new Date().getTime();
@@ -205,7 +205,6 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
             }
             Assert.assertNotNull(future);
             Assert.assertNotNull(future.getResult());
-            Thread.sleep(100);
         }
         tcpClient.close();
     }

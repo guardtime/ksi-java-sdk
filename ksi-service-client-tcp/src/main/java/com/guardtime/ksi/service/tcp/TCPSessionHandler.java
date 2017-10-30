@@ -53,14 +53,14 @@ class TCPSessionHandler implements IoHandler {
     }
 
     public void sessionCreated(IoSession session) throws Exception {
-        LOGGER.debug("TCP session {} with signer created.", session.getId());
+        LOGGER.debug("TCP session ID={} created.", session.getId());
     }
 
     public void sessionIdle(IoSession session, IdleStatus idleStatus) throws Exception {
-        LOGGER.debug("TCP session {} with signer is idle.", session.getId());
+        LOGGER.debug("TCP session ID={} is idle.", session.getId());
     }
 
     public void sessionOpened(IoSession session) throws Exception {
-        LOGGER.debug("TCP session {} with signer is opened.", session.getId());
+        LOGGER.debug("TCP session ID={} is opened.", session.getId());
     }
 }

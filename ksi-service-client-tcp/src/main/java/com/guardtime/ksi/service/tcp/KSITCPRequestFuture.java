@@ -82,11 +82,11 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
 
             long timeoutMs = getMsLeftBeforeTimeout();
             response = transaction.waitResponse(timeoutMs);
-            logger.debug("Really waiting for response {} ms.", timeoutMs);
 
             if (response != null) {
                 return response;
             } else {
+                logger.debug("Message {} not received");
                 throw saveException(new TCPTimeoutException("Response was not received in " + this.timeoutMs + " ms"));
             }
         } catch (InterruptedException e) {

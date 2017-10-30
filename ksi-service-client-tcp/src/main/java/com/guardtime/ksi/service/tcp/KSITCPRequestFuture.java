@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  */
 class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement> {
 
-    private KSITCPSigningTransaction transaction;
+    private KSITCPTransaction transaction;
     private final long timeoutMs;
     private WriteFuture writeFuture;
     private long transactionStartedMillis;
@@ -46,7 +46,7 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
     }
 
     private void startTransaction(IoSession tcpSession, InputStream request) throws IOException, KSIException {
-        this.transaction = KSITCPSigningTransaction.fromRequest(request);
+        this.transaction = KSITCPTransaction.fromRequest(request);
         transactionStartedMillis = System.currentTimeMillis();
         this.writeFuture = transaction.send(tcpSession);
         ActiveTransactionsHolder.put(transaction);

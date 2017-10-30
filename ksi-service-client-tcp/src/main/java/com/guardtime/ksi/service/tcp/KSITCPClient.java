@@ -45,7 +45,7 @@ class KSITCPClient implements Closeable {
             return new KSITCPRequestFuture(request, tcpSession,
                     TimeUnit.SECONDS.toMillis(tcpClientSettings.getTcpTransactionTimeoutSec()));
         } catch (Throwable e) {
-            throw new KSITCPTransactionException("There was a problem with initiating a TCP signing transaction with endpoint " +
+            throw new KSITCPTransactionException("There was a problem with initiating a TCP transaction with endpoint " +
                     tcpClientSettings.getEndpoint() + ".", e);
         }
     }

@@ -37,10 +37,12 @@ class TCPSessionHandler implements IoHandler {
     }
 
     public void messageReceived(IoSession session, Object message) throws Exception {
-        ActiveTransactionsHolder.responseReceived((KSITCPSigningTransaction) message);
+        LOGGER.debug("Message received. {}", message);
+        ActiveTransactionsHolder.responseReceived((KSITCPTransaction) message);
     }
 
     public void messageSent(IoSession session, Object message) throws Exception {
+        LOGGER.debug("Message sent. {}", message);
     }
 
     public void inputClosed(IoSession session) throws Exception {

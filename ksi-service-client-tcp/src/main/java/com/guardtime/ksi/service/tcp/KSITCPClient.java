@@ -69,13 +69,13 @@ class KSITCPClient implements Closeable {
 
     private IoSession createTcpSession() throws KSITCPTransactionException {
         InetSocketAddress endpoint = tcpClientSettings.getEndpoint();
-        logger.debug("Creating a new TCP session with host '{}'...", endpoint.getHostName());
+        logger.debug("Creating a new TCP session with host '{}'...", endpoint);
         ConnectFuture connectFuture = connector.connect(endpoint);
         try {
             return connectFuture.await().getSession();
         } catch (Exception e) {
             connectFuture.cancel();
-            throw new KSITCPTransactionException("Failed to initiate the TCP session with signer. Signer endpoint: " + endpoint, e);
+            throw new KSITCPTransactionException("Failed to initiate the TCP session with endpoint: " + endpoint, e);
         }
     }
 

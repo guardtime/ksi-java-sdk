@@ -28,8 +28,6 @@ import com.guardtime.ksi.util.Util;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,8 +39,6 @@ import java.util.concurrent.TimeUnit;
  * Class that represents a single TCP transaction.
  */
 class KSITCPTransaction {
-
-    private static final Logger logger = LoggerFactory.getLogger(KSITCPTransaction.class);
 
     private static final int REQUEST_WRAPPER_TAG = 0x201;
     private static final int RESPONSE_WRAPPER_TAG = 0x202;
@@ -84,8 +80,6 @@ class KSITCPTransaction {
 
 
         transaction.response = tlv;
-
-        logger.debug("KSITCPTransaction.fromResponse "+transaction.getCorrelationId());
         return transaction;
     }
 
@@ -165,14 +159,11 @@ class KSITCPTransaction {
     void responseReceived(TLVElement response) {
         this.response = response;
         availableResponse.offer(response);
-        logger.debug("Response offer to availableResponse");
         ActiveTransactionsHolder.remove(this);
     }
 
     TLVElement waitResponse(long timeoutMs) throws InterruptedException {
-        TLVElement poll = availableResponse.poll(timeoutMs, TimeUnit.MILLISECONDS);
-        logger.debug("KSITCPTransaction.waitResponse "+poll==null? "null": "poll");
-        return poll;
+        return availableResponse.poll(timeoutMs, TimeUnit.MILLISECONDS);
     }
 
     WriteFuture send(IoSession session) {

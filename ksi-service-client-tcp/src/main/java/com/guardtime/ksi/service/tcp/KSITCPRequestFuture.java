@@ -22,8 +22,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.tlv.TLVElement;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,8 +31,6 @@ import java.util.concurrent.TimeUnit;
  * Class that hold the initiated TCP request and from which the response can be asked for.
  */
 class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement> {
-
-    private static final Logger logger = LoggerFactory.getLogger(KSITCPRequestFuture.class);
 
     private KSITCPTransaction transaction;
     private final long timeoutMs;
@@ -52,8 +48,13 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
     private void startTransaction(IoSession tcpSession, InputStream request) throws IOException, KSIException {
         this.transaction = KSITCPTransaction.fromRequest(request);
         transactionStartedMillis = System.currentTimeMillis();
-        this.writeFuture = transaction.send(tcpSession);
         ActiveTransactionsHolder.put(transaction);
+        try {
+            this.writeFuture = transaction.send(tcpSession);
+        } catch (Exception e) {
+            ActiveTransactionsHolder.remove(transaction);
+            throw e;
+        }
     }
 
     /**
@@ -86,7 +87,6 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
             if (response != null) {
                 return response;
             } else {
-                logger.debug("Message {} not received", transaction);
                 throw saveException(new TCPTimeoutException("Response was not received in " + this.timeoutMs + " ms"));
             }
         } catch (InterruptedException e) {

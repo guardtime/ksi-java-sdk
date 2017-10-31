@@ -20,24 +20,22 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
+import static com.guardtime.ksi.Resources.SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRECATED_ALGORITHM;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_SHA1_AGGREGATION_LINK_OK;
 
-public class InputHashAlgorithmVerificationRuleTest extends AbstractRuleTest {
+public class AggregationHashChainAlgorithmDeprecatedRuleTest extends AbstractRuleTest {
 
-    private Rule rule = new InputHashAlgorithmVerificationRule();
+    private Rule rule = new AggregationHashChainAlgorithmDeprecatedRule();
 
     @Test
-    public void testSignatureVerificationWithoutDocumentHashReturnsOkStatus_Ok() throws Exception {
+    public void testSignatureWithCorrectAggregationChainsAlgorithms_Ok() throws Exception {
         RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14)));
         Assert.assertNotNull(result);
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
@@ -45,23 +43,18 @@ public class InputHashAlgorithmVerificationRuleTest extends AbstractRuleTest {
     }
 
     @Test
-    public void testSignatureVerificationWithValidDocumentHashReturnsOkStatus_Ok() throws Exception {;
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
-        Assert.assertEquals(rule.verify(build(signature, signature.getInputHash())).getResultCode(), VerificationResultCode.OK);
+    public void testSignatureWithValidSha1AggregationChainsAlgorithms_Ok() throws Exception {
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_SHA1_AGGREGATION_LINK_OK)));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
+        Assert.assertNull(result.getErrorCode());
     }
 
     @Test
-    public void testSignatureVerificationWithInvalidDocumentHashAlgorithm() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_2017_03_14), new DataHash(HashAlgorithm.SHA2_512, new byte[64])));
+    public void testSignatureWithDeprecatedSha1AggregationChainsAlgorithms() throws Exception {
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRECATED_ALGORITHM)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_04);
-    }
-
-    @Test
-    public void testSignatureVerificationWithInvalidRfc3161OutputHashReturnsFailStatus_Ok() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(RFC3161_SIGNATURE), new DataHash(HashAlgorithm.SHA2_512, new byte[64])));
-        Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_04);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_15);
     }
 
 }

@@ -27,9 +27,9 @@ import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
-public class CalendarHashChainAggregationAlgorithmRuleTest extends AbstractRuleTest {
+public class CalendarHashChainAggregationAlgorithmObsoleteRuleTest extends AbstractRuleTest {
 
-    private Rule rule = new CalendarHashChainAggregationAlgorithmRule();
+    private Rule rule = new CalendarHashChainAggregationAlgorithmObsoleteRule();
 
     @Test
     public void testSignatureWithCorrectCalendarChainsAlgorithms_Ok() throws Exception {

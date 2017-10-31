@@ -125,8 +125,14 @@ public enum HashAlgorithm {
         this.length = length;
         this.status = status;
         this.alternatives = alternatives;
-        this.deprecatedSince = deprecatedSince;
-        this.obsoleteSince = obsoleteSince;
+        if (obsoleteSince != null
+                && (deprecatedSince == null || deprecatedSince != null && obsoleteSince.before(deprecatedSince))) {
+            this.deprecatedSince = obsoleteSince;
+            this.obsoleteSince = obsoleteSince;
+        } else {
+            this.deprecatedSince = deprecatedSince;
+            this.obsoleteSince = obsoleteSince;
+        }
     }
 
     /**

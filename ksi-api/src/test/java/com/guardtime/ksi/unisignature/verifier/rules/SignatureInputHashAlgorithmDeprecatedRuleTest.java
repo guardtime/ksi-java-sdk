@@ -33,9 +33,9 @@ import static com.guardtime.ksi.Resources.SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRE
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_SHA1_INPUT_HASH_OK;
 
-public class InputHashAlgorithmDeprecatedRuleTest extends AbstractRuleTest {
+public class SignatureInputHashAlgorithmDeprecatedRuleTest extends AbstractRuleTest {
 
-    private Rule rule = new InputHashAlgorithmDeprecatedRule();
+    private Rule rule = new SignatureInputHashAlgorithmDeprecatedRule();
 
     @Test
     public void testSignatureVerificationWithNotDeprecatedAlgorithm_Ok() throws Exception {

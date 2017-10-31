@@ -20,38 +20,34 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-
 /**
- * Verifies that calendar hash chain aggregation(derived from the right link) hash algorithms were
- * obsolete at the publication time. If calendar hash chain is missing then status {@link
- * VerificationResultCode#OK} will be returned.
+ * Verifies if the aggregation hash chain uses a hash algorithm that was deprecated at the aggregation time.
  */
-public class CalendarHashChainAggregationAlgorithmRule extends BaseRule {
+public class AggregationHashChainAlgorithmDeprecatedRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(CalendarHashChainAggregationAlgorithmRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(AggregationHashChainAlgorithmDeprecatedRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
-        if (context.getCalendarHashChain() == null) {
-            return VerificationResultCode.OK;
-        }
-
-        Date publicationTime = context.getSignature().getPublicationTime();
-        if (context.getCalendarHashChain().getInputHash().getAlgorithm().isObsolete(publicationTime)) {
-            logger.info("Calendar hash chain aggregation hash algorithms is obsolete at {}", publicationTime);
-            return VerificationResultCode.FAIL;
+        AggregationHashChain[] chains = context.getAggregationHashChains();
+        for (AggregationHashChain chain : chains) {
+            if (chain.getAggregationAlgorithm().isDeprecated(chain.getAggregationTime())) {
+                logger.info("Aggregation hash chain aggregation algorithm {} is deprecated at {}",
+                        chain.getAggregationAlgorithm().getName(), chain.getAggregationTime());
+                return VerificationResultCode.FAIL;
+            }
         }
         return VerificationResultCode.OK;
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.INT_16;
+        return VerificationErrorCode.INT_15;
     }
 
 }

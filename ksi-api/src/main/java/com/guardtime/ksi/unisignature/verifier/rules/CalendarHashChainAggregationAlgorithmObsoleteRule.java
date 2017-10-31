@@ -20,7 +20,6 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
@@ -30,30 +29,29 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Verifies that the hash algorithm of the input hash of the signature (input hash of the first aggregation hash chain or
- * if present the input hash of the RFC-3161 record) is deprecated at the aggregation time.
+ * Verifies that calendar hash chain aggregation(derived from the right link) hash algorithms were
+ * obsolete at the publication time. If calendar hash chain is missing then status {@link
+ * VerificationResultCode#OK} will be returned.
  */
-public class InputHashAlgorithmDeprecatedRule extends BaseRule {
+public class CalendarHashChainAggregationAlgorithmObsoleteRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(InputHashAlgorithmDeprecatedRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(CalendarHashChainAggregationAlgorithmObsoleteRule.class);
 
-    VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
-        Date aggregationTime = context.getSignature().getAggregationTime();
-        HashAlgorithm algorithm = context.getSignature().getInputHash().getAlgorithm();
-        if (algorithm.isDeprecated(aggregationTime)) {
-            if (context.getRfc3161Record() != null) {
-                logger.info("RFC 3161 record input hash algorithm {} is deprecated.",
-                        context.getRfc3161Record().getInputHash().getAlgorithm().getName());
-            } else {
-                logger.info("Input hash algorithm {} of the first aggregation hash chain is deprecated.",
-                        algorithm.getName());
-            }
+    public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
+        if (context.getCalendarHashChain() == null) {
+            return VerificationResultCode.OK;
+        }
+
+        Date publicationTime = context.getSignature().getPublicationTime();
+        if (context.getCalendarHashChain().getInputHash().getAlgorithm().isObsolete(publicationTime)) {
+            logger.info("Calendar hash chain aggregation hash algorithm is obsolete at {}", publicationTime);
             return VerificationResultCode.FAIL;
         }
         return VerificationResultCode.OK;
     }
 
-    VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.INT_13;
+    public VerificationErrorCode getErrorCode() {
+        return VerificationErrorCode.INT_16;
     }
+
 }

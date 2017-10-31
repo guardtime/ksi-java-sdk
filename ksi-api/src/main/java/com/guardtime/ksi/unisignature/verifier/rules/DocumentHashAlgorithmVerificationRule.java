@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  * Verifies that document hash provided and it's hash algorithm match with the hash algorithm of
  * the input hash of the first aggregation chain or RFC-3161 record if present.
  */
-public class InputHashAlgorithmVerificationRule extends BaseRule {
+public class DocumentHashAlgorithmVerificationRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(InputHashAlgorithmVerificationRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(DocumentHashAlgorithmVerificationRule.class);
 
     VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         if(context.getDocumentHash() == null){

@@ -43,8 +43,8 @@ class TransactionDecoder extends CumulativeProtocolDecoder {
         while (remaining >= tlvLength) {
             int limit = responseBuffer.position() + tlvLength;
             responseBuffer.limit(limit);
-            KSITCPSigningTransaction ksitcpSigningTransaction = KSITCPSigningTransaction.fromResponse(responseBuffer.slice());
-            decoder.write(ksitcpSigningTransaction);
+            KSITCPTransaction transaction = KSITCPTransaction.fromResponse(responseBuffer.slice());
+            decoder.write(transaction);
             responseBuffer.limit(initialLimit);
             responseBuffer.position(limit);
             if (remaining == tlvLength) {

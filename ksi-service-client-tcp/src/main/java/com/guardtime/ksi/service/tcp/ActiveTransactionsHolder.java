@@ -25,30 +25,29 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * This class holds a map of active KSI TCP signing transactions by ID. I helps to keep track which responses go together with which requests
+ * This class holds a map of active KSI TCP transactions by ID. I helps to keep track which responses go together with which requests
  * Each request is added to this holder, and each response passes through it to check that there is a corresponding request waiting.
  */
 class ActiveTransactionsHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(ActiveTransactionsHolder.class);
 
-    private static final ConcurrentMap<Long, KSITCPSigningTransaction> ACTIVE_TRANSACTIONS = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<Long, KSITCPTransaction> ACTIVE_TRANSACTIONS = new ConcurrentHashMap<>();
 
-    synchronized static void put(KSITCPSigningTransaction transaction) {
+    synchronized static void put(KSITCPTransaction transaction) {
         ACTIVE_TRANSACTIONS.put(transaction.getCorrelationId(), transaction);
     }
 
-    synchronized static void remove(KSITCPSigningTransaction transaction) {
+    synchronized static void remove(KSITCPTransaction transaction) {
         ACTIVE_TRANSACTIONS.remove(transaction.getCorrelationId());
     }
 
-    synchronized static void responseReceived(KSITCPSigningTransaction transaction) {
+    synchronized static void responseReceived(KSITCPTransaction transaction) {
         long correlationId = transaction.getCorrelationId();
         if (ACTIVE_TRANSACTIONS.get(correlationId) != null) {
             ACTIVE_TRANSACTIONS.get(correlationId).responseReceived(transaction.getResponse());
         } else {
-            logger.info("Received TCP signing response with id {}, but did not find corresponding request. It might have timed out.", correlationId);
+            logger.info("Received TCP response with id {}, but did not find corresponding request. It might have timed out.", correlationId);
         }
-
     }
 }

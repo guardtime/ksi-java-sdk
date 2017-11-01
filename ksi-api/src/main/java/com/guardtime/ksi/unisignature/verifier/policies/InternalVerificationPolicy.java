@@ -32,14 +32,14 @@ import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAggregatio
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAggregationTimeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainInputHashVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainRegistrationTimeRule;
-import com.guardtime.ksi.unisignature.verifier.rules.DocumentHashVerificationRule;
-import com.guardtime.ksi.unisignature.verifier.rules.SignatureInputHashAlgorithmDeprecatedRule;
 import com.guardtime.ksi.unisignature.verifier.rules.DocumentHashAlgorithmVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.DocumentHashVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.InputHashLevelVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161InternalHashAlgorithmsDeprecatedRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161RecordIndexRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161RecordTimeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
+import com.guardtime.ksi.unisignature.verifier.rules.SignatureInputHashAlgorithmDeprecatedRule;
 import com.guardtime.ksi.unisignature.verifier.rules.SignaturePublicationRecordPublicationHashRule;
 import com.guardtime.ksi.unisignature.verifier.rules.SignaturePublicationRecordPublicationTimeRule;
 
@@ -65,17 +65,16 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new SignatureInputHashAlgorithmDeprecatedRule());
 
         rules.add(new Rfc3161InternalHashAlgorithmsDeprecatedRule());
-        rules.add(new Rfc3161RecordIndexRule());
         rules.add(new AggregationHashChainIndexSuccessorRule());
+        rules.add(new AggregationChainInputHashVerificationRule());
+        rules.add(new Rfc3161RecordTimeRule());
+        rules.add(new Rfc3161RecordIndexRule());
 
         rules.add(new AggregationHashChainLinkMetadataRule());
         rules.add(new AggregationHashChainAlgorithmDeprecatedRule());
 
-        rules.add(new AggregationChainInputHashVerificationRule());
         rules.add(new AggregationHashChainConsistencyRule());
-        rules.add(new Rfc3161RecordTimeRule());
         rules.add(new AggregationHashChainTimeConsistencyRule());
-
         rules.add(new AggregationHashChainIndexConsistencyRule());
 
         // verify calendar hash chain (if present)
@@ -85,12 +84,12 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new CalendarHashChainAggregationAlgorithmObsoleteRule());
 
         // verify publication record (if present)
-        rules.add(new SignaturePublicationRecordPublicationHashRule());
         rules.add(new SignaturePublicationRecordPublicationTimeRule());
+        rules.add(new SignaturePublicationRecordPublicationHashRule());
 
         // verify calendar authentication record (if present)
-        rules.add(new CalendarAuthenticationRecordAggregationHashRule());
         rules.add(new CalendarAuthenticationRecordAggregationTimeRule());
+        rules.add(new CalendarAuthenticationRecordAggregationHashRule());
 
 
     }

@@ -20,6 +20,7 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.unisignature.CalendarHashChainLink;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
@@ -43,9 +44,12 @@ public class CalendarHashChainAggregationAlgorithmObsoleteRule extends BaseRule 
         }
 
         Date publicationTime = context.getSignature().getPublicationTime();
-        if (context.getCalendarHashChain().getInputHash().getAlgorithm().isObsolete(publicationTime)) {
-            logger.info("Calendar hash chain aggregation hash algorithm is obsolete at {}", publicationTime);
-            return VerificationResultCode.FAIL;
+        for (CalendarHashChainLink link : context.getCalendarHashChain().getChainLinks()) {
+            if (link.isRightLink() && link.getDataHash().getAlgorithm().isObsolete(publicationTime)) {
+                logger.info("Calendar hash chain contains obsolete aggregation algorithm {} at publication time {}",
+                        link.getDataHash().getAlgorithm(), publicationTime);
+                return VerificationResultCode.FAIL;
+            }
         }
         return VerificationResultCode.OK;
     }

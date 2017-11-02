@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -42,8 +42,7 @@ public class PublicationsFileBasedVerificationPolicy extends InternalVerificatio
 
         Rule signaturePublicationPresentInPubFileRule = new CompositeRule(false,
                 new SignaturePublicationRecordExistenceRule(),
-                new PublicationsFileContainsSignaturePublicationRule(),
-                new CalendarHashChainAlgorithmDeprecatedRule());
+                new PublicationsFileContainsSignaturePublicationRule());
 
         Rule useExtendingRule = new CompositeRule(false,
                 new PublicationsFileContainsPublicationRule(),
@@ -54,9 +53,17 @@ public class PublicationsFileBasedVerificationPolicy extends InternalVerificatio
                 new PublicationsFileExtendedSignatureInputHashRule()
         );
 
-        addRule(new CompositeRule(true,
+        Rule checkCalendar = new CompositeRule(false,
                 signaturePublicationPresentInPubFileRule,
-                useExtendingRule));
+                new CalendarHashChainAlgorithmDeprecatedRule());
+
+        Rule doExtending = new CompositeRule(true,
+                signaturePublicationPresentInPubFileRule,
+                useExtendingRule);
+
+        addRule(new CompositeRule(true,
+                checkCalendar,
+                doExtending));
     }
 
     public String getName() {

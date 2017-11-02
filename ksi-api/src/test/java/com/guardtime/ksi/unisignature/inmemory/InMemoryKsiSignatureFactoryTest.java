@@ -73,7 +73,7 @@ public class InMemoryKsiSignatureFactoryTest {
         signatureFactory.createSignature(TestUtil.loadTlv(SIGNATURE_2017_03_14), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
     }
 
-    @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: INT_09.*")
+    @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: INT_07.*")
     public void testCreateSignatureFromInvalidComponents_ThrowsInvalidSignatureContentException() throws Exception {
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
         SignaturePublicationRecord publicationRecord = signatureComponentFactory.createPublicationRecord(new PublicationData(PUBLICATION_STRING), null, null);

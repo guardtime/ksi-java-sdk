@@ -34,30 +34,31 @@ import java.util.List;
 public interface KSISigningService extends Closeable {
 
     /**
-     * Used to create new signature.
+     * Creates a new KSI signature.
      *
-     * @param dataHash - instance of {@link DataHash} to be signed.
-     * @param level - level of the dataHash to be signed in the overall tree.
+     * @param dataHash instance of {@link DataHash} to be signed.
+     * @param level the dataHash's level in the local aggregation tree.
      *
-     * @return instance of {@link AggregationResponseFuture} containing Aggregation response data.
+     * @return Instance of {@link AggregationResponseFuture} containing Aggregation response data.
      * @throws KSIException
      */
     Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException;
 
     /**
-     * If the implementation combines multiple clients then this method can be used to get those subclients. If the implementation
-     * is a client that directly connects to a single gateway then it will return an empty list.
+     * Gets all the subservices in case of the implementation that combines multiple KSISigningServices. If the implementation
+     * is a KSISigningService connecting directly to a single gateway, an empty list is returned.
      */
     List<KSISigningService> getSubSigningServices();
 
     /**
-     * Registers a new {@link ConfigurationListener <AggregatorConfiguration>} for the client. Each time client's configuration is
+     * Registers a new {@link ConfigurationListener}&lt;{@link AggregatorConfiguration}&gt;
+     * for the KSISigningService. Each time KSISigningService's configuration is
      * updated, this listener is called.
      */
     void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener);
 
     /**
-     * Makes the client ask for configuration update. On completion of the update config registered {@link ConfigurationListener}s
+     * Makes the KSISigningService ask for configuration update. On completion of the update, the registered {@link ConfigurationListener}s
      * are called.
      *
      * @return Future of the {@link AggregatorConfiguration}

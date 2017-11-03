@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +59,8 @@ import static java.util.Arrays.asList;
  * A signer class to create a list of unisigantures. Methods {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)},
  * {@link KsiBlockSigner#add(DataHash)} and/or {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)} can be used
  * to add new input hash to the block signer. Method {@link KsiBlockSigner#sign()} must be called to get the final
- * signatures. <p/> Current implementation returns one signature per input hash. <p/> Note that this class can not be
+ * signatures. The signatures are returned the same order as the data hashes were added to block signer. <p/>
+ * Current implementation returns one signature per input hash. <p/> Note that this class can not be
  * used multiple times. </p> The following sample shows how to use {@link KsiBlockSigner} class:
  * <p>
  * <pre>
@@ -89,7 +90,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     private static final String DEFAULT_CLIENT_ID_LOCAL_AGGREGATION = "local-aggregation";
     protected static final int MAXIMUM_LEVEL = 255;
 
-    private final Map<LeafKey, AggregationChainLink> chains = new HashMap<>();
+    private final Map<LeafKey, AggregationChainLink> chains = new LinkedHashMap<>();
     private final HashTreeBuilder treeBuilder;
 
     private final KSISigningService signingService;

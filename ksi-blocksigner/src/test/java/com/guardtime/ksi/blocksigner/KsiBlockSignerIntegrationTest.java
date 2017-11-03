@@ -35,6 +35,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -215,6 +217,36 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         signAndVerify(blockSigner, 3);
     }
 
+    @Test
+    public void testBlockSignerSignatureOutputOrder() throws Exception {
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        List<Input> input = Arrays.asList(new Input(DATA_HASH, 3L, metadata), new Input(DATA_HASH, 0L, metadata3),
+                new Input(DATA_HASH_2, 0L, metadata2), new Input(dataHashSha386, 3L, metadata),
+                new Input(DATA_HASH, 0L, metadata4), new Input(DATA_HASH, 0L, metadata), new Input(DATA_HASH, 2L, metadata3),
+                new Input(DATA_HASH_2, 1L, metadata), new Input(DATA_HASH_2, 1L, metadata2),
+                new Input(dataHashSha386, 0L, metadata4), new Input(dataHashSha386, 1L, metadata3));
+        Collections.shuffle(input);
+
+        for (Input i : input) {
+            builder.add(i.getDataHash(), i.getLevel(), i.getMetadata());
+        }
+
+        List<KSISignature> signatures = builder.sign();
+        assertNotNull(signatures);
+        assertFalse(signatures.isEmpty());
+        assertEquals(signatures.size(), input.size());
+        int index = 0;
+        for (KSISignature signature : signatures) {
+            assertTrue(ksi.verify(signature, new KeyBasedVerificationPolicy()).isOk());
+            assertEquals(signature.getInputHash(), input.get(index).getDataHash());
+            assertEquals(signature.getAggregationHashChains()[0].getChainLinks().get(0).getLevelCorrection(),
+                    input.get(index).getLevel());
+            assertEquals(signature.getAggregationHashChainIdentity()[signature.getAggregationHashChainIdentity().length-1].getDecodedClientId(),
+                    input.get(index).getMetadata().getClientId());
+            index++;
+        }
+    }
+
     private void signAndVerify(KsiBlockSigner signer, int size) throws KSIException {
         List<KSISignature> signatures = signer.sign();
         assertNotNull(signatures);
@@ -222,6 +254,31 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         assertEquals(signatures.size(), size);
         for (KSISignature signature : signatures) {
             assertTrue(ksi.verify(signature, new KeyBasedVerificationPolicy()).isOk());
+        }
+    }
+
+    private static class Input {
+        private DataHash dataHash;
+        private Long level;
+        private IdentityMetadata metadata;
+
+        public Input(DataHash dataHash, Long level, IdentityMetadata metadata) {
+            super();
+            this.dataHash = dataHash;
+            this.level = level;
+            this.metadata = metadata;
+        }
+
+        public DataHash getDataHash() {
+            return dataHash;
+        }
+
+        public Long getLevel() {
+            return level;
+        }
+
+        public IdentityMetadata getMetadata() {
+            return metadata;
         }
     }
 

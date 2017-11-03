@@ -43,8 +43,8 @@ import java.io.IOException;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * This class provides functionality to obtain {@link Signer} object(s). This class offers multiple methods to configure
- * {@link Signer} object. It is mandatory to set the signing client.
+ * Obtaining and configuring the {@link Signer} object(s). This class offers multiple methods to configure
+ * {@link Signer} object. It is mandatory to set the signing service client.
  */
 public final class SignerBuilder {
     private HashAlgorithm defaultHashAlgorithm = HashAlgorithm.SHA2_256;
@@ -53,7 +53,7 @@ public final class SignerBuilder {
 
     /**
      * Sets the default signing hash algorithm to be used to create new KSI signatures. When using
-     * {@link KSI#sign(DataHash)} or {@link KSI#asyncSign(DataHash)}method then this algorithm is
+     * {@link KSI#sign(DataHash)} or {@link KSI#asyncSign(DataHash)} method, this algorithm is
      * ignored. By default {@link HashAlgorithm#SHA2_256} algorithm is used.
      */
     public SignerBuilder setDefaultSigningHashAlgorithm(HashAlgorithm defaultHashAlgorithm) {
@@ -70,14 +70,14 @@ public final class SignerBuilder {
     }
 
     /**
-     * This method can be used to set a default verification policy. Verification will be ran before signature is returned to the user.
+     * Sets the default verification policy. Verification will be ran before signature is returned to the user.
      * If signature verification fails,
      * {@link com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException} exception is thrown. If needed,
      * user can access the invalid signature and verification result using the methods
      * {@link InvalidSignatureContentException#getSignature()} and
      * {@link InvalidSignatureContentException#getVerificationResult()}.
      * <p>
-     * By default policy returned by method {@link ContextAwarePolicyAdapter#createInternalPolicy()} is used.
+     * By default the policy returned by method {@link ContextAwarePolicyAdapter#createInternalPolicy()} is used.
      */
     public SignerBuilder setDefaultVerificationPolicy(ContextAwarePolicy policy) {
         this.policy = policy;
@@ -85,7 +85,7 @@ public final class SignerBuilder {
     }
 
     /**
-     * Builds and returns the {@link Signer} instance. If signing client isn't configured {@link NullPointerException} is thrown.
+     * Builds and returns the {@link Signer} instance. If signing client isn't configured, {@link NullPointerException} is thrown.
      */
     public Signer build() {
         Util.notNull(signingService, "KSI signing service");

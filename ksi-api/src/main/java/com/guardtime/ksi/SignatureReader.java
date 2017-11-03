@@ -38,24 +38,24 @@ import java.io.InputStream;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * This class is implementation of the {@link Reader} interface. This class can be initialized with user provided
- * verification policy. By default internal verification policy is used.
+ * Implementation of the {@link Reader} interface. It can be initialized with user provided
+ * verification policy, by default internal verification policy is used.
  */
 public class SignatureReader implements Reader {
 
     private final KSISignatureFactory signatureFactory;
 
     /**
-     * Allocates a SignatureReader object and initializes it so {@link InternalVerificationPolicy} is used for
-     * {@link KSISignature} consistency verification.
+     * Allocates a {@link #SignatureReader()} object and initializes it so that {@link InternalVerificationPolicy}
+     * is used for {@link KSISignature} consistency verification.
      */
     public SignatureReader() {
         this(ContextAwarePolicyAdapter.createInternalPolicy());
     }
 
     /**
-     * Allocates a SignatureReader object and initializes it so user provided {@link ContextAwarePolicy} is used for
-     * {@link KSISignature} consistency verification.
+     * Allocates a {@link #SignatureReader()} object and initializes it so that user provided
+     * {@link ContextAwarePolicy} is used for {@link KSISignature} consistency verification.
      */
     public SignatureReader(ContextAwarePolicy policy) {
         signatureFactory = new InMemoryKsiSignatureFactory(policy, new InMemoryKsiSignatureComponentFactory());

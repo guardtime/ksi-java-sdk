@@ -250,11 +250,6 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         return levelCorrection;
     }
 
-    public void addLevelCorrection(long level) throws TLVParserException {
-        this.levelCorrection = level;
-        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_LEVEL_CORRECTION, level));
-    }
-
     private void addLevelCorrectionTlvElement() throws TLVParserException {
         this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_LEVEL_CORRECTION, this.levelCorrection));
     }

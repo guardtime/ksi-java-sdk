@@ -64,6 +64,11 @@ public interface KSISignatureComponentFactory {
     AggregationChainLink createLeftAggregationChainLink(LinkMetadata identity, long level) throws KSIException;
 
     /**
+     * Creates a new right aggregation hash chain link with given metadata and level.
+     */
+    AggregationChainLink createRightAggregationChainLink(LinkMetadata identity, long level) throws KSIException;
+
+    /**
      * Creates calendar authentication record from input TLV element.
      *
      * @param element instance of {@link TLVElement}. not null

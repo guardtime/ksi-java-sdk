@@ -55,6 +55,4 @@ public interface AggregationChainLink {
      * @return will return link level correction or 0 if level correction isn't present.
      */
     Long getLevelCorrection();
-
-    void addLevelCorrection(long level) throws KSIException;
 }

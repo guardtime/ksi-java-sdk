@@ -160,7 +160,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         if (level > 0) {
             AggregationHashChain firstChain = signature.getAggregationHashChains()[0];
             LinkedList<AggregationChainLink> links = new LinkedList<>();
-            AggregationChainLink link = addLevelCorrectionToLink(firstChain.getChainLinks().get(0), level);
+            AggregationChainLink link = createLinkWithLevelCorrection(firstChain.getChainLinks().get(0), level);
             links.add(link);
 
             LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
@@ -198,6 +198,8 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         return signature;
     }
 
+
+
     private PublicationsFile getPublicationsFile(PublicationsHandler handler) throws KSIException {
         if (handler == null) {
             return null;
@@ -219,9 +221,25 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         }
     }
 
-    private AggregationChainLink addLevelCorrectionToLink(AggregationChainLink link, long levelCorrection) throws KSIException {
-        levelCorrection = link.getLevelCorrection() + levelCorrection;
-        link.addLevelCorrection(levelCorrection);
+
+    private AggregationChainLink createLinkWithLevelCorrection(AggregationChainLink link, long level) throws KSIException {
+        long levelCorrection = link.getLevelCorrection() + level;
+        if (link.isLeft()) {
+            if (link.getMetadata() != null) {
+                return signatureComponentFactory.createLeftAggregationChainLink(link.getMetadata(), levelCorrection);
+            } else if (link.getSiblingData() != null) {
+                return signatureComponentFactory.createLeftAggregationChainLink(new DataHash(link.getSiblingData()),
+                        levelCorrection);
+            }
+        } else {
+            if (link.getMetadata() != null) {
+                return signatureComponentFactory.createRightAggregationChainLink(link.getMetadata(), levelCorrection);
+            } else if (link.getSiblingData() != null) {
+                return signatureComponentFactory.createRightAggregationChainLink(new DataHash(link.getSiblingData()),
+                        levelCorrection);
+            }
+        }
         return link;
     }
+
 }

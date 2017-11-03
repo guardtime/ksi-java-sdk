@@ -65,10 +65,10 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new SignatureInputHashAlgorithmDeprecatedRule());
 
         rules.add(new Rfc3161InternalHashAlgorithmsDeprecatedRule());
-        rules.add(new AggregationHashChainIndexSuccessorRule());
         rules.add(new AggregationChainInputHashVerificationRule());
         rules.add(new Rfc3161RecordTimeRule());
         rules.add(new Rfc3161RecordIndexRule());
+        rules.add(new AggregationHashChainIndexSuccessorRule());
 
         rules.add(new AggregationHashChainLinkMetadataRule());
         rules.add(new AggregationHashChainAlgorithmDeprecatedRule());

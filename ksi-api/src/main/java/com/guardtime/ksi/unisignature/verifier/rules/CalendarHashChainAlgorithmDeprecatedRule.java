@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Verifies if any of the calendar hash chain aggregation hash algorithms (derived from the right link)
+ * Verifies if any of the calendar hash chain aggregation hash algorithms (derived from the left link)
  * were deprecated at the publication time.
  */
 public class CalendarHashChainAlgorithmDeprecatedRule extends BaseRule {
@@ -47,11 +47,9 @@ public class CalendarHashChainAlgorithmDeprecatedRule extends BaseRule {
 
     private boolean isAlgorithmsDeprecated(CalendarHashChain calendarHashChain) throws InvalidCalendarHashChainException {
         for (CalendarHashChainLink link : calendarHashChain.getChainLinks()) {
-            if (!link.isRightLink()) {
-                continue;
-            }
-            if (link.getDataHash().getAlgorithm().isDeprecated(calendarHashChain.getPublicationTime())) {
-                logger.info("Calendar hash chain aggregation hash algorithm {} is deprecated.", link.getDataHash().getAlgorithm().getName());
+            if (!link.isRightLink() && link.getDataHash().getAlgorithm().isDeprecated(calendarHashChain.getPublicationTime())) {
+                logger.info("Calendar hash chain aggregation hash algorithm {} is deprecated.",
+                        link.getDataHash().getAlgorithm().getName());
                 return true;
             }
         }

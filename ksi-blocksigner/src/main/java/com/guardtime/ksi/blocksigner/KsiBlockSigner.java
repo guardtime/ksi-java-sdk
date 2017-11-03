@@ -175,7 +175,6 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm, maxTreeHeight);
     }
 
-
     /**
      * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
      */

@@ -53,17 +53,17 @@ public class PublicationsFileBasedVerificationPolicy extends InternalVerificatio
                 new PublicationsFileExtendedSignatureInputHashRule()
         );
 
-        Rule checkCalendar = new CompositeRule(false,
+        Rule verifySignatureAgainsPubFileRule = new CompositeRule(false,
                 signaturePublicationPresentInPubFileRule,
                 new CalendarHashChainAlgorithmDeprecatedRule());
 
-        Rule doExtending = new CompositeRule(true,
+        Rule extendSigantureForVerificationRule = new CompositeRule(true,
                 signaturePublicationPresentInPubFileRule,
                 useExtendingRule);
 
         addRule(new CompositeRule(true,
-                checkCalendar,
-                doExtending));
+                verifySignatureAgainsPubFileRule,
+                extendSigantureForVerificationRule));
     }
 
     public String getName() {

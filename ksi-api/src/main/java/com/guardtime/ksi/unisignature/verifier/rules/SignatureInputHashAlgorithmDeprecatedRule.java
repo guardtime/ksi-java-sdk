@@ -41,13 +41,7 @@ public class SignatureInputHashAlgorithmDeprecatedRule extends BaseRule {
         Date aggregationTime = context.getSignature().getAggregationTime();
         HashAlgorithm algorithm = context.getSignature().getInputHash().getAlgorithm();
         if (algorithm.isDeprecated(aggregationTime)) {
-            if (context.getRfc3161Record() != null) {
-                logger.info("RFC 3161 record input hash algorithm {} is deprecated.",
-                        context.getRfc3161Record().getInputHash().getAlgorithm().getName());
-            } else {
-                logger.info("Input hash algorithm {} of the first aggregation hash chain is deprecated.",
-                        algorithm.getName());
-            }
+            logger.info("Signature input hash algorithm {} is deprecated.", algorithm.getName());
             return VerificationResultCode.FAIL;
         }
         return VerificationResultCode.OK;

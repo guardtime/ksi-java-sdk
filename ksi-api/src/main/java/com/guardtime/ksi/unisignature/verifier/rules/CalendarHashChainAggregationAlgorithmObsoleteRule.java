@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Verifies that calendar hash chain aggregation(derived from the right link) hash algorithms were
+ * Verifies that calendar hash chain aggregation(derived from the left link) hash algorithms were
  * obsolete at the publication time. If calendar hash chain is missing then status {@link
  * VerificationResultCode#OK} will be returned.
  */
@@ -45,7 +45,7 @@ public class CalendarHashChainAggregationAlgorithmObsoleteRule extends BaseRule 
 
         Date publicationTime = context.getSignature().getPublicationTime();
         for (CalendarHashChainLink link : context.getCalendarHashChain().getChainLinks()) {
-            if (link.isRightLink() && link.getDataHash().getAlgorithm().isObsolete(publicationTime)) {
+            if (!link.isRightLink() && link.getDataHash().getAlgorithm().isObsolete(publicationTime)) {
                 logger.info("Calendar hash chain contains obsolete aggregation algorithm {} at publication time {}",
                         link.getDataHash().getAlgorithm(), publicationTime);
                 return VerificationResultCode.FAIL;

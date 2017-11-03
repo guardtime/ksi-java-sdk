@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Verifies if any of the response calendar hash chain aggregation hash algorithms (derived from the right link)
+ * Verifies if any of the response calendar hash chain aggregation hash algorithms (derived from the left link)
  * were deprecated at the publication time.
  */
 public class CalendarHashChainAlgorithmDeprecatedExtenderResponseRule extends BaseRule {
@@ -57,11 +57,9 @@ public class CalendarHashChainAlgorithmDeprecatedExtenderResponseRule extends Ba
     private boolean isAlgorithmsDeprecated(CalendarHashChain calendarHashChain, Date publicationTime)
             throws InvalidCalendarHashChainException {
         for (CalendarHashChainLink link : calendarHashChain.getChainLinks()) {
-            if (!link.isRightLink()) {
-                continue;
-            }
-            if (link.getDataHash().getAlgorithm().isDeprecated(publicationTime)) {
-                logger.info("Calendar hash chain aggregation hash algorithm {} is deprecated.", link.getDataHash().getAlgorithm().getName());
+            if (!link.isRightLink() && link.getDataHash().getAlgorithm().isDeprecated(publicationTime)) {
+                logger.info("Calendar hash chain aggregation hash algorithm {} is deprecated.",
+                        link.getDataHash().getAlgorithm().getName());
                 return true;
             }
         }

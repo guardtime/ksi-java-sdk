@@ -71,12 +71,20 @@ public class InMemoryKsiSignatureComponentFactory implements KSISignatureCompone
         return new LeftAggregationChainLink(siblingHash, levelCorrection);
     }
 
+    public AggregationChainLink createLeftAggregationChainLink(byte[] legacyId, long levelCorrection) throws KSIException {
+        return new LeftAggregationChainLink(legacyId, levelCorrection);
+    }
+
     public AggregationChainLink createLeftAggregationChainLink(LinkMetadata metadata, long levelCorrection) throws KSIException {
         return new LeftAggregationChainLink(metadata, levelCorrection);
     }
 
     public AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
         return new RightAggregationChainLink(siblingHash, levelCorrection);
+    }
+
+    public AggregationChainLink createRightAggregationChainLink(byte[] legacyId, long levelCorrection) throws KSIException {
+        return new RightAggregationChainLink(legacyId, levelCorrection);
     }
 
     public AggregationChainLink createRightAggregationChainLink(LinkMetadata metadata, long levelCorrection) throws KSIException {

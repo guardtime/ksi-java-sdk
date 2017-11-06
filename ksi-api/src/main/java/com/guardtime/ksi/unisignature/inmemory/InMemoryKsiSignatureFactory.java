@@ -227,19 +227,24 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         if (link.isLeft()) {
             if (link.getMetadata() != null) {
                 return signatureComponentFactory.createLeftAggregationChainLink(link.getMetadata(), levelCorrection);
-            } else if (link.getSiblingData() != null) {
+            } else if (link.getSiblingData() != null && link.getLinkIdentity() == null) {
                 return signatureComponentFactory.createLeftAggregationChainLink(new DataHash(link.getSiblingData()),
+                        levelCorrection);
+            } else {
+                return signatureComponentFactory.createLeftAggregationChainLink(link.getSiblingData(),
                         levelCorrection);
             }
         } else {
             if (link.getMetadata() != null) {
                 return signatureComponentFactory.createRightAggregationChainLink(link.getMetadata(), levelCorrection);
-            } else if (link.getSiblingData() != null) {
+            } else if (link.getSiblingData() != null && link.getLinkIdentity() == null) {
                 return signatureComponentFactory.createRightAggregationChainLink(new DataHash(link.getSiblingData()),
+                        levelCorrection);
+            } else {
+                return signatureComponentFactory.createRightAggregationChainLink(link.getSiblingData(),
                         levelCorrection);
             }
         }
-        return link;
     }
 
 }

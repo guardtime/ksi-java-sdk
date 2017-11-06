@@ -43,6 +43,10 @@ class LeftAggregationChainLink extends InMemoryAggregationChainLink {
         super(metadata, levelCorrection);
     }
 
+    LeftAggregationChainLink(byte[] legacyId, long levelCorrection) throws KSIException {
+        super(legacyId, levelCorrection);
+    }
+
     LeftAggregationChainLink(TLVElement element) throws KSIException {
         super(element);
     }

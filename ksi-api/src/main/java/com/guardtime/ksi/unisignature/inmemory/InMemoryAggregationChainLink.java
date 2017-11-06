@@ -83,7 +83,16 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             this.metadata = new InMemoryLinkMetadata(linkMetadata.getDecodedClientId(), linkMetadata.getDecodedMachineId(), linkMetadata.getSequenceNumber(), linkMetadata.getRequestTime());
         }
         this.rootElement.addChildElement(metadata.getRootElement());
+    }
 
+    InMemoryAggregationChainLink(byte[] legacyId, long levelCorrection) throws KSIException {
+        verifyLegacyId(legacyId);
+        this.levelCorrection = levelCorrection;
+        this.rootElement = new TLVElement(false, false, getElementType());
+        addLevelCorrectionTlvElement();
+        TLVElement legacyIdElement = new TLVElement(false, false, ELEMENT_TYPE_LEGACY_ID);
+        legacyIdElement.setContent(legacyId);
+        this.rootElement.addChildElement(legacyIdElement);
     }
 
     InMemoryAggregationChainLink(TLVElement element) throws KSIException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -73,6 +73,7 @@ abstract class PduV2 extends TLVStructure {
         }
 
         // calculate mac
+        macAlgorithm.checkExpiration();
         this.mac = new MessageMac(macAlgorithm);
         rootElement.addChildElement(mac.getRootElement());
         mac.setMac(calculateMac(macAlgorithm, loginKey));

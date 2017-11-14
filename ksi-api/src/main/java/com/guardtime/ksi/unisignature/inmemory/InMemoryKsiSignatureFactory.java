@@ -53,6 +53,8 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 /**
  * In memory implementation of the {@link KSISignatureFactory} interface.
  *
@@ -159,22 +161,15 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(element);
         if (level > 0) {
             AggregationHashChain firstChain = signature.getAggregationHashChains()[0];
-            LinkedList<AggregationChainLink> links = new LinkedList<>();
+            LinkedList<AggregationChainLink> links = new LinkedList<>(firstChain.getChainLinks());
             AggregationChainLink link = createLinkWithLevelCorrection(firstChain.getChainLinks().get(0), level);
-            links.add(link);
+            links.set(0, link);
 
             LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
-            for (int i = 1; i < firstChain.getChainLinks().size(); i++) {
-                links.add(firstChain.getChainLinks().get(i));
-            }
-
-            AggregationHashChain aggregationHashChain = signatureComponentFactory.createAggregationHashChain(inputHash, firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
-            List<AggregationHashChain> aggregationHashChains = new LinkedList<>();
-            aggregationHashChains.add(aggregationHashChain);
-
-            for (int i = 1; i < signature.getAggregationHashChains().length; i++) {
-                aggregationHashChains.add(signature.getAggregationHashChains()[i]);
-            }
+            List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
+            AggregationHashChain aggregationHashChain = signatureComponentFactory.createAggregationHashChain(inputHash,
+                    firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
+            aggregationHashChains.set(0, aggregationHashChain);
 
             signature = (InMemoryKsiSignature) createSignature(aggregationHashChains, signature.getCalendarHashChain(),
                     signature.getCalendarAuthenticationRecord(), signature.getPublicationRecord(), signature.getRfc3161Record());
@@ -198,8 +193,6 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         return signature;
     }
 
-
-
     private PublicationsFile getPublicationsFile(PublicationsHandler handler) throws KSIException {
         if (handler == null) {
             return null;
@@ -221,30 +214,12 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         }
     }
 
-
     private AggregationChainLink createLinkWithLevelCorrection(AggregationChainLink link, long level) throws KSIException {
         long levelCorrection = link.getLevelCorrection() + level;
         if (link.isLeft()) {
-            if (link.getMetadata() != null) {
-                return signatureComponentFactory.createLeftAggregationChainLink(link.getMetadata(), levelCorrection);
-            } else if (link.getSiblingData() != null && link.getLinkIdentity() == null) {
-                return signatureComponentFactory.createLeftAggregationChainLink(new DataHash(link.getSiblingData()),
-                        levelCorrection);
-            } else {
-                return signatureComponentFactory.createLeftAggregationChainLink(link.getSiblingData(),
-                        levelCorrection);
-            }
+            return signatureComponentFactory.createLeftAggregationChainLink(link, levelCorrection);
         } else {
-            if (link.getMetadata() != null) {
-                return signatureComponentFactory.createRightAggregationChainLink(link.getMetadata(), levelCorrection);
-            } else if (link.getSiblingData() != null && link.getLinkIdentity() == null) {
-                return signatureComponentFactory.createRightAggregationChainLink(new DataHash(link.getSiblingData()),
-                        levelCorrection);
-            } else {
-                return signatureComponentFactory.createRightAggregationChainLink(link.getSiblingData(),
-                        levelCorrection);
-            }
+            return signatureComponentFactory.createRightAggregationChainLink(link, levelCorrection);
         }
     }
-
 }

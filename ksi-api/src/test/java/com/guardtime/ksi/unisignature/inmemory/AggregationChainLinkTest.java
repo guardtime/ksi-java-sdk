@@ -19,15 +19,19 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.util.Base16;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.Date;
+
+import static org.testng.Assert.assertEquals;
 
 public class AggregationChainLinkTest {
 
@@ -141,6 +145,68 @@ public class AggregationChainLinkTest {
         LeftAggregationChainLink decodedChanLink = new LeftAggregationChainLink(link.getRootElement());
         Assert.assertEquals(link, decodedChanLink);
         Assert.assertEquals(link.getLinkIdentity().getType(), decodedChanLink.getLinkIdentity().getType());
+    }
+
+    @Test
+    public void testCreateNewLeftLinkFromAnotherLinkWithMetadata() throws Exception {
+        InMemoryLinkMetadata metadata = new InMemoryLinkMetadata(TEST_CLIENT_ID);
+        LeftAggregationChainLink link = new LeftAggregationChainLink(metadata, 0L);
+        LeftAggregationChainLink newLink = new LeftAggregationChainLink(link, 3L);
+        compareLinks(link, newLink, 3l, true);
+    }
+
+    @Test
+    public void testCreateNewRightLinkFromAnotherLinkWithMetadata() throws Exception {
+        InMemoryLinkMetadata metadata = new InMemoryLinkMetadata(TEST_CLIENT_ID);
+        RightAggregationChainLink link = new RightAggregationChainLink(metadata, 0L);
+        RightAggregationChainLink newLink = new RightAggregationChainLink(link, 3L);
+        compareLinks(link, newLink, 3l, false);
+    }
+
+    @Test
+    public void testCreateNewLeftLinkFromAnotherLinkWithSiblingHash() throws Exception {
+        LeftAggregationChainLink link = new LeftAggregationChainLink(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), 0L);
+        LeftAggregationChainLink newLink = new LeftAggregationChainLink(link, 3L);
+        compareLinks(link, newLink, 3l, true);
+    }
+
+    @Test
+    public void testCreateNewRightLinkFromAnotherLinkWithSiblingHash() throws Exception {
+        RightAggregationChainLink link = new RightAggregationChainLink(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), 0L);
+        RightAggregationChainLink newLink = new RightAggregationChainLink(link, 3L);
+        compareLinks(link, newLink, 3l, false);
+    }
+
+    @Test
+    public void testCreateNewLeftLinkFromAnotherLinkWithLegacyId() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x07);
+        element.addChildElement(legacyId);
+        LeftAggregationChainLink link = new LeftAggregationChainLink(element);
+        LeftAggregationChainLink newLink = new LeftAggregationChainLink(link, 3L);
+        compareLinks(link, newLink, 3l, true);
+    }
+
+    @Test
+    public void testCreateNewRightLinkFromAnotherLinkWithLegacyId() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x08);
+        element.addChildElement(legacyId);
+        RightAggregationChainLink link = new RightAggregationChainLink(element);
+        RightAggregationChainLink newLink = new RightAggregationChainLink(link, 3L);
+        compareLinks(link, newLink, 3l, false);
+    }
+
+    private void compareLinks(AggregationChainLink link, AggregationChainLink newLink, long level, boolean isLeft)
+            throws KSIException {
+        if (link.getLinkIdentity() == null) {
+            Assert.assertNull(newLink.getLinkIdentity());
+        } else {
+            assertEquals(newLink.getLinkIdentity().getType(), link.getLinkIdentity().getType());
+            assertEquals(newLink.getLinkIdentity().getDecodedClientId(), link.getLinkIdentity().getDecodedClientId());
+        }
+        assertEquals(newLink.getLevelCorrection().longValue(), level);
+        assertEquals(newLink.getMetadata(), link.getMetadata());
+        assertEquals(newLink.getSiblingData(), link.getSiblingData());
+        assertEquals(newLink.isLeft(), isLeft);
     }
 
 }

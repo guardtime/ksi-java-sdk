@@ -23,6 +23,7 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.ChainResult;
 import com.guardtime.ksi.unisignature.LinkMetadata;
 
@@ -43,8 +44,8 @@ class RightAggregationChainLink extends InMemoryAggregationChainLink {
         super(metadata, levelCorrection);
     }
 
-    RightAggregationChainLink(byte[] legacyId, long levelCorrection) throws KSIException {
-        super(legacyId, levelCorrection);
+    RightAggregationChainLink(AggregationChainLink link, long levelCorrection) throws KSIException {
+        super(link, levelCorrection);
     }
 
     RightAggregationChainLink(TLVElement element) throws KSIException {

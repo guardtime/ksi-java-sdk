@@ -71,8 +71,8 @@ public class InMemoryKsiSignatureComponentFactory implements KSISignatureCompone
         return new LeftAggregationChainLink(siblingHash, levelCorrection);
     }
 
-    public AggregationChainLink createLeftAggregationChainLink(byte[] legacyId, long levelCorrection) throws KSIException {
-        return new LeftAggregationChainLink(legacyId, levelCorrection);
+    public AggregationChainLink createLeftAggregationChainLink(AggregationChainLink link, long levelCorrection) throws KSIException {
+        return new LeftAggregationChainLink(link, levelCorrection);
     }
 
     public AggregationChainLink createLeftAggregationChainLink(LinkMetadata metadata, long levelCorrection) throws KSIException {
@@ -83,8 +83,8 @@ public class InMemoryKsiSignatureComponentFactory implements KSISignatureCompone
         return new RightAggregationChainLink(siblingHash, levelCorrection);
     }
 
-    public AggregationChainLink createRightAggregationChainLink(byte[] legacyId, long levelCorrection) throws KSIException {
-        return new RightAggregationChainLink(legacyId, levelCorrection);
+    public AggregationChainLink createRightAggregationChainLink(AggregationChainLink link, long levelCorrection) throws KSIException {
+        return new RightAggregationChainLink(link, levelCorrection);
     }
 
     public AggregationChainLink createRightAggregationChainLink(LinkMetadata metadata, long levelCorrection) throws KSIException {

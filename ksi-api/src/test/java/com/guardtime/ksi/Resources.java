@@ -137,6 +137,8 @@ public class Resources {
     public static final String SIGNATURE_PUBLICATION_RECORD_INVALID_PUBLICATION_TIME =  INVALID_SIGNATURES_PUBLICATION_RECORD + "invalid-signature-pub-rec-pub-time-future-value.tlv";
     public static final String SIGNATURE_WITH_CAL_AUTH_AND_PUB_REC = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-cal-aut-present-pub-rec-present.tlv";
     public static final String SIGNATURE_PUBLICATION_RECORD_BUT_NO_CALENDAR = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-missing-pub-rec-present.tlv";
+    public static final String SIGNATURE_PUBLICATION_RECORD_DOES_NOT_MATCH_PUBLICATION = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-extended-signature-to-publication-file-PUB-05.ksig";
+    public static final String SIGNATURE_PUBLICATION_RECORD_NOT_FOUND_FROM_FILE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-suitable-publication-not-found-GEN-02.ksig";
 
     /**
      * Signature components

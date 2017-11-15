@@ -36,9 +36,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Class that represents a single TCP signing transaction.
+ * Class that represents a single TCP transaction.
  */
-class KSITCPSigningTransaction {
+class KSITCPTransaction {
 
     private static final int REQUEST_WRAPPER_TAG = 0x201;
     private static final int RESPONSE_WRAPPER_TAG = 0x202;
@@ -52,19 +52,19 @@ class KSITCPSigningTransaction {
     private static final Object CONF_REQUEST_LOCK = new Object();
     private static Long confRequestId = 0L;
 
-    private KSITCPSigningTransaction() {
+    private KSITCPTransaction() {
     }
 
-    static KSITCPSigningTransaction fromRequest(InputStream request) throws IOException, KSIException {
-        KSITCPSigningTransaction transaction = new KSITCPSigningTransaction();
+    static KSITCPTransaction fromRequest(InputStream request) throws IOException, KSIException {
+        KSITCPTransaction transaction = new KSITCPTransaction();
         TLVElement tlv = TLVElement.create(Util.toByteArray(request));
         transaction.correlationId = isConfigurationPayload(tlv) ? getNewConfId() : extractTransactionIdFromRequestTLV(tlv);
         transaction.request = tlv;
         return transaction;
     }
 
-    static KSITCPSigningTransaction fromResponse(IoBuffer ioBuffer) throws KSIException {
-        KSITCPSigningTransaction transaction = new KSITCPSigningTransaction();
+    static KSITCPTransaction fromResponse(IoBuffer ioBuffer) throws KSIException {
+        KSITCPTransaction transaction = new KSITCPTransaction();
         byte[] responseData = new byte[ioBuffer.remaining()];
         ioBuffer.get(responseData);
         TLVElement tlv = parse(responseData);
@@ -169,4 +169,10 @@ class KSITCPSigningTransaction {
     WriteFuture send(IoSession session) {
         return session.write(this);
     }
+
+    @Override
+    public String toString() {
+        return "KSITCPTransaction [correlationId=" + correlationId + ", request=" + request + ", response=" + response + "]";
+    }
+
 }

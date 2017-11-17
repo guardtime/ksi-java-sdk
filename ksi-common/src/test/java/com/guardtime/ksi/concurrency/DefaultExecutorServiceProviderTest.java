@@ -28,7 +28,7 @@ public class DefaultExecutorServiceProviderTest {
     @Test
     public void testExecutorServicePoolCustomSize() {
         int customPoolSize = 30;
-        System.setProperty("executor.pool.size", String.valueOf(customPoolSize));
+        System.setProperty("ksi.executor.pool.size", String.valueOf(customPoolSize));
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) DefaultExecutorServiceProvider.getExecutorService();
         Assert.assertEquals(threadPoolExecutor.getMaximumPoolSize(), customPoolSize);
     }

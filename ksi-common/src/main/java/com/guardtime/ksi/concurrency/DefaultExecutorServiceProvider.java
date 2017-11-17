@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class DefaultExecutorServiceProvider {
 
-    private static int executorPoolSize = 1000;
+    private static int executorPoolSize = 100;
     private static ExecutorService executorService;
 
     static {

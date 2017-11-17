@@ -16,6 +16,7 @@ Version 4.11
 * IMPROVEMENT: Verification of the validity of the signing certificate during aggregation time.
 * IMPROVEMENT: Removed old deprecated methods.
 * IMPROVEMENT: Added default verification policy.
+* IMPROVEMENT: Default executor service thread pool size is configurable.
 
 Version 4.10
 

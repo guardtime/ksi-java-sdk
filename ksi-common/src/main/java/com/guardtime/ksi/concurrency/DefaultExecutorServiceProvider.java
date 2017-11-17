@@ -29,8 +29,19 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class DefaultExecutorServiceProvider {
 
-    private static final int MAXIMUM_POOL_SIZE = 10000;
+    private static int executorPoolSize = 1000;
     private static ExecutorService executorService;
+
+    static {
+        String poolSize = System.getProperty("executor.pool.size");
+        if (poolSize != null) {
+            try {
+                executorPoolSize = Integer.parseInt(poolSize);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid system property 'executor.pool.size' value", e);
+            }
+        }
+    }
 
     /**
      * Used to get the default {@link ExecutorService} instance, which is a cached thread pool.
@@ -38,9 +49,8 @@ public class DefaultExecutorServiceProvider {
     public synchronized static ExecutorService getExecutorService() {
         if (executorService == null) {
             executorService = Executors.newCachedThreadPool();
-            ((ThreadPoolExecutor) executorService).setMaximumPoolSize(MAXIMUM_POOL_SIZE);
+            ((ThreadPoolExecutor) executorService).setMaximumPoolSize(executorPoolSize);
         }
         return executorService;
     }
-
 }

@@ -33,7 +33,7 @@ public class DefaultExecutorServiceProvider {
     private static ExecutorService executorService;
 
     static {
-        String poolSize = System.getProperty("executor.pool.size");
+        String poolSize = System.getProperty("ksi.executor.pool.size");
         if (poolSize != null) {
             try {
                 executorPoolSize = Integer.parseInt(poolSize);

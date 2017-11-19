@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -17,22 +17,7 @@
  * reserves and retains all trademark rights.
  */
 
-package com.guardtime.ksi;
-
-import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.publication.PublicationsFile;
-
 /**
- * Getting the publications file. An instance of this class can be obtained using {@link PublicationsHandlerBuilder} class.
+ * Adapters for publications file client
  */
-public interface PublicationsHandler {
-    /**
-     * Gets the publications file. Uses the {@link com.guardtime.ksi.service.client.KSIPublicationsFileClient}
-     * for downloading.
-     *
-     * @return The publications file ({@link PublicationsFile}).
-     * @throws KSIException when error occurs (e.g. when communication with KSI service fails).
-     */
-    PublicationsFile getPublicationsFile() throws KSIException;
-
-}
+package com.guardtime.ksi.publication.adapter;

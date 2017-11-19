@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -46,6 +46,7 @@ public enum VerificationErrorCode {
     PUB_05("PUB-05", "Publication record hash and publications file publication hash mismatch"),
     KEY_01("KEY-01", "Certificate not found"),
     KEY_02("KEY-02", "PKI signature not verified with certificate"),
+    KEY_03("KEY-03", "Signing certificate not valid at aggregation time"),
     CAL_01("CAL-01", "Calendar root hash mismatch between signature and calendar database chain"),
     CAL_02("CAL-02", "Aggregation hash chain root hash and calendar database hash chain input hash mismatch"),
     CAL_03("CAL-03", "Aggregation time mismatch"),

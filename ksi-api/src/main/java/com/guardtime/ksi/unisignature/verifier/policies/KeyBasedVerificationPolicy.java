@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -23,6 +23,7 @@ import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecor
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecordSignatureVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainExistenceRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CertificateExistenceRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CertificateValidityRule;
 
 /**
  * KSI Signature verification policy. Can be used if the keyless signature contains a calendar hash chain and a calendar
@@ -37,6 +38,7 @@ public class KeyBasedVerificationPolicy extends InternalVerificationPolicy {
         addRule(new CalendarHashChainExistenceRule());
         addRule(new CalendarAuthenticationRecordExistenceRule());
         addRule(new CertificateExistenceRule());
+        addRule(new CertificateValidityRule());
         addRule(new CalendarAuthenticationRecordSignatureVerificationRule());
     }
 

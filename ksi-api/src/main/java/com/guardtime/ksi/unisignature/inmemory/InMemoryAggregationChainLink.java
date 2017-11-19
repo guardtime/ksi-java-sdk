@@ -161,28 +161,6 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         }
     }
 
-    /**
-     * This method is used get link identity.
-     *
-     * @return if metadata is present then the clientId will be returned. If 'legacyId' is present then identity will be
-     * decoded from 'legacyId'. Empty string otherwise.
-     *  @deprecated use {@link InMemoryAggregationChainLink#getLinkIdentity()} instead
-     */
-    @Deprecated
-    public String getIdentity() throws InvalidSignatureException {
-        if (legacyId != null) {
-            try {
-                return getIdentityFromLegacyId();
-            } catch (CharacterCodingException e) {
-                throw new InvalidSignatureException("Decoding link identity from legacy id failed", e);
-            }
-        }
-        if (metadata != null) {
-            return metadata.getDecodedClientId();
-        }
-        return "";
-    }
-
     public Identity getLinkIdentity() {
         Identity identity = null;
         if (legacyId != null) {

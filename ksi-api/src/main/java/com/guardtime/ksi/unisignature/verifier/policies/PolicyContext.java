@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -41,6 +41,10 @@ public class PolicyContext {
         Util.notNull(publicationsHandler, "Publications handler");
         this.publicationsHandler = publicationsHandler;
         this.extendingService = extendingService;
+    }
+
+    public PolicyContext(PublicationData publicationData) {
+        this(publicationData, null);
     }
 
     public PolicyContext(PublicationData publicationData, KSIExtendingService extendingService) {

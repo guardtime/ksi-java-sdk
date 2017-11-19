@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -41,7 +41,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     }
 
     /**
-     * Method creating context aware policy using {@link InternalVerificationPolicy} for verification.
+     * Creates context aware policy using {@link InternalVerificationPolicy} for verification.
      *
      * @return Internal verification policy with suitable context.
      */
@@ -50,7 +50,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     }
 
     /**
-     * Method creating context aware policy using {@link KeyBasedVerificationPolicy} for verification.
+     * Creates context aware policy using {@link KeyBasedVerificationPolicy} for verification.
      *
      * @param handler
      *      Publications handler.
@@ -62,7 +62,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     }
 
     /**
-     * Method creating context aware policy using {@link PublicationsFileBasedVerificationPolicy} for verification.
+     * Creates context aware policy using {@link PublicationsFileBasedVerificationPolicy} for verification.
      *
      * @param handler
      *      Publications handler.
@@ -73,7 +73,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     }
 
     /**
-     * Method creating context aware policy using {@link PublicationsFileBasedVerificationPolicy} for verification. If
+     * Creates context aware policy using {@link PublicationsFileBasedVerificationPolicy} for verification. If
      * extender is provided, then extending is allowed while verifying signature.
      *
      * @param handler
@@ -89,7 +89,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     }
 
     /**
-     * Method creating context aware policy using {@link CalendarBasedVerificationPolicy} for verification. Since
+     * Creates context aware policy using {@link CalendarBasedVerificationPolicy} for verification. Since
      * extender is provided, then extending is allowed when verifying signature.
      *
      * @param extender
@@ -103,8 +103,20 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     }
 
     /**
-     * Method creating context aware policy using {@link UserProvidedPublicationBasedVerificationPolicy} for verification. Since
-     * extender is provided, then extending is allowed when verifying signature.
+     * Creates context aware policy using {@link UserProvidedPublicationBasedVerificationPolicy} for verification. Only
+     * user provided publication data is used for verification.
+     *
+     * @param publicationData
+     *      User provided publication data.
+     * @return User provided publication based verification policy with suitable context.
+     */
+    public static ContextAwarePolicy createUserProvidedPublicationPolicy(PublicationData publicationData) {
+        return createUserProvidedPublicationPolicy(publicationData, null);
+    }
+
+    /**
+     * Creates context aware policy using {@link UserProvidedPublicationBasedVerificationPolicy} for verification.
+     * If extender is set, signature is extended within verification process.
      *
      * @param publicationData
      *      User provided publication data.
@@ -114,9 +126,24 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
      */
     public static ContextAwarePolicy createUserProvidedPublicationPolicy(PublicationData publicationData, Extender extender) {
         Util.notNull(publicationData, "Publication data");
-        Util.notNull(extender, "Extender");
         return new ContextAwarePolicyAdapter(new UserProvidedPublicationBasedVerificationPolicy(),
-                new PolicyContext(publicationData, extender.getExtendingService()));
+                new PolicyContext(publicationData, extender != null ? extender.getExtendingService() : null));
+    }
+
+    /**
+     * Creates context aware policy using {@link DefaultVerificationPolicy} for verification.
+     * If extender is set, signature is extended within verification process.
+     *
+     * @param handler
+     *      Publications handler.
+     * @param extender
+     *      Extender.
+     * @return Context aware verification policy for default verification.
+     */
+    public static ContextAwarePolicy createDefaultPolicy(PublicationsHandler handler, Extender extender) {
+        Util.notNull(handler, "Publications handler");
+        return new ContextAwarePolicyAdapter(new DefaultVerificationPolicy(),
+                new PolicyContext(handler, extender != null ? extender.getExtendingService() : null));
     }
 
     /**

@@ -19,18 +19,30 @@
 
 package com.guardtime.ksi.unisignature.inmemory;
 
-import java.util.*;
-
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
-import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.AggregationHashChain;
+import com.guardtime.ksi.unisignature.CalendarAuthenticationRecord;
+import com.guardtime.ksi.unisignature.CalendarHashChain;
+import com.guardtime.ksi.unisignature.ChainResult;
+import com.guardtime.ksi.unisignature.Identity;
+import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.RFC3161Record;
+import com.guardtime.ksi.unisignature.SignaturePublicationRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * KSI signature structure class. KSI signature consist of the following components: <ul> <li>Aggregation hash chain.
@@ -200,42 +212,6 @@ final class InMemoryKsiSignature extends TLVStructure implements KSISignature {
 
     public InMemoryCalendarHashChain getCalendarHashChain() {
         return calendarChain;
-    }
-
-    @Deprecated
-    public InMemoryKsiSignature extend(CalendarHashChain calendar, PublicationRecord publicationsRecord) throws KSIException {
-        InMemoryKsiSignature extendedSignature = new InMemoryKsiSignature(rootElement);
-        InMemoryCalendarHashChain calendarHashChain = (InMemoryCalendarHashChain) calendar;
-        if (calendarChain != null) {
-            extendedSignature.getRootElement().replace(getCalendarHashChain().getRootElement(), calendarHashChain.getRootElement());
-        } else {
-            extendedSignature.getRootElement().addChildElement(calendarHashChain.getRootElement());
-        }
-
-        extendedSignature.calendarChain = calendarHashChain;
-
-        if (extendedSignature.calendarAuthenticationRecord != null) {
-            extendedSignature.getRootElement().remove(extendedSignature.calendarAuthenticationRecord.getRootElement());
-            extendedSignature.calendarAuthenticationRecord = null;
-        }
-
-        if (publicationsRecord != null) {
-
-            TLVStructure publicationRecord = (TLVStructure) publicationsRecord;
-            publicationRecord.getRootElement().setType(SignaturePublicationRecord.ELEMENT_TYPE);
-            InMemorySignaturePublicationRecord signaturePublicationRecord = new InMemorySignaturePublicationRecord(publicationRecord.getRootElement());
-            if (extendedSignature.getPublicationRecord() != null) {
-                extendedSignature.getRootElement().replace(extendedSignature.getPublicationRecord().getRootElement(), signaturePublicationRecord.getRootElement());
-
-            } else {
-                extendedSignature.getRootElement().addChildElement(publicationRecord.getRootElement());
-            }
-            extendedSignature.publicationRecord = signaturePublicationRecord;
-        } else if (extendedSignature.getPublicationRecord() != null) {
-            extendedSignature.getRootElement().remove(extendedSignature.getPublicationRecord().getRootElement());
-            extendedSignature.publicationRecord = null;
-        }
-        return extendedSignature;
     }
 
     public RFC3161Record getRfc3161Record() {

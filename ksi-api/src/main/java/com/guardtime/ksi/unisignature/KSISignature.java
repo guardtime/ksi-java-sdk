@@ -19,12 +19,11 @@
 
 package com.guardtime.ksi.unisignature;
 
-import java.io.OutputStream;
-import java.util.Date;
-
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.publication.PublicationRecord;
+
+import java.io.OutputStream;
+import java.util.Date;
 
 /**
  * This interface represents a keyless uni-signature. KSI signature consist of the following components: <ul> <li>One or
@@ -83,29 +82,6 @@ public interface KSISignature {
      * Returns the publication time.
      */
     Date getPublicationTime();
-
-    /**
-     * Extends the signature to the given calendar hash chain and publication.
-     *
-     * @param calendarHashChain
-     *         new calendar hash chain
-     * @param publicationRecord
-     *         publication record. may be null
-     * @return extended signature. NB! signature isn't verified
-     * @throws KSIException
-     *         when extending fails
-     * @deprecated  use {@link com.guardtime.ksi.KSI#extend(KSISignature)} or
-     * {@link com.guardtime.ksi.KSI#asyncExtend(KSISignature)} instead
-     */
-    @Deprecated
-    KSISignature extend(CalendarHashChain calendarHashChain, PublicationRecord publicationRecord) throws KSIException;
-
-    /**
-     * Returns the identity of the signature.
-     * @deprecated  use {@link KSISignature#getAggregationHashChainIdentity()} instead
-     */
-    @Deprecated
-    String getIdentity();
 
     /**
      * Returns an array of the identities present in all aggregation hash chains. The identities in the array are

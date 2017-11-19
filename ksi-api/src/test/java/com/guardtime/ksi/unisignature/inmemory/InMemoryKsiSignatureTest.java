@@ -22,9 +22,6 @@ package com.guardtime.ksi.unisignature.inmemory;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.publication.PublicationData;
-import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
-import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.Identity;
 import com.guardtime.ksi.unisignature.IdentityType;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -39,7 +36,6 @@ import java.io.InputStream;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
-import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
 import static com.guardtime.ksi.Resources.SIGANTURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS;
 import static com.guardtime.ksi.Resources.SIGANTURE_CALENDAR_AUTH_BUT_NO_CALAENDAR;
@@ -111,30 +107,6 @@ public class InMemoryKsiSignatureTest {
         KSISignature signature = TestUtil.loadSignature(RFC3161_SIGNATURE);
         Assert.assertNotEquals(signature.getInputHash(), signature.getAggregationHashChains()[0].getInputHash());
         Assert.assertEquals(signature.getInputHash(), signature.getRfc3161Record().getInputHash());
-    }
-
-    @Test
-    public void testSignatureExtend() throws Exception {
-        InMemoryKsiSignature signature = load(TestUtil.load(SIGNATURE_2017_03_14));
-        Assert.assertFalse(signature.isExtended());
-        Assert.assertFalse(signature.isPublished());
-        Assert.assertEquals(signature.getPublicationTime(), new Date(1489520040000L));
-        Assert.assertEquals(signature.getAggregationTime(), new Date(1489520040000L));
-
-        CalendarHashChain calendarHashChain = CalendarHashChainTest.load(EXTENDED_SIGNATURE_2017_03_14, InMemoryCalendarHashChain.ELEMENT_TYPE);
-        PublicationsFilePublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData("AAAAAA-CYZCCA-AAKSTF-DBZU7A-ICL6VV-RY3AF7-5EHAAJ-T6IG32-JS7YHT-54SFCN-GLDABW-SK7KNX"));
-
-        KSISignature extendedSignature = signature.extend(calendarHashChain, record);
-        Assert.assertTrue(extendedSignature.isExtended());
-        Assert.assertFalse(signature.isExtended());
-        Assert.assertEquals(extendedSignature.getPublicationTime(), new Date(1489536000000L));
-        /*
-         * Aggregation time cannot change
-         */
-        Assert.assertEquals(extendedSignature.getAggregationTime(), new Date(1489520040000L));
-        Assert.assertNull(extendedSignature.getCalendarAuthenticationRecord());
-        Assert.assertEquals(extendedSignature.getInputHash(), signature.getInputHash());
-        Assert.assertEquals(extendedSignature.getCalendarHashChain().getAggregationTime(), new Date(1489520040000L));
     }
 
     @Test(expectedExceptions = {InvalidAggregationHashChainException.class}, expectedExceptionsMessageRegExp = "Aggregation chain index list can not be empty")

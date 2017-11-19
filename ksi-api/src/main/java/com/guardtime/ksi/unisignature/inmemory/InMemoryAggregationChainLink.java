@@ -85,7 +85,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         if (link.getMetadata() != null) {
             metadata = getLinkMetadata(link.getMetadata());
             element = metadata.getRootElement();
-        } else if (link.getSiblingData() != null && link.getLinkIdentity() == null) {
+        } else if (link.getLinkIdentity() == null) {
             siblingHash = new DataHash(link.getSiblingData());
             element = TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash);
         } else {
@@ -94,7 +94,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             element.setContent(link.getSiblingData());
         }
         rootElement.addChildElement(element);
-        addLevelCorrection(levelCorrection);
+        addLevelCorrection(link.getLevelCorrection() + levelCorrection);
     }
 
     InMemoryAggregationChainLink(TLVElement element) throws KSIException {

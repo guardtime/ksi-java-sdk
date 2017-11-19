@@ -215,11 +215,10 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     }
 
     private AggregationChainLink createLinkWithLevelCorrection(AggregationChainLink link, long level) throws KSIException {
-        long levelCorrection = link.getLevelCorrection() + level;
         if (link.isLeft()) {
-            return signatureComponentFactory.createLeftAggregationChainLink(link, levelCorrection);
+            return signatureComponentFactory.createLeftAggregationChainLink(link, level);
         } else {
-            return signatureComponentFactory.createRightAggregationChainLink(link, levelCorrection);
+            return signatureComponentFactory.createRightAggregationChainLink(link, level);
         }
     }
 }

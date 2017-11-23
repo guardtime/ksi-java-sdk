@@ -38,7 +38,7 @@ public class Rfc3161OutputHashAlgorithmDeprecatedRule extends BaseRule {
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         if (context.getRfc3161Record() != null) {
-            Date rfc3161AggregationTime = context.getRfc3161Record().getAggregationTime();
+            Date rfc3161AggregationTime = context.getSignature().getAggregationTime();
             HashAlgorithm hashAlgorithm = context.getSignature().getAggregationHashChains()[0].getInputHash().getAlgorithm();
 
             if (context.getRfc3161Record().getOutputHash(hashAlgorithm).getAlgorithm().isDeprecated(rfc3161AggregationTime)) {

@@ -14,6 +14,7 @@ Version 4.11
 * BUGFIX: Fixed test resource loading functionality.
 * IMPROVEMENT: BlockSigner returns signature in the same order as the data hashes were added to queue.
 * IMPROVEMENT: Verification of the validity of the signing certificate during aggregation time.
+* IMPROVEMENT: Blocksigner only adds user provided metadata.
 * IMPROVEMENT: Removed old deprecated methods.
 * IMPROVEMENT: Added default verification policy.
 * IMPROVEMENT: Default executor service thread pool size is configurable.

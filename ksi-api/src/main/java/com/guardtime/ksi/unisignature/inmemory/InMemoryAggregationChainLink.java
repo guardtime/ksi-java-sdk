@@ -66,24 +66,35 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     private InMemoryLinkMetadata metadata;
 
     InMemoryAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
-        this.levelCorrection = levelCorrection;
         this.siblingHash = siblingHash;
         this.rootElement = new TLVElement(false, false, getElementType());
-        addLevelCorrectionTlvElement();
         this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash));
+        addLevelCorrection(levelCorrection);
     }
 
     InMemoryAggregationChainLink(LinkMetadata linkMetadata, long levelCorrection) throws KSIException {
-        this.levelCorrection = levelCorrection;
         this.rootElement = new TLVElement(false, false, getElementType());
-        addLevelCorrectionTlvElement();
-        if (linkMetadata instanceof InMemoryLinkMetadata) {
-            this.metadata = (InMemoryLinkMetadata) linkMetadata;
-        } else {
-            this.metadata = new InMemoryLinkMetadata(linkMetadata.getDecodedClientId(), linkMetadata.getDecodedMachineId(), linkMetadata.getSequenceNumber(), linkMetadata.getRequestTime());
-        }
+        this.metadata = getLinkMetadata(linkMetadata);
         this.rootElement.addChildElement(metadata.getRootElement());
+        addLevelCorrection(levelCorrection);
+    }
 
+    InMemoryAggregationChainLink(AggregationChainLink link, long levelCorrection) throws KSIException{
+        rootElement = new TLVElement(false, false, getElementType());
+        TLVElement element = null;
+        if (link.getMetadata() != null) {
+            metadata = getLinkMetadata(link.getMetadata());
+            element = metadata.getRootElement();
+        } else if (link.getLinkIdentity() == null) {
+            siblingHash = new DataHash(link.getSiblingData());
+            element = TLVElement.create(ELEMENT_TYPE_SIBLING_HASH, siblingHash);
+        } else {
+            legacyId = link.getSiblingData();
+            element = new TLVElement(false, false, ELEMENT_TYPE_LEGACY_ID);
+            element.setContent(link.getSiblingData());
+        }
+        rootElement.addChildElement(element);
+        addLevelCorrection(link.getLevelCorrection() + levelCorrection);
     }
 
     InMemoryAggregationChainLink(TLVElement element) throws KSIException {
@@ -109,11 +120,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             }
         }
 
-        // in valid signatures, level values never exceed 8 bits, so the correction amounts should really be even less
-        // do the range check at once to prevent possible overflow attacks in hash chain computation
-        if (levelCorrection > 0xff) {
-            throw new InvalidAggregationHashChainException("Unsupported level correction amount " + levelCorrection);
-        }
+        validateLevelCorrection(this.levelCorrection);
 
         // exactly one of the three "sibling data" items must be present
         if (siblingHash == null && legacyId == null && metadata == null) {
@@ -131,6 +138,14 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Legacy id and metadata are present");
         }
 
+    }
+
+    private void validateLevelCorrection(long levelCorrection) throws InvalidAggregationHashChainException {
+        // in valid signatures, level values never exceed 8 bits, so the correction amounts should really be even less
+        // do the range check at once to prevent possible overflow attacks in hash chain computation
+        if (levelCorrection < 0x0 || levelCorrection > 0xff) {
+            throw new InvalidAggregationHashChainException("Unsupported level correction amount " + levelCorrection);
+        }
     }
 
     private void verifyLegacyId(byte[] legacyId) throws InvalidAggregationHashChainException {
@@ -228,16 +243,29 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         return levelCorrection;
     }
 
-    private void addLevelCorrectionTlvElement() throws TLVParserException {
-        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_LEVEL_CORRECTION, this.levelCorrection));
-    }
-
     public boolean isLeft() {
         return getElementType() == ELEMENT_TYPE_LEFT_LINK;
     }
 
     public LinkMetadata getMetadata() {
         return metadata;
+    }
+
+    private InMemoryLinkMetadata getLinkMetadata(LinkMetadata linkMetadata) throws KSIException {
+        if (linkMetadata instanceof InMemoryLinkMetadata) {
+            return (InMemoryLinkMetadata) linkMetadata;
+        } else {
+            return new InMemoryLinkMetadata(linkMetadata.getDecodedClientId(), linkMetadata.getDecodedMachineId(),
+                    linkMetadata.getSequenceNumber(), linkMetadata.getRequestTime());
+        }
+    }
+
+    private void addLevelCorrection(long levelCorrection) throws TLVParserException {
+        validateLevelCorrection(levelCorrection);
+        if (levelCorrection > 0) {
+            this.levelCorrection = levelCorrection;
+            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_LEVEL_CORRECTION, this.levelCorrection));
+        }
     }
 
 }

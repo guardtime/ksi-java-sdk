@@ -53,6 +53,8 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 /**
  * In memory implementation of the {@link KSISignatureFactory} interface.
  *
@@ -159,22 +161,15 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(element);
         if (level > 0) {
             AggregationHashChain firstChain = signature.getAggregationHashChains()[0];
-            LinkedList<AggregationChainLink> links = new LinkedList<>();
-            AggregationChainLink leftAggregationChainLink = signatureComponentFactory.createLeftAggregationChainLink(firstChain.getChainLinks().get(0).getMetadata(), level);
-            links.add(leftAggregationChainLink);
+            LinkedList<AggregationChainLink> links = new LinkedList<>(firstChain.getChainLinks());
+            AggregationChainLink link = createLinkWithLevelCorrection(firstChain.getChainLinks().get(0), level);
+            links.set(0, link);
 
             LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
-            for (int i = 1; i < firstChain.getChainLinks().size(); i++) {
-                links.add(firstChain.getChainLinks().get(i));
-            }
-
-            AggregationHashChain aggregationHashChain = signatureComponentFactory.createAggregationHashChain(inputHash, firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
-            List<AggregationHashChain> aggregationHashChains = new LinkedList<>();
-            aggregationHashChains.add(aggregationHashChain);
-
-            for (int i = 1; i < signature.getAggregationHashChains().length; i++) {
-                aggregationHashChains.add(signature.getAggregationHashChains()[i]);
-            }
+            List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
+            AggregationHashChain aggregationHashChain = signatureComponentFactory.createAggregationHashChain(inputHash,
+                    firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
+            aggregationHashChains.set(0, aggregationHashChain);
 
             signature = (InMemoryKsiSignature) createSignature(aggregationHashChains, signature.getCalendarHashChain(),
                     signature.getCalendarAuthenticationRecord(), signature.getPublicationRecord(), signature.getRfc3161Record());
@@ -216,6 +211,14 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     private void addTlvStructure(TLVElement root, TLVStructure structure) throws KSIException {
         if (structure != null) {
             root.addChildElement(structure.getRootElement());
+        }
+    }
+
+    private AggregationChainLink createLinkWithLevelCorrection(AggregationChainLink link, long level) throws KSIException {
+        if (link.isLeft()) {
+            return signatureComponentFactory.createLeftAggregationChainLink(link, level);
+        } else {
+            return signatureComponentFactory.createRightAggregationChainLink(link, level);
         }
     }
 }

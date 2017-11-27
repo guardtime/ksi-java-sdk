@@ -104,6 +104,21 @@ public class AggregationChainLinkTest {
         new LeftAggregationChainLink(element);
     }
 
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount -2")
+    public void testNegativeLevelCorrectionWithMetadata_ThrowsInvalidAggregationHashChainException() throws Exception {
+        new LeftAggregationChainLink(new InMemoryLinkMetadata(TEST_CLIENT_ID), -2L);
+    }
+
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount 300")
+    public void testLargeLevelCorrectionWithMetadata_ThrowsInvalidAggregationHashChainException() throws Exception {
+        new LeftAggregationChainLink(new InMemoryLinkMetadata(TEST_CLIENT_ID), 300L);
+    }
+
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount -2")
+    public void testNegativeLevelCorrectionSiblingHash_ThrowsInvalidAggregationHashChainException() throws Exception {
+        new LeftAggregationChainLink(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), -2L);
+    }
+
     @Test
     public void testDecodeLinkWithMetadata_Ok() throws Exception {
         TLVElement metadata = new TLVElement(false, false, 0x04);
@@ -136,6 +151,12 @@ public class AggregationChainLinkTest {
         RightAggregationChainLink link = new RightAggregationChainLink(element);
         Assert.assertNotNull(link);
         Assert.assertEquals(link.getLinkIdentity().getDecodedClientId().toLowerCase(), TEST_CLIENT_ID);
+    }
+
+    @Test
+    public void testCreateNewLinkWithZeroLevelCorrection() throws Exception {
+        RightAggregationChainLink link = new RightAggregationChainLink(new InMemoryLinkMetadata(TEST_CLIENT_ID), 0L);
+        Assert.assertEquals(link.getRootElement().getChildElements(0x01).size(), 0);
     }
 
     @Test

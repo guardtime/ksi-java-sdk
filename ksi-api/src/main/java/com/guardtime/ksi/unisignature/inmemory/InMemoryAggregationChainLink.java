@@ -120,11 +120,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             }
         }
 
-        // in valid signatures, level values never exceed 8 bits, so the correction amounts should really be even less
-        // do the range check at once to prevent possible overflow attacks in hash chain computation
-        if (levelCorrection > 0xff) {
-            throw new InvalidAggregationHashChainException("Unsupported level correction amount " + levelCorrection);
-        }
+        validateLevelCorrection(this.levelCorrection);
 
         // exactly one of the three "sibling data" items must be present
         if (siblingHash == null && legacyId == null && metadata == null) {
@@ -142,6 +138,14 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             throw new InvalidAggregationHashChainException("Multiple sibling data items in hash step. Legacy id and metadata are present");
         }
 
+    }
+
+    private void validateLevelCorrection(long levelCorrection) throws InvalidAggregationHashChainException {
+        // in valid signatures, level values never exceed 8 bits, so the correction amounts should really be even less
+        // do the range check at once to prevent possible overflow attacks in hash chain computation
+        if (levelCorrection < 0x0 || levelCorrection > 0xff) {
+            throw new InvalidAggregationHashChainException("Unsupported level correction amount " + levelCorrection);
+        }
     }
 
     private void verifyLegacyId(byte[] legacyId) throws InvalidAggregationHashChainException {
@@ -257,8 +261,11 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
     }
 
     private void addLevelCorrection(long levelCorrection) throws TLVParserException {
-        this.levelCorrection = levelCorrection;
-        this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_LEVEL_CORRECTION, this.levelCorrection));
+        validateLevelCorrection(levelCorrection);
+        if (levelCorrection > 0) {
+            this.levelCorrection = levelCorrection;
+            this.rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_LEVEL_CORRECTION, this.levelCorrection));
+        }
     }
 
 }

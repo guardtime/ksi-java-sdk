@@ -41,14 +41,8 @@ public class DocumentHashAlgorithmVerificationRule extends BaseRule {
         }
         HashAlgorithm algorithm = context.getSignature().getInputHash().getAlgorithm();
         if (algorithm != context.getDocumentHash().getAlgorithm()) {
-            if (context.getRfc3161Record() != null) {
-                logger.info("Document hash algorithm {} does not match with the RFC 3161 record input hash algorithm {}.",
-                        context.getDocumentHash().getAlgorithm(), algorithm);
-            } else {
-                logger.info(
-                        "Document hash algorithm {} does not match with the input hash algorithm {} of the first aggragation chain.",
-                        context.getDocumentHash().getAlgorithm(), algorithm);
-            }
+            logger.info("Document hash algorithm {} does not match with the signature input hash algorithm {}.",
+                    context.getDocumentHash().getAlgorithm(), algorithm);
             return VerificationResultCode.FAIL;
         }
         return VerificationResultCode.OK;

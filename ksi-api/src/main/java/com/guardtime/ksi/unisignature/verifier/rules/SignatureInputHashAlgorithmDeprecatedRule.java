@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Verifies that the hash algorithm of the input hash of the signature (input hash of the first aggregation hash chain or
- * if present the input hash of the RFC-3161 record) is deprecated at the aggregation time.
+ * Verifies that the hash algorithm of the input hash of the signature (input hash of the first aggregation hash chain
+ * or if present the input hash of the RFC-3161 record) was not deprecated at the aggregation time.
  */
 public class SignatureInputHashAlgorithmDeprecatedRule extends BaseRule {
 

@@ -47,8 +47,7 @@ public class CalendarHashChainAlgorithmDeprecatedExtenderResponseRule extends Ba
                 publicationsFile.getPublicationRecord(context.getSignature().getAggregationTime());
         CalendarHashChain extendedCalendarHashChain =
                 context.getExtendedCalendarHashChain(publicationRecord.getPublicationTime());
-        if (extendedCalendarHashChain == null
-                || isAlgorithmsDeprecated(extendedCalendarHashChain, publicationRecord.getPublicationTime())) {
+        if (isAlgorithmsDeprecated(extendedCalendarHashChain, publicationRecord.getPublicationTime())) {
             return VerificationResultCode.NA;
         }
         return VerificationResultCode.OK;

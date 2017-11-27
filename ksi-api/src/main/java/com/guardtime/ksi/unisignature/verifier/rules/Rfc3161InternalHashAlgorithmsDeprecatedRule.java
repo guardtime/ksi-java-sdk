@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Verifies if the RFC-3161 record uses internally a hash function that was deprecated at the aggregation time.
+ * Verifies that the RFC-3161 record uses internally a hash functions that were not deprecated at the aggregation time.
  */
 public class Rfc3161InternalHashAlgorithmsDeprecatedRule extends BaseRule {
 

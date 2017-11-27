@@ -68,7 +68,6 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new AggregationChainInputHashVerificationRule());
         rules.add(new Rfc3161RecordTimeRule());
         rules.add(new Rfc3161RecordIndexRule());
-        rules.add(new AggregationHashChainIndexSuccessorRule());
 
         rules.add(new AggregationHashChainLinkMetadataRule());
         rules.add(new AggregationHashChainAlgorithmDeprecatedRule());
@@ -76,6 +75,7 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new AggregationHashChainConsistencyRule());
         rules.add(new AggregationHashChainTimeConsistencyRule());
         rules.add(new AggregationHashChainIndexConsistencyRule());
+        rules.add(new AggregationHashChainIndexSuccessorRule());
 
         // verify calendar hash chain (if present)
         rules.add(new CalendarHashChainInputHashVerificationRule());
@@ -90,8 +90,6 @@ public class InternalVerificationPolicy implements Policy {
         // verify calendar authentication record (if present)
         rules.add(new CalendarAuthenticationRecordAggregationTimeRule());
         rules.add(new CalendarAuthenticationRecordAggregationHashRule());
-
-
     }
 
     /**

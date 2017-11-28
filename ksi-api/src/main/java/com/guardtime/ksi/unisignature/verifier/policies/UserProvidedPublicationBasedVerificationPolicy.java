@@ -19,7 +19,19 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
-import com.guardtime.ksi.unisignature.verifier.rules.*;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAlgorithmDeprecatedRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CompositeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.ExtendingPermittedVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.Rule;
+import com.guardtime.ksi.unisignature.verifier.rules.SignaturePublicationRecordExistenceRule;
+import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationCalendarHashChainAlgorithmDeprecatedRule;
+import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationCreationTimeVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationExistenceRule;
+import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationExtendedSignatureInputHashRule;
+import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationHashEqualsToSignaturePublicationHashRule;
+import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationHashMatchesExtendedResponseRule;
+import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationTimeEqualsToSignaturePublicationTimeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationTimeMatchesExtendedResponseRule;
 
 /**
  * This policy can be used to verify keyless signatures using used provided publication.
@@ -29,32 +41,32 @@ public class UserProvidedPublicationBasedVerificationPolicy extends InternalVeri
     private static final String TYPE_USER_PROVIDED_PUBLICATION_BASED_POLICY = "USER_PROVIDED_PUBLICATION_POLICY";
 
     public UserProvidedPublicationBasedVerificationPolicy() {
-        addRule(new UserProvidedPublicationExistenceRule());
 
-        Rule verifyUserPublicationRule = new CompositeRule(false,
+        Rule userPublicationVerificationRule = new CompositeRule(false,
+                new UserProvidedPublicationExistenceRule(),
                 new SignaturePublicationRecordExistenceRule(),
-                new UserProvidedPublicationTimeEqualsToSignaturePublicationTimeRule(),
-                new UserProvidedPublicationHashEqualsToSignaturePublicationHashRule()
-        );
+                new UserProvidedPublicationTimeEqualsToSignaturePublicationTimeRule());
 
-
-        Rule publicationTimeRule = new CompositeRule(true,
-                new SignatureDoesNotContainPublicationRule(),
-                new UserProvidedPublicationTimeNotEqualToSignaturePublicationTimeRule()
-        );
-
-
-        Rule verifyUsingExtenderRule = new CompositeRule(false,
-                publicationTimeRule,
+        Rule useExtendingRule = new CompositeRule(false,
                 new UserProvidedPublicationCreationTimeVerificationRule(),
                 new ExtendingPermittedVerificationRule(),
+                new UserProvidedPublicationCalendarHashChainAlgorithmDeprecatedRule(),
                 new UserProvidedPublicationHashMatchesExtendedResponseRule(),
                 new UserProvidedPublicationTimeMatchesExtendedResponseRule(),
-                new UserProvidedPublicationExtendedSignatureInputHashRule()
-        );
+                new UserProvidedPublicationExtendedSignatureInputHashRule());
 
+        Rule verifySignatureAgainstUserPublicationRule = new CompositeRule(false,
+                userPublicationVerificationRule,
+                new UserProvidedPublicationHashEqualsToSignaturePublicationHashRule(),
+                new CalendarHashChainAlgorithmDeprecatedRule());
 
-        addRule(new CompositeRule(true, verifyUserPublicationRule, verifyUsingExtenderRule));
+        Rule extendSigantureForVerificationRule = new CompositeRule(true,
+                userPublicationVerificationRule,
+                useExtendingRule);
+
+        addRule(new CompositeRule(true,
+                verifySignatureAgainstUserPublicationRule,
+                extendSigantureForVerificationRule));
     }
 
     public String getName() {

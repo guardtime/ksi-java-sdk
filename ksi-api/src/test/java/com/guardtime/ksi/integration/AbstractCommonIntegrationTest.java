@@ -90,6 +90,7 @@ public abstract class AbstractCommonIntegrationTest {
     private static final Logger logger = LoggerFactory.getLogger(AbstractCommonIntegrationTest.class);
     protected static final String TEST_GROUP_INTEGRATION = "integration";
     protected static final String KSI_DATA_GROUP_NAME = "ksiDataProvider";
+    protected static final String INTERNAL_POLICY_SIGNATURES = "INTERNAL_POLICY_SIGNATURES";
     protected static final String INVALID_SIGNATURES = "INVALID_SIGNATURES";
     protected static final String POLICY_VERIFICATION_SIGNATURES = "POLICY_VERIFICATION_SIGNATURES";
     protected static final String VALID_SIGNATURES = "VALID_SIGNATURES";
@@ -346,6 +347,15 @@ public abstract class AbstractCommonIntegrationTest {
     public static Object[][] getTestDataAndResultsForValidSignatures() throws Exception {
         try{
             return getTestFilesAndResults("valid-signatures/", "signature-results.csv");
+        } catch (Throwable e){
+            return new Object[][] {{}};
+        }
+    }
+
+    @DataProvider(name = INTERNAL_POLICY_SIGNATURES)
+    public static Object[][] getTestDataAndResultsForInternalPolicySignatures() throws Exception {
+        try{
+            return getTestFilesAndResults("internal-policy-signatures/", "internal-policy-results.csv");
         } catch (Throwable e){
             return new Object[][] {{}};
         }

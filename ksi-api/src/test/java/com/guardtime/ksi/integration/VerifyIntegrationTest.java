@@ -22,11 +22,8 @@ package com.guardtime.ksi.integration;
 import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.ExtenderBuilder;
 import com.guardtime.ksi.KSI;
-import com.guardtime.ksi.PublicationsHandler;
-import com.guardtime.ksi.PublicationsHandlerBuilder;
 import com.guardtime.ksi.SignatureVerifier;
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
@@ -41,15 +38,12 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
-import com.guardtime.ksi.unisignature.verifier.policies.DefaultVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.security.Key;
 
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2014_06_02;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
@@ -73,6 +67,11 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = INVALID_SIGNATURES)
     public void testInvalidSignatures(IntegrationTestDataHolder testData) throws Exception {
         testExecution(testData);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = INTERNAL_POLICY_SIGNATURES)
+    public void testInternalPolicySignatures(IntegrationTestDataHolder testDataHolder) throws Exception {
+        testExecution(testDataHolder);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = POLICY_VERIFICATION_SIGNATURES)

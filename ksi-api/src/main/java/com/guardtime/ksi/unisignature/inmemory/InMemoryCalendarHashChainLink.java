@@ -53,7 +53,7 @@ abstract class InMemoryCalendarHashChainLink extends TLVStructure implements Cal
         if (!algorithm.isImplemented()) {
             throw new InvalidCalendarHashChainException("Invalid calendar hash chain. Hash algorithm " +algorithm.getName() + " is not implemented");
         }
-        DataHasher hasher = new DataHasher(algorithm);
+        DataHasher hasher = new DataHasher(algorithm, false);
         hasher.addData(imprintA);
         hasher.addData(imprintB);
         hasher.addData(new byte[]{(byte) 0xFF});

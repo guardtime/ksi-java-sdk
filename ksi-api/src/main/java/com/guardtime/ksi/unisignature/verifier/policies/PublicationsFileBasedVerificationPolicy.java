@@ -58,7 +58,7 @@ public class PublicationsFileBasedVerificationPolicy extends InternalVerificatio
                 new CalendarHashChainAlgorithmDeprecatedRule());
 
         Rule extendSigantureForVerificationRule = new CompositeRule(true,
-                signaturePublicationPresentInPubFileRule,
+                verifySignatureAgainsPubFileRule,
                 useExtendingRule);
 
         addRule(new CompositeRule(true,

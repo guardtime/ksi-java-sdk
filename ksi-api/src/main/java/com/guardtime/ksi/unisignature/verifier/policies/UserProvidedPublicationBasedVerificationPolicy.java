@@ -61,7 +61,7 @@ public class UserProvidedPublicationBasedVerificationPolicy extends InternalVeri
                 new CalendarHashChainAlgorithmDeprecatedRule());
 
         Rule extendSigantureForVerificationRule = new CompositeRule(true,
-                userPublicationVerificationRule,
+                verifySignatureAgainstUserPublicationRule,
                 useExtendingRule);
 
         addRule(new CompositeRule(true,

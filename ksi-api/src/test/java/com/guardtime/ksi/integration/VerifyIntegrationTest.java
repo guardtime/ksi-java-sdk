@@ -51,9 +51,9 @@ import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION;
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGR_CHAINS_AND_CALENDAR_CHAIN;
 import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE;
 import static com.guardtime.ksi.Resources.SIGNATURE_PUBLICATION_RECORD_DOES_NOT_MATCH_PUBLICATION;
-import static com.guardtime.ksi.Resources.SIGNATURE_PUBLICATION_RECORD_NOT_FOUND_FROM_FILE;
 import static com.guardtime.ksi.Resources.SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
@@ -260,7 +260,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyWithExtendedSignatureAndNoExtender_NA() throws Exception{
-        KSISignature signature = loadSignature(SIGNATURE_PUBLICATION_RECORD_NOT_FOUND_FROM_FILE);
+        KSISignature signature = loadSignature(SIGNATURE_ONLY_AGGR_CHAINS_AND_CALENDAR_CHAIN);
         VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(simpleHttpClient), null));
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);

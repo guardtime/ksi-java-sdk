@@ -104,7 +104,6 @@ public class CompositeRule implements Rule {
                     }
                 }
             }
-
             if (lastFailedResult != null) {
                 return lastFailedResult.getResultCode();
             }

@@ -216,13 +216,17 @@ public class IntegrationTestDataHolder {
         }
     }
 
-    private VerificationErrorCode getErrorCodeByName(String name) {
-        for (VerificationErrorCode code : VerificationErrorCode.values()) {
-            if (code.getCode().equals(name)) {
-                return code;
+    private VerificationErrorCode getErrorCodeByName(String code) {
+        if(code.length() == 0) {
+            return null;
+        } else {
+            for (VerificationErrorCode errorCode : VerificationErrorCode.values()) {
+                if (errorCode.getCode().equals(code)) {
+                    return errorCode;
+                }
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown verification error code: " + code);
     }
 
     public String toString() {

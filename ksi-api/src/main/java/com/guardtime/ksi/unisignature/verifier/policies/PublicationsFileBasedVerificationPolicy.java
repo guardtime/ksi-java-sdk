@@ -40,10 +40,6 @@ public class PublicationsFileBasedVerificationPolicy extends InternalVerificatio
 
     public PublicationsFileBasedVerificationPolicy() {
 
-        Rule signaturePublicationPresentInPubFileRule = new CompositeRule(false,
-                new SignaturePublicationRecordExistenceRule(),
-                new PublicationsFileContainsSignaturePublicationRule());
-
         Rule useExtendingRule = new CompositeRule(false,
                 new PublicationsFileContainsPublicationRule(),
                 new ExtendingPermittedVerificationRule(),
@@ -54,11 +50,12 @@ public class PublicationsFileBasedVerificationPolicy extends InternalVerificatio
         );
 
         Rule verifySignatureAgainsPubFileRule = new CompositeRule(false,
-                signaturePublicationPresentInPubFileRule,
+                new SignaturePublicationRecordExistenceRule(),
+                new PublicationsFileContainsSignaturePublicationRule(),
                 new CalendarHashChainAlgorithmDeprecatedRule());
 
         Rule extendSigantureForVerificationRule = new CompositeRule(true,
-                signaturePublicationPresentInPubFileRule,
+                verifySignatureAgainsPubFileRule,
                 useExtendingRule);
 
         addRule(new CompositeRule(true,

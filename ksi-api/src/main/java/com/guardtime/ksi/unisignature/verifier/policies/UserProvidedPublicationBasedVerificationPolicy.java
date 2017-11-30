@@ -42,11 +42,6 @@ public class UserProvidedPublicationBasedVerificationPolicy extends InternalVeri
 
     public UserProvidedPublicationBasedVerificationPolicy() {
 
-        Rule userPublicationVerificationRule = new CompositeRule(false,
-                new UserProvidedPublicationExistenceRule(),
-                new SignaturePublicationRecordExistenceRule(),
-                new UserProvidedPublicationTimeEqualsToSignaturePublicationTimeRule());
-
         Rule useExtendingRule = new CompositeRule(false,
                 new UserProvidedPublicationCreationTimeVerificationRule(),
                 new ExtendingPermittedVerificationRule(),
@@ -56,12 +51,14 @@ public class UserProvidedPublicationBasedVerificationPolicy extends InternalVeri
                 new UserProvidedPublicationExtendedSignatureInputHashRule());
 
         Rule verifySignatureAgainstUserPublicationRule = new CompositeRule(false,
-                userPublicationVerificationRule,
+                new UserProvidedPublicationExistenceRule(),
+                new SignaturePublicationRecordExistenceRule(),
+                new UserProvidedPublicationTimeEqualsToSignaturePublicationTimeRule(),
                 new UserProvidedPublicationHashEqualsToSignaturePublicationHashRule(),
                 new CalendarHashChainAlgorithmDeprecatedRule());
 
         Rule extendSigantureForVerificationRule = new CompositeRule(true,
-                userPublicationVerificationRule,
+                verifySignatureAgainstUserPublicationRule,
                 useExtendingRule);
 
         addRule(new CompositeRule(true,

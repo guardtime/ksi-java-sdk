@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -19,6 +19,8 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAlgorithmDeprecatedExtenderResponseRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAlgorithmDeprecatedRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CompositeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.ExtendingPermittedVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.PublicationsFileContainsPublicationRule;
@@ -38,21 +40,27 @@ public class PublicationsFileBasedVerificationPolicy extends InternalVerificatio
 
     public PublicationsFileBasedVerificationPolicy() {
 
-        Rule signaturePublicationPresentInPubFileRule = new CompositeRule(false,
-                new SignaturePublicationRecordExistenceRule(),
-                new PublicationsFileContainsSignaturePublicationRule());
-
         Rule useExtendingRule = new CompositeRule(false,
                 new PublicationsFileContainsPublicationRule(),
                 new ExtendingPermittedVerificationRule(),
+                new CalendarHashChainAlgorithmDeprecatedExtenderResponseRule(),
                 new PublicationsFilePublicationHashMatchesExtenderResponseRule(),
                 new PublicationsFilePublicationTimeMatchesExtenderResponseRule(),
                 new PublicationsFileExtendedSignatureInputHashRule()
         );
 
+        Rule verifySignatureAgainsPubFileRule = new CompositeRule(false,
+                new SignaturePublicationRecordExistenceRule(),
+                new PublicationsFileContainsSignaturePublicationRule(),
+                new CalendarHashChainAlgorithmDeprecatedRule());
+
+        Rule extendSigantureForVerificationRule = new CompositeRule(true,
+                verifySignatureAgainsPubFileRule,
+                useExtendingRule);
+
         addRule(new CompositeRule(true,
-                signaturePublicationPresentInPubFileRule,
-                useExtendingRule));
+                verifySignatureAgainsPubFileRule,
+                extendSigantureForVerificationRule));
     }
 
     public String getName() {

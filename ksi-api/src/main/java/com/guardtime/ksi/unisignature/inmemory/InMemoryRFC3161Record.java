@@ -156,20 +156,20 @@ class InMemoryRFC3161Record extends TLVStructure implements RFC3161Record {
     public DataHash getOutputHash(HashAlgorithm hashAlgorithm) throws HashException {
         DataHash hash = getInputHash();
 
-        DataHasher hasher = new DataHasher(HashAlgorithm.getById(tstInfoAlgorithm.intValue()));
+        DataHasher hasher = new DataHasher(HashAlgorithm.getById(tstInfoAlgorithm.intValue()), false);
         hasher.addData(tstInfoPrefix);
         hasher.addData(hash.getValue());
         hasher.addData(tstInfoSuffix);
 
         hash = hasher.getHash();
 
-        hasher = new DataHasher(HashAlgorithm.getById(signedAttributesAlgorithm.intValue()));
+        hasher = new DataHasher(HashAlgorithm.getById(signedAttributesAlgorithm.intValue()), false);
         hasher.addData(signedAttributesPrefix);
         hasher.addData(hash.getValue());
         hasher.addData(signedAttributesSuffix);
         hash = hasher.getHash();
 
-        hasher = new DataHasher(hashAlgorithm);
+        hasher = new DataHasher(hashAlgorithm, false);
         hasher.addData(hash.getImprint());
 
         return hasher.getHash();
@@ -182,6 +182,14 @@ class InMemoryRFC3161Record extends TLVStructure implements RFC3161Record {
     @Override
     public int getElementType() {
         return ELEMENT_TYPE;
+    }
+
+    public HashAlgorithm getTstInfoAlgorithm() {
+        return HashAlgorithm.getById(tstInfoAlgorithm.intValue());
+    }
+
+    public HashAlgorithm getSignedAttributesAlgorithm() {
+        return HashAlgorithm.getById(signedAttributesAlgorithm.intValue());
     }
 
 }

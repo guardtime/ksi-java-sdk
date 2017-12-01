@@ -131,6 +131,7 @@ abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStructure {
     protected DataHash calculateMac() throws KSIException {
         try {
             HashAlgorithm algorithm = HashAlgorithm.getByName("DEFAULT");
+            algorithm.checkExpiration();
             return new DataHash(algorithm, Util.calculateHMAC(getContent(), this.loginKey, algorithm.getName()));
         } catch (IOException e) {
             throw new KSIProtocolException("Problem with HMAC", e);

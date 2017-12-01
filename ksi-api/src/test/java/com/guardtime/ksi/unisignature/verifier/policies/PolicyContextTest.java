@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -26,8 +26,8 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class PolicyContextTest {
 
@@ -56,6 +56,15 @@ public class PolicyContextTest {
         assertNotNull(pc.getExtendingService());
         assertNotNull(pc.getPublicationsHandler());
         assertNull(pc.getUserPublication());
+    }
+
+    @Test
+    public void testPolicyContextWithPublicationData() {
+        PolicyContext pc = new PolicyContext(Mockito.mock(PublicationData.class));
+        assertFalse(pc.isExtendingAllowed());
+        assertNull(pc.getExtendingService());
+        assertNull(pc.getPublicationsHandler());
+        assertNotNull(pc.getUserPublication());
     }
 
     @Test

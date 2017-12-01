@@ -58,6 +58,19 @@ public interface KSISignatureFactory {
     KSISignature createSignature(TLVElement element, DataHash originalInputHash) throws KSIException;
 
     /**
+     * Creates keyless uni-signature from input TLV element.
+     *
+     * @param element
+     *         instance of {@link TLVElement}. not null
+     * @param originalInputHash - original input hash. It is used to verify signature if it is present.
+     * @param level - local aggregation tree height
+     * @return instance of {@link KSISignature}
+     * @throws KSIException
+     *         when error occurs (e.g input data is invalid)
+     */
+    KSISignature createSignature(TLVElement element, DataHash originalInputHash, long level) throws KSIException;
+
+    /**
      * Creates keyless uni-signature from given elements.
      *
      * @param aggregationHashChains

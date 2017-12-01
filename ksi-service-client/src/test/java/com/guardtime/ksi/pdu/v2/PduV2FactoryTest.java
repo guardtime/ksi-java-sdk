@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -365,6 +365,12 @@ public class PduV2FactoryTest {
         Assert.assertNotNull(response.getParents());
         Assert.assertEquals(response.getParents().size(), 3);
         Assert.assertEquals(response.getMaximumRequests(), Long.valueOf(4));
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
+    public void testConstructDeprecatedHmacAlgorithm() throws Exception {
+        new KSIServiceCredentials("anon", "anon", HashAlgorithm.SHA1);
     }
 
 }

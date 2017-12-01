@@ -58,6 +58,13 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
+    public void testSignHashWithLevel_Ok(KSI ksi) throws Exception {
+        KSISignature sig = ksi.sign(getFileHash(INPUT_FILE), 3L);
+        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, ksi.getExtendingService(), getFileHash(INPUT_FILE), 3L), new KeyBasedVerificationPolicy());
+        Assert.assertTrue(result.isOk());
+    }
+
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
     public void testSignFileAndUseInvalidHashForVerification_VerificationFailsWithErrorGen1(KSI ksi) throws Exception {
         KSISignature sig = ksi.sign(loadFile(INPUT_FILE));
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, ksi.getExtendingService(), getFileHash(INPUT_FILE_REVERSED)), new KeyBasedVerificationPolicy());

@@ -1,4 +1,5 @@
 /*
+
  * Copyright 2013-2016 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
@@ -82,7 +83,6 @@ public class Resources {
     public static final String RFC3161_SIGNATURE_INVALID_AGGREGATION_TIME = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-aggr-time-future-value.tlv";
     public static final String RFC3161_SIGNATURE_WRONG_RECORD_OUTPUT_HASH = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-input-hash-wrong.tlv";
     public static final String RFC3161_SIGNATURE_DEPRECATED_OUTPUT_HASH = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-and-aggregation-input-hash-has-deprecated-algorithm.tlv";
-
     public static final String RFC3161_SHA1_INPUT_HASH_2016 = VALID_SIGNATURES + "signature-SHA1-in-rfc3161-record-input-hash.ksig";
     public static final String RFC3161_SHA1_SIG_ATR_2016 = VALID_SIGNATURES + "signature-SHA1-in-rfc3161-record-sig-atr-algorithm.ksig";
     public static final String RFC3161_SHA1_TST_ALGORITHM_2016 = VALID_SIGNATURES + "signature-SHA1-in-rfc3161-record-tst-info-algorithm.ksig";

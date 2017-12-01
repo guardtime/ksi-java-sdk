@@ -174,7 +174,6 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm, maxTreeHeight);
     }
 
-
     /**
      * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
      */
@@ -194,6 +193,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      */
     public boolean add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException {
         notNull(dataHash, "DataHash");
+        dataHash.getAlgorithm().checkExpiration();
         if (level < 0 || level > MAXIMUM_LEVEL) {
             throw new IllegalStateException("Level must be between 0 and 255");
         }

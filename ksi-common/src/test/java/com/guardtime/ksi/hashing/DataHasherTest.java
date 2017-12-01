@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static com.guardtime.ksi.CommonTestUtil.loadFile;
@@ -49,8 +50,13 @@ public class DataHasherTest {
 
     @Test(dataProvider = "workingAlgorithms")
     public void testWorkingAlgorithms(HashAlgorithm algorithm) throws Exception {
-        DataHasher hasher = new DataHasher(algorithm);
+        DataHasher hasher = new DataHasher(algorithm, false);
         Assert.assertNotNull(hasher);
+    }
+
+    @Test(dataProvider = "deprecatedAlgorithms", expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm .* is marked deprecated since .*")
+    public void testDeprecatedAlgorithms(HashAlgorithm algorithm) throws Exception {
+        new DataHasher(algorithm, true);
     }
 
     @Test
@@ -69,6 +75,16 @@ public class DataHasherTest {
     public void testSha1AlgorithmStateTag() throws Exception {
         HashAlgorithm alg = HashAlgorithm.getByName("SHA1");
         Assert.assertEquals(alg.getStatus(), Status.NORMAL);
+        Assert.assertTrue(alg.isDeprecated(new Date()));
+        Assert.assertFalse(alg.isObsolete(new Date()));
+    }
+
+    @Test
+    public void testSha1AlgorithmBeforeObsolete() throws Exception {
+        HashAlgorithm alg = HashAlgorithm.SHA1;
+        Assert.assertEquals(alg.getStatus(), Status.NORMAL);
+        Assert.assertFalse(alg.isDeprecated(new Date(1467234000000L)/* 30.06.2016 */));
+        Assert.assertFalse(alg.isObsolete(new Date()));
     }
 
     @Test
@@ -185,6 +201,19 @@ public class DataHasherTest {
     @DataProvider(name = "workingAlgorithms")
     public Object[][] workingHashAlgorithms() {
         return getHashAlgorithmsByStatus(Status.NORMAL, Status.NOT_TRUSTED);
+    }
+
+    @DataProvider(name = "deprecatedAlgorithms")
+    public Object[][] deprecatedAlgorithms() {
+        List<Object[]> objectsList = new ArrayList<Object[]>();
+        Date currentDate = new Date();
+        for (HashAlgorithm algorithm : HashAlgorithm.values()) {
+            if (algorithm.isDeprecated(currentDate)) {
+                objectsList.add(new Object[]{algorithm});
+            }
+        }
+        Object[][] objects = new Object[objectsList.size()][];
+        return objectsList.toArray(objects);
     }
 
     private Object[][] getHashAlgorithmsByStatus(Status... allowedStatuses) {

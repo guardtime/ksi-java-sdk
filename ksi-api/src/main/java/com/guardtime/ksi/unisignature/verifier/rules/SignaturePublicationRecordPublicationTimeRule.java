@@ -35,7 +35,7 @@ import java.util.Date;
  */
 public class SignaturePublicationRecordPublicationTimeRule extends BaseRule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SignaturePublicationRecordPublicationHashRule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SignaturePublicationRecordPublicationTimeRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         if (context.getPublicationRecord() == null) {

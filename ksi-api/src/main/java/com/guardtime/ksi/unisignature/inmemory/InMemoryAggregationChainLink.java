@@ -214,7 +214,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
         if (!algorithm.isImplemented()) {
             throw new InvalidAggregationHashChainException("Invalid aggregation hash chain. Hash algorithm " + algorithm.getName() + " is not implemented");
         }
-        DataHasher hasher = new DataHasher(algorithm);
+        DataHasher hasher = new DataHasher(algorithm, false);
         hasher.addData(hash1);
         hasher.addData(hash2);
         hasher.addData(Util.encodeUnsignedLong(level));

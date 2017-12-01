@@ -20,7 +20,7 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.unisignature.CalendarHashChain;
+import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
@@ -61,9 +61,9 @@ public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTes
 
     @Test
     public void testPublicationFileDoesNotContainPublication_NA() throws Exception {
-        CalendarHashChain mockedChain = Mockito.mock(CalendarHashChain.class);
-        Mockito.when(mockedChain.getAggregationTime()).thenReturn(new Date());
-        Mockito.when(context.getCalendarHashChain()).thenReturn(mockedChain);
+        KSISignature ksiSignature = Mockito.mock(KSISignature.class);
+        Mockito.when(ksiSignature.getAggregationTime()).thenReturn(new Date());
+        Mockito.when(context.getSignature()).thenReturn(ksiSignature);
         Assert.assertEquals(rule.verify(context).getResultCode(), VerificationResultCode.NA);
     }
 

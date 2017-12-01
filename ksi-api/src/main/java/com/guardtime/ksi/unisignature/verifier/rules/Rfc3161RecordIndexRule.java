@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class Rfc3161RecordIndexRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(AggregationHashChainTimeConsistencyRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(Rfc3161RecordIndexRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         if (context.getRfc3161Record() != null) {

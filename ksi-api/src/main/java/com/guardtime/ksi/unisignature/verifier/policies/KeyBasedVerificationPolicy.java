@@ -21,6 +21,7 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecordExistenceRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecordSignatureVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAlgorithmDeprecatedRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainExistenceRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CertificateExistenceRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CertificateValidityRule;
@@ -36,6 +37,7 @@ public class KeyBasedVerificationPolicy extends InternalVerificationPolicy {
 
     public KeyBasedVerificationPolicy() {
         addRule(new CalendarHashChainExistenceRule());
+        addRule(new CalendarHashChainAlgorithmDeprecatedRule());
         addRule(new CalendarAuthenticationRecordExistenceRule());
         addRule(new CertificateExistenceRule());
         addRule(new CertificateValidityRule());

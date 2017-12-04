@@ -149,6 +149,8 @@ public class Resources {
     public static final String SIGNATURE_CALENDAR_AUTH_INVALID_HASH = INTERNAL_SIGNATURES_CALENDAR_AUTH + "invalid-signature-cal-auth-rec-pub-hash-datahash-value-wrong.tlv";
     public static final String SIGNATURE_CALENDAR_AUTH_INVALID_PUBLICATION_TIME = INTERNAL_SIGNATURES_CALENDAR_AUTH + "invalid-signature-cal-auth-rec-pub-time-int-value-wrong.tlv";
     public static final String SIGANTURE_CALENDAR_AUTH_BUT_NO_CALAENDAR = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-missing-cal-aut-present.tlv";
+    public static final String SIGNATURE_AGGREGATION_TIME_BEFORE_CERT = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-aggregation-time-before-cert-time-KEY-03.ksig";
+    public static final String SIGNATURE_AGGREGATION_TIME_AFTER_CERT = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-aggregation-time-after-cert-time-KEY-03.ksig";
     //Publication record
     public static final String SIGNATURE_PUBLICATION_RECORD_INVALID_HASH = INTERNAL_SIGNATURES_PUBLICATION_RECORD + "invalid-signature-pub-rec-pub-hash-datahash-value-wrong.tlv";
     public static final String SIGNATURE_PUBLICATION_RECORD_INVALID_PUBLICATION_TIME =  INTERNAL_SIGNATURES_PUBLICATION_RECORD + "invalid-signature-pub-rec-pub-time-future-value.tlv";

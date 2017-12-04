@@ -35,7 +35,7 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 
 /**
- * This rule is used to check if certificate not valid at aggregation time.
+ * This rule is used to check if certificate was valid at aggregation time.
  */
 
 public class CertificateValidityRule extends BaseRule {

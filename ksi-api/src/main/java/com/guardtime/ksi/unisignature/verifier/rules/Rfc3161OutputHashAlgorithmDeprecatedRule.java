@@ -21,6 +21,8 @@ package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.RFC3161Record;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
@@ -37,16 +39,22 @@ public class Rfc3161OutputHashAlgorithmDeprecatedRule extends BaseRule {
     private static final Logger logger = LoggerFactory.getLogger(Rfc3161OutputHashAlgorithmDeprecatedRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
-        if (context.getRfc3161Record() != null) {
-            Date rfc3161AggregationTime = context.getSignature().getAggregationTime();
-            HashAlgorithm hashAlgorithm = context.getSignature().getAggregationHashChains()[0].getInputHash().getAlgorithm();
-
-            if (context.getRfc3161Record().getOutputHash(hashAlgorithm).getAlgorithm().isDeprecated(rfc3161AggregationTime)) {
+        RFC3161Record rfc3161Record = context.getRfc3161Record();
+        if (rfc3161Record != null) {
+            if (isRfc3161OutputHashAlgorithmDeprecated(rfc3161Record, context.getSignature())) {
                 logger.info("RFC-3161 record output hash algorithm is deprecated.");
                 return VerificationResultCode.FAIL;
             }
         }
         return VerificationResultCode.OK;
+    }
+
+    private boolean isRfc3161OutputHashAlgorithmDeprecated(RFC3161Record rfc3161Record, KSISignature signature) {
+        Date aggregationTime = signature.getAggregationTime();
+        HashAlgorithm hashAlgorithm = signature.getAggregationHashChains()[0].getInputHash().getAlgorithm();
+        HashAlgorithm outputHashAlgorithm = rfc3161Record.getOutputHash(hashAlgorithm).getAlgorithm();
+
+        return outputHashAlgorithm.isDeprecated(aggregationTime);
     }
 
     public VerificationErrorCode getErrorCode() {

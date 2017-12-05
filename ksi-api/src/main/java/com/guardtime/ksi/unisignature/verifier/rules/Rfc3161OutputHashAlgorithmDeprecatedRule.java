@@ -41,21 +41,18 @@ public class Rfc3161OutputHashAlgorithmDeprecatedRule extends BaseRule {
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         RFC3161Record rfc3161Record = context.getRfc3161Record();
         if (rfc3161Record != null) {
-            if (isRfc3161OutputHashAlgorithmDeprecated(rfc3161Record, context.getSignature())) {
-                logger.info("RFC-3161 record output hash algorithm is deprecated.");
+            KSISignature signature = context.getSignature();
+            Date aggregationTime = signature.getAggregationTime();
+            HashAlgorithm hashAlgorithm = signature.getAggregationHashChains()[0].getInputHash().getAlgorithm();
+            if (hashAlgorithm.isDeprecated(aggregationTime)) {
+                logger.info("RFC-3161 record output hash algorithm {} was deprecated at aggregation time {}",
+                        hashAlgorithm.getName(), aggregationTime);
                 return VerificationResultCode.FAIL;
             }
         }
         return VerificationResultCode.OK;
     }
 
-    private boolean isRfc3161OutputHashAlgorithmDeprecated(RFC3161Record rfc3161Record, KSISignature signature) {
-        Date aggregationTime = signature.getAggregationTime();
-        HashAlgorithm hashAlgorithm = signature.getAggregationHashChains()[0].getInputHash().getAlgorithm();
-        HashAlgorithm outputHashAlgorithm = rfc3161Record.getOutputHash(hashAlgorithm).getAlgorithm();
-
-        return outputHashAlgorithm.isDeprecated(aggregationTime);
-    }
 
     public VerificationErrorCode getErrorCode() {
         return VerificationErrorCode.INT_17;

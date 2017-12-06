@@ -21,6 +21,7 @@ package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.unisignature.verifier.AlwaysSuccessfulPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.DefaultVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
@@ -34,7 +35,8 @@ public enum IntegrationTestAction {
     POLICY_KEY("key", new KeyBasedVerificationPolicy()),
     POLICY_CALENDAR("calendar", new CalendarBasedVerificationPolicy()),
     POLICY_USER_PUBLICATION("userPublication", new UserProvidedPublicationBasedVerificationPolicy()),
-    POLICY_PUBLICATIONS_FILE("publicationsFile", new PublicationsFileBasedVerificationPolicy());
+    POLICY_PUBLICATIONS_FILE("publicationsFile", new PublicationsFileBasedVerificationPolicy()),
+    POLICY_DEFAULT("default", new DefaultVerificationPolicy());
 
     IntegrationTestAction(String name, Policy policy) {
         this.name = name;

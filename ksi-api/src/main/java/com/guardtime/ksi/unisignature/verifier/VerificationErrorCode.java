@@ -44,6 +44,7 @@ public enum VerificationErrorCode {
     INT_14("INT-14", "RFC3161 compatibility record composed of hash algorithms that where deprecated at the time of signing"),
     INT_15("INT-15", "Aggregation hash chain uses hash algorithm that was deprecated at the time of signing"),
     INT_16("INT-16", "Calendar hash chain hash algorithm was obsolete at publication time"),
+    INT_17("INT-17", "The RFC3161 compatibility record output hash algorithm was deprecated at the time of signing"),
     PUB_01("PUB-01", "Extender response calendar root hash mismatch"),
     PUB_02("PUB-02", "Extender response inconsistent"),
     PUB_03("PUB-03", "Extender response input hash mismatch"),

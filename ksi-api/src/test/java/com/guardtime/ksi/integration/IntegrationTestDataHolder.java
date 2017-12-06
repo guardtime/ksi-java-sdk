@@ -70,6 +70,7 @@ import java.security.cert.CertificateFactory;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
+import static com.guardtime.ksi.TestUtil.calculateHash;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.createCertSelector;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.createKeyStore;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadHTTPSettings;
@@ -197,12 +198,6 @@ public class IntegrationTestDataHolder {
             }
         });
         return mockClient;
-    }
-
-    private DataHash calculateHash(TLVElement rootElement, HashAlgorithm macAlgorithm, byte[] loginKey) throws Exception {
-        byte[] tlvBytes = rootElement.getEncoded();
-        byte[] macCalculationInput = Util.copyOf(tlvBytes, 0, tlvBytes.length - macAlgorithm.getLength());
-        return new DataHash(macAlgorithm, Util.calculateHMAC(macCalculationInput, loginKey, macAlgorithm.getName()));
     }
 
     private PublicationsFile getPublicationsFile() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, KSIException {

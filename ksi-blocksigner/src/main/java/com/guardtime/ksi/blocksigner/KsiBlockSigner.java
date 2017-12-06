@@ -271,9 +271,14 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
                         leafKey.getInputDataHash(), firstChain.getAggregationTime(), chainIndex, links, algorithm);
                 aggregationHashChains.add(0, aggregationHashChain);
             } else { // situation, where only one hash without metadata is signed
+                //TODO:
+                //TODO: IS THIS EVEN NEEDED? JUST RETURN ROOTNODE SIGNATURE????
+                //TODO:
+                //TODO: Hard coded left link is created (might be right as well) AND hard coded  metadata is expected while it might also be sibling hash or legacy ID.
                 AggregationChainLink leftAggregationChainLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(
                         firstChain.getChainLinks().get(0).getMetadata(), leafKey.getLeaf().getLevel());
                 links.addAll(firstChain.getChainLinks());
+                //TODO: Original link gets forcefully replaced - prove that it's bad due to above issue.
                 links.set(0, leftAggregationChainLink);
 
                 AggregationHashChain aggregationHashChain =

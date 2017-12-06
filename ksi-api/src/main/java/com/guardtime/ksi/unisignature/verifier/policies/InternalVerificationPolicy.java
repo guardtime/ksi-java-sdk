@@ -36,6 +36,7 @@ import com.guardtime.ksi.unisignature.verifier.rules.DocumentHashAlgorithmVerifi
 import com.guardtime.ksi.unisignature.verifier.rules.DocumentHashVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.InputHashLevelVerificationRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161InternalHashAlgorithmsDeprecatedRule;
+import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161OutputHashAlgorithmDeprecatedRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161RecordIndexRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rfc3161RecordTimeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
@@ -65,6 +66,7 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new SignatureInputHashAlgorithmDeprecatedRule());
 
         rules.add(new Rfc3161InternalHashAlgorithmsDeprecatedRule());
+        rules.add(new Rfc3161OutputHashAlgorithmDeprecatedRule());
         rules.add(new AggregationChainInputHashVerificationRule());
         rules.add(new Rfc3161RecordTimeRule());
         rules.add(new Rfc3161RecordIndexRule());

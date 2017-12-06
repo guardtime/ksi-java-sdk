@@ -10,6 +10,7 @@ Version 4.11
 * FEATURE: Now Possible to extend with TCPClient. Also possible to initialize SigingTCPClient and ExtenderTCPClient separately. Deprecated TCPClient(TCPClientSettings) constructor.
 * BUGFIX: Made extender optional for publication code based verification.
 * IMPROVEMENT: No support for Java 5 and Java 6 anymore.
+* IMPROVEMENT: The RFC3161 compatibility record output hash algorithm deprecated verification rule.
 * BUGFIX: Made extender optional for publication code based verification.
 * IMPROVEMENT: Added general context aware verification policy.
 * IMPROVEMENT: Hash level to signing interface.

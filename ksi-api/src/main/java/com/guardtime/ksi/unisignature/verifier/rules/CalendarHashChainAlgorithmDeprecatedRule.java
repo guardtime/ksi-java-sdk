@@ -29,6 +29,8 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
+
 /**
  * Verifies if any of the calendar hash chain aggregation hash algorithms (derived from the left link)
  * were deprecated at the publication time.
@@ -46,8 +48,9 @@ public class CalendarHashChainAlgorithmDeprecatedRule extends BaseRule {
     }
 
     private boolean isAlgorithmsDeprecated(CalendarHashChain calendarHashChain) throws InvalidCalendarHashChainException {
+        Date publicationTime = calendarHashChain.getPublicationTime();
         for (CalendarHashChainLink link : calendarHashChain.getChainLinks()) {
-            if (!link.isRightLink() && link.getDataHash().getAlgorithm().isDeprecated(calendarHashChain.getPublicationTime())) {
+            if (!link.isRightLink() && link.getDataHash().getAlgorithm().isDeprecated(publicationTime)) {
                 logger.info("Calendar hash chain aggregation hash algorithm {} is deprecated.",
                         link.getDataHash().getAlgorithm().getName());
                 return true;

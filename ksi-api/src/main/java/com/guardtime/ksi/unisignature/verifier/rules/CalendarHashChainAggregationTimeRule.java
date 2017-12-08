@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * This rule is used to verify that calendar hash chain aggregation time equals to last aggregation hash chain
+ * Verifies that calendar hash chain aggregation time equals to last aggregation hash chain
  * aggregation time. If calendar hash chain is missing then {@link VerificationResultCode#OK} is returned.
  */
 public class CalendarHashChainAggregationTimeRule extends BaseRule {

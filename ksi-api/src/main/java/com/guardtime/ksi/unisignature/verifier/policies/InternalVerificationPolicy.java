@@ -48,7 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This policy is used to check keyless signature internal consistency. The verification described in this policy
+ * Checks keyless signature internal consistency. The verification described in this policy
  * assumes, the signature being verified is syntactically correct - it parses correctly and contains all the mandatory
  * elements. Parsing of the signature must be completed before the verification process.
  */

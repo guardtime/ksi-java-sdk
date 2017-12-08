@@ -27,7 +27,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 
 /**
- * This rule is used to check if publications file contains publication closest to signature registration time.
+ * Checks if publications file contains publication closest to signature registration time.
  */
 public class PublicationsFileContainsPublicationRule extends BaseRule {
 

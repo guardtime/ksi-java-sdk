@@ -28,7 +28,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 
 /**
- * This rule can be used to check if publications file contains signature publication.
+ * Checks if publications file contains signature publication.
  */
 public class PublicationsFileContainsSignaturePublicationRule extends BaseRule {
 

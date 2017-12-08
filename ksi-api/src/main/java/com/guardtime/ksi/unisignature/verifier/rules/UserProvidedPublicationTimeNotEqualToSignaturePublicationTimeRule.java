@@ -27,7 +27,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import java.util.Date;
 
 /**
- * This rule is used verify that user provided publication time does not equal to signature publication time
+ * Verifies that user provided publication time does not equal to signature publication time
  */
 public class UserProvidedPublicationTimeNotEqualToSignaturePublicationTimeRule extends BaseRule {
 

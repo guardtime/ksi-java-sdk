@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * This rule verifies that aggregation chain indices are matching corresponding aggregation chains (e.g all left and
+ * Verifies that aggregation chain indices are matching corresponding aggregation chains (e.g all left and
  * right links are correctly defined in the chain index).
  */
 public final class AggregationHashChainIndexConsistencyRule extends BaseRule {

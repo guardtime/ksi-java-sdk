@@ -26,7 +26,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 
 /**
- * Rule to check that keyless signature does not contain calendar hash chain.
+ * Checks that keyless signature does not contain calendar hash chain.
  */
 public class CalendarHashChainDoesNotExistRule extends BaseRule {
 

@@ -26,7 +26,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 
 /**
- * This rule checks that signature does not contain publication record.
+ * Checks that signature does not contain publication record.
  */
 public class SignatureDoesNotContainPublicationRule extends BaseRule {
 

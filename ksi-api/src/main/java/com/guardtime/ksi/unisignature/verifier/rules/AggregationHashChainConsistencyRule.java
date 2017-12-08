@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This rule verifies that all aggregation hash chains are consistent (e.g previous aggregation output hash equals to
+ * Verifies that all aggregation hash chains are consistent (e.g previous aggregation output hash equals to
  * current aggregation chain input hash).
  */
 public final class AggregationHashChainConsistencyRule extends BaseRule {

@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This rule is used verify that user provided publication hash matches with extender response calendar root hash.
+ * Verifies that user provided publication hash matches with extender response calendar root hash.
  */
 public class UserProvidedPublicationHashMatchesExtendedResponseRule extends BaseRule {
 

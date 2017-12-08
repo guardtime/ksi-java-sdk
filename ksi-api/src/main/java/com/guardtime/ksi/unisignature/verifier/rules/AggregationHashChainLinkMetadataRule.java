@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * This rule verifies that all metadata structures in aggregation hash chain links are valid.
+ * Verifies that all metadata structures in aggregation hash chain links are valid.
  */
 public final class AggregationHashChainLinkMetadataRule extends BaseRule {
     private static final int EXPECTED_PADDING_CONTENT = 0x01;

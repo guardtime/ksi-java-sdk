@@ -27,7 +27,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import java.util.Date;
 
 /**
- * This rule checks that signature is created before user provided publication.
+ * Checks that signature is created before user provided publication.
  */
 public class UserProvidedPublicationCreationTimeVerificationRule extends BaseRule {
 

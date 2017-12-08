@@ -29,7 +29,7 @@ import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
 
 /**
- * This rule is used verify that publications file publication time matches with extender response calendar chain
+ * Verifies that publications file publication time matches with extender response calendar chain
  * shape.
  */
 public class PublicationsFilePublicationTimeMatchesExtenderResponseRule extends BaseRule {

@@ -32,7 +32,8 @@ import com.guardtime.ksi.unisignature.verifier.rules.Rule;
 import com.guardtime.ksi.unisignature.verifier.rules.SignaturePublicationRecordExistenceRule;
 
 /**
- * This rule can be used to verify signatures using publications file.
+ *
+ * KSI Signature verification policy. Can be used to verify signatures using publications file.
  */
 public class PublicationsFileBasedVerificationPolicy extends InternalVerificationPolicy {
 

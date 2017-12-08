@@ -34,7 +34,7 @@ import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationTime
 import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationTimeMatchesExtendedResponseRule;
 
 /**
- * This policy can be used to verify keyless signatures using used provided publication.
+ * KSI Signature verification policy. Can be used to verify signatures using userd provided publication.
  */
 public class UserProvidedPublicationBasedVerificationPolicy extends InternalVerificationPolicy {
 

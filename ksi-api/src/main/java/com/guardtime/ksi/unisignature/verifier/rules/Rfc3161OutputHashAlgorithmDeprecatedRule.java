@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * This rule verifies if the RFC3161 compatibility record output hash algorithm was deprecated at the time of signing.
+ * Verifies if the RFC3161 compatibility record output hash algorithm was deprecated at the time of signing.
  */
 public class Rfc3161OutputHashAlgorithmDeprecatedRule extends BaseRule {
 

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * This rule is used to check that extended signature contains correct calendar hash chain input hash (e.g matches with
+ * Checks that extended signature contains correct calendar hash chain input hash (e.g matches with
  * aggregation chain root hash).
  */
 public class ExtendedSignatureCalendarChainInputHashRule extends BaseRule {

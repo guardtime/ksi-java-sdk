@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.security.cert.Certificate;
 
 /**
- * This rule ise used to check if publications file contains certificate with certificate id present in calendar
+ * Checks if publications file contains certificate with certificate id present in calendar
  * authentication record.
  */
 public class CertificateExistenceRule extends BaseRule {

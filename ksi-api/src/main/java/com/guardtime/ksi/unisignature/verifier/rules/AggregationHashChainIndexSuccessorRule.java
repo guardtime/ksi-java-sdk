@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * This rule checks that chain index of a aggregation hash chain is successor to it's parent aggregation hash chain index.
+ * Checks that chain index of a aggregation hash chain is successor to it's parent aggregation hash chain index.
  */
 public class AggregationHashChainIndexSuccessorRule extends BaseRule {
 

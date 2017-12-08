@@ -68,8 +68,8 @@ public class InternalVerificationPolicy implements Policy {
         rules.add(new Rfc3161InternalHashAlgorithmsDeprecatedRule());
         rules.add(new Rfc3161OutputHashAlgorithmDeprecatedRule());
         rules.add(new AggregationChainInputHashVerificationRule());
-        rules.add(new Rfc3161RecordTimeRule());
         rules.add(new Rfc3161RecordIndexRule());
+        rules.add(new Rfc3161RecordTimeRule());
         rules.add(new AggregationHashChainIndexSuccessorRule());
 
         rules.add(new AggregationHashChainLinkMetadataRule());

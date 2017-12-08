@@ -19,9 +19,11 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarAuthenticationRecordAggregationHashRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainAlgorithmDeprecatedRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CompositeRule;
 import com.guardtime.ksi.unisignature.verifier.rules.ExtendingPermittedVerificationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.NotRule;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
 import com.guardtime.ksi.unisignature.verifier.rules.SignaturePublicationRecordExistenceRule;
 import com.guardtime.ksi.unisignature.verifier.rules.UserProvidedPublicationCalendarHashChainAlgorithmDeprecatedRule;
@@ -50,20 +52,30 @@ public class UserProvidedPublicationBasedVerificationPolicy extends InternalVeri
                 new UserProvidedPublicationTimeMatchesExtendedResponseRule(),
                 new UserProvidedPublicationExtendedSignatureInputHashRule());
 
-        Rule verifySignatureAgainstUserPublicationRule = new CompositeRule(false,
+        Rule publicationsEqual = new CompositeRule(false,
                 new UserProvidedPublicationExistenceRule(),
                 new SignaturePublicationRecordExistenceRule(),
                 new UserProvidedPublicationTimeEqualsToSignaturePublicationTimeRule(),
                 new UserProvidedPublicationHashEqualsToSignaturePublicationHashRule(),
                 new CalendarHashChainAlgorithmDeprecatedRule());
 
-        Rule extendSigantureForVerificationRule = new CompositeRule(true,
-                verifySignatureAgainstUserPublicationRule,
+        Rule publicationTimesNotEqualDoExtending = new CompositeRule(false,
+                new UserProvidedPublicationExistenceRule(),
+                new SignaturePublicationRecordExistenceRule(),
+                new NotRule(new UserProvidedPublicationTimeEqualsToSignaturePublicationTimeRule()),
                 useExtendingRule);
 
+        Rule signatureDoesNotContainPublicationDoExtending = new CompositeRule(false,
+                new UserProvidedPublicationExistenceRule(),
+                new NotRule(new SignaturePublicationRecordExistenceRule()),
+                useExtendingRule);
+
+
         addRule(new CompositeRule(true,
-                verifySignatureAgainstUserPublicationRule,
-                extendSigantureForVerificationRule));
+                publicationsEqual,
+                publicationTimesNotEqualDoExtending,
+                signatureDoesNotContainPublicationDoExtending));
+
     }
 
     public String getName() {

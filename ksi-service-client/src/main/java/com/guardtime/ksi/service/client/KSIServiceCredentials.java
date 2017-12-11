@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -103,6 +103,7 @@ public class KSIServiceCredentials implements ServiceCredentials {
             throw new IllegalArgumentException("loginKey is null");
         }
         if (hmacAlgorithm != null) {
+            hmacAlgorithm.checkExpiration();
             this.hmacAlgorithm = hmacAlgorithm;
         }
         this.loginId = loginId;

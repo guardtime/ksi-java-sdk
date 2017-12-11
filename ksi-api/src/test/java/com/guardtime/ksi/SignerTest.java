@@ -17,6 +17,26 @@ public class SignerTest {
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
+    public void testSignerBuilderWithDeprecatedAlgorithm() throws KSIException {
+        new SignerBuilder().setSigningService(mockedSigningService).setDefaultSigningHashAlgorithm(HashAlgorithm.SHA1).build();
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
+    public void testSignWithDeprecatedAlgorithm() throws KSIException {
+        Signer signer = new SignerBuilder().setSigningService(mockedSigningService).build();
+        signer.sign(new DataHash(HashAlgorithm.SHA1, new byte[20]));
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
+    public void testAsyncSignWithDeprecatedAlgorithm() throws KSIException {
+        Signer signer = new SignerBuilder().setSigningService(mockedSigningService).build();
+        signer.asyncSign(new DataHash(HashAlgorithm.SHA1, new byte[20]));
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
             expectedExceptionsMessageRegExp = "Level must be between 0 and 255")
     public void testSignWithNegativeLevel() throws KSIException {
         Signer signer = new SignerBuilder().setSigningService(mockedSigningService).build();

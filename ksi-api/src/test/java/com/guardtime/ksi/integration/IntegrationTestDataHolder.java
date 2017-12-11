@@ -63,6 +63,7 @@ import java.security.cert.CertificateException;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
+import static com.guardtime.ksi.TestUtil.calculateHash;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.createCertSelector;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.createKeyStore;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadHTTPSettings;
@@ -77,7 +78,6 @@ public class IntegrationTestDataHolder {
     private final DataHash inputHash;
     private final DataHash chcInputHash;
     private final DataHash chchOutputHash;
-    private final Date registrationTime;
     private final Date aggregationTime;
     private final Date publicationTime;
     private final PublicationData userPublication;
@@ -101,12 +101,12 @@ public class IntegrationTestDataHolder {
         notEmpty(inputData[0], "Test file");
         if (testFilePath != null && !(testFilePath.trim().length() == 0)) {
             testFile = testFilePath + inputData[0];
-            responseFile = inputData[13].length() == 0 ? null : testFilePath + inputData[13];
-            publicationsFile = inputData[14].length() == 0 ? null : testFilePath + inputData[14];
+            responseFile = inputData[12].length() == 0 ? null : testFilePath + inputData[12];
+            publicationsFile = inputData[13].length() == 0 ? null : testFilePath + inputData[13];
         } else {
             testFile = inputData[0];
-            responseFile = inputData[13].length() == 0 ? null : inputData[13];
-            publicationsFile = inputData[14].length() == 0 ? null : inputData[14];
+            responseFile = inputData[12].length() == 0 ? null : inputData[12];
+            publicationsFile = inputData[13].length() == 0 ? null : inputData[13];
         }
 
         notEmpty(inputData[1], "Action");
@@ -118,11 +118,10 @@ public class IntegrationTestDataHolder {
         inputHash = inputData[5].length() == 0 ? null : new DataHash(Base16.decode(inputData[5]));
         chcInputHash = inputData[6].length() == 0 ? null : new DataHash(Base16.decode(inputData[6]));
         chchOutputHash = inputData[7].length() == 0 ? null : new DataHash(Base16.decode(inputData[7]));
-        registrationTime = inputData[8].length() == 0 ? null : new Date(Long.decode(inputData[8]) * 1000L);
-        aggregationTime = inputData[9].length() == 0 ? null : new Date(Long.decode(inputData[9]) * 1000L);
-        publicationTime = inputData[10].length() == 0 ? null : new Date(Long.decode(inputData[10]) * 1000L);
-        userPublication = inputData[11].length() == 0 ? null : new PublicationData(inputData[11]);
-        extendingPermitted = inputData[12].length() == 0 ? false : Boolean.valueOf(inputData[12]);
+        aggregationTime = inputData[8].length() == 0 ? null : new Date(Long.decode(inputData[8]) * 1000L);
+        publicationTime = inputData[9].length() == 0 ? null : new Date(Long.decode(inputData[9]) * 1000L);
+        userPublication = inputData[10].length() == 0 ? null : new PublicationData(inputData[10]);
+        extendingPermitted = inputData[11].length() == 0 ? false : Boolean.valueOf(inputData[11]);
 
         this.settings = loadHTTPSettings();
         buildKsi();
@@ -195,12 +194,6 @@ public class IntegrationTestDataHolder {
         return mockClient;
     }
 
-    private DataHash calculateHash(TLVElement rootElement, HashAlgorithm macAlgorithm, byte[] loginKey) throws Exception {
-        byte[] tlvBytes = rootElement.getEncoded();
-        byte[] macCalculationInput = Util.copyOf(tlvBytes, 0, tlvBytes.length - macAlgorithm.getLength());
-        return new DataHash(macAlgorithm, Util.calculateHMAC(macCalculationInput, loginKey, macAlgorithm.getName()));
-    }
-
     private PublicationsFile getPublicationsFile() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, KSIException {
         InMemoryPublicationsFileFactory factory = new InMemoryPublicationsFileFactory(new JKSTrustStore(createKeyStore(), createCertSelector()));
         return factory.create(load(publicationsFile));
@@ -218,13 +211,17 @@ public class IntegrationTestDataHolder {
         }
     }
 
-    private VerificationErrorCode getErrorCodeByName(String name) {
-        for (VerificationErrorCode code : VerificationErrorCode.values()) {
-            if (code.getCode().equals(name)) {
-                return code;
+    private VerificationErrorCode getErrorCodeByName(String code) {
+        if(code.length() == 0) {
+            return null;
+        } else {
+            for (VerificationErrorCode errorCode : VerificationErrorCode.values()) {
+                if (errorCode.getCode().equals(code)) {
+                    return errorCode;
+                }
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown verification error code: " + code);
     }
 
     public String toString() {
@@ -236,7 +233,6 @@ public class IntegrationTestDataHolder {
                 ", inputHash=" + inputHash +
                 ", chcInputHash=" + chcInputHash +
                 ", chchOutputHash=" + chchOutputHash +
-                ", registrationTime=" + (registrationTime == null ? "" : registrationTime.getTime()) +
                 ", aggregationTime=" + (aggregationTime == null ? "" : aggregationTime.getTime()) +
                 ", publicationTime=" + (publicationTime == null ? "" : publicationTime.getTime()) +
                 ", userPublication=" + (userPublication == null ? "" : userPublication.getPublicationString()) +
@@ -272,10 +268,6 @@ public class IntegrationTestDataHolder {
 
     public DataHash getChchOutputHash() {
         return chchOutputHash;
-    }
-
-    public Date getRegistrationTime() {
-        return registrationTime;
     }
 
     public Date getAggregationTime() {

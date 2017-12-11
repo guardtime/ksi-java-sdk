@@ -92,6 +92,7 @@ public final class SignerBuilder {
         if (defaultHashAlgorithm == null) {
             this.defaultHashAlgorithm = HashAlgorithm.SHA2_256;
         }
+        defaultHashAlgorithm.checkExpiration();
         if (policy == null) {
             this.policy = ContextAwarePolicyAdapter.createInternalPolicy();
         }
@@ -141,6 +142,7 @@ public final class SignerBuilder {
 
         public Future<KSISignature> asyncSign(DataHash dataHash, long level) throws KSIException {
             notNull(dataHash, "Data hash");
+            dataHash.getAlgorithm().checkExpiration();
             if (level < 0 || level > MAXIMUM_LEVEL) {
                 throw new IllegalArgumentException("Level must be between 0 and 255");
             }

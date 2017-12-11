@@ -131,49 +131,19 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
     }
 
     /**
-     * Creates general verification policy.
-     * <br>
-     * Verification procedure:
-     * <li>Verification with user publication (if provided), signature is extended only if extender is provided.
-     * <li>Otherwise verification with publications file, signature is extended only if extender is provided.
-     * <li>Key-based verification, only done if publications file based verification ends with NA.
-     *
-     * @param publicationData
-     *      User provided publication data.
-     * @param handler
-     *      Publications handler.
-     * @param extender
-     *      Extender.
-     * @return Context aware verification policy based on user input.
-     */
-    public static ContextAwarePolicy createGeneralPolicy(PublicationData publicationData, PublicationsHandler handler,
-            Extender extender) {
-        if (publicationData != null) {
-            return createUserProvidedPublicationPolicy(publicationData, extender);
-        } else {
-            return createGeneralPolicy(handler, extender);
-        }
-    }
-
-    /**
-     * Creates general verification policy.
-     * <br>
-     * Verification procedure:
-     * <li>Verification with publications file, signature is extended only if extender is provided.
-     * <li>Key-based verification, only done if publications file based verification ends with NA.
+     * Creates context aware policy using {@link DefaultVerificationPolicy} for verification.
+     * If extender is set, signature is extended within verification process.
      *
      * @param handler
      *      Publications handler.
      * @param extender
      *      Extender.
-     * @return Context aware verification policy based on user input.
+     * @return Context aware verification policy for default verification.
      */
-    public static ContextAwarePolicy createGeneralPolicy(PublicationsHandler handler, Extender extender) {
+    public static ContextAwarePolicy createDefaultPolicy(PublicationsHandler handler, Extender extender) {
         Util.notNull(handler, "Publications handler");
-        PolicyContext context = new PolicyContext(handler, extender != null ? extender.getExtendingService() : null);
-        PublicationsFileBasedVerificationPolicy publicationsPolicy = new PublicationsFileBasedVerificationPolicy();
-        publicationsPolicy.setFallbackPolicy(new KeyBasedVerificationPolicy());
-        return new ContextAwarePolicyAdapter(publicationsPolicy, context);
+        return new ContextAwarePolicyAdapter(new DefaultVerificationPolicy(),
+                new PolicyContext(handler, extender != null ? extender.getExtendingService() : null));
     }
 
     /**

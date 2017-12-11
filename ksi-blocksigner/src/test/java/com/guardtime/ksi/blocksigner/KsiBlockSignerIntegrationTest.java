@@ -28,6 +28,9 @@ import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
+import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeClass;
@@ -35,6 +38,9 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
@@ -75,8 +81,9 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     @DataProvider(name = WORKING_HASH_ALGORITHMS)
     public Object[][] hashAlgorithms() {
         List<Object[]> hashAlgorithms = new ArrayList<>();
+        Date currentDate = new Date();
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
-            if (HashAlgorithm.Status.NOT_IMPLEMENTED != algorithm.getStatus()) {
+            if (HashAlgorithm.Status.NOT_IMPLEMENTED != algorithm.getStatus() && !algorithm.isDeprecated(currentDate)) {
                 hashAlgorithms.add(new Object[]{algorithm});
             }
         }
@@ -112,11 +119,23 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     public void testBlockSignerWithAllWorkingHashAlgorithms(HashAlgorithm algorithm) throws Exception {
         KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setDefaultHashAlgorithm(algorithm).build();
         blockSigner.add(dataHashSha512, metadata4);
-        blockSigner.add(dataHashSha1, metadata);
         blockSigner.add(dataHashRipemd160, metadata2);
         blockSigner.add(dataHashSha386, metadata3);
 
-        signAndVerify(blockSigner, 4);
+        signAndVerify(blockSigner, 3);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
+    public void testBlockSignerWithDeprecatedHashAlgorithms() throws Exception {
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        blockSigner.add(dataHashSha1, metadata);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
+    public void testInitBlockSignerWithDeprecatedHashAlgorithm() throws Exception {
+        new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setDefaultHashAlgorithm(HashAlgorithm.SHA1).build();
     }
 
     @Test
@@ -201,6 +220,77 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         signAndVerify(blockSigner, 3);
     }
 
+    @Test
+    public void testBlockSignerSignatureOutputOrder() throws Exception {
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        List<Input> input = Arrays.asList(new Input(DATA_HASH, 3L, metadata), new Input(DATA_HASH, 0L, metadata3),
+                new Input(DATA_HASH_2, 0L, metadata2), new Input(dataHashSha386, 3L, metadata),
+                new Input(DATA_HASH, 0L, metadata4), new Input(DATA_HASH, 0L, metadata), new Input(DATA_HASH, 2L, metadata3),
+                new Input(DATA_HASH_2, 1L, metadata), new Input(DATA_HASH_2, 1L, metadata2),
+                new Input(dataHashSha386, 0L, metadata4), new Input(dataHashSha386, 1L, metadata3));
+        Collections.shuffle(input);
+
+        for (Input i : input) {
+            builder.add(i.getDataHash(), i.getLevel(), i.getMetadata());
+        }
+
+        List<KSISignature> signatures = builder.sign();
+        assertNotNull(signatures);
+        assertFalse(signatures.isEmpty());
+        assertEquals(signatures.size(), input.size());
+        int index = 0;
+        for (KSISignature signature : signatures) {
+            assertTrue(ksi.verify(signature, new KeyBasedVerificationPolicy()).isOk());
+            assertEquals(signature.getInputHash(), input.get(index).getDataHash());
+            assertEquals(signature.getAggregationHashChains()[0].getChainLinks().get(0).getLevelCorrection(),
+                    input.get(index).getLevel());
+            assertEquals(signature.getAggregationHashChainIdentity()[signature.getAggregationHashChainIdentity().length-1].getDecodedClientId(),
+                    input.get(index).getMetadata().getClientId());
+            index++;
+        }
+    }
+
+    @Test
+    public void testBlockSignerWithoutMetadata() throws Exception {
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        blockSigner.add(DATA_HASH);
+        blockSigner.add(DATA_HASH);
+        blockSigner.add(DATA_HASH);
+        signAndVerify(blockSigner, 3);
+    }
+
+    @Test
+    public void testBlockSignerOneHashWithoutMetadata() throws Exception {
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        blockSigner.add(DATA_HASH);
+        signAndVerify(blockSigner, 1);
+    }
+
+    @Test
+    public void testBlockSignerWithoutMetadataLevel() throws Exception {
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        List<Input> hashes = Arrays.asList(new Input(DATA_HASH, 2L, null), new Input(DATA_HASH, 3L, null),
+                new Input(DATA_HASH, 2L, null), new Input(DATA_HASH, 3L, null), new Input(DATA_HASH, 1L, null));
+
+        for (Input hashWithLevel : hashes) {
+            blockSigner.add(hashWithLevel.getDataHash(), hashWithLevel.getLevel(), null);
+        }
+
+        signAndVerifyWithLevel(blockSigner, hashes);
+    }
+
+    @Test
+    public void testBlockSignerOneHashLevelWithoutMetadata() throws Exception {
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        List<Input> hashes = Collections.singletonList(new Input(DATA_HASH, 2L, null));
+
+        for (Input hashWithLevel : hashes) {
+            blockSigner.add(hashWithLevel.getDataHash(), hashWithLevel.getLevel(), null);
+        }
+
+        signAndVerifyWithLevel(blockSigner, hashes);
+    }
+
     private void signAndVerify(KsiBlockSigner signer, int size) throws KSIException {
         List<KSISignature> signatures = signer.sign();
         assertNotNull(signatures);
@@ -208,6 +298,47 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         assertEquals(signatures.size(), size);
         for (KSISignature signature : signatures) {
             assertTrue(ksi.verify(signature, new KeyBasedVerificationPolicy()).isOk());
+        }
+    }
+
+    private void signAndVerifyWithLevel(KsiBlockSigner signer, List<Input> hashes) throws Exception {
+        List<KSISignature> signatures = signer.sign();
+        assertNotNull(signatures);
+        assertFalse(signatures.isEmpty());
+        assertEquals(signatures.size(), hashes.size());
+        int i = 0;
+
+        ContextAwarePolicy policy = ContextAwarePolicyAdapter.createKeyPolicy(getPublicationsHandler(simpleHttpClient));
+        for (KSISignature signature : signatures) {
+            VerificationResult verificationResult =
+                    ksi.verify(signature, hashes.get(i).getDataHash(), hashes.get(i).getLevel(), policy);
+            assertTrue(verificationResult.isOk());
+            i++;
+        }
+    }
+
+    private static class Input {
+        private DataHash dataHash;
+        private Long level;
+        private IdentityMetadata metadata;
+
+        public Input(DataHash dataHash, Long level, IdentityMetadata metadata) {
+            super();
+            this.dataHash = dataHash;
+            this.level = level;
+            this.metadata = metadata;
+        }
+
+        public DataHash getDataHash() {
+            return dataHash;
+        }
+
+        public Long getLevel() {
+            return level;
+        }
+
+        public IdentityMetadata getMetadata() {
+            return metadata;
         }
     }
 

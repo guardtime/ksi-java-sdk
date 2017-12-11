@@ -54,14 +54,29 @@ public interface KSISignatureComponentFactory {
     AggregationChainLink createLeftAggregationChainLink(DataHash siblingHash, long level) throws KSIException;
 
     /**
-     * Creates a new right aggregation hash chain link with given sibling hash and level.
+     * Creates a new left aggregation hash chain link with corresponding data of given link and level.
      */
-    AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long level) throws KSIException;
+    AggregationChainLink createLeftAggregationChainLink(AggregationChainLink link, long levelCorrection) throws KSIException;
 
     /**
      * Creates a new left aggregation hash chain link with given metadata and level.
      */
     AggregationChainLink createLeftAggregationChainLink(LinkMetadata identity, long level) throws KSIException;
+
+    /**
+     * Creates a new right aggregation hash chain link with given sibling hash and level.
+     */
+    AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long level) throws KSIException;
+
+    /**
+     * Creates a new right aggregation hash chain link with given metadata and level.
+     */
+    AggregationChainLink createRightAggregationChainLink(LinkMetadata identity, long level) throws KSIException;
+
+    /**
+     * Creates a new right aggregation hash chain link with corresponding data of given link and level.
+     */
+    AggregationChainLink createRightAggregationChainLink(AggregationChainLink link, long levelCorrection) throws KSIException;
 
     /**
      * Creates calendar authentication record from input TLV element.

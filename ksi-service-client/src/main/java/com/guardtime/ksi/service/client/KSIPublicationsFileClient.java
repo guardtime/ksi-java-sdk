@@ -26,7 +26,7 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 
 /**
- * Getting the publications file.
+ * KSI client for getting the publications file.
  */
 public interface KSIPublicationsFileClient extends Closeable {
 

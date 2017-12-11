@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Interface for extender configuration.
+ * The extender configuration.
  */
 public interface ExtenderConfiguration {
     /**

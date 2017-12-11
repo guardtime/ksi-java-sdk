@@ -24,7 +24,7 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 import java.util.List;
 
 /**
- * Interface for aggregator configuration.
+ * The aggregator configuration.
  */
 public interface AggregatorConfiguration {
 

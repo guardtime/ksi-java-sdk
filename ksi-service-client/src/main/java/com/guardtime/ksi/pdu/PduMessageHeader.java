@@ -42,7 +42,7 @@ import java.util.List;
  * `instance identifier' value from a client, a server <b>may drop</b> future messages with lower `instance identifier'
  * values assuming these are delayed messages from a previous invocation and thus no longer relevant. Similarly, a
  * server may prioritize messages from a given client invocation by `message identifier' values under the assumption
- * that messages with lower values are more likely to be stale </p> <p/> <p> Messages where the `instance identifier'
+ * that messages with lower values are more likely to be stale. </p> <p/> <p> Messages where the `instance identifier'
  * and `message identifier' fields are absent should be considered unique. This is to accommodate short-lived client
  * applications that typically send only a single request; for long-lived processes the `instance identifier' and
  * `message identifier' fields should be considered mandatory. </p>
@@ -60,12 +60,12 @@ public class PduMessageHeader extends TLVStructure {
     private Long messageId;
 
     /**
-     * Constructor for creating a new message header object with client identifier. This constructor should be used by
-     * short-lived client applications that typically send only a single request; for long-lived processes the `instance
-     * identifier' and `message identifier' fields should be considered mandatory.
+     * Constructor for creating a new message header object with client identifier. Should be used by
+     * short-lived client applications that typically send only a single request; for long-lived processes
+     * the `instance identifier' and `message identifier' fields should be considered mandatory.
      *
      * @param loginId
-     *         - identifier of the client host for MAC key lookup
+     *         identifier of the client host for MAC key lookup.
      */
     public PduMessageHeader(String loginId) throws KSIException {
         if (loginId == null) {
@@ -82,11 +82,11 @@ public class PduMessageHeader extends TLVStructure {
      * Constructor for creating a new message header object with client, instance and message identifier.
      *
      * @param loginId
-     *         - identifier of the client host for MAC key lookup.
+     *         identifier of the client host for MAC key lookup.
      * @param instanceId
-     *         - a number identifying invocation of the sender. Must be not null when message identifier is present.
+     *         a number identifying invocation of the sender; can not be null when message identifier is present.
      * @param messageId
-     *         - message number for duplicate filtering. Must be not null when instance identifier is present.
+     *         message number for duplicate filtering; can not be null when instance identifier is present.
      */
     public PduMessageHeader(String loginId, Long instanceId, Long messageId) throws KSIException {
         this(loginId);
@@ -109,17 +109,17 @@ public class PduMessageHeader extends TLVStructure {
     }
 
     /**
-     * Constructor for creating a new message header object with given {@link KSIRequestContext}
+     * Constructor for creating a new message header object with given {@link KSIRequestContext}.
      */
     public PduMessageHeader(String loginId, KSIRequestContext context) throws KSIException {
         this(loginId, context.getInstanceId(), context.getMessageId());
     }
 
     /**
-     * Create new message header object from base TLV element.
+     * Creates new message header object from base TLV element.
      *
      * @param rootElement
-     *         instance of{@link TLVElement}
+     *         instance of{@link TLVElement}.
      */
     public PduMessageHeader(TLVElement rootElement) throws KSIException {
         super(rootElement);
@@ -145,7 +145,7 @@ public class PduMessageHeader extends TLVStructure {
     }
 
     /**
-     * @return returns a number identifying invocation of the sender. Must be not null when message identifier is
+     * @return The number identifying invocation of the sender; can not be null when message identifier is
      * present.
      */
     public Long getInstanceId() {
@@ -153,14 +153,14 @@ public class PduMessageHeader extends TLVStructure {
     }
 
     /**
-     * @return returns the message number for duplicate filtering. Must be not null when instance identifier is present.
+     * @return The message number for duplicate filtering; can not be null when instance identifier is present.
      */
     public Long getMessageId() {
         return messageId;
     }
 
     /**
-     * @return returns the identifier of the client host for MAC key lookup.
+     * @return The identifier of the client host for MAC key lookup.
      */
     public String getLoginId() {
         return loginId;

@@ -27,12 +27,12 @@ import java.util.List;
  */
 public interface ExtenderConfiguration {
     /**
-     * Returns the maximum number of requests the client is allowed to send within one second
+     * Returns the maximum number of requests the client is allowed to send within one second.
      */
     Long getMaximumRequests();
 
     /**
-     * Returns a list of parent server URI-s
+     * Returns a list of parent server URIs.
      */
     List<String> getParents();
 
@@ -42,7 +42,7 @@ public interface ExtenderConfiguration {
     Date getCalendarFirstTime();
 
     /**
-     * Return the aggregation time of the oldest calendar record the extender has
+     * Returns the aggregation time of the oldest calendar record the extender has.
      */
     Date getCalendarLastTime();
 

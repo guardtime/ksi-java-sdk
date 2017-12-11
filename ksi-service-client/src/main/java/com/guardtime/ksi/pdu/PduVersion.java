@@ -19,7 +19,7 @@
 package com.guardtime.ksi.pdu;
 
 /**
- * Contains a list of supported PDU versions
+ * Contains a list of supported PDU versions.
  */
 public enum PduVersion {
 

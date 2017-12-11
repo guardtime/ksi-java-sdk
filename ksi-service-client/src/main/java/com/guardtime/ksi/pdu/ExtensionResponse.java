@@ -21,12 +21,12 @@ package com.guardtime.ksi.pdu;
 import com.guardtime.ksi.tlv.TLVElement;
 
 /**
- * Extension response
+ * Common interface for extension response.
  */
 public interface ExtensionResponse {
 
     /**
-     * Returns a calendar hash chain TLV element
+     * Returns a calendar hash chain TLV element.
      */
     TLVElement getCalendarHashChain();
 

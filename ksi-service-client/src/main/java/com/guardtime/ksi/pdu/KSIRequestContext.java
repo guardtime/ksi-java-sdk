@@ -19,9 +19,9 @@
 package com.guardtime.ksi.pdu;
 
 /**
- * Helper class for KSI request/response. This class holds additional data that
- * specific data like request identifier and login key.
- * can be used when sending request and parsing responses.
+ * Helper class for KSI request/response. Holds specific
+ * data like request identifier and login key.
+ * Can be used when sending requests and parsing responses.
  */
 public final class KSIRequestContext {
 

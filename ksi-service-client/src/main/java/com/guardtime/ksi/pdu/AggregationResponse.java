@@ -21,12 +21,12 @@ package com.guardtime.ksi.pdu;
 import com.guardtime.ksi.tlv.TLVElement;
 
 /**
- * Aggregation response
+ * Common interface for aggregation response.
  */
 public interface AggregationResponse {
 
     /**
-     * Returns a payload element of the response
+     * Returns a payload element of the response.
      */
     TLVElement getPayload();
 

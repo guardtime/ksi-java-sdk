@@ -19,12 +19,12 @@
 package com.guardtime.ksi.pdu;
 
 /**
- * Common interface for aggregation PDU
+ * Common interface for aggregation request PDU.
  */
 public interface AggregationRequest {
 
     /**
-     * Returns bytes of the request
+     * Returns bytes of the request.
      */
     byte[] toByteArray();
 

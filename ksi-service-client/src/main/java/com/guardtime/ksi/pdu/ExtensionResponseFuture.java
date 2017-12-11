@@ -25,7 +25,7 @@ import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
 
 /**
- * Future of the process of calling extender.
+ * Future of the process of calling the extender.
  *
  * @see Future
  */

@@ -29,17 +29,17 @@ import java.util.List;
 public interface AggregatorConfiguration {
 
     /**
-     * Return the maximum level value that the client's aggregation tree are allowed to have.
+     * Returns the maximum level value that the client's aggregation tree is allowed to have.
      */
     Long getMaximumLevel();
 
     /**
-     * Return the  hash function that the client is recommended to use in its aggregation trees.
+     * Returns the hash function that the client is recommended to use in its aggregation trees.
      */
     HashAlgorithm getAggregationAlgorithm();
 
     /**
-     * Return the recommended duration of client's aggregation round, in milliseconds.
+     * Returns the recommended duration of client's aggregation round, in milliseconds.
      */
     Long getAggregationPeriod();
 
@@ -50,7 +50,7 @@ public interface AggregatorConfiguration {
     Long getMaximumRequests();
 
     /**
-     * Returns a list of parent server URI-s
+     * Returns a list of parent server URIs
      */
     List<String> getParents();
 

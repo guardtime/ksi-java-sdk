@@ -19,12 +19,12 @@
 package com.guardtime.ksi.pdu;
 
 /**
- * Extension request PDU
+ * Common interface for extension request PDU.
  */
 public interface ExtensionRequest {
 
     /**
-     *  Returns bytes of the request
+     *  Returns bytes of the request.
      */
     byte[] toByteArray();
 

@@ -23,12 +23,12 @@ import com.guardtime.ksi.exceptions.KSIException;
 
 /**
  * KSI protocol related request response future.
- * <p/>
+ *
  * Future is a design pattern for asynchronous request. A Future represents the result of an asynchronous operation.
  * It is possible to check if the computation is complete, and to retrieve the result of the operation. The result can
  * be retrieved using the method {@link #getResult()} once the computation has completed.
  * {@link #getResult()} is blocking, until the result is ready.
- * <p/>
+ * 
  * Note: while recent Java versions also provide the Future pattern this API has it's own implementation to provide backwards
  * compatibility with older Java versions.
  *

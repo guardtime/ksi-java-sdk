@@ -40,38 +40,30 @@ public interface KSISigningService extends Closeable {
      * @param level the dataHash's level in the local aggregation tree.
      *
      * @return Instance of {@link AggregationResponseFuture} containing Aggregation response data.
-     * @throws KSIException
+     * @throws KSIException in case any error occurs.
      */
     Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException;
 
     /**
-<<<<<<< HEAD
-     * Gets subclients in case of the implementation that combines multiple clients. If the implementation
-     * is a client that directly connects to a single gateway, an empty list will be returned.
-=======
      * Gets all the subservices in case of the implementation that combines multiple KSISigningServices. If the implementation
      * is a KSISigningService connecting directly to a single gateway, an empty list is returned.
->>>>>>> develop
+     *
+     * @return List of subservices.
      */
     List<KSISigningService> getSubSigningServices();
 
     /**
-<<<<<<< HEAD
-     * Registers a new {@link ConfigurationListener}&lt;{@link AggregatorConfiguration}&gt; for the client. Each time client's configuration is
-=======
      * Registers a new {@link ConfigurationListener}&lt;{@link AggregatorConfiguration}&gt;
      * for the KSISigningService. Each time KSISigningService's configuration is
->>>>>>> develop
      * updated, this listener is called.
+     *
+     * @param listener an instance of {@link ConfigurationListener}&lt;{@link AggregatorConfiguration}&gt;. 
+     *
      */
     void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener);
 
     /**
-<<<<<<< HEAD
-     * Makes the client ask for configuration update. On completion of the update the registered {@link ConfigurationListener}s
-=======
      * Makes the KSISigningService ask for configuration update. On completion of the update, the registered {@link ConfigurationListener}s
->>>>>>> develop
      * are called.
      *
      * @return Future of the {@link AggregatorConfiguration}.

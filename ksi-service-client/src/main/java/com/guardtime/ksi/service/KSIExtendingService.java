@@ -37,19 +37,25 @@ public interface KSIExtendingService extends Closeable {
      *
      * @param aggregationTime aggregation time of the existing signature.
      * @param publicationTime publication time to which the existing signature is to be extended.
+     *
      * @return Instance of {@link ExtensionResponseFuture} containing calendar chains needed to extend the signature.
+     * @throws KSIException in case any error occurs.
      */
     Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException;
 
     /**
      * Gets the subclients in case of the implementation that combines multiple clients. If the implementation
      * is a client that directly connects to a single gateway, an empty list will be returned.
+     *
+     * @return List of subclients.
      */
     List<KSIExtendingService> getSubExtendingServices();
 
     /**
      * Registers a new {@link ConfigurationListener}&lt;{@link ExtenderConfiguration}&gt; for the client. Each time client's configuration
      * is updated, this listener is called.
+     *
+     * @param listener an instance of {@link ConfigurationListener}&lt;{@link ExtenderConfiguration}&gt;.
      */
     void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener);
 

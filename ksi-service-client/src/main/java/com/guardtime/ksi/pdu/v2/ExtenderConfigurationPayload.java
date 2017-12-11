@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * Extender's configuration response payload element, provides detailed information about
- * the Extender.
+ * the extender.
  */
 public class ExtenderConfigurationPayload extends TLVStructure implements ExtenderConfiguration {
 

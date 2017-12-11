@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * Aggregator's configuration response payload element, provides detailed information about
- * the Aggregator.
+ * the aggregator.
  */
 public class AggregatorConfigurationPayload extends TLVStructure implements AggregatorConfiguration {
 

@@ -108,8 +108,9 @@ abstract class PduV2 extends TLVStructure {
     public abstract int[] getSupportedPayloadTypes();
 
     /**
-     * In some cases where server lacks the information needed to populate header, request identifier, etc components
-     * the special error payload is returned. This method returns the error payload type.
+     * In some cases where server lacks the information needed to populate header,
+     * request identifier, etc components the special error payload is returned.
+     * This method returns the error payload type.
      */
     public int getErrorPayloadType() {
         return 0x03;

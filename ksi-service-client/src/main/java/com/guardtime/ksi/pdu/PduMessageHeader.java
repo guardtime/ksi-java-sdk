@@ -26,9 +26,11 @@ import com.guardtime.ksi.tlv.TLVStructure;
 import java.util.List;
 
 /**
- * <p> Message header TLV object. The message header consist of the following fields: </p> <ul> <li>login identifier -
- * identifier of the client host for MAC key lookup by server <p/> <li>instance identifier - a number identifying
- * invocation of the sender <p/> <li>message identifier - message number for duplicate filtering </ul> <p/> <p/>
+ * Message header TLV object. The message header consist of the following fields:
+ * <ul> <li>login identifier - identifier of the client host for MAC key lookup by server
+ * <li>instance identifier - a number identifying invocation of the sender
+ * <li>message identifier - message number for duplicate filtering </ul>
+ * <br><br>
  * <pre>
  * TLV [01] header {
  *   TLV [01] login_id { utf8 string }
@@ -36,16 +38,17 @@ import java.util.List;
  *   TLV [03] msg_id { integer } // optional
  * }
  * </pre>
- * <p/> <p> The instance and message identifier fields, when present, are used for filtering duplicate messages. The
+ * The instance and message identifier fields, when present, are used for filtering duplicate messages. The
  * value of the `instance identifier' field should increase every time the sending process is restarted. The `message
  * identifier' should sequentially number the messages within a process invocation. Having seen messages with a higher
  * `instance identifier' value from a client, a server <b>may drop</b> future messages with lower `instance identifier'
  * values assuming these are delayed messages from a previous invocation and thus no longer relevant. Similarly, a
  * server may prioritize messages from a given client invocation by `message identifier' values under the assumption
- * that messages with lower values are more likely to be stale. </p> <p/> <p> Messages where the `instance identifier'
- * and `message identifier' fields are absent should be considered unique. This is to accommodate short-lived client
- * applications that typically send only a single request; for long-lived processes the `instance identifier' and
- * `message identifier' fields should be considered mandatory. </p>
+ * that messages with lower values are more likely to be stale.
+ * <br><br>
+ * Messages where the `instance identifier' and `message identifier' fields are absent should be considered unique.
+ * This is to accommodate short-lived client applications that typically send only a single request; for long-lived
+ * processes the `instance identifier' and `message identifier' fields should be considered mandatory.
  */
 public class PduMessageHeader extends TLVStructure {
 

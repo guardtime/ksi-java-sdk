@@ -61,12 +61,12 @@ class AggregationRequestPayloadV1 extends TLVStructure {
     }
 
     /**
-     * Create new aggregation request.
+     * Creates new aggregation request.
      *
      * @param dataHash
      *         request hash value.
      * @param requestId
-     *         request id
+     *         request ID.
      */
     public AggregationRequestPayloadV1(DataHash dataHash, Long requestId) throws KSIException {
         this(requestId);
@@ -77,10 +77,10 @@ class AggregationRequestPayloadV1 extends TLVStructure {
     }
 
     /**
-     * Create new aggregation request from base TLVTag.
+     * Creates new aggregation request from base TLVTag.
      *
      * @param element
-     *         TLV element
+     *         TLV element.
      */
     public AggregationRequestPayloadV1(TLVElement element) throws KSIException {
         super(element);
@@ -111,16 +111,16 @@ class AggregationRequestPayloadV1 extends TLVStructure {
     /**
      * Get request hash.
      *
-     * @return request hash
+     * @return Request hash.
      */
     public final DataHash getRequestHash() {
         return requestHash;
     }
 
     /**
-     * Get request Id.
+     * Gets request ID.
      *
-     * @return Request Id
+     * @return Request ID.
      */
     public final Long getRequestId() {
         return requestId;

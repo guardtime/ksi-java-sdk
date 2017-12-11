@@ -66,9 +66,9 @@ abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStructure {
      * Used to parse request TLV objects.
      *
      * @param element
-     *         - instance of {@link TLVElement}
+     *         an instance of {@link TLVElement}.
      * @param loginKey
-     *         - login key byte array
+     *         login key (byte array).
      */
     public AbstractKSIRequest(TLVElement element, byte[] loginKey) throws KSIException {
         super(element);
@@ -108,7 +108,7 @@ abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStructure {
     }
 
     /**
-     * Returns outgoing aggregation message HMAC
+     * Returns outgoing aggregation message HMAC.
      */
     public DataHash getMac() {
         return this.mac;
@@ -124,9 +124,9 @@ abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStructure {
     /**
      * Calculates the MAC based on header and payload TLVs.
      *
-     * @return calculated data hash
+     * @return Calculated data hash.
      * @throws KSIException
-     *         if hmac generation fails
+     *         if HMAC generation fails.
      */
     protected DataHash calculateMac() throws KSIException {
         try {

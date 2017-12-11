@@ -41,12 +41,12 @@ class ExtensionRequestPayloadV1 extends TLVStructure {
     private Date publicationTime;
 
     /**
-     * Create extension request with aggregation time.
+     * Creates extension request with aggregation time.
      *
      * @param aggregationTime
-     *         aggregation time
+     *         aggregation time.
      * @param requestId
-     *         request identifier
+     *         request ID.
      */
     public ExtensionRequestPayloadV1(Date aggregationTime, Long requestId) throws KSIException {
         if (aggregationTime == null) {
@@ -69,16 +69,16 @@ class ExtensionRequestPayloadV1 extends TLVStructure {
     }
 
     /**
-     * Create extension request with aggregation and publication time.
+     * Creates extension request with aggregation and publication time.
      *
      * @param aggregationTime
-     *         aggregation time
+     *         aggregation time.
      * @param publicationTime
-     *         publication time
+     *         publication time.
      * @param requestId
-     *         request identifier
+     *         request ID.
      * @throws KSIProtocolException
-     *         if request requires hash chain going backwards in time
+     *         if request requires hash chain going backwards in time.
      */
     public ExtensionRequestPayloadV1(Date aggregationTime, Date publicationTime, Long requestId) throws KSIException {
         this(aggregationTime, requestId);
@@ -122,7 +122,7 @@ class ExtensionRequestPayloadV1 extends TLVStructure {
 
 
     /**
-     * @return request id
+     * @return Request ID.
      */
     public final Long getRequestId() {
         return requestId;

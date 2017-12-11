@@ -28,26 +28,26 @@ import com.guardtime.ksi.tlv.TLVStructure;
 abstract class PduResponsePayloadV1 extends TLVStructure {
 
     /**
-     * Constructor used to parse response payload.
+     * Constructor for parsing response payload.
      *
-     * @param element instance of {@link TLVElement} to createSignature
+     * @param element instance of {@link TLVElement} to createSignature.
      */
     public PduResponsePayloadV1(TLVElement element) throws KSIException {
         super(element);
     }
 
     /**
-     * @return returns request id
+     * @return Request ID.
      */
     public abstract Long getRequestId();
 
     /**
-     * @return returns error code
+     * @return Error code.
      */
     public abstract Long getError();
 
     /**
-     * @return returns error message
+     * @return Error message.
      */
     public abstract String getErrorMessage();
 

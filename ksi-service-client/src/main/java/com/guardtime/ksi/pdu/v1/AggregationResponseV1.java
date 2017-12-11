@@ -25,17 +25,17 @@ import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 
 /**
- * This class is describes a legacy KSI aggregation response protocol data unit (PDU).
+ * Describes a legacy KSI aggregation response protocol data unit (PDU).
  */
 class AggregationResponseV1 extends AbstractKSIResponse<AggregationResponsePayloadV1> {
 
     /**
-     * Constructor used to parse response messages. Also does the basic validation.
+     * Constructor for parsing response messages. Also does the basic validation.
      *
-     * @param rootElement instance of{@link TLVElement}
-     * @param context     instance of {@link KSIRequestContext}. may not be null
-     * @param credentials credentials of the gateway. may not be null
-     * @throws KSIException will be thrown when TLV message parsing fails
+     * @param rootElement instance of{@link TLVElement}.
+     * @param context     instance of {@link KSIRequestContext}, may not be null.
+     * @param credentials credentials of the KSI gateway, may not be null.
+     * @throws KSIException will be thrown when TLV message parsing fails.
      */
     public AggregationResponseV1(TLVElement rootElement, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
         super(rootElement, context, credentials);

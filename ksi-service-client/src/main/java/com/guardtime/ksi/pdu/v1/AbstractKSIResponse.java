@@ -52,31 +52,31 @@ abstract class AbstractKSIResponse<T extends PduResponsePayloadV1> extends TLVSt
     private static final int ELEMENT_TYPE_MAC = 0x1F;
 
     /**
-     * KSI message header
+     * KSI message header.
      */
     private PduMessageHeader header;
 
     /**
-     * KSI response protocol data unit
+     * KSI response protocol data unit.
      */
     private T response;
 
     /**
-     * KSI message MAC code
+     * KSI message MAC code.
      */
     private DataHash mac;
 
     /**
-     * This constructor is used to parse response messages. Also does the basic validation.
+     * Constructor for parsing the response messages. Also does the basic validation.
      *
      * @param rootElement
-     *         - instance of {@link TLVElement}. may not be null.
+     *         instance of {@link TLVElement}, may not be null.
      * @param context
-     *         - instance of {@link KSIRequestContext}. may not be null
+     *         instance of {@link KSIRequestContext}, may not be null.
      * @param credentials
-     *         - credentials of the gateway. may not be null
+     *         credentials of the gateway, may not be null.
      * @throws KSIProtocolException
-     *         - will be thrown when TLV message parsing fails
+     *         when TLV message parsing fails.
      */
     public AbstractKSIResponse(TLVElement rootElement, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
         super(rootElement);
@@ -134,14 +134,14 @@ abstract class AbstractKSIResponse<T extends PduResponsePayloadV1> extends TLVSt
     }
 
     /**
-     * This method is used to check MAC code.
+     * Checks the MAC code.
      *
      * @param key
-     *         - key to be used to calculate MAC code
+     *         key to be used to calculate MAC code.
      * @param hmacAlgorithm
-     *         - algorithm for verifying the HMAC of incoming messages
+     *         algorithm for verifying the HMAC of incoming messages.
      * @throws KSIException
-     *         will be thrown when MAC code doesn't validate
+     *         when MAC code doesn't validate
      */
     private void validateMac(byte[] key, HashAlgorithm hmacAlgorithm) throws KSIException {
         try {
@@ -171,9 +171,9 @@ abstract class AbstractKSIResponse<T extends PduResponsePayloadV1> extends TLVSt
      * error information.
      *
      * @param child
-     *         KSI protocol error element
+     *         KSI protocol error element.
      * @throws KSIProtocolException
-     *         will be always thrown
+     *         will always be thrown.
      */
     private void throwErrorPayloadException(TLVElement child) throws KSIException {
         TLVElement errorCodeElement = child.getFirstChildElement(ELEMENT_TYPE_ERROR_CODE);
@@ -183,9 +183,9 @@ abstract class AbstractKSIResponse<T extends PduResponsePayloadV1> extends TLVSt
     }
 
     /**
-     * @return returns KSI protocol message bytes without MAC code,
+     * @return KSI protocol message bytes without MAC code.
      * @throws IOException
-     *         if IO error occurs
+     *         if IO error occurs.
      */
     private byte[] getContent() throws IOException, KSIException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

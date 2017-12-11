@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -37,6 +37,7 @@ class ExtensionResponseV1 extends AbstractKSIResponse<ExtensionResponsePayloadV1
      *         instance of {@link KSIRequestContext}, may not be null.
      * @param credentials
      *         instance of {@link ServiceCredentials}, may not be null.
+     *
      * @throws KSIProtocolException
      *         will be thrown when TLV message parsing fails.
      */

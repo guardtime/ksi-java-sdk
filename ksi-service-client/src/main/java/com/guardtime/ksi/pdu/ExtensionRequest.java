@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -24,7 +24,7 @@ package com.guardtime.ksi.pdu;
 public interface ExtensionRequest {
 
     /**
-     *  Returns bytes of the request.
+     *  @return Bytes of the request.
      */
     byte[] toByteArray();
 

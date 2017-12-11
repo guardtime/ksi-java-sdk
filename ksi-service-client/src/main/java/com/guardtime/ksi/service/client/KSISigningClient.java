@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -34,7 +34,7 @@ public interface KSISigningClient extends KSICredentialsAwareClient {
      *
      * @param request
      *         instance of {@link InputStream} that contains request.
-     * @return instance of {@link Future} containing KSI response.
+     * @return Instance of {@link Future} containing KSI response.
      * @throws KSIClientException
      */
     Future<TLVElement> sign(InputStream request) throws KSIClientException;

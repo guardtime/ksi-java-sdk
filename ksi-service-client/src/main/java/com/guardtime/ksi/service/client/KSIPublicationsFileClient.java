@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -33,7 +33,7 @@ public interface KSIPublicationsFileClient extends Closeable {
     /**
      * Gets the publications file.
      *
-     * @return instance of {@link Future} containing KSI publications file data.
+     * @return Instance of {@link Future} containing KSI publications file data.
      * @throws KSIClientException
      */
     Future<ByteBuffer> getPublicationsFile() throws KSIClientException;

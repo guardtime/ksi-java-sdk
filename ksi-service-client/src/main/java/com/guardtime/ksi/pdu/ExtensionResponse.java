@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -26,7 +26,7 @@ import com.guardtime.ksi.tlv.TLVElement;
 public interface ExtensionResponse {
 
     /**
-     * Returns a calendar hash chain TLV element.
+     * @return Calendar hash chain TLV element.
      */
     TLVElement getCalendarHashChain();
 

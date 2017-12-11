@@ -29,7 +29,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * ExtenderConfigurationPayload provides additional information about the Extender.
+ * Extender's configuration response payload element, provides detailed information about
+ * the Extender.
  */
 public class ExtenderConfigurationPayload extends TLVStructure implements ExtenderConfiguration {
 

@@ -41,7 +41,7 @@ import java.util.List;
 import static com.guardtime.ksi.util.Util.containsInt;
 
 /**
- * Common PDU implementation for aggregation and extension request/response classes
+ * Common PDU implementation for aggregation and extension request/response classes.
  */
 abstract class PduV2 extends TLVStructure {
 
@@ -54,7 +54,7 @@ abstract class PduV2 extends TLVStructure {
     private MessageMac mac;
 
     /**
-     * Constructor for creating a request PDU message
+     * Constructor for creating a request PDU message.
      */
     public PduV2(PduMessageHeader header, List<TLVElement> payloads, HashAlgorithm macAlgorithm, byte[] loginKey) throws KSIException {
         // root element
@@ -82,7 +82,7 @@ abstract class PduV2 extends TLVStructure {
     }
 
     /**
-     * Constructor for reading a response PDU message
+     * Constructor for reading a response PDU message.
      */
     public PduV2(TLVElement rootElement, ServiceCredentials credentials) throws KSIException {
         super(rootElement);
@@ -96,14 +96,14 @@ abstract class PduV2 extends TLVStructure {
     }
 
     /**
-     * Returns the header of the PDU
+     * @return The header of the PDU.
      */
     public PduMessageHeader getHeader() {
         return header;
     }
 
     /**
-     * Returns an array of supported PDU payload types
+     * @return An array of supported PDU payload types.
      */
     public abstract int[] getSupportedPayloadTypes();
 

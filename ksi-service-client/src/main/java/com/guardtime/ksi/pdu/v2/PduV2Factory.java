@@ -42,6 +42,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Implementation of the {@link PduFactory}.
+ */
+
 public class PduV2Factory implements PduFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(PduV2Factory.class);

@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Aggregation configuration response payload element.
+ * Aggregator's configuration response payload element, provides detailed information about
+ * the Aggregator.
  */
 public class AggregatorConfigurationPayload extends TLVStructure implements AggregatorConfiguration {
 

@@ -40,7 +40,7 @@ class ExtensionRequestPayloadV2 extends TLVStructure {
     private Date publicationTime;
 
     /**
-     * Creates a new instance of extension request payload
+     * Creates a new instance of extension request payload.
      */
     public ExtensionRequestPayloadV2(Date aggregationTime, Date publicationTime, Long requestId) throws KSIException {
         this.requestId = requestId;

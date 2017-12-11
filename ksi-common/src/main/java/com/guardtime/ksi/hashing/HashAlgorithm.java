@@ -265,7 +265,7 @@ public enum HashAlgorithm {
      */
     public boolean isDeprecated(Date givenDate) {
         Util.notNull(givenDate, "Given date");
-        return this.deprecatedSince != null && givenDate.after(this.deprecatedSince);
+        return this.deprecatedSince != null && !givenDate.before(this.deprecatedSince);
     }
 
     /**
@@ -273,7 +273,7 @@ public enum HashAlgorithm {
      */
     public boolean isObsolete(Date givenDate) {
         Util.notNull(givenDate, "Given date");
-        return this.obsoleteSince != null && givenDate.after(this.obsoleteSince);
+        return this.obsoleteSince != null && !givenDate.before(this.obsoleteSince);
     }
 
     /**

@@ -48,7 +48,6 @@ public class NotRule implements Rule {
 
         public VerificationResultCode getResultCode() {
             return resultCode;
-
         }
 
         public VerificationErrorCode getErrorCode() {

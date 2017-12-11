@@ -75,7 +75,10 @@ public class DataHasherTest {
     public void testSha1AlgorithmStateTag() throws Exception {
         HashAlgorithm alg = HashAlgorithm.getByName("SHA1");
         Assert.assertEquals(alg.getStatus(), Status.NORMAL);
+        Assert.assertEquals(alg.getDeprecatedSince(), new Date(1467331200000L));
+        Assert.assertTrue(alg.isDeprecated(alg.getDeprecatedSince()));
         Assert.assertTrue(alg.isDeprecated(new Date()));
+        Assert.assertNull(alg.getObsoleteSince());
         Assert.assertFalse(alg.isObsolete(new Date()));
     }
 

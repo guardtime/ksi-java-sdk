@@ -76,9 +76,9 @@ public class DataHasherTest {
         HashAlgorithm alg = HashAlgorithm.getByName("SHA1");
         Assert.assertEquals(alg.getStatus(), Status.NOT_TRUSTED);
         Assert.assertEquals(alg.getDeprecatedSince(), new Date(1467331200000L));
+        Assert.assertNull(alg.getObsoleteSince());
         Assert.assertTrue(alg.isDeprecated(alg.getDeprecatedSince()));
         Assert.assertTrue(alg.isDeprecated(new Date()));
-        Assert.assertNull(alg.getObsoleteSince());
         Assert.assertFalse(alg.isObsolete(new Date()));
     }
 

@@ -43,8 +43,14 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
     /**
      * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientSimpleConfiguration}
      *
-     * @param settings
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     * @param signingClient
+     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.apache.ApacheHttpSigningClient}
+     *
+     * @param extenderClient
+     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.apache.ApacheHttpExtenderClient}
+     *
+     * @param publicationsFileClient
+     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.apache.ApacheHttpPublicationsFileClient}
      */
     public ApacheHttpClient(ApacheHttpSigningClient signingClient, ApacheHttpExtenderClient extenderClient,
             ApacheHttpPublicationsFileClient publicationsFileClient) {

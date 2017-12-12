@@ -39,7 +39,7 @@ public class SimpleHttpSigningClient extends AbstractSimpleHttpClient implements
     }
 
     /**
-     * @see com.guardtime.ksi.service.client.KSISigningClient.sign
+     * @see com.guardtime.ksi.service.client.KSISigningClient
      */
     public SimpleHttpPostRequestFuture sign(InputStream request) throws KSIClientException {
         return post(request);

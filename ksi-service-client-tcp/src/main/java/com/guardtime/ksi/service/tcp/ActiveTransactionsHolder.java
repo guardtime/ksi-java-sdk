@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * This class holds a map of active KSI TCP transactions by ID. I helps to keep track which responses go together with which requests
+ * Holds a map of active KSI TCP transactions by ID. I helps to keep track which responses go together with which requests
  * Each request is added to this holder, and each response passes through it to check that there is a corresponding request waiting.
  */
 class ActiveTransactionsHolder {

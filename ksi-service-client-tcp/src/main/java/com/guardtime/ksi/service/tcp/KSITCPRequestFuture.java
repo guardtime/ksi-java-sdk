@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -28,7 +28,7 @@ import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Class that hold the initiated TCP request and from which the response can be asked for.
+ * Holds the initiated TCP request. From this class the response can be asked for.
  */
 class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement> {
 
@@ -58,7 +58,7 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
     }
 
     /**
-     * This method blocks until response timeout occurs or the response arrives.
+     * Blocks until response timeout occurs or the response arrives.
      *
      * @return Bytes of the TCP response.
      */
@@ -108,7 +108,7 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
     }
 
     /**
-     * @return Is the TCP request finished.
+     * @return True, if the TCP request is finished.
      */
     public boolean isFinished() {
         if (finished) {

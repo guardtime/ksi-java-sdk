@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -42,10 +42,12 @@ public class TCPClient implements KSISigningClient, KSIExtenderClient {
     private final ExtenderTCPClient extenderTCPClient;
 
     /**
-     * @deprecated use {@link SigningTCPClient#(com.guardtime.ksi.service.tcp.TCPClientSettings)} or {@link TCPClient#(com.guardtime.ksi.service.tcp.TCPClientSettings, com.guardtime.ksi.service.tcp.TCPClientSettings)}
+     * @param signingSettings settings for the aggregator connection.
+     *
+     * @deprecated Use {@link SigningTCPClient#SigningTCPClient(TCPClientSettings)} or {@link #TCPClient(TCPClientSettings, TCPClientSettings)}
      * instead.
      *
-     * WARNING! Using this constructor only configures the aggregator connection and the extending will not be usable.
+     * <b>WARNING!</b> Using this constructor only configures the aggregator connection and the extending will not be usable.
      */
     @Deprecated
     public TCPClient(TCPClientSettings signingSettings) {
@@ -58,8 +60,8 @@ public class TCPClient implements KSISigningClient, KSIExtenderClient {
     }
 
     /**
-     * @param signingSettings Settings for the aggregator connection.
-     * @param extendingSettings Settings for the extender connection.
+     * @param signingSettings settings for the aggregator connection.
+     * @param extendingSettings settings for the extender connection.
      */
     public TCPClient(TCPClientSettings signingSettings, TCPClientSettings extendingSettings) {
         Util.notNull(signingSettings, "TCPClientSettings.signingSettings");

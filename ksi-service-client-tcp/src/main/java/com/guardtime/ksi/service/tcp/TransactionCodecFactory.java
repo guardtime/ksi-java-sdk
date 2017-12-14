@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -24,7 +24,7 @@ import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
 /**
- * Class that holds Transaction encoder and decoder. Needed to connect NioSocketConnector and TransactionEncoder/TransactionDecoder.
+ * Holds Transaction encoder and decoder. Needed to connect NioSocketConnector and TransactionEncoder/TransactionDecoder.
  */
 class TransactionCodecFactory implements ProtocolCodecFactory {
 

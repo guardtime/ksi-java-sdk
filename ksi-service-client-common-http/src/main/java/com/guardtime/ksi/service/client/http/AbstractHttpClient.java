@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -26,7 +26,7 @@ import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.util.Util;
 
 /**
- * Common class for all KSI HTTP clients
+ * Common class for all KSI HTTP clients.
  */
 public abstract class AbstractHttpClient implements KSISigningClient, KSIExtenderClient, KSIPublicationsFileClient {
 

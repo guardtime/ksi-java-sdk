@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -41,22 +41,22 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
     private ApacheHttpPublicationsFileClient publicationsFileClient;
 
     /**
-     * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientSimpleConfiguration}
+     * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientSimpleConfiguration}.
      *
      * @param settings
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     *         settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}.
      */
     public ApacheHttpClient(HttpClientSettings settings) {
         this(settings, new ApacheHttpClientSimpleConfiguration());
     }
 
     /**
-     * Constructs ApacheHttpClient with configuration values passed in
+     * Constructs ApacheHttpClient with configuration values passed in.
      *
      * @param settings
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     *         settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}.
      * @param asyncConfiguration
-     *         - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
+     *         configuration defined by an instance of {@link ApacheHttpClientConfiguration}.
      */
     public ApacheHttpClient(AbstractHttpClientSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         super(settings);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * Apache HTTP Client specific response future class.
+ * Apache HTTP client specific response future class.
  */
 public class ApacheHttpPostRequestFuture extends HttpPostRequestFuture {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -25,11 +25,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * KSI client settings for HTTP endpoint. <p> HTTP Service settings consist of three URLs and connections parameters:
- * </p> <ul> <li>signingUrl - URL of KSI gateway for signing requests</li> <li>extendingUrl - URL of KSI extender for
- * extending requests</li> <li>publicationsFileUrl - URL of online publications file.</li> </ul>
- * <p/>
+ * KSI client settings for HTTP endpoint.
+ * <p> HTTP Service settings consist of three URLs and connections parameters:</p>
+ * <ul> <li>signingUrl - URL of KSI gateway for signing requests,</li>
+ * <li>extendingUrl - URL of KSI extender for extending requests,</li>
+ * <li>publicationsFileUrl - URL of online publications file.</li> </ul>
+ * <p>
  * Connection parameters hold HTTP connection settings like timeouts and proxy configuration.
+ * </p>
  */
 public class HttpClientSettings extends AbstractHttpClientSettings {
 
@@ -41,33 +44,33 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
     private PduVersion pduVersion;
 
     /**
-     * Create HTTP Service settings with provided parameters.
+     * Creates HTTP service settings with provided parameters.
      *
      * @param signingUrl
-     *         URL of KSI gateway for signing requests
+     *         URL of KSI gateway for signing requests.
      * @param extendingUrl
-     *         URL of KSI extender for extending requests
+     *         URL of KSI extender for extending requests.
      * @param publicationsFileUrl
      *         URL of online publications file.
      * @param credentials
-     *         service credentials
+     *         service credentials.
      */
     public HttpClientSettings(String signingUrl, String extendingUrl, String publicationsFileUrl, ServiceCredentials credentials) {
         this(signingUrl, extendingUrl, publicationsFileUrl, credentials, PduVersion.V2);
     }
     /**
-     * Create HTTP Service settings with provided parameters.
+     * Creates HTTP service settings with provided parameters.
      *
      * @param signingUrl
-     *         URL of KSI gateway for signing requests
+     *         URL of KSI gateway for signing requests.
      * @param extendingUrl
-     *         URL of KSI extender for extending requests
+     *         URL of KSI extender for extending requests.
      * @param publicationsFileUrl
      *         URL of online publications file.
      * @param credentials
-     *         service credentials
+     *         service credentials.
      * @param pduVersion
-     *         version of pdu to use
+     *         version of PDU to use.
      */
     public HttpClientSettings(String signingUrl, String extendingUrl, String publicationsFileUrl, ServiceCredentials credentials, PduVersion pduVersion) {
         if (extendingUrl == null) {
@@ -174,7 +177,7 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
     }
 
     /**
-     * @return connection parameters
+     * @return Connection parameters.
      */
     public HTTPConnectionParameters getParameters() {
         return parameters;
@@ -184,15 +187,13 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
      * Set connection parameters.
      *
      * @param parameters
-     *         http connection parameters
+     *         HTTP connection parameters.
      */
     public void setParameters(HTTPConnectionParameters parameters) {
         this.parameters = parameters;
     }
 
     /**
-     * HTTP Connection parameters.
-     * <p/>
      * Contains low level connection parameters for HTTP service.
      */
     public static class HTTPConnectionParameters {
@@ -205,13 +206,13 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
         private int readTimeout = -1;
 
         /**
-         * Create new HTTP Connection Parameters.
+         * Creates new set of HTTP connection parameters.
          */
         public HTTPConnectionParameters() {
         }
 
         /**
-         * @return connection timeout
+         * @return Connection timeout.
          */
         public int getConnectionTimeout() {
             return connectionTimeout;
@@ -221,14 +222,14 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
          * Set connection timeout.
          *
          * @param connectionTimeout
-         *         connection timeout
+         *         connection timeout.
          */
         public void setConnectionTimeout(int connectionTimeout) {
             this.connectionTimeout = connectionTimeout;
         }
 
         /**
-         * @return proxy password
+         * @return Proxy password.
          */
         public String getProxyPassword() {
             return proxyPassword;
@@ -238,14 +239,14 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
          * Set proxy password.
          *
          * @param proxyPassword
-         *         proxy password
+         *         proxy password.
          */
         public void setProxyPassword(String proxyPassword) {
             this.proxyPassword = proxyPassword;
         }
 
         /**
-         * @return proxy URL.
+         * @return Proxy URL.
          */
         public URL getProxyUrl() {
             return proxyUrl;
@@ -255,14 +256,14 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
          * Set proxy URL.
          *
          * @param proxyUrl
-         *         proxy url
+         *         proxy URL.
          */
         public void setProxyUrl(URL proxyUrl) {
             this.proxyUrl = proxyUrl;
         }
 
         /**
-         * @return proxy username
+         * @return Proxy username.
          */
         public String getProxyUser() {
             return proxyUser;
@@ -272,14 +273,14 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
          * Set proxy username.
          *
          * @param proxyUser
-         *         proxy user
+         *         proxy username.
          */
         public void setProxyUser(String proxyUser) {
             this.proxyUser = proxyUser;
         }
 
         /**
-         * @return read timeout
+         * @return Read timeout in milliseconds.
          */
         public int getReadTimeout() {
             return readTimeout;
@@ -289,7 +290,7 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
          * Set read timeout.
          *
          * @param readTimeout
-         *         read timeout
+         *         read timeout in milliseconds.
          */
         public void setReadTimeout(int readTimeout) {
             this.readTimeout = readTimeout;

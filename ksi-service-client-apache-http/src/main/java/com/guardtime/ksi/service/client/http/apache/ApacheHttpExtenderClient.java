@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -35,7 +35,7 @@ public class ApacheHttpExtenderClient extends AbstractApacheHttpClient implement
     /**
      * Constructs ApacheHttpExtenderClient with configuration values passed in.
      *
-     * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings}
+     * @param settings settings defined by {@link com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings}.
      */
     public ApacheHttpExtenderClient(CredentialsAwareHttpSettings settings) {
         super(settings);
@@ -43,10 +43,10 @@ public class ApacheHttpExtenderClient extends AbstractApacheHttpClient implement
     }
 
     /**
-     * Constructs ApacheHttpExtenderClient with configuration values passed in
+     * Constructs ApacheHttpExtenderClient with configuration values passed in.
      *
-     * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}
-     * @param asyncConfiguration - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
+     * @param settings settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}.
+     * @param asyncConfiguration configuration defined by an instance of {@link ApacheHttpClientConfiguration}.
      */
     public ApacheHttpExtenderClient(CredentialsAwareHttpSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         super(settings, asyncConfiguration);

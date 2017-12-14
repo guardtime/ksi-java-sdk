@@ -19,7 +19,7 @@
 
 /**
  *
- * PDU exception classes.
+ * PDU exception classes
  *
  */
 package com.guardtime.ksi.pdu.exceptions;

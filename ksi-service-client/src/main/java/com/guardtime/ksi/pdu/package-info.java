@@ -18,6 +18,6 @@
  */
 
 /**
- * PDU (Protocol Data Unit) interfaces.
+ * PDU (Protocol Data Unit) interfaces
  */
 package com.guardtime.ksi.pdu;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -28,7 +28,7 @@ import com.guardtime.ksi.service.client.http.HttpSettings;
 import java.io.InputStream;
 
 /**
- * Simple HTTP client
+ * Simple HTTP client.
  */
 public class SimpleHttpClient extends AbstractHttpClient {
 

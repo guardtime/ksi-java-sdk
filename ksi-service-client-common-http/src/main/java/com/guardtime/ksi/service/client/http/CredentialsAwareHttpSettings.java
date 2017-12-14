@@ -55,6 +55,8 @@ public class CredentialsAwareHttpSettings extends HttpSettings {
 
     /**
      * Sets the PDU version.
+     *
+     * @param pduVersion the PDU version to be used for communication.
      */
     public void setPduVersion(PduVersion pduVersion) {
         this.pduVersion = pduVersion;

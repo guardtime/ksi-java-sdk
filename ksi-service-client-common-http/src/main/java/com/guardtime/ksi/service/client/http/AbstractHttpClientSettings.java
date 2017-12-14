@@ -85,6 +85,8 @@ public abstract class AbstractHttpClientSettings {
      * </p><p>
      * Default value is -1.
      * </p>
+     *
+     * @return Connection timeout in milliseconds as int.
      */
     public int getConnectionTimeout() {
         return UNDEFINED_TIMEOUT;
@@ -99,6 +101,8 @@ public abstract class AbstractHttpClientSettings {
      * </p><p>
      * Default value is -1.
      * </p>
+     *
+     * @return Read timeout in milliseconds as int.
      */
     public int getReadTimeout() {
         return UNDEFINED_TIMEOUT;

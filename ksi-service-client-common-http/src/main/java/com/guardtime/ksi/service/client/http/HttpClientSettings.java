@@ -280,7 +280,7 @@ public class HttpClientSettings extends AbstractHttpClientSettings {
         }
 
         /**
-         * @return Read timeout in milliseconds.
+         * @return Read timeout in milliseconds as int.
          */
         public int getReadTimeout() {
             return readTimeout;

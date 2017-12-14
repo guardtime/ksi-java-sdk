@@ -42,6 +42,8 @@ public abstract class HttpPostRequestFuture implements Future<TLVElement> {
      *         HTTP header response message.
      * @param response
      *         response input stream.
+     *
+     * @return {@link TLVElement}
      * @throws HttpProtocolException
      *         will be thrown when KSI HTTP response is not valid.
      */

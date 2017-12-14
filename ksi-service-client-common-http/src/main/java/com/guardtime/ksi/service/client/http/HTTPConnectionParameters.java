@@ -58,6 +58,8 @@ public class HTTPConnectionParameters {
      * </p><p>
      * Default value is -1.
      * </p>
+     *
+     * @return Connection timeout in milliseconds as int.
      */
     public int getConnectionTimeout() {
         return connectionTimeout;
@@ -72,6 +74,8 @@ public class HTTPConnectionParameters {
      * </p><p>
      * Default value is -1.
      * </p>
+     *
+     * @return Read timeout in milliseconds as int.
      */
     public int getReadTimeout() {
         return readTimeout;

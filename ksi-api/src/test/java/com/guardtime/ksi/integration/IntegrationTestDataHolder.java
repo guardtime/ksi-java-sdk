@@ -27,7 +27,6 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
-import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.RequestContextFactory;
@@ -36,6 +35,8 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
@@ -50,16 +51,22 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
+
 import org.apache.commons.io.IOUtils;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
@@ -84,6 +91,7 @@ public class IntegrationTestDataHolder {
     private final boolean extendingPermitted;
     private final String responseFile;
     private final String publicationsFile;
+    private final String certFile;
 
     private KSIExtenderClient extenderClient;
     private KSI ksi;
@@ -103,10 +111,12 @@ public class IntegrationTestDataHolder {
             testFile = testFilePath + inputData[0];
             responseFile = inputData[12].length() == 0 ? null : testFilePath + inputData[12];
             publicationsFile = inputData[13].length() == 0 ? null : testFilePath + inputData[13];
+            certFile = inputData[14].length() == 0 ? null : testFilePath + inputData[14];
         } else {
             testFile = inputData[0];
             responseFile = inputData[12].length() == 0 ? null : inputData[12];
             publicationsFile = inputData[13].length() == 0 ? null : inputData[13];
+            certFile = inputData[14].length() == 0 ? null : inputData[14];
         }
 
         notEmpty(inputData[1], "Action");
@@ -130,18 +140,17 @@ public class IntegrationTestDataHolder {
     private void buildKsi() throws IOException, KSIException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
         SimpleHttpClient httpClient = new SimpleHttpClient(settings);
         KSIBuilder builder = new KSIBuilder();
-        builder.setKsiProtocolPublicationsFileClient(httpClient).
+        builder.setPublicationsFilePkiTrustStore(getKeyStore()).
+                setKsiProtocolExtendingService(getExtendingService()).
                 setKsiProtocolSignerClient(httpClient).
-                setPublicationsFilePkiTrustStore(createKeyStore()).
                 setPublicationsFileTrustedCertSelector(createCertSelector()).
                 setDefaultVerificationPolicy(new AlwaysSuccessfulPolicy()).
                 setDefaultSigningHashAlgorithm(HashAlgorithm.SHA2_256);
 
-        if (responseFile != null) {
-
-            builder.setKsiProtocolExtendingService(mockExtenderService());
+        if (publicationsFile == null) {
+            builder.setKsiProtocolPublicationsFileClient(httpClient);
         } else {
-            builder.setKsiProtocolExtenderClient(extenderClient);
+            builder.setKsiProtocolPublicationsFileClient(new PublicationsFileClientFromFile(publicationsFile));
         }
 
         this.ksi = builder.build();
@@ -150,12 +159,9 @@ public class IntegrationTestDataHolder {
     public VerificationContext getVerificationContext(KSISignature signature) throws KSIException, IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
 
         VerificationContextBuilder builder = new VerificationContextBuilder();
-        if (responseFile == null) {
-            builder.setExtenderClient(extenderClient);
-        } else {
-            builder.setExtendingService(mockExtenderService());
-        }
+
         builder.setSignature(signature).
+                setExtendingService(getExtendingService()).
                 setPublicationsFile(publicationsFile == null ? ksi.getPublicationsFile() : getPublicationsFile()).
                 setUserPublication(userPublication).
                 setExtendingAllowed(extendingPermitted).
@@ -195,8 +201,31 @@ public class IntegrationTestDataHolder {
     }
 
     private PublicationsFile getPublicationsFile() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, KSIException {
-        InMemoryPublicationsFileFactory factory = new InMemoryPublicationsFileFactory(new JKSTrustStore(createKeyStore(), createCertSelector()));
+        InMemoryPublicationsFileFactory factory = new InMemoryPublicationsFileFactory(new JKSTrustStore(getKeyStore(), createCertSelector()));
         return factory.create(load(publicationsFile));
+    }
+
+    private KeyStore getKeyStore() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        KeyStore keyStore = createKeyStore();
+        if (certFile != null) {
+            keyStore.load(null);
+            InputStream fis = load(certFile);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            while (bis.available() > 0) {
+                Certificate cert = cf.generateCertificate(bis);
+                keyStore.setCertificateEntry("custom"+bis.available(), cert);
+            }
+        }
+        return keyStore;
+    }
+
+    private KSIExtendingService getExtendingService() throws IOException, KSIException {
+        if (responseFile == null) {
+            return new KSIExtendingClientServiceAdapter(extenderClient);
+        } else {
+            return mockExtenderService();
+        }
     }
 
     private void notEmpty(String object, String name) {
@@ -239,6 +268,7 @@ public class IntegrationTestDataHolder {
                 ", extendingPermitted=" + extendingPermitted +
                 ", responseFile=" + responseFile +
                 ", publicationsFile=" + publicationsFile +
+                ", certFile=" + certFile +
                 " }";
     }
 

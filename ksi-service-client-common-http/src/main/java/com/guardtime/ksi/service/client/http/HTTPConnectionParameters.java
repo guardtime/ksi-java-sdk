@@ -113,7 +113,7 @@ public class HTTPConnectionParameters {
         this.proxyUrl = proxyUrl;
     }
 
-    /**     *
+    /**     
      * @return Proxy username.
      */
     public String getProxyUser() {

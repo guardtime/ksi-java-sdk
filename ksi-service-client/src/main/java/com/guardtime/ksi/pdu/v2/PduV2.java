@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -49,7 +49,7 @@ abstract class PduV2 extends TLVStructure {
 
     private static final int[] PUSHABLE_ELEMENT_TYPES = new int[] {0x04};
 
-    protected List<TLVElement> payloads = new LinkedList<TLVElement>();
+    protected List<TLVElement> payloads = new LinkedList<>();
     private PduMessageHeader header;
     private MessageMac mac;
 
@@ -73,6 +73,7 @@ abstract class PduV2 extends TLVStructure {
         }
 
         // calculate mac
+        macAlgorithm.checkExpiration();
         this.mac = new MessageMac(macAlgorithm);
         rootElement.addChildElement(mac.getRootElement());
         mac.setMac(calculateMac(macAlgorithm, loginKey));
@@ -115,7 +116,7 @@ abstract class PduV2 extends TLVStructure {
     }
 
     public List<TLVElement> getPayloads(int tlvType) throws TLVParserException {
-        List<TLVElement> payloadElements = new ArrayList<TLVElement>();
+        List<TLVElement> payloadElements = new ArrayList<>();
         for (TLVElement payload : payloads) {
             if (payload.getType() == tlvType) {
                 payloadElements.add(payload);

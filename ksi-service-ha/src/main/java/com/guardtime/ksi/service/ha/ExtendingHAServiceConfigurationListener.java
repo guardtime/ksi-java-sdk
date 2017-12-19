@@ -30,13 +30,13 @@ import java.util.List;
  */
 class ExtendingHAServiceConfigurationListener extends AbstractHAConfigurationListener<ExtenderConfiguration> {
 
-    private final List<SubServiceConfListener<ExtenderConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<ExtenderConfiguration>>();
+    private final List<SubServiceConfListener<ExtenderConfiguration>> subServiceConfListeners = new ArrayList<>();
     private final List<KSIExtendingService> subservices;
 
     ExtendingHAServiceConfigurationListener(List<KSIExtendingService> subservices) {
         this.subservices = subservices;
         for (KSIExtendingService subservice : subservices) {
-            SubServiceConfListener<ExtenderConfiguration> listener = new SubServiceConfListener<ExtenderConfiguration>(subservice.toString(), this);
+            SubServiceConfListener<ExtenderConfiguration> listener = new SubServiceConfListener<>(subservice.toString(), this);
             subservice.registerExtenderConfigurationListener(listener);
             subServiceConfListeners.add(listener);
         }
@@ -67,7 +67,7 @@ class ExtendingHAServiceConfigurationListener extends AbstractHAConfigurationLis
      * @return {@link Future} which eventually provides subconfigurations consolidation result.
      */
     Future<ExtenderConfiguration> getExtensionConfiguration() {
-        return new HAConfFuture<ExtenderConfiguration>(invokeSubserviceConfUpdates(),
+        return new HAConfFuture<>(invokeSubserviceConfUpdates(),
                 new HAConfFuture.ConfResultSupplier<ConsolidatedResult<ExtenderConfiguration>>() {
                     public ConsolidatedResult<ExtenderConfiguration> get() {
                         return lastConsolidatedConfiguration;
@@ -76,7 +76,7 @@ class ExtendingHAServiceConfigurationListener extends AbstractHAConfigurationLis
     }
 
     private List<Future<ExtenderConfiguration>> invokeSubserviceConfUpdates() {
-        List<Future<ExtenderConfiguration>> confFutures = new ArrayList<Future<ExtenderConfiguration>>();
+        List<Future<ExtenderConfiguration>> confFutures = new ArrayList<>();
         for (KSIExtendingService service : subservices) {
             confFutures.add(service.getExtendingConfiguration());
         }

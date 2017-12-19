@@ -53,6 +53,7 @@ public interface TreeBuilder<N extends TreeNode> {
      * @param nodes
      *         a list of leafs to be added to the tree. must not be null.
      */
+    @SuppressWarnings("unchecked")
     void add(N... nodes) throws KSIException;
 
     /**

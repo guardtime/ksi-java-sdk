@@ -24,11 +24,9 @@ import com.guardtime.ksi.KSIBuilder;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.DefaultPduIdentifierProvider;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
-import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.RequestContextFactory;
@@ -37,6 +35,8 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
@@ -51,19 +51,26 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
+
 import org.apache.commons.io.IOUtils;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
+import static com.guardtime.ksi.TestUtil.calculateHash;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.createCertSelector;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.createKeyStore;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadHTTPSettings;
@@ -78,13 +85,13 @@ public class IntegrationTestDataHolder {
     private final DataHash inputHash;
     private final DataHash chcInputHash;
     private final DataHash chchOutputHash;
-    private final Date registrationTime;
     private final Date aggregationTime;
     private final Date publicationTime;
     private final PublicationData userPublication;
     private final boolean extendingPermitted;
     private final String responseFile;
     private final String publicationsFile;
+    private final String certFile;
 
     private KSIExtenderClient extenderClient;
     private KSI ksi;
@@ -102,12 +109,14 @@ public class IntegrationTestDataHolder {
         notEmpty(inputData[0], "Test file");
         if (testFilePath != null && !(testFilePath.trim().length() == 0)) {
             testFile = testFilePath + inputData[0];
-            responseFile = inputData[13].length() == 0 ? null : testFilePath + inputData[13];
-            publicationsFile = inputData[14].length() == 0 ? null : testFilePath + inputData[14];
+            responseFile = inputData[12].length() == 0 ? null : testFilePath + inputData[12];
+            publicationsFile = inputData[13].length() == 0 ? null : testFilePath + inputData[13];
+            certFile = inputData[14].length() == 0 ? null : testFilePath + inputData[14];
         } else {
             testFile = inputData[0];
-            responseFile = inputData[13].length() == 0 ? null : inputData[13];
-            publicationsFile = inputData[14].length() == 0 ? null : inputData[14];
+            responseFile = inputData[12].length() == 0 ? null : inputData[12];
+            publicationsFile = inputData[13].length() == 0 ? null : inputData[13];
+            certFile = inputData[14].length() == 0 ? null : inputData[14];
         }
 
         notEmpty(inputData[1], "Action");
@@ -119,11 +128,10 @@ public class IntegrationTestDataHolder {
         inputHash = inputData[5].length() == 0 ? null : new DataHash(Base16.decode(inputData[5]));
         chcInputHash = inputData[6].length() == 0 ? null : new DataHash(Base16.decode(inputData[6]));
         chchOutputHash = inputData[7].length() == 0 ? null : new DataHash(Base16.decode(inputData[7]));
-        registrationTime = inputData[8].length() == 0 ? null : new Date(Long.decode(inputData[8]) * 1000L);
-        aggregationTime = inputData[9].length() == 0 ? null : new Date(Long.decode(inputData[9]) * 1000L);
-        publicationTime = inputData[10].length() == 0 ? null : new Date(Long.decode(inputData[10]) * 1000L);
-        userPublication = inputData[11].length() == 0 ? null : new PublicationData(inputData[11]);
-        extendingPermitted = inputData[12].length() == 0 ? false : Boolean.valueOf(inputData[12]);
+        aggregationTime = inputData[8].length() == 0 ? null : new Date(Long.decode(inputData[8]) * 1000L);
+        publicationTime = inputData[9].length() == 0 ? null : new Date(Long.decode(inputData[9]) * 1000L);
+        userPublication = inputData[10].length() == 0 ? null : new PublicationData(inputData[10]);
+        extendingPermitted = inputData[11].length() == 0 ? false : Boolean.valueOf(inputData[11]);
 
         this.settings = loadHTTPSettings();
         buildKsi();
@@ -132,19 +140,17 @@ public class IntegrationTestDataHolder {
     private void buildKsi() throws IOException, KSIException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
         SimpleHttpClient httpClient = new SimpleHttpClient(settings);
         KSIBuilder builder = new KSIBuilder();
-        builder.setKsiProtocolPublicationsFileClient(httpClient).
+        builder.setPublicationsFilePkiTrustStore(getKeyStore()).
+                setKsiProtocolExtendingService(getExtendingService()).
                 setKsiProtocolSignerClient(httpClient).
-                setPublicationsFilePkiTrustStore(createKeyStore()).
                 setPublicationsFileTrustedCertSelector(createCertSelector()).
                 setDefaultVerificationPolicy(new AlwaysSuccessfulPolicy()).
-                setPduIdentifierProvider(new DefaultPduIdentifierProvider()).
                 setDefaultSigningHashAlgorithm(HashAlgorithm.SHA2_256);
 
-        if (responseFile != null) {
-
-            builder.setKsiProtocolExtendingService(mockExtenderService());
+        if (publicationsFile == null) {
+            builder.setKsiProtocolPublicationsFileClient(httpClient);
         } else {
-            builder.setKsiProtocolExtenderClient(extenderClient);
+            builder.setKsiProtocolPublicationsFileClient(new PublicationsFileClientFromFile(publicationsFile));
         }
 
         this.ksi = builder.build();
@@ -153,17 +159,14 @@ public class IntegrationTestDataHolder {
     public VerificationContext getVerificationContext(KSISignature signature) throws KSIException, IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
 
         VerificationContextBuilder builder = new VerificationContextBuilder();
-        if (responseFile == null) {
-            builder.setExtenderClient(extenderClient);
-        } else {
-            builder.setExtendingService(mockExtenderService());
-        }
+
         builder.setSignature(signature).
+                setExtendingService(getExtendingService()).
                 setPublicationsFile(publicationsFile == null ? ksi.getPublicationsFile() : getPublicationsFile()).
                 setUserPublication(userPublication).
                 setExtendingAllowed(extendingPermitted).
                 setDocumentHash(inputHash, inputHashLevel);
-        VerificationContext context = builder.createVerificationContext();
+        VerificationContext context = builder.build();
         context.setKsiSignatureComponentFactory(new InMemoryKsiSignatureComponentFactory());
         return context;
     }
@@ -197,15 +200,32 @@ public class IntegrationTestDataHolder {
         return mockClient;
     }
 
-    private DataHash calculateHash(TLVElement rootElement, HashAlgorithm macAlgorithm, byte[] loginKey) throws Exception {
-        byte[] tlvBytes = rootElement.getEncoded();
-        byte[] macCalculationInput = Util.copyOf(tlvBytes, 0, tlvBytes.length - macAlgorithm.getLength());
-        return new DataHash(macAlgorithm, Util.calculateHMAC(macCalculationInput, loginKey, macAlgorithm.getName()));
+    private PublicationsFile getPublicationsFile() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, KSIException {
+        InMemoryPublicationsFileFactory factory = new InMemoryPublicationsFileFactory(new JKSTrustStore(getKeyStore(), createCertSelector()));
+        return factory.create(load(publicationsFile));
     }
 
-    private PublicationsFile getPublicationsFile() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, KSIException {
-        InMemoryPublicationsFileFactory factory = new InMemoryPublicationsFileFactory(new JKSTrustStore(createKeyStore(), createCertSelector()));
-        return factory.create(load(publicationsFile));
+    private KeyStore getKeyStore() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        KeyStore keyStore = createKeyStore();
+        if (certFile != null) {
+            keyStore.load(null);
+            InputStream fis = load(certFile);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            while (bis.available() > 0) {
+                Certificate cert = cf.generateCertificate(bis);
+                keyStore.setCertificateEntry("custom"+bis.available(), cert);
+            }
+        }
+        return keyStore;
+    }
+
+    private KSIExtendingService getExtendingService() throws IOException, KSIException {
+        if (responseFile == null) {
+            return new KSIExtendingClientServiceAdapter(extenderClient);
+        } else {
+            return mockExtenderService();
+        }
     }
 
     private void notEmpty(String object, String name) {
@@ -220,13 +240,17 @@ public class IntegrationTestDataHolder {
         }
     }
 
-    private VerificationErrorCode getErrorCodeByName(String name) {
-        for (VerificationErrorCode code : VerificationErrorCode.values()) {
-            if (code.getCode().equals(name)) {
-                return code;
+    private VerificationErrorCode getErrorCodeByName(String code) {
+        if(code.length() == 0) {
+            return null;
+        } else {
+            for (VerificationErrorCode errorCode : VerificationErrorCode.values()) {
+                if (errorCode.getCode().equals(code)) {
+                    return errorCode;
+                }
             }
         }
-        return null;
+        throw new IllegalArgumentException("Unknown verification error code: " + code);
     }
 
     public String toString() {
@@ -238,13 +262,13 @@ public class IntegrationTestDataHolder {
                 ", inputHash=" + inputHash +
                 ", chcInputHash=" + chcInputHash +
                 ", chchOutputHash=" + chchOutputHash +
-                ", registrationTime=" + (registrationTime == null ? "" : registrationTime.getTime()) +
                 ", aggregationTime=" + (aggregationTime == null ? "" : aggregationTime.getTime()) +
                 ", publicationTime=" + (publicationTime == null ? "" : publicationTime.getTime()) +
                 ", userPublication=" + (userPublication == null ? "" : userPublication.getPublicationString()) +
                 ", extendingPermitted=" + extendingPermitted +
                 ", responseFile=" + responseFile +
                 ", publicationsFile=" + publicationsFile +
+                ", certFile=" + certFile +
                 " }";
     }
 
@@ -274,10 +298,6 @@ public class IntegrationTestDataHolder {
 
     public DataHash getChchOutputHash() {
         return chchOutputHash;
-    }
-
-    public Date getRegistrationTime() {
-        return registrationTime;
     }
 
     public Date getAggregationTime() {

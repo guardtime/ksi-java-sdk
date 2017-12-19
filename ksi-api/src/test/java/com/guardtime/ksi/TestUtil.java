@@ -20,12 +20,14 @@ package com.guardtime.ksi;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.service.KSIExtendingService;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
+import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVInputStream;
 import com.guardtime.ksi.trust.CryptoException;
 import com.guardtime.ksi.trust.PKITrustStore;
@@ -76,27 +78,31 @@ public final class TestUtil extends CommonTestUtil {
     }
 
     public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtendingService extendingService, DataHash documentHash) throws Exception {
+        return buildContext(signature, ksi, extendingService, documentHash, 0L);
+    }
+
+    public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtendingService extendingService, DataHash documentHash, long level) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtendingService(extendingService);
-        return builder.setDocumentHash(documentHash).createVerificationContext();
+        return builder.setDocumentHash(documentHash, level).build();
     }
 
     public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtenderClient extenderClient, DataHash documentHash) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtenderClient(extenderClient);
-        return builder.setDocumentHash(documentHash).createVerificationContext();
+        return builder.setDocumentHash(documentHash).build();
     }
 
     public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtenderClient extenderClient, PublicationData publicationData) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtenderClient(extenderClient);
-        return builder.setUserPublication(publicationData).createVerificationContext();
+        return builder.setUserPublication(publicationData).build();
     }
 
     public static VerificationContext buildContext(KSISignature signature, KSI ksi, KSIExtenderClient extenderClient, PublicationData publicationData, boolean allowExtending) throws Exception {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         builder.setSignature(signature).setPublicationsFile(ksi.getPublicationsFile()).setExtenderClient(extenderClient);
-        return builder.setUserPublication(publicationData).setExtendingAllowed(allowExtending).createVerificationContext();
+        return builder.setUserPublication(publicationData).setExtendingAllowed(allowExtending).build();
     }
 
     /**
@@ -110,6 +116,15 @@ public final class TestUtil extends CommonTestUtil {
         if (!expectedClass.isAssignableFrom(thrown.getClass()) || !expectedMessage.equals(thrown.getMessage())) {
             assertCause(expectedClass, expectedMessage, thrown.getCause());
         }
+    }
+
+    /**
+     * Calculates HMAC with given {@param hmacAlgorithm} from given {@param rootElement} and {@param loginKey}.
+     */
+    public static DataHash calculateHash(TLVElement rootElement, HashAlgorithm hmacAlgorithm, byte[] loginKey) throws Exception {
+        byte[] tlvBytes = rootElement.getEncoded();
+        byte[] macCalculationInput = Util.copyOf(tlvBytes, 0, tlvBytes.length - hmacAlgorithm.getLength());
+        return new DataHash(hmacAlgorithm, Util.calculateHMAC(macCalculationInput, loginKey, hmacAlgorithm.getName()));
     }
 
 }

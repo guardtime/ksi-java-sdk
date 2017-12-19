@@ -71,7 +71,7 @@ public class ExtendedSignatureCalendarHashChainRightLinksMatchesRule extends Bas
     }
 
     private List<CalendarHashChainLink> getRightLinks(CalendarHashChain hashChain) {
-        List<CalendarHashChainLink> returnable = new LinkedList<CalendarHashChainLink>();
+        List<CalendarHashChainLink> returnable = new LinkedList<>();
         for (CalendarHashChainLink link : hashChain.getChainLinks()) {
             if (link.isRightLink()) {
                 returnable.add(link);

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2013-2016 Guardtime, Inc.
+  ~ Copyright 2013-2017 Guardtime, Inc.
   ~
   ~ This file is part of the Guardtime client SDK.
   ~
@@ -19,29 +19,27 @@
 
 <html>
 <body>
-<h2><a id="intro"></a>KSI introduction</h2>
+<h2><a id="intro"></a>Introduction</h2>
 
-<h2>API introduction</h2>
-
-<p>This is the Client API for KSI service. It provides functionality to create and verify KSI Signatures.</p>
+<p>This is the Java SDK for KSI service. It provides functionality to create, extend and verify KSI signatures.</p>
 
 
-<h2>API modules</h2>
-The KSI SDK Java project contains the following modules:
+<h2>Modules</h2>
+The KSI Java SDK project contains the following modules:
 <ul>
+    <li>ksi-api - main module</li>
     <li>ksi-common - contains common functionality</li>
     <li>ksi-service-client - common module for all KSI service clients</li>
     <li>ksi-service-client-common-http - common module for all KSI HTTP service clients</li>
-    <li>ksi-service-client-apache-http - KSI HTTP service client implementation. Uses apache-async-httpclient to
-        communicate with the server.
+    <li>ksi-service-client-apache-http - KSI HTTP service client implementation, uses apache-async-httpclient to
+        communicate with the server
     </li>
-    <li>ksi-service-client-simple-http - KSI HTTP service client implementation. Uses Java standard API to communicate
-        with the server.
+    <li>ksi-service-client-simple-http - KSI HTTP service client implementation, uses Java standard API to communicate
+        with the server
     </li>
-    <li>ksi-service-client-tcp - KSI TCP signing service client implementation.</li>
-    <li>ksi-service-ha - KSI High-availability service implementation (Implements KSISigningService and KSIExtenderService).</li>
-    <li>ksi-blocksigner - module for signing multiple data hashes as a block, in one operation.</li>
-    <li>ksi-api - main module</li>
+    <li>ksi-service-client-tcp -  KSI TCP signing and extending service client implementation.</li>
+    <li>ksi-service-ha - KSI High-availability service implementation (Implements KSISigningService and KSIExtenderService)</li>
+    <li>ksi-blocksigner - module for signing multiple data hashes as a block, in one operation</li>
 </ul>
 
 
@@ -55,22 +53,21 @@ The KSI SDK Java project contains the following modules:
 </ul>
 <p>Optional libraries:</p>
 <ul>
-    <li>apache-async-httpclient - used by ksi-service-client-apache-http module. When using
-        ksi-service-client-apache-http module then apache-async-httpclient dependency must be in application classpath.
+    <li>apache-async-httpclient - dependency needed in application classpath if the ksi-service-client-apache-http module is used
     </li>
-    <li>mina-core - used by ksi-service-client-tcp module.</li>
-    <li>SLF4J simple implementation - simple SLF4J backend that logs to standard output.</li>
+    <li>mina-core - used by ksi-service-client-tcp module</li>
+    <li>SLF4J simple implementation - simple SLF4J backend that logs to standard output</li>
 </ul>
-<p>All libraries are bundled with source, including optional libraries. If these are not required, the API user must
+<p>All libraries are bundled with source, including optional libraries. If these are not required, the SDK user must
     exclude them.</p>
 
 
 <h2>Logging</h2>
 
-<p>KSI API uses SLF4J for logging, SLF4J is a facade for different logging frameworks(e.g. java.util.logging, logback,
-    log4j). By default simple implementations is included with API that logs to standard output.</p>
+<p>KSI Java SDK uses SLF4J for logging, SLF4J is a facade for different logging frameworks(e.g. java.util.logging, logback,
+    log4j). By default simple implementation is included with API that logs to standard output.</p>
 
-<p>SLF4J allows developers to send KSI API logs to the logging framework used in their application. To enable it,
+<p>SLF4J allows developers to send KSI Java SDK logs to the logging framework used in their application. To enable it,
     logging framework support must be downloaded from <a href="http://www.slf4j.org/">SLF4J homepage</a> and added to
     classpath.</p>
 
@@ -84,10 +81,10 @@ The KSI SDK Java project contains the following modules:
 <p>To obtain a instance of <em>com.guardtime.ksi.KSI</em> the <em>com.guardtime.ksi.KSIBuilder</em> class can be used.
     <em>com.guardtime.ksi.KSIBuilder</em> class checks that at least the following parameters are present:</p>
 <ul>
-    <li>signing-client - used to sign data.</li>
-    <li>extender-client - used to extend/verify signature.</li>
-    <li>publications-file-client - used to download publications file</li>
-    <li>publications file trusted certificate selector - defines the additional parameters to check when verifying the
+    <li>signing client - used to sign data</li>
+    <li>extender client - used to extend/verify KSI signatures</li>
+    <li>publications file client - used to download publications file</li>
+    <li>publications file trusted certificate selector - used to define the additional parameters to check while verifying the
         publications file signing certificate
     </li>
 </ul>
@@ -118,33 +115,33 @@ The following clients are currently implemented:
         <em>SimpleHttpClient</em> - uses Java standard API to communicate with the server
     </li>
     <li>
-        <em>ApacheHttpClient</em> - uses apache HTTP client to communicate with the server
+        <em>ApacheHttpClient</em> - uses Apache HTTP client to communicate with the server
     </li>
     <li>
-        <em>TCPClient</em> - uses TCP protocol. NB! Only signing is supported!
+        <em>TCPClient</em> - uses TCP protocol. NB! Only signing and extending are supported! Can not be used to download publications file!
     </li>
     <li>
-        <em>HAService</em> - Combines one to many KSISigningServices and one to many KSIExtenderClients or KSIExtenderServices to achieve redundancy. NB! Only signing and extending is supported!
+        <em>HAService</em> - Combines one to many KSISigningServices and one to many KSIExtenderClients or KSIExtenderServices to achieve redundancy. NB! Only signing and extending are supported!
     </li>
 </ul>
 Method <em>setPublicationsFilePkiTrustStore(trustStore)</em> from <em>com.guardtime.ksi.KSIBuilder</em> class can be
-used to specify the default Java Key Store to be used when verifying the publications file. This key store is
+used to specify the default Java KeyStore to be used when verifying the publications file. This keystore is
 used to build a valid certificate path from root certificate to the certificate that was used for publications file
 signing. Method <em>setPublicationsFileTrustedCertSelector(CertSelector certSelector)</em> from <em>com.guardtime.ksi.KSIBuilder</em>
 class defines the additional parameters to check when verifying the signing certificate. A <em>CertSelector</em> defines
 a set of criteria for signing certificate. The following implementation of <em>CertSelector</em> exist:
 <ul>
     <li><em>com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector</em> implemented by Guardtime. Selects
-        certificates by subjectDN values (e.g E=test@test.com)
+        certificates by Subject DN values (e.g. E=test@test.com).
     </li>
     <li><em>java.security.cert.X509CertSelector</em> is part of Java SDK. See X509CertSelector javadoc for more
         information.
     </li>
 </ul>
 
-A new implementation (e.g reading configuration from file) can be added by implementing <em>CertSelector</em> interface.
-The following example code creates a instance of <em>com.guardtime.ksi.KSI</em> with <em>com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector</em>
-and custom trust store:
+A new implementation (e.g. reading configuration from file) can be added by implementing <em>CertSelector</em> interface.
+The following example code creates an instance of <em>com.guardtime.ksi.KSI</em> with <em>com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector</em>
+and custom truststore:
 <pre><code>
     SimpleHttpClient simpleHttpClient = ...
 
@@ -162,12 +159,12 @@ Method <em>setDefaultSigningHashAlgorithm(HashAlgorithm algorithm)</em> from <em
 is used to specify the default signing hash algorithm.
 
 For all the following operations, KSI object can be used. There are also separate interfaces created. The following examples cover
-usage of KSI interface and also operation specific one.
+usage of KSI interface and also operation specific ones.
 
 <h3>Read Signature</h3>
 The following code can be used to read signature:
 <pre><code>
-    //KSI
+    // KSI
     KSI ksi = ...
 
     // read signature from disk
@@ -181,7 +178,7 @@ The following code can be used to read signature:
     KSISignature signature3 = ksi.read(bytes);
     
     
-    //using Reader interface
+    // using Reader interface
     Reader reader = new SignatureReader();
     KSISignature signature = reader.read(new File("signature.ksig"));
 
@@ -189,7 +186,7 @@ The following code can be used to read signature:
 <h3>Create Signature</h3>
 The following code can be used to create signature:
 <pre><code>
-    //KSI
+    // KSI
     KSI ksi = ...
 
     // synchronous signing
@@ -199,7 +196,7 @@ The following code can be used to create signature:
     KSISignature signature2 = future.getResult();
 
 
-    //using Signer interface
+    // using Signer interface
     CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings("signing-service-url", KSIServiceCredentials);
     SimpleHttpSigningClient signingClient = new SimpleHttpSigningClient(settings);
 
@@ -211,6 +208,7 @@ The following code can be used to create signature:
 <h3>Extend Signature</h3>
 The following code can be used to extend signature:
 <pre><code>
+    // KSI
     KSI ksi = ...
 
     // read signature from disk
@@ -224,7 +222,7 @@ The following code can be used to extend signature:
     KSISignature extendedSignature2 = future.getResult();
     
     
-    //using Extender interface
+    // using Extender interface
     CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings("extender-service-url", KSIServiceCredentials);
     SimpleHttpExtenderClient extenderClient = new SimpleHttpExtenderClient(settings);
 
@@ -238,15 +236,15 @@ The following code can be used to extend signature:
 Java SDK provides policy based verification process. To verify a signature the VerificationContext must be built and
 policy must be selected. Currently the following policies are implemented:
 <ul>
-    <li><b>KeyBasedVerificationPolicy</b> can be used if the keyless signature contains a calendar hash chain and a
+    <li><b>KeyBasedVerificationPolicy</b> can be used if the signature contains a calendar hash chain and a
         calendar
         authentication record. NB! Key-based verification should be used for short-term verification before a
         publication becomes available.
     </li>
-    <li><b>UserProvidedPublicationBasedVerificationPolicy</b> can be used to verify keyless signatures with user
-        provided publication
+    <li><b>UserProvidedPublicationBasedVerificationPolicy</b> can be used to verify signatures with user
+        provided publication.
     </li>
-    <li><b>PublicationsFileBasedVerificationPolicy</b> can be used to verify signatures using publications file</li>
+    <li><b>PublicationsFileBasedVerificationPolicy</b> can be used to verify signatures using publications file.</li>
     <li><b>CalendarBasedVerificationPolicy</b> takes as input the computed output hash of aggregation hash chains and
         the `aggregation
         time'. It requires on-line access to the extending service and allows verification using the calendar database
@@ -279,8 +277,9 @@ The following code can be used to create verification context:
     VerificationContext context = builder.createVerificationContext();
 </code></pre>
 
-The following code can be used to verify signature:
+The following code can be used to verify the signature:
 <pre><code>
+    // KSI
     KSI ksi = ...
 
     VerificationContext context = ...
@@ -288,18 +287,18 @@ The following code can be used to verify signature:
     VerificationResult result = ksi.verify(context, policy);
     
     
-    //using Verifier interface
+    // using Verifier interface
     Verifier verifier = new SignatureVerifier();
       
     VerificationResult result = verifier.verify(signature, ContextAwarePolicyAdapter.createKeyPolicy(publicationsHandler));
 
 </code></pre>
 
-<h3>Get info about configuration</h3>
+<h3>Get Info About Configuration</h3>
 
-KSI SDK can be used to get information about KSISigningService's or KSIExtenderService's configuration. If the service is connected to a single gateway then it represents the configuration of this gateway.
-If the service composes of multiple other clients then their configurations are consolidated into one. To get information about a services configuration one should register a configuration update listener.
-Configuration updates can be pushed by gateways without client explicitly asking for them and they can be invoked by service also. Following is the example how to register a listener for aggregator
+KSI SDK can be used to get information about KSISigningService's or KSIExtenderService's configuration. If the service is connected to a single Gateway then it represents the configuration of this Gateway.
+If the service composes of multiple other clients then their configurations are consolidated into one. To get information about a service's configuration one should register a configuration update listener.
+Configuration updates can be pushed by Gateways without client explicitly asking for them and they can be invoked by service also. Following is the example how to register a listener for Aggregator
 configuration updates and how to call for an update (works similarly with KSIExtenderClient):
 
 <pre><code>
@@ -343,7 +342,7 @@ Alternatively the <i>HTTPConnectionParameters</i> class can be used to configure
 
 <h2>HAService Configuration</h2>
 <p>More redundant connection to gateway can be achieved using HAService.
-HAService combines multiple other services, sends requests to all of them in parallel and gives back the first successful one.</p>
+    HAService combines multiple other services, sends requests to all of them in parallel and gives back the first successful one.</p>
 
 <p>To configure HAService, initialize the services it uses and build a HA services with those instances:</p>
 

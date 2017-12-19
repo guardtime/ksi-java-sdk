@@ -43,8 +43,8 @@ import java.io.IOException;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * This class provides functionality to obtain {@link Signer} object(s). This class offers multiple methods to configure
- * {@link Signer} object. It is mandatory to set the signing client.
+ * Obtaining and configuring the {@link Signer} object(s). This class offers multiple methods to configure
+ * {@link Signer} object. It is mandatory to set the signing service client.
  */
 public final class SignerBuilder {
     private HashAlgorithm defaultHashAlgorithm = HashAlgorithm.SHA2_256;
@@ -53,7 +53,7 @@ public final class SignerBuilder {
 
     /**
      * Sets the default signing hash algorithm to be used to create new KSI signatures. When using
-     * {@link KSI#sign(DataHash)} or {@link KSI#asyncSign(DataHash)}method then this algorithm is
+     * {@link KSI#sign(DataHash)} or {@link KSI#asyncSign(DataHash)} method, this algorithm is
      * ignored. By default {@link HashAlgorithm#SHA2_256} algorithm is used.
      */
     public SignerBuilder setDefaultSigningHashAlgorithm(HashAlgorithm defaultHashAlgorithm) {
@@ -70,14 +70,14 @@ public final class SignerBuilder {
     }
 
     /**
-     * This method can be used to set a default verification policy. Verification will be ran before signature is returned to the user.
+     * Sets the default verification policy. Verification will be ran before signature is returned to the user.
      * If signature verification fails,
      * {@link com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException} exception is thrown. If needed,
      * user can access the invalid signature and verification result using the methods
      * {@link InvalidSignatureContentException#getSignature()} and
      * {@link InvalidSignatureContentException#getVerificationResult()}.
      * <p>
-     * By default policy returned by method {@link ContextAwarePolicyAdapter#createInternalPolicy()} is used.
+     * By default the policy returned by method {@link ContextAwarePolicyAdapter#createInternalPolicy()} is used.
      */
     public SignerBuilder setDefaultVerificationPolicy(ContextAwarePolicy policy) {
         this.policy = policy;
@@ -85,13 +85,14 @@ public final class SignerBuilder {
     }
 
     /**
-     * Builds and returns the {@link Signer} instance. If signing client isn't configured {@link NullPointerException} is thrown.
+     * Builds and returns the {@link Signer} instance. If signing client isn't configured, {@link NullPointerException} is thrown.
      */
     public Signer build() {
         Util.notNull(signingService, "KSI signing service");
         if (defaultHashAlgorithm == null) {
             this.defaultHashAlgorithm = HashAlgorithm.SHA2_256;
         }
+        defaultHashAlgorithm.checkExpiration();
         if (policy == null) {
             this.policy = ContextAwarePolicyAdapter.createInternalPolicy();
         }
@@ -103,6 +104,7 @@ public final class SignerBuilder {
     private class SignerImpl implements Signer {
 
         private final Long DEFAULT_LEVEL = 0L;
+        private static final int MAXIMUM_LEVEL = 255;
 
         private final KSISignatureFactory signatureFactory;
         private final HashAlgorithm defaultHashAlgorithm;
@@ -116,7 +118,11 @@ public final class SignerBuilder {
         }
 
         public KSISignature sign(DataHash dataHash) throws KSIException {
-            Future<KSISignature> future = asyncSign(dataHash);
+            return sign(dataHash, DEFAULT_LEVEL);
+        }
+
+        public KSISignature sign(DataHash dataHash, long level) throws KSIException {
+            Future<KSISignature> future = asyncSign(dataHash, level);
             return future.getResult();
         }
 
@@ -131,9 +137,17 @@ public final class SignerBuilder {
         }
 
         public Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException {
+            return asyncSign(dataHash, DEFAULT_LEVEL);
+        }
+
+        public Future<KSISignature> asyncSign(DataHash dataHash, long level) throws KSIException {
             notNull(dataHash, "Data hash");
-            Future<AggregationResponse> aggregationResponseFuture = signingService.sign(dataHash, DEFAULT_LEVEL);
-            return new SigningFuture(aggregationResponseFuture, signatureFactory, dataHash);
+            dataHash.getAlgorithm().checkExpiration();
+            if (level < 0 || level > MAXIMUM_LEVEL) {
+                throw new IllegalArgumentException("Level must be between 0 and 255");
+            }
+            Future<AggregationResponse> aggregationResponseFuture = signingService.sign(dataHash, level);
+            return new SigningFuture(aggregationResponseFuture, signatureFactory, dataHash, level);
         }
 
         public Future<KSISignature> asyncSign(File file) throws KSIException {

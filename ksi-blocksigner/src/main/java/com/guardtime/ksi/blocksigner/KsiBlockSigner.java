@@ -24,23 +24,29 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.PduFactory;
+import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
-import com.guardtime.ksi.unisignature.*;
+import com.guardtime.ksi.unisignature.AggregationChainLink;
+import com.guardtime.ksi.unisignature.AggregationHashChain;
+import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
+import com.guardtime.ksi.unisignature.KSISignatureFactory;
+import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +58,8 @@ import static java.util.Arrays.asList;
  * A signer class to create a list of unisigantures. Methods {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)},
  * {@link KsiBlockSigner#add(DataHash)} and/or {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)} can be used
  * to add new input hash to the block signer. Method {@link KsiBlockSigner#sign()} must be called to get the final
- * signatures. <p/> Current implementation returns one signature per input hash. <p/> Note that this class can not be
+ * signatures. The signatures are returned the same order as the data hashes were added to block signer. <p/>
+ * Current implementation returns one signature per input hash. <p/> Note that this class can not be
  * used multiple times. </p> The following sample shows how to use {@link KsiBlockSigner} class:
  * <p>
  * <pre>
@@ -79,10 +86,9 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     private static final Logger logger = LoggerFactory.getLogger(KsiBlockSigner.class);
 
     private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
-    private static final String DEFAULT_CLIENT_ID_LOCAL_AGGREGATION = "local-aggregation";
     protected static final int MAXIMUM_LEVEL = 255;
 
-    private final Map<LeafKey, AggregationChainLink> chains = new HashMap<LeafKey, AggregationChainLink>();
+    private final Map<LeafKey, AggregationChainLink> chains = new LinkedHashMap<>();
     private final HashTreeBuilder treeBuilder;
 
     private final KSISigningService signingService;
@@ -168,7 +174,6 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm, maxTreeHeight);
     }
 
-
     /**
      * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
      */
@@ -177,7 +182,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     }
 
     /**
-     * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
+     * Adds a hash to the {@link KsiBlockSigner}.
      */
     public boolean add(DataHash dataHash) throws KSIException {
         return add(dataHash, 0L, null);
@@ -188,18 +193,23 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      */
     public boolean add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException {
         notNull(dataHash, "DataHash");
+        dataHash.getAlgorithm().checkExpiration();
         if (level < 0 || level > MAXIMUM_LEVEL) {
             throw new IllegalStateException("Level must be between 0 and 255");
         }
-        if (metadata == null) {
-            metadata = new IdentityMetadata(DEFAULT_CLIENT_ID_LOCAL_AGGREGATION);
-        }
         logger.debug("New input hash '{}' with level '{}' added to block signer.", dataHash, level);
-        LinkMetadata linkMetadata = SIGNATURE_COMPONENT_FACTORY.createLinkMetadata(metadata.getClientId(),
-                metadata.getMachineId(), metadata.getSequenceNumber(), metadata.getRequestTime());
 
-        AggregationChainLink metadataLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(linkMetadata, level);
-        ImprintNode leaf = calculateChainStepLeft(dataHash.getImprint(), metadataLink.getSiblingData(), level );
+        ImprintNode leaf = null;
+        AggregationChainLink metadataLink = null;
+        if (metadata != null) {
+            LinkMetadata linkMetadata = SIGNATURE_COMPONENT_FACTORY.createLinkMetadata(metadata.getClientId(),
+                    metadata.getMachineId(), metadata.getSequenceNumber(), metadata.getRequestTime());
+
+            metadataLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(linkMetadata, level);
+            leaf = calculateChainStepLeft(dataHash.getImprint(), metadataLink.getSiblingData(), level);
+        } else {
+            leaf = new ImprintNode(dataHash, level);
+        }
 
         if (treeBuilder.calculateHeight(new ImprintNode(leaf)) > maxTreeHeight) {
             return false;
@@ -210,13 +220,13 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         return true;
     }
 
-    public ImprintNode calculateChainStepLeft(byte[] left, byte[] right, long length) throws KSIException {
+    private ImprintNode calculateChainStepLeft(byte[] left, byte[] right, long length) throws KSIException {
         long level = length + 1;
-        DataHash hash = hash(left,right, level);
+        DataHash hash = hash(left, right, level);
         return new ImprintNode(hash, level);
     }
 
-    protected final DataHash hash(byte[] hash1, byte[] hash2, long level)  {
+    private final DataHash hash(byte[] hash1, byte[] hash2, long level)  {
         linkDataHasher.reset();
         linkDataHasher.addData(hash1);
         linkDataHasher.addData(hash2);
@@ -232,28 +242,50 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         logger.debug("Root node calculated. {}(level={})", new DataHash(rootNode.getValue()), rootNode.getLevel());
         KSISignature rootNodeSignature = signRootNode(rootNode);
         AggregationHashChain firstChain = rootNodeSignature.getAggregationHashChains()[0];
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        rootNodeSignature.writeTo(output);
 
-        List<KSISignature> signatures = new LinkedList<KSISignature>();
+        List<KSISignature> signatures = new LinkedList<>();
         for (LeafKey leafKey : this.chains.keySet()) {
-            LinkedList<AggregationChainLink> links = new LinkedList<AggregationChainLink>();
-            links.add(this.chains.get(leafKey)); // Add metadata link
-            TreeNode node = leafKey.getLeaf();
+            LinkedList<AggregationChainLink> links = new LinkedList<>();
 
+            long initialHashLevel = 0L;
+            if (this.chains.get(leafKey) != null) { // if IdentityMetadata was added
+                links.add(this.chains.get(leafKey)); // Add metadata link
+            } else if (leafKey.getLeaf().getLevel() > 0) {
+                initialHashLevel = leafKey.getLeaf().getLevel();
+            }
+
+            TreeNode node = leafKey.getLeaf();
             while (!node.isRoot()) {
                 TreeNode parent = node.getParent();
-                links.add(createLink(node, parent));
+                links.add(createLink(node, parent, initialHashLevel));
+                initialHashLevel = 0L; //reset hash level, so only the first link gets the extra level correction
                 node = parent;
             }
 
-            LinkedList<Long> chainIndex = new LinkedList<Long>(firstChain.getChainIndex());
-            chainIndex.add(calculateIndex(links));
-            AggregationHashChain aggregationHashChain = SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(leafKey.getInputDataHash(), firstChain.getAggregationTime(), chainIndex, links, algorithm);
-            List<AggregationHashChain> aggregationHashChains = new LinkedList<AggregationHashChain>();
-            aggregationHashChains.add(aggregationHashChain);
-            aggregationHashChains.addAll(asList(rootNodeSignature.getAggregationHashChains()));
-            KSISignature signature = signatureFactory.createSignature(aggregationHashChains, rootNodeSignature.getCalendarHashChain(), rootNodeSignature.getCalendarAuthenticationRecord(), rootNodeSignature.getPublicationRecord(), rootNodeSignature.getRfc3161Record());
+            List<AggregationHashChain> aggregationHashChains =
+                    new LinkedList<>(asList(rootNodeSignature.getAggregationHashChains()));
+            if (!links.isEmpty()) {
+                LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
+                chainIndex.add(calculateIndex(links));
+                AggregationHashChain aggregationHashChain = SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(
+                        leafKey.getInputDataHash(), firstChain.getAggregationTime(), chainIndex, links, algorithm);
+                aggregationHashChains.add(0, aggregationHashChain);
+            } else { // situation, where only one hash without metadata is signed
+                AggregationChainLink leftAggregationChainLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(
+                        firstChain.getChainLinks().get(0).getMetadata(), leafKey.getLeaf().getLevel());
+                links.addAll(firstChain.getChainLinks());
+                links.set(0, leftAggregationChainLink);
+
+                AggregationHashChain aggregationHashChain =
+                        SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(leafKey.getInputDataHash(),
+                                firstChain.getAggregationTime(), new LinkedList<>(firstChain.getChainIndex()), links,
+                                firstChain.getAggregationAlgorithm());
+                aggregationHashChains.set(0, aggregationHashChain);
+            }
+
+            KSISignature signature = signatureFactory.createSignature(aggregationHashChains,
+                    rootNodeSignature.getCalendarHashChain(), rootNodeSignature.getCalendarAuthenticationRecord(),
+                    rootNodeSignature.getPublicationRecord(), rootNodeSignature.getRfc3161Record());
             signatures.add(signature);
 
         }
@@ -267,14 +299,14 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         return SigningFuture.getResult();
     }
 
-    private AggregationChainLink createLink(TreeNode node, TreeNode parent) throws KSIException {
+    private AggregationChainLink createLink(TreeNode node, TreeNode parent, long hashLevel) throws KSIException {
         AggregationChainLink link;
         long parentLevel = parent.getLevel();
         if (node.isLeft()) {
-            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getLeftChildNode());
+            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getLeftChildNode()) + hashLevel;
             link = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(new DataHash(parent.getRightChildNode().getValue()), levelCorrection);
         } else {
-            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getRightChildNode());
+            long levelCorrection = calculateLevelCorrection(parentLevel, parent.getRightChildNode()) + hashLevel;
             link = SIGNATURE_COMPONENT_FACTORY.createRightAggregationChainLink(new DataHash(parent.getLeftChildNode().getValue()), levelCorrection);
         }
         return link;

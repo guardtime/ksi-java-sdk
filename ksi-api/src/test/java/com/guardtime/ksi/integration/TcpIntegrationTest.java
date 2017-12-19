@@ -22,27 +22,32 @@ import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
+import com.guardtime.ksi.service.tcp.ExtenderTCPClient;
 import com.guardtime.ksi.service.tcp.KSITCPTransactionException;
-import com.guardtime.ksi.service.tcp.TCPClient;
+import com.guardtime.ksi.service.tcp.SigningTCPClient;
 import com.guardtime.ksi.service.tcp.TCPClientSettings;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.guardtime.ksi.Resources.INPUT_FILE;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
 
@@ -57,23 +62,28 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
             "alyPaM4eymvMn6Di8VIhEvUpJqfay5REg016NWopK0WfpU6ZcA" +
             "EX9g4vu0futr1JlGz5UoUAhS0AHRIz62ucr0k88aZI9YHlvJ6Y"; //Length: 252
 
-    private static ApacheHttpClient httpClient;
-    private static KSISigningClient tcpClient;
+    private static ApacheHttpClient pubFileClient;
+    private static KSISigningClient tcpSigningClient;
+    private static KSIExtenderClient tcpExtenderClient;
 
-    @BeforeClass
+    @BeforeMethod
     public void setUp() throws Exception {
-        tcpClient = new TCPClient(loadTCPSettings());
-        httpClient = new ApacheHttpClient(loadHTTPSettings());
-        this.ksi = createKsi(httpClient, tcpClient, httpClient);
+        tcpSigningClient = new SigningTCPClient(loadTCPSigningSettings());
+        tcpExtenderClient = new ExtenderTCPClient(loadTCPExtendingSettings());
+        pubFileClient = new ApacheHttpClient(loadHTTPSettings());
+        this.ksi = createKsi(tcpExtenderClient, tcpSigningClient, pubFileClient);
     }
 
-    @AfterClass
+    @AfterMethod
     public void closeClients() throws IOException {
-        if (httpClient != null) {
-            httpClient.close();
+        if (pubFileClient != null) {
+            pubFileClient.close();
         }
-        if (tcpClient != null) {
-            tcpClient.close();
+        if (tcpSigningClient != null) {
+            tcpSigningClient.close();
+        }
+        if (tcpExtenderClient != null) {
+            tcpExtenderClient.close();
         }
     }
 
@@ -119,25 +129,39 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test (groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "The connector is being disposed.")
-    public void tcpClientSettingsConnector() throws Exception {
-        TCPClient tcpClient = new TCPClient(loadTCPSettings());
-        KSI tcpKsi = createKsi(httpClient, tcpClient, httpClient);
-        tcpClient.close();
+    public void tcpSigningClientSettingsConnector() throws Exception {
+        KSI tcpKsi = createKsi(tcpExtenderClient, tcpSigningClient, pubFileClient);
+        tcpSigningClient.close();
         tcpKsi.sign(new byte[0]);
+    }
+
+    @Test (groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "The connector is being disposed.")
+    public void testTcpExtenderClientSettingsConnector() throws Exception {
+        KSI tcpKsi = createKsi(tcpExtenderClient, tcpSigningClient, pubFileClient);
+        tcpExtenderClient.close();
+        tcpKsi.extend(loadSignature(SIGNATURE_2014_06_02));
+    }
+
+    @Test (groups = TEST_GROUP_INTEGRATION)
+    public void testClosingOneTcpClientDoesNotCloseTheOther() throws Exception {
+        KSI tcpKsi = createKsi(tcpExtenderClient, tcpSigningClient, pubFileClient);
+        tcpSigningClient.close();
+        tcpKsi.extend(loadSignature(SIGNATURE_2014_06_02));
     }
 
     private VerificationResult signAndVerify(HashAlgorithm algorithm) throws Exception {
         DataHash fileHash = getFileHash(INPUT_FILE, algorithm);
         KSISignature sig = ksi.sign(fileHash);
-        return ksi.verify(TestUtil.buildContext(sig, ksi, httpClient, fileHash), new KeyBasedVerificationPolicy());
+        return ksi.verify(TestUtil.buildContext(sig, ksi, tcpExtenderClient, fileHash), new KeyBasedVerificationPolicy());
     }
 
     @DataProvider(name = VALID_HASH_ALGORITHMS_DATA_PROVIDER)
     private static Object[][] hashAlgorithmProvider() {
-        List<HashAlgorithm> hashAlgorithms = new ArrayList<HashAlgorithm>();
+        List<HashAlgorithm> hashAlgorithms = new ArrayList<>();
         HashAlgorithm[] allAlgorithms = HashAlgorithm.values();
+        Date currentDate = new Date();
         for (HashAlgorithm algorithm : allAlgorithms) {
-            if (HashAlgorithm.Status.NORMAL.equals(algorithm.getStatus())) {
+            if (HashAlgorithm.Status.NORMAL.equals(algorithm.getStatus()) && !algorithm.isDeprecated(currentDate)) {
                 hashAlgorithms.add(algorithm);
             }
         }
@@ -153,19 +177,19 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         TCPClientSettings emptyTcpSettings = loadTCPSettings(EMPTY_LOGIN_ID, EMPTY_LOGIN_ID);
         TCPClientSettings shortTcpSettings = loadTCPSettings(SHORT_LOGIN_ID, SHORT_LOGIN_ID);
         TCPClientSettings longTcpSettings = loadTCPSettings(LONG_LOGIN_ID, LONG_LOGIN_ID);
-        KSISigningClient emptyTcpClient = new TCPClient(emptyTcpSettings);
-        KSISigningClient shortTcpClient = new TCPClient(shortTcpSettings);
-        KSISigningClient longTcpClient = new TCPClient(longTcpSettings);
+        KSISigningClient emptyTcpClient = new SigningTCPClient(emptyTcpSettings);
+        KSISigningClient shortTcpClient = new SigningTCPClient(shortTcpSettings);
+        KSISigningClient longTcpClient = new SigningTCPClient(longTcpSettings);
 
         return new Object[][]{
-                createKsiObject(httpClient, emptyTcpClient, httpClient),
-                createKsiObject(httpClient, shortTcpClient, httpClient),
-                createKsiObject(httpClient, longTcpClient, httpClient)
+                createKsiObject(tcpExtenderClient, emptyTcpClient, pubFileClient),
+                createKsiObject(tcpExtenderClient, shortTcpClient, pubFileClient),
+                createKsiObject(tcpExtenderClient, longTcpClient, pubFileClient)
         };
     }
 
     private static TCPClientSettings loadTCPSettings(String loginId, String loginKey) throws IOException {
-        TCPClientSettings settings = loadTCPSettings();
+        TCPClientSettings settings = loadTCPSigningSettings();
         int tcpTransactionTimeoutSec = 1;
         ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
         return new TCPClientSettings(settings.getEndpoint(), tcpTransactionTimeoutSec, serviceCredentials);

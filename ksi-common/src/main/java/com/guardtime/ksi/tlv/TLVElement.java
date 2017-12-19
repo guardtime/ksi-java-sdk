@@ -19,17 +19,21 @@
 
 package com.guardtime.ksi.tlv;
 
-import java.io.*;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.util.Base16;
+import com.guardtime.ksi.util.Util;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.util.Base16;
-import com.guardtime.ksi.util.Util;
 
 /**
  * <p> This class represents the Type-Length-Value (TLV) element. The TLV scheme is used to encode both the KSI data
@@ -64,7 +68,7 @@ public final class TLVElement {
      */
     private int type;
 
-    private List<TLVElement> children = new LinkedList<TLVElement>();
+    private List<TLVElement> children = new LinkedList<>();
     private byte[] content = new byte[0];
 
     public TLVElement(boolean nonCritical, boolean forwarded, int type) {
@@ -76,22 +80,6 @@ public final class TLVElement {
         this.nonCritical = nonCritical;
         this.forwarded = forwarded;
         this.type = type;
-    }
-
-    /**
-     * Converts bytes to TLV element
-     *
-     * @param bytes
-     *         - byte array to convert
-     * @return instance of {@link TLVElement}
-     * @throws MultipleTLVElementException
-     *         - Thrown if the outer most layer is composed of more than one TLV.
-     * @throws TLVParserException
-     * @deprecated use {@link TLVElement#create(byte[])}.
-     */
-    @Deprecated
-    public static TLVElement createFromBytes(byte[] bytes) throws TLVParserException {
-        return create(bytes);
     }
 
     /**
@@ -331,7 +319,7 @@ public final class TLVElement {
      * @return the List of {@link TLVElement}'s with specified tag or empty List
      */
     public List<TLVElement> getChildElements(int tag) {
-        List<TLVElement> elements = new LinkedList<TLVElement>();
+        List<TLVElement> elements = new LinkedList<>();
         for (TLVElement element : children) {
             if (tag == element.getType()) {
                 elements.add(element);
@@ -345,7 +333,7 @@ public final class TLVElement {
     }
 
     public List<TLVElement> getChildElements(int... tags) {
-        List<TLVElement> elements = new LinkedList<TLVElement>();
+        List<TLVElement> elements = new LinkedList<>();
         for (TLVElement element : children) {
             for (int tag : tags) {
                 if (tag == element.getType()) {
@@ -362,15 +350,6 @@ public final class TLVElement {
 
     public void setType(int type) {
         this.type = type;
-    }
-
-    /**
-     * @return true if the TLVElement has type or length over TLV8 maximums.
-     * @deprecated Use {@link #isOutputTlv16}
-     */
-    @Deprecated
-    public boolean isTlv16() {
-        return isOutputTlv16();
     }
 
     public boolean isOutputTlv16() {

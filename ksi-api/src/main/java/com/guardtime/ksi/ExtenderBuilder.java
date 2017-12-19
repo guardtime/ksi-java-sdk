@@ -40,8 +40,9 @@ import java.io.IOException;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * This class provides functionality to obtain {@link Extender} object(s). This class offers multiple methods to configure
- * {@link Extender} object. It is mandatory to set extender client and publications file client and publications file certificate constraint.
+ * Obtaining and configuring the {@link Extender} object(s).
+ * At least extending service and publication handler must be set to build the {@link Extender} object,
+ * otherwise the {@link NullPointerException} is thrown.
  */
 public final class ExtenderBuilder {
     private KSIExtendingService extendingService;
@@ -49,7 +50,7 @@ public final class ExtenderBuilder {
     private ContextAwarePolicy policy;
 
     /**
-     * Sets the extending service to be used in verification and extending process.
+     * Sets the extending service to be used in extending and verification process.
      */
     public ExtenderBuilder setExtendingService(KSIExtendingService extendingService) {
         this.extendingService = extendingService;
@@ -57,7 +58,7 @@ public final class ExtenderBuilder {
     }
 
     /**
-     * Sets the publications file handler to be used to download publications file.
+     * Sets the publications file handler to be used to download the publications file.
      */
     public ExtenderBuilder setPublicationsHandler(PublicationsHandler publicationsHandler) {
         this.publicationsHandler = publicationsHandler;
@@ -65,14 +66,14 @@ public final class ExtenderBuilder {
     }
 
     /**
-     * This method can be used to set a default verification policy. Verification will be ran before signature is
+     * Sets the default verification policy. Verification will be ran before signature is
      * returned to the user. If signature verification fails,
      * {@link com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException} exception is thrown.
      * If needed, user can access the invalid signature and verification result using the methods
      * {@link InvalidSignatureContentException#getSignature()} and
      * {@link InvalidSignatureContentException#getVerificationResult()}.
      * <p>
-     * By default policy returned by method {@link ContextAwarePolicyAdapter#createInternalPolicy()} is used.
+     * By default the policy returned by method {@link ContextAwarePolicyAdapter#createInternalPolicy()} is used.
      */
     public ExtenderBuilder setDefaultVerificationPolicy(ContextAwarePolicy policy) {
         this.policy = policy;
@@ -80,10 +81,10 @@ public final class ExtenderBuilder {
     }
 
     /**
-     * Builds the {@link Extender} instance. Checks that the extender, publications file handler are set.
-     * If not configured {@link NullPointerException} is thrown.
+     * Builds the {@link Extender} instance. Checks that the extender and the publications file handler are set.
+     * If not configured, {@link NullPointerException} is thrown.
      *
-     * @return instance of {@link Extender} class
+     * @return Instance of {@link Extender} class.
      * @throws KSIException will be thrown when errors occur on {@link Extender} class initialization.
      */
     public Extender build() throws KSIException {

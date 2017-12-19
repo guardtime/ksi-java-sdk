@@ -33,7 +33,7 @@ public class PublicationsFileContainsPublicationRule extends BaseRule {
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         PublicationsFile publicationsFile = context.getPublicationsFile();
-        PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(context.getCalendarHashChain().getAggregationTime());
+        PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(context.getSignature().getAggregationTime());
         return publicationRecord == null ? VerificationResultCode.NA : VerificationResultCode.OK;
     }
 

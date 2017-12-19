@@ -16,7 +16,8 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+
 /**
- * Public PDU (Protocol Data Unit) interfaces
+ * PDU (Protocol Data Unit) interfaces
  */
 package com.guardtime.ksi.pdu;

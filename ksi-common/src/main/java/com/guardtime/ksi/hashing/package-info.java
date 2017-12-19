@@ -16,9 +16,10 @@
  * Guardtime, Inc., and no license to trademarks is granted; Guardtime
  * reserves and retains all trademark rights.
  */
+
 /**
  *
- * Classes for creating and representing data hashes.
+ * Classes to create and represent data hashes
  *
  */
 package com.guardtime.ksi.hashing;

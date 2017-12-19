@@ -36,14 +36,6 @@ public class SimpleHttpClient extends AbstractHttpClient {
     private SimpleHttpExtenderClient extenderClient;
     private SimpleHttpPublicationsFileClient publicationsFileClient;
 
-
-    public SimpleHttpClient(SimpleHttpSigningClient signingClient, SimpleHttpExtenderClient extenderClient,
-            SimpleHttpPublicationsFileClient publicationsFileClient) {
-        this.signingClient = signingClient;
-        this.extenderClient = extenderClient;
-        this.publicationsFileClient = publicationsFileClient;
-    }
-
     public SimpleHttpClient(AbstractHttpClientSettings settings) {
         super(settings);
         HTTPConnectionParameters params =
@@ -64,7 +56,6 @@ public class SimpleHttpClient extends AbstractHttpClient {
 
         publicationsFileClient =
                 new SimpleHttpPublicationsFileClient(new HttpSettings(settings.getPublicationsFileUrl().toString()));
-
     }
 
     public SimpleHttpPostRequestFuture sign(InputStream request) throws KSIClientException {

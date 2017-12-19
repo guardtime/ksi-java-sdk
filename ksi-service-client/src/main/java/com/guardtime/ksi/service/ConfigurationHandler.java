@@ -38,7 +38,7 @@ public class ConfigurationHandler<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationHandler.class);
 
-    private List<ConfigurationListener<T>> listeners = new ArrayList<ConfigurationListener<T>>();
+    private List<ConfigurationListener<T>> listeners = new ArrayList<>();
     private final ExecutorService executorService;
 
     /**

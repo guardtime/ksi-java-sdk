@@ -55,7 +55,7 @@ public class ApacheHttpSigningClient extends AbstractApacheHttpClient implements
     }
 
     /**
-     * @see com.guardtime.ksi.service.client.KSISigningClient.sign
+     * @see com.guardtime.ksi.service.client.KSISigningClient
      */
     public ApacheHttpPostRequestFuture sign(InputStream request) throws KSIClientException {
         return post(request);

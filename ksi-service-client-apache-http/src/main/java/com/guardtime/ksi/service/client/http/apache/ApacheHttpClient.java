@@ -43,8 +43,14 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
     /**
      * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientSimpleConfiguration}
      *
-     * @param settings
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     * @param signingClient
+     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.apache.ApacheHttpSigningClient}
+     *
+     * @param extenderClient
+     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.apache.ApacheHttpExtenderClient}
+     *
+     * @param publicationsFileClient
+     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.apache.ApacheHttpPublicationsFileClient}
      */
     public ApacheHttpClient(ApacheHttpSigningClient signingClient, ApacheHttpExtenderClient extenderClient,
             ApacheHttpPublicationsFileClient publicationsFileClient) {
@@ -78,8 +84,15 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
         params.setProxyUrl(settings.getProxyUrl());
         params.setProxyUser(settings.getProxyUser());
         params.setProxyPassword(settings.getProxyPassword());
-        signingClient = new ApacheHttpSigningClient(new CredentialsAwareHttpSettings(settings.getSigningUrl().toString(), settings.getCredentials(), params), asyncConfiguration);
-        extenderClient = new ApacheHttpExtenderClient(new CredentialsAwareHttpSettings(settings.getExtendingUrl().toString(), settings.getCredentials(), params), asyncConfiguration);
+
+        CredentialsAwareHttpSettings signingSettings = new CredentialsAwareHttpSettings(settings.getSigningUrl().toString(), settings.getCredentials(), params);
+        signingSettings.setPduVersion(settings.getPduVersion());
+        signingClient = new ApacheHttpSigningClient(signingSettings, asyncConfiguration);
+
+        CredentialsAwareHttpSettings extendingSettings = new CredentialsAwareHttpSettings(settings.getExtendingUrl().toString(), settings.getCredentials(), params);
+        extendingSettings.setPduVersion(settings.getPduVersion());
+        extenderClient = new ApacheHttpExtenderClient(extendingSettings, asyncConfiguration);
+
         publicationsFileClient = new ApacheHttpPublicationsFileClient(new HttpSettings(settings.getPublicationsFileUrl().toString(), params), asyncConfiguration);
     }
 

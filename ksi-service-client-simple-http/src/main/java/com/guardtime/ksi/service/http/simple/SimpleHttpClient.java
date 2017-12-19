@@ -51,10 +51,17 @@ public class SimpleHttpClient extends AbstractHttpClient {
         params.setProxyUrl(settings.getProxyUrl());
         params.setProxyUser(settings.getProxyUser());
         params.setProxyPassword(settings.getProxyPassword());
-        signingClient = new SimpleHttpSigningClient(
-                new CredentialsAwareHttpSettings(settings.getSigningUrl().toString(), settings.getCredentials(), params));
-        extenderClient = new SimpleHttpExtenderClient(
-                new CredentialsAwareHttpSettings(settings.getExtendingUrl().toString(), settings.getCredentials(), params));
+
+        CredentialsAwareHttpSettings signingSettings = new CredentialsAwareHttpSettings(
+                settings.getSigningUrl().toString(), settings.getCredentials(), params);
+        signingSettings.setPduVersion(settings.getPduVersion());
+        signingClient = new SimpleHttpSigningClient(signingSettings);
+
+        CredentialsAwareHttpSettings extendingSettings = new CredentialsAwareHttpSettings(
+                settings.getExtendingUrl().toString(), settings.getCredentials(), params);
+        extendingSettings.setPduVersion(settings.getPduVersion());
+        extenderClient = new SimpleHttpExtenderClient(extendingSettings);
+
         publicationsFileClient =
                 new SimpleHttpPublicationsFileClient(new HttpSettings(settings.getPublicationsFileUrl().toString()));
 

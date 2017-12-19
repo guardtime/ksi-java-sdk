@@ -31,7 +31,7 @@ import static com.guardtime.ksi.util.Util.notNull;
 public class CredentialsAwareHttpSettings extends HttpSettings {
 
     private final ServiceCredentials credentials;
-    private PduVersion pduVersion = PduVersion.V1;
+    private PduVersion pduVersion = PduVersion.V2;
 
     public CredentialsAwareHttpSettings(String url, ServiceCredentials credentials) {
         this(url, credentials, null);

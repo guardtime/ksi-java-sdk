@@ -35,7 +35,7 @@ public class SimpleHttpPublicationsFileClient extends AbstractSimpleHttpClient i
     }
 
     /**
-     * @see com.guardtime.ksi.service.client.KSIPublicationsFileClient.getPublicationsFile
+     * @see com.guardtime.ksi.service.client.KSIPublicationsFileClient
      */
     public SimpleHttpGetRequestFuture getPublicationsFile() throws KSIClientException {
         HttpURLConnection connection;

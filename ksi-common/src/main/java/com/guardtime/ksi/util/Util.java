@@ -539,7 +539,7 @@ public final class Util {
      * @throws InvalidKeyException
      *         if invalid key is provided.
      * @throws IllegalArgumentException
-     *         if HMAC key is nll.
+     *         if HMAC key is null.
      */
     public static byte[] calculateHMAC(byte[] message, byte[] keyBytes, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         if (keyBytes == null) {

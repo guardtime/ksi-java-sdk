@@ -94,6 +94,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter,
                                        KSIExtendingService extendingService, boolean extendingAllowed,
                                        KSISignatureComponentFactory signatureComponentFactory) {
+        this(signatureComponentFactory);
         Util.notNull(policy, "Signature verification policy");
         Util.notNull(publicationsFileClientAdapter, "Publications file client adapter");
         Util.notNull(extendingService, "KSI extending service");
@@ -101,10 +102,10 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         this.publicationsHandler = createPublicationsHandler(publicationsFileClientAdapter);
         this.extendingService = extendingService;
         this.extendingAllowed = extendingAllowed;
-        this.signatureComponentFactory = signatureComponentFactory;
         this.verifySignatures = true;
     }
 
+    @Deprecated
     public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter,
                                        KSIExtenderClient extenderClient, boolean extendingAllowed,
                                        KSISignatureComponentFactory signatureComponentFactory) {

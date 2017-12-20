@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -23,41 +23,63 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 
 /**
- * A signer class to create block signatures. Methods {@link BlockSigner#add(DataHash, long, IdentityMetadata)}, {@link
- * BlockSigner#add(DataHash, long, IdentityMetadata)} and/or {@link BlockSigner#add(DataHash)} can be used to add new
- * input hash to the block signer. Method {@link BlockSigner#sign()} must be called to get the final signatures.
- *
+ * Provides the means to create block signatures.
+ * <p>
+ * Methods {@link BlockSigner#add(DataHash, long, IdentityMetadata)},
+ * {@link BlockSigner#add(DataHash, long, IdentityMetadata)} and/or {@link BlockSigner#add(DataHash)}
+ * can be used to add new input hash to the block signer. Method {@link BlockSigner#sign()} must be
+ * called to get the final signatures.
+ *</p>
  *  @param <T>
- *         type of the created block signature
+ *         type of the created block signature.
  */
 public interface BlockSigner<T> {
 
     /**
-     * Adds a new hash to the signer
+     * Adds a new hash to the signer.
      *
-     * @return true if this hash was added as a result of the call.
+     * @param dataHash data hash to be added.
+     *
+     * @return True, if this hash was added as a result of the call.
      * If adding given hash exceeds given tree height, no hash is added to signer.
+     *
+     * @throws KSIException
      */
     boolean add(DataHash dataHash) throws KSIException;
 
     /**
-     * Adds a new hash to the signer
+     * Adds a new hash and metadata to the signer.
      *
-     * @return true if this hash was added as a result of the call.
+     * @param dataHash data to be added.
+     * @param metadata metadata to be added.
+     *
+     * @return True, if this hash was added as a result of the call.
      * If adding given hash exceeds given tree height, no hash is added to signer.
+     *
+     * @throws KSIException
      */
     boolean add(DataHash dataHash, IdentityMetadata metadata) throws KSIException;
 
     /**
-     * Adds a new hash to the signer
+     * Adds a new hash, level, and metadata to the signer.
      *
-     * @return true if this hash was added as a result of the call.
+     * @param dataHash data hash to be added.
+     * @param level level to be added.
+     * @param metadata metadata to be added.
+     *
+     * @return True, if this hash was added as a result of the call.
      * If adding given hash exceeds given tree height, no hash is added to signer.
+     *
+     * @throws KSIException
      */
     boolean add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException;
 
     /**
-     * Creates a block signature
+     * Creates a block signature.
+     *
+     * @return The block signature.
+     *
+     * @throws KSIException
      */
     T sign() throws KSIException;
 

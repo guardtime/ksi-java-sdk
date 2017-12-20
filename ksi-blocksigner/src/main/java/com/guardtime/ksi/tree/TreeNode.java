@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -20,54 +20,56 @@
 package com.guardtime.ksi.tree;
 
 /**
- * This interface represents a node in a binary tree.
+ * Represents of a node in a binary tree.
  */
 public interface TreeNode {
 
     /**
-     * Returns the value of the node. Must always be present.
+     * @return The value of the node, must always be present.
      */
     byte[] getValue();
 
     /**
-     * Returns the height of the node.
+     * @return The height of the node.
      */
     long getLevel();
 
     /**
-     * Returns the parent node. In case of root (head) node the <i>null</i> is returned.
+     * @return The parent node. In case of root (head) node the, null is returned.
      */
     TreeNode getParent();
 
     void setParent(TreeNode node);
 
     /**
-     * Returns left child node. In case of leaf node <i>null</i> is returned.
+     * @return Left child node. In case of leaf node, null is returned.
      */
     TreeNode getLeftChildNode();
 
     /**
-     * Returns right child node. In case of leaf node <i>null</i> is returned.
+     * @return Right child node. In case of leaf node, null is returned.
      */
     TreeNode getRightChildNode();
 
     /**
-     * Returns true is this node is left child node.
+     * @return True, if this node is left child node.
      */
     boolean isLeft();
 
     /**
-     * Helper method to mark that the current node is left child node.
+     * Helper to mark that the current node is left child node.
+     *
+     * @param b True, if the current node is left child node.
      */
     void setLeft(boolean b);
 
     /**
-     * Returns true if current node is the root (head) node.
+     * @return True, if current node is the root (head) node.
      */
     boolean isRoot();
 
     /**
-     * Returns true if current node is the leaf node.
+     * @return True, if current node is the leaf node.
      */
     boolean isLeaf();
 }

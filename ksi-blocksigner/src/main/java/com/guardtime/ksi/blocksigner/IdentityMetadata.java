@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -44,32 +44,32 @@ public class IdentityMetadata {
     }
 
     /**
-     * Returns the client id to be added to the signature.
-     * Mandatory metadata element
+     * @return The client ID to be added to the signature.
+     * Mandatory metadata element.
      */
     public String getClientId() {
         return clientId;
     }
 
     /**
-     * Returns the machine id to be added to the signature.
-     * Optional metadata element
+     * @return The machine ID to be added to the signature.
+     * Optional metadata element.
      */
     public String getMachineId() {
         return machineId;
     }
 
     /**
-     * Returns the sequence number to be added to the signature.
-     * Optional metadata element
+     * @return The sequence number to be added to the signature.
+     * Optional metadata element.
      */
     public Long getSequenceNumber() {
         return sequenceNumber;
     }
 
     /**
-     * Returns the request time to be added to the signature.
-     * Optional metadata element
+     * @return The request time to be added to the signature.
+     * Optional metadata element.
      */
     public Long getRequestTime() {
         return requestTime;

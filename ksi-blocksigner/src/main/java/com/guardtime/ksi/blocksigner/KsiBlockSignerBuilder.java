@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * This class provides functionality to obtain {@link KsiBlockSigner} object(s). This cass offers multiple methods to configure
- * {@link KsiBlockSigner} object.
+ * Provides functionality to obtain {@link KsiBlockSigner} object(s), offering multiple
+ * methods to configure {@link KsiBlockSigner} object.
  */
 public class KsiBlockSignerBuilder {
 

@@ -732,7 +732,7 @@ public final class Util {
      * Checks if an element is present in an int array.
      *
      * @param array an array of int values.
-     * @param key a primitive int value.
+     * @param key an int value.
      *
      * @return True, if element is present in array.
      */

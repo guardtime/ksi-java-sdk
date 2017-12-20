@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * List of supported hash functions and also some convenience functions.
+ * List of supported hash functions and some convenience functions.
  */
 public enum HashAlgorithm {
     SHA1("SHA1", 0x00, 20, Status.NORMAL, new String[] {}, new Date(1467331200000L)/* 01.07.2016 */, null),
@@ -54,43 +54,43 @@ public enum HashAlgorithm {
     }
 
     /**
-     * algorithm id.
+     * Algorithm ID.
      */
     private final int id;
     /**
-     * size of hash result in bits.
+     * Size of the hash result in bits.
      */
     private final int length;
     /**
-     * name of the hash algorithm.
+     * Name of the hash algorithm.
      */
     private final String name;
     /**
-     * maturity status of the algorithm.
+     * Maturity status of the algorithm.
      */
     private final Status status;
     /**
-     * alternative names for algorithm.
+     * Alternative names for algorithm.
      */
     private final String[] alternatives;
 
     /**
-     * the function is deprecated since the given date due to the loss of collision resistance
+     * The hash function is deprecated since the given date due to the loss of collision resistance.
      */
     private final Date deprecatedSince;
 
     /**
-     * the function is obsolete since the given date due to loss of 2nd pre-image resistance
+     * The hash function is obsolete since the given date due to loss of 2nd pre-image resistance.
      */
     private final Date obsoleteSince;
 
     /**
      * Constructor which initiates HashAlgorithm.
      *
-     * @param name   algorithm name
-     * @param id     algorithm id
-     * @param length algorithm hash length
-     * @param status status of algorithm
+     * @param name   algorithm name.
+     * @param id     algorithm ID.
+     * @param length hash length in bits.
+     * @param status status of the algorithm.
      */
     HashAlgorithm(String name, int id, int length, Status status) {
         this(name, id, length, status, new String[]{}, null, null);
@@ -99,24 +99,26 @@ public enum HashAlgorithm {
     /**
      * Constructor which initiates HashAlgorithm with alternative names.
      *
-     * @param name         algorithm name
-     * @param id           algorithm id
-     * @param length       algorithm hash length
-     * @param status       status of algorithm
-     * @param alternatives alternative names of algorithm
+     * @param name         algorithm name.
+     * @param id           algorithm ID.
+     * @param length       hash length in bits.
+     * @param status       status of the algorithm.
+     * @param alternatives alternative names of the algorithm.
      */
     HashAlgorithm(String name, int id, int length, Status status, String[] alternatives) {
         this(name, id, length, status, alternatives, null, null);
     }
 
     /**
-     * Constructor which initiates HashAlgorithm with alternative names.
+     * Constructor which initiates HashAlgorithm with alternative names, and dates of becoming deprecated and/or obsolete.
      *
-     * @param name         algorithm name
-     * @param id           algorithm id
-     * @param length       algorithm hash length
-     * @param status       status of algorithm
-     * @param alternatives alternative names of algorithm
+     * @param name         algorithm name.
+     * @param id           algorithm ID.
+     * @param length       hash length in bits.
+     * @param status       status of the algorithm.
+     * @param alternatives alternative names of the algorithm.
+     * @param deprecatedSince the date since when the algorithm is deprecated.
+     * @param obsoleteSince the date since when the algorithm is considered obsolete.
      */
     HashAlgorithm(String name, int id, int length, Status status, String[] alternatives, Date deprecatedSince,
             Date obsoleteSince) {
@@ -136,11 +138,13 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Get hash algorithm by id/code.
+     * Gets the hash algorithm by ID.
      *
-     * @param id one-byte hash function identifier
-     * @return HashAlgorithm when a match is found
-     * @throws IllegalArgumentException if algorithm is unknown
+     * @param id one-byte hash function identifier.
+     *
+     * @return {@link HashAlgorithm}, if a match is found, otherwise null.
+     *
+     * @throws IllegalArgumentException if algorithm is unknown.
      */
     public static HashAlgorithm getById(int id) {
         for (HashAlgorithm algorithm : values()) {
@@ -152,8 +156,11 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Returns true if the input id is one of the hash algorithm id.
-     * @param id one-byte hash function identifier
+     * Checks if the input ID is the hash algorithm ID.
+     *
+     * @param id one-byte hash function identifier.
+     *
+     * @return True, if input ID equals the hash algorithm ID.
      */
     public static boolean isHashAlgorithmId(int id) {
         for (HashAlgorithm algorithm : values()) {
@@ -165,10 +172,11 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Get hash algorithm by name.
+     * Gets the hash algorithm by name.
      *
-     * @param name name of the algorithm to look for
-     * @return HashAlgorithm when match is found, otherwise null
+     * @param name name of the algorithm to look for.
+     *
+     * @return {@link HashAlgorithm}, if a match is found, otherwise null.
      */
     public static HashAlgorithm getByName(String name) {
         String normalizedName = nameNormalize(name);
@@ -180,7 +188,9 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Returns a list of implemented algorithms. Returns all algorithms with status {@link
+     * Returns the list of implemented algorithms.
+     *
+     * @return List of implemented algorithms with status {@link
      * com.guardtime.ksi.hashing.HashAlgorithm.Status#NORMAL} or {@link com.guardtime.ksi.hashing.HashAlgorithm.Status#NOT_TRUSTED}
      */
     public static List<HashAlgorithm> getImplementedHashAlgorithms() {
@@ -194,17 +204,18 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Helper method to normalize the algorithm names for name search.
+     * Helper to normalize the algorithm names for name search.
      *
-     * @param name algorithm name to normalize
-     * @return name stripped of all non-alphanumeric characters
+     * @param name algorithm name to be normalized.
+     *
+     * @return Algorithm name stripped of all non-alphanumeric characters.
      */
     static String nameNormalize(String name) {
         return name.toLowerCase().replaceAll("[^\\p{Alnum}]", "");
     }
 
     /**
-     * Get id/code for the DataHash.
+     * Gets ID for the DataHash.
      *
      * @return DataHash identifier.
      */
@@ -213,25 +224,25 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Get length of the hash value for DataHash in octets.
+     * Gets the length of the hash value for DataHash in octets.
      *
-     * @return Length of the hash value.
+     * @return Length of the hash value in octets.
      */
     public int getLength() {
         return length;
     }
 
     /**
-     * Get name of the algorithm for DataHash.
+     * Gets the name of the algorithm for DataHash.
      *
-     * @return Name of the algorithm
+     * @return Name of the algorithm.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Get status of the algorithm for DataHash.
+     * Gets the status of the algorithm for DataHash.
      *
      * @return Status of the algorithm.
      */
@@ -240,28 +251,30 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Returns the date the algorithm is set deprecated.
+     * @return The date since when the algorithm is set to be deprecated.
      */
     public Date getDeprecatedSince() {
         return deprecatedSince;
     }
 
     /**
-     * Returns the date the algorithm is set obsolete.
+     * @return The date since when the algorithm is set to be obsolete.
      */
     public Date getObsoleteSince() {
         return obsoleteSince;
     }
 
     /**
-     * Returns true if hash algorithm is implemented.
+     * @return True, if hash algorithm is implemented.
      */
     public boolean isImplemented() {
         return !Status.NOT_IMPLEMENTED.equals(this.status);
     }
 
     /**
-     * Returns true if the given date is after the hash algorithm deprecation date.
+     * @param givenDate date to check against the hash algorithm deprecation date.
+     *
+     * @return True, if the given date is after the hash algorithm deprecation date.
      */
     public boolean isDeprecated(Date givenDate) {
         Util.notNull(givenDate, "Given date");
@@ -269,7 +282,9 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Returns true if the given date is after the hash algorithm obsolete date.
+     * @param givenDate date to check against the date since when the algorithm is considered obsolete.
+     *
+     * @return True, if the given date is after the hash algorithm obsoletion date.
      */
     public boolean isObsolete(Date givenDate) {
         Util.notNull(givenDate, "Given date");
@@ -277,7 +292,7 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Checks if hash algorithm is not marked obsolete or deprecated.
+     * Checks that the hash algorithm is NOT marked obsolete or deprecated.
      */
     public void checkExpiration() {
         if (this.obsoleteSince != null) {
@@ -289,7 +304,7 @@ public enum HashAlgorithm {
     }
 
     /**
-     * Support status of a hash algorithm.
+     * Support status of the hash algorithm.
      */
     public enum Status {
         /**

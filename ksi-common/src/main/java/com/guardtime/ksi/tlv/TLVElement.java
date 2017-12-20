@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -36,35 +36,43 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <p> This class represents the Type-Length-Value (TLV) element. The TLV scheme is used to encode both the KSI data
- * structures and also protocol data units. </p>
- * <p/>
- * For space efficiency, two TLV encodings are used: <ul> <li>A 16-bit TLV (TLV16) encodes a 13-bit type and 16-bit
- * length (and can thus contain at most 65535 octets of data in the value part). <li>An 8-bit TLV (TLV8) encodes a 5-bit
- * type and 8-bit length (at most 255 octets of value data). </ul> TLV header contains 3 flags: <ul> <li>16-bit flag.
- * TLV8 and TLV16 are distinguished by the `16-Bit' flag in the first octet of the type field <li>The non-critical flag.
- * <li>The Forward Unknown flag. </ul>
+ * <p> Representation of the Type-Length-Value (TLV) element. The TLV scheme is used to encode
+ * both, the KSI data structures and also protocol data units. </p>
+ * <p> For space efficiency, two TLV encodings are used:</p>
+ * <ul>
+ *     <li>A 16-bit TLV (TLV16) encodes a 13-bit type and 16-bit
+ * length (and can thus contain at most 65535 octets of data in the value part).
+ *     <li>An 8-bit TLV (TLV8) encodes a 5-bit
+ * type and 8-bit length (at most 255 octets of value data).
+ * </ul>
+ * TLV header contains 3 flags:
+ * <ul>
+ *     <li>16-bit flag. TLV8 and TLV16 are distinguished by the `16-Bit' flag
+ *     in the first octet of the type field
+ *     <li>The non-critical flag.
+ *     <li>The Forward Unknown flag.
+ * </ul>
  */
 public final class TLVElement {
 
     public static final int MAX_TLV16_CONTENT_LENGTH = 0xFFFF;
 
     /**
-     * TLV 16 bit flag
+     * TLV 16 bit flag.
      */
     private boolean inputTlv16;
 
     /**
-     * Non-critical flag
+     * Non-critical flag.
      */
     private boolean nonCritical;
 
     /**
-     * The Forward Unknown flag
+     * The Forward Unknown flag.
      */
     private boolean forwarded;
     /**
-     * The type tags are given in hexadecimal: 4 digits for global (long) and 2 digits for local (short) tlv types.
+     * The type tags are given in hexadecimal: 4 digits for global (long) and 2 digits for local (short) TLV types.
      */
     private int type;
 
@@ -84,6 +92,12 @@ public final class TLVElement {
 
     /**
      * Creates TLVElement form byte array.
+     *
+     * @param bytes byte array to create the TLV element from.
+     *
+     * @return {@link TLVElement}
+     *
+     * @throws TLVParserException
      */
     public static TLVElement create(byte[] bytes) throws TLVParserException {
         TLVInputStream input = null;
@@ -102,8 +116,15 @@ public final class TLVElement {
     }
 
     /**
-     * Static factory method for creating TLV element with {@link Long} content. TLV element nonCritical and forwarded
-     * flags are set to false.
+     * Creates TLV element with {@link Long} content.
+     * TLV element nonCritical and forwarded flags are set to false.
+     *
+     * @param type TLV element type.
+     * @param value value to be the content of the TLV element.
+     *
+     * @return {@link TLVElement}
+     *
+     * @throws TLVParserException
      */
     public static TLVElement create(int type, long value) throws TLVParserException {
         TLVElement element = create(type);
@@ -112,16 +133,30 @@ public final class TLVElement {
     }
 
     /**
-     * Static factory method for creating TLV element with {@link Date} content. TLV element nonCritical and forwarded
-     * flags are set to false.
+     * Creates TLV element with {@link Date} content.
+     * TLV element nonCritical and forwarded flags are set to false.
+     *
+     * @param type TLV element type.
+     * @param value value to be the content of the TLV element.
+     *
+     * @return {@link TLVElement}
+     *
+     * @throws TLVParserException
      */
     public static TLVElement create(int type, Date value) throws TLVParserException {
         return create(type, value.getTime() / 1000);
     }
 
     /**
-     * Static factory method for creating TLV element with {@link DataHash} content. TLV element nonCritical and forwarded
-     * flags are set to false.
+     * Creates TLV element with {@link DataHash} content.
+     * TLV element nonCritical and forwarded flags are set to false.
+     *
+     * @param type TLV element type.
+     * @param value value to be the content of the TLV element.
+     *
+     * @return {@link TLVElement}
+     *
+     * @throws TLVParserException
      */
     public static TLVElement create(int type, DataHash value) throws TLVParserException {
         TLVElement element = create(type);
@@ -130,8 +165,15 @@ public final class TLVElement {
     }
 
     /**
-     * Static factory method for creating TLV element with {@link String} content. TLV element nonCritical and forwarded
-     * flags are set to false.
+     * Creates TLV element with {@link String} content.
+     * TLV element nonCritical and forwarded flags are set to false.
+     *
+     * @param type TLV element type.
+     * @param value value to be the content of the TLV element.
+     *
+     * @return {@link TLVElement}
+     *
+     * @throws TLVParserException
      */
     public static TLVElement create(int type, String value) throws TLVParserException {
         TLVElement element = create(type);
@@ -167,11 +209,12 @@ public final class TLVElement {
     }
 
     /**
-     * This method is used to convert TLV element content data to UTF-8 string.
+     * Converts the TLV element content data to UTF-8 string.
      *
-     * @return decoded instance of string
+     * @return Decoded instance of string.
+     *
      * @throws TLVParserException
-     *         - content string isn't null terminated or is malformed UTF-8 data.
+     *         when content string isn't null terminated or is malformed UTF-8 data.
      */
     public final String getDecodedString() throws TLVParserException {
         byte[] data = getContent();
@@ -186,11 +229,12 @@ public final class TLVElement {
     }
 
     /**
-     * This method is used to convert TLV element content data to {@link DataHash} object.
+     * Converts TLV element content data to {@link DataHash} object.
      *
-     * @return decoded instance of data hash
+     * @return Decoded instance of data hash.
+     *
      * @throws TLVParserException
-     *         - content can not be decoded to data hash
+     *         when content can not be decoded to data hash.
      */
     public final DataHash getDecodedDataHash() throws TLVParserException {
         byte[] content = getContent();
@@ -201,20 +245,23 @@ public final class TLVElement {
     }
 
     /**
-     * This method is used to get Data object from TLV element.
+     * Gets the Date object from TLV element.
      *
-     * @return decoded date object
+     * @return Decoded date object.
+     *
      * @throws TLVParserException
-     *         - content can not be decoded to date object
+     *         when content can not be decoded to a Date object.
      */
     public final Date getDecodedDate() throws TLVParserException {
         return new Date(getDecodedLong() * 1000);
     }
 
     /**
-     * This method is used to get HashAlgorithm form TLV element
+     * Gets HashAlgorithm form TLV element.
      *
-     * @return instance of {@link HashAlgorithm}
+     * @return Instance of {@link HashAlgorithm}.
+     *
+     * @throws TLVParserException
      */
     public HashAlgorithm getDecodedHashAlgorithm() throws TLVParserException {
         int algorithmId = getDecodedLong().intValue();
@@ -227,7 +274,8 @@ public final class TLVElement {
     /**
      * Returns the TLV content. If TLV does not include content then empty array is returned.
      *
-     * @return byte array including TLV element content
+     * @return Byte array including TLV element content.
+     *
      * @throws TLVParserException
      */
     public byte[] getContent() throws TLVParserException {
@@ -242,10 +290,12 @@ public final class TLVElement {
     }
 
     /**
-     * Sets the value to TLV element content
+     * Sets the value to TLV element content.
      *
      * @param content
-     *         value to set
+     *         value to set.
+     *
+     * @throws TLVParserException
      */
     public void setContent(byte[] content) throws TLVParserException {
         assertActualContentLengthIsInTLVLimits(content.length);
@@ -256,7 +306,9 @@ public final class TLVElement {
      * Encodes the instance of {@link String}. TLV encoded string is always terminated with a zero octet.
      *
      * @param s
-     *         - string to decode
+     *         string to decode.
+     *
+     * @throws TLVParserException
      */
     public void setStringContent(String s) throws TLVParserException {
         if (s != null) {
@@ -275,12 +327,13 @@ public final class TLVElement {
     }
 
     /**
-     * Returns the first child element with specified tag. If tag doesn't exist then null is returned
+     * Returns the first child element with specified tag. If tag doesn't exist then null is returned.
      *
      * @param tag
      *         tag to search.
-     * @return the first instance of {@link TLVElement} with specified tag or null when the child element with specified
-     * tag doesn't exist.
+     *
+     * @return The first instance of {@link TLVElement} with specified tag,
+     * or null when the child element with specified tag doesn't exist.
      */
     public TLVElement getFirstChildElement(int tag) {
         for (TLVElement element : children) {
@@ -292,7 +345,8 @@ public final class TLVElement {
     }
 
     /**
-     * Returns the first child element. If current element doesn't contain child elements then null is returned.
+     * @return The first child element, an instance of {@link TLVElement}.
+     * If current element doesn't contain child elements then null is returned.
      */
     public TLVElement getFirstChildElement() {
         if (children.isEmpty()) {
@@ -302,7 +356,8 @@ public final class TLVElement {
     }
 
     /**
-     * Returns the last child element. If current element doesn't contain child elements then null is returned.
+     * @return The last child element, an instance of {@link TLVElement}.
+     * If current element doesn't contain child elements then null is returned.
      */
     public TLVElement getLastChildElement() {
         if (children.isEmpty()) {
@@ -316,7 +371,7 @@ public final class TLVElement {
      *
      * @param tag
      *         tag to search.
-     * @return the List of {@link TLVElement}'s with specified tag or empty List
+     * @return The list of {@link TLVElement}'s with specified tag or empty list.
      */
     public List<TLVElement> getChildElements(int tag) {
         List<TLVElement> elements = new LinkedList<>();
@@ -371,9 +426,10 @@ public final class TLVElement {
     /**
      * Encodes TLV header.
      *
-     * @return byte array containing encoded TLV header
+     * @return Byte array containing encoded TLV header.
+     *
      * @throws TLVParserException
-     *         when TLV header encoding fails or I/O error occurs
+     *         when TLV header encoding fails or I/O error occurs.
      */
     public byte[] encodeHeader() throws TLVParserException {
         DataOutputStream out = null;
@@ -414,7 +470,7 @@ public final class TLVElement {
     }
 
     /**
-     * Returns the length of the TLV element content.
+     * @return The length of the TLV element content.
      */
     public int getContentLength() {
         int contentLength = content.length;
@@ -435,9 +491,9 @@ public final class TLVElement {
      * Replaces first element with given one.
      *
      * @param childToBeReplaced
-     *         tlv element to be replaced
+     *         TLV element to be replaced.
      * @param newChild
-     *         new tlv element
+     *         new TLV element.
      */
     public void replace(TLVElement childToBeReplaced, TLVElement newChild) {
         for (int i = 0; i < children.size(); i++) {
@@ -463,12 +519,13 @@ public final class TLVElement {
     }
 
     /**
-     * Writes the encoded TLV element to the specified output stream .
+     * Writes the encoded TLV element to the specified output stream.
      *
      * @param out
      *         the output stream to which to write the TLV element data.
+     *
      * @throws TLVParserException
-     *         I/O error occurred or TLV encoding failed.
+     *         when I/O error occurred or TLV encoding failed.
      */
     public void writeTo(OutputStream out) throws TLVParserException {
         try {

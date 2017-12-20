@@ -21,7 +21,7 @@ package com.guardtime.ksi.service.ha;
 import com.guardtime.ksi.service.client.KSIClientException;
 
 /**
- * Thrown when HA Service fails to create a consolidated configuration
+ * Thrown when HA Service fails to create a consolidated configuration.
  */
 public class HAConfigurationConsolidationException extends KSIClientException {
 

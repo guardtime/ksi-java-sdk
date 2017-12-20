@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Handles configuration consolidation and listener updates for ExtendingHAService
+ * Handles configuration consolidation and listener updates for {@link ExtendingHAService}.
  */
 class ExtendingHAServiceConfigurationListener extends AbstractHAConfigurationListener<ExtenderConfiguration> {
 
@@ -62,7 +62,7 @@ class ExtendingHAServiceConfigurationListener extends AbstractHAConfigurationLis
     }
 
     /**
-     * Can be used to get extenders configuration. Invokes configuration updates for all the subclients.
+     * Gets the extender's configuration. Invokes configuration updates for all the subclients.
      *
      * @return {@link Future} which eventually provides subconfigurations consolidation result.
      */

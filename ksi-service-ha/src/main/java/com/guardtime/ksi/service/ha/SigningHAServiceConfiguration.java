@@ -44,7 +44,7 @@ class SigningHAServiceConfiguration implements AggregatorConfiguration {
     private final List<String> parents;
 
     /**
-     * Creates a new SigningHAServiceConfiguration all of which properties are taken from the given configuration.
+     * Creates a new {@link SigningHAServiceConfiguration} with properties from the given configuration.
      *
      * @param configuration May not be null.
      */

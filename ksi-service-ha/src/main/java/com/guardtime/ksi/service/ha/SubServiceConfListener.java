@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Helper to keep track of the last known state of certain subclients configuration
+ * Helper to keep track of the last known state of certain subclients configuration.
  */
 class SubServiceConfListener<T> implements ConfigurationListener<T> {
 
@@ -36,8 +36,8 @@ class SubServiceConfListener<T> implements ConfigurationListener<T> {
     private T lastConfiguration;
 
     /**
-     * @param clientId Something to distinguish the client from other clients. Used in logging.
-     * @param parent Listener to call every time subclients configuration is updated. It's implementation
+     * @param clientId something to distinguish the client from other clients, used in logging.
+     * @param parent listener to call every time subclients configuration is updated. It's implementation
      *                                    should start the recalculation process.
      */
     SubServiceConfListener(String clientId, ConfigurationListener<T> parent) {

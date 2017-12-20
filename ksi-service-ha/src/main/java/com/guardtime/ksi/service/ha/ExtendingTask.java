@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.concurrent.Callable;
 
 /**
- * Task for doing an extension request.
+ * Creates an extension request.
  */
 class ExtendingTask implements Callable<ExtensionResponse> {
 
@@ -38,9 +38,9 @@ class ExtendingTask implements Callable<ExtensionResponse> {
      * @param service
      *          {@link KSIExtendingService} used for the extension request.
      * @param aggregationTime
-     *          Aggregation time of the signature to be extended.
+     *          aggregation time of the signature to be extended.
      * @param publicationTime
-     *          Publication time until which the signature is to be extended.
+     *          publication time until which the signature is to be extended.
      */
     public ExtendingTask(KSIExtendingService service, Date aggregationTime, Date publicationTime) {
         this.service = service;

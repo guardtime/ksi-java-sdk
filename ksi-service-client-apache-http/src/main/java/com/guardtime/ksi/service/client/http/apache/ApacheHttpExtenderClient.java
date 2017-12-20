@@ -54,7 +54,7 @@ public class ApacheHttpExtenderClient extends AbstractApacheHttpClient implement
     }
 
     /**
-     * @see com.guardtime.ksi.service.client.KSIExtenderClient#extend(InputStream)
+     * @see com.guardtime.ksi.service.client.KSIExtenderClient
      */
     public ApacheHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
         return post(request);

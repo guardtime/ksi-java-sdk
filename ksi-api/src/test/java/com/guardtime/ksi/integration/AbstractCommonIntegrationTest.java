@@ -211,7 +211,7 @@ public abstract class AbstractCommonIntegrationTest {
 
     protected static TCPClientSettings loadTCPExtendingSettings(){
         Properties props = loadProperties();
-        String extenderIp = getProperty(props, "tcp.extenderIp");
+        String extenderIp = getProperty(props, "tcp.extenderIP");
         int extenderPort = Integer.parseInt(getProperty(props, "tcp.extenderPort"));
         int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
         String loginId = getProperty(props, "tcp.loginId");

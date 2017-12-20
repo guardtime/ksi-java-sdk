@@ -42,7 +42,7 @@ public class CredentialsAwareHttpSettingsTest {
         assertNull(settings.getProxyPassword());
         assertEquals(settings.getConnectionTimeout(), -1);
         assertEquals(settings.getReadTimeout(), -1);
-        assertEquals(settings.getPduVersion(), PduVersion.V1);
+        assertEquals(settings.getPduVersion(), PduVersion.V2);
         assertEquals(settings.getCredentials().getLoginId(), credentials.getLoginId());
         assertEquals(settings.getCredentials().getLoginKey(), credentials.getLoginKey());
         assertEquals(settings.getCredentials().getHmacAlgorithm(), credentials.getHmacAlgorithm());

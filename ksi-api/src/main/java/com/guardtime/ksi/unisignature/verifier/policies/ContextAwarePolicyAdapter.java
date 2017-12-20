@@ -154,7 +154,7 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
      * @param handler
      *      Publications handler.
      * @param extendingService
-     *      Extending service.
+     *      Extender client.
      * @return Policy with suitable context.
      */
     public static ContextAwarePolicy createPolicy(Policy policy, PublicationsHandler handler, KSIExtendingService extendingService) {

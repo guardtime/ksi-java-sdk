@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Handles configuration consolidation and listener updates for SigningHAService
+ * Handles configuration consolidation and listener updates for {@link SigningHAService}.
  */
 class SigningHAServiceConfigurationListener extends AbstractHAConfigurationListener<AggregatorConfiguration> {
 
@@ -62,9 +62,9 @@ class SigningHAServiceConfigurationListener extends AbstractHAConfigurationListe
     }
 
     /**
-     * Can be used to get aggregators configuration. Invokes configuration updates for all the subclients.
+     * Gets the aggregator's configuration. Invokes configuration updates for all the subclients.
      *
-     * @return {@link Future} which eventually provides subconfigurations consolidation result.
+     * @return {@link Future} which eventually provides subconfiguration's consolidation result.
      */
     Future<AggregatorConfiguration> getAggregationConfiguration() {
         return new HAConfFuture<>(invokeSubServiceConfUpdates(),

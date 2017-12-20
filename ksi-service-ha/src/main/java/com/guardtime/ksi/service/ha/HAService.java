@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Combines {@link SigningHAService} and {@link ExtendingHAService}
+ * Combines {@link SigningHAService} and {@link ExtendingHAService}.
  */
 public class HAService implements KSISigningService, KSIExtendingService {
 
@@ -105,7 +105,7 @@ public class HAService implements KSISigningService, KSIExtendingService {
     }
 
     /**
-     * Closes signingHaService and extenderHaService
+     * Closes signingHaService and extenderHaService.
      *
      * @see SigningHAService#close()
      * @see ExtendingHAService#close()
@@ -121,7 +121,7 @@ public class HAService implements KSISigningService, KSIExtendingService {
     }
 
     /**
-     * For building the SigningHAService.
+     * Builds the {@link SigningHAService}.
      */
     public static class Builder {
 
@@ -130,6 +130,10 @@ public class HAService implements KSISigningService, KSIExtendingService {
 
         /**
          * @see SigningHAService.Builder#addClients(List)
+         *
+         * @param clients list of signing clients.
+         *
+         * @return Instance of the builder itself.
          */
         public HAService.Builder addSigningClients(List<KSISigningClient> clients) {
             signingHAServiceBuilder.addClients(clients);
@@ -138,6 +142,10 @@ public class HAService implements KSISigningService, KSIExtendingService {
 
         /**
          * @see SigningHAService.Builder#addServices(List)
+         *
+         * @param services list of signing services.
+         *
+         * @return Instance of the builder itself.
          */
         public HAService.Builder addSigningServices(List<KSISigningService> services) {
             signingHAServiceBuilder.addServices(services);
@@ -146,6 +154,10 @@ public class HAService implements KSISigningService, KSIExtendingService {
 
         /**
          * @see ExtendingHAService.Builder#addClients(List)
+         *
+         * @param clients list of extender clients.
+         *
+         * @return Instance of the builder itself.
          */
         public HAService.Builder addExtenderClients(List<KSIExtenderClient> clients) {
             extenderHAServiceBuilder.addClients(clients);
@@ -154,6 +166,10 @@ public class HAService implements KSISigningService, KSIExtendingService {
 
         /**
          * @see ExtendingHAService.Builder#addServices(List)
+         *
+         * @param services list of extending services.
+         *
+         * @return Instance of the builder itself.
          */
         public HAService.Builder addExtenderServices(List<KSIExtendingService> services) {
             extenderHAServiceBuilder.addServices(services);
@@ -161,8 +177,14 @@ public class HAService implements KSISigningService, KSIExtendingService {
         }
 
         /**
+         * {@link HAService} builder.
+         *
          * @see SigningHAService.Builder#setExecutorService(ExecutorService)
          * @see ExtendingHAService.Builder#setExecutorService(ExecutorService)
+         *
+         * @param executorService an instance of {@link SigningHAService.Builder#setExecutorService(ExecutorService)} or {@link ExtendingHAService.Builder#setExecutorService(ExecutorService)}.
+         *
+         * @return Instance of the builder itself.
          */
         public HAService.Builder setExecutorService(ExecutorService executorService) {
             signingHAServiceBuilder.setExecutorService(executorService);
@@ -171,12 +193,12 @@ public class HAService implements KSISigningService, KSIExtendingService {
         }
 
         /**
-         * Builds and instance of {@link HAService} based on what js set in this builder.
+         * Builds an instance of {@link HAService} based on what is set in this builder.
          *
          * @see SigningHAService.Builder#build()
          * @see ExtendingHAService.Builder#build()
          *
-         * @return Instance of {@link HAService}
+         * @return Instance of {@link HAService}.
          */
         public HAService build() {
             return new HAService(signingHAServiceBuilder.build(), extenderHAServiceBuilder.build());

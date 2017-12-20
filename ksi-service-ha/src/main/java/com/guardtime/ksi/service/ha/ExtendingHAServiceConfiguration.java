@@ -44,10 +44,10 @@ class ExtendingHAServiceConfiguration implements ExtenderConfiguration {
     private final Date calLastTime;
 
     /**
-     * Creates a new ExtendingHAServiceConfiguration by copying all the properties from the given configuration.
+     * Creates a new {@link ExtendingHAServiceConfiguration} by copying all the properties from the given configuration.
      * If any of the given properties is not sane then it's left unset.
      *
-     * @param configuration May not be null.
+     * @param configuration may not be null.
      */
     ExtendingHAServiceConfiguration(ExtenderConfiguration configuration) {
         Util.notNull(configuration, "ExtendingHAServiceConfiguration configuration to copy");

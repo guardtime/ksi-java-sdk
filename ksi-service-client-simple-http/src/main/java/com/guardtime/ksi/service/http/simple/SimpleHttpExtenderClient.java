@@ -39,7 +39,7 @@ public class SimpleHttpExtenderClient extends AbstractSimpleHttpClient implement
     }
 
     /**
-     * @see com.guardtime.ksi.service.client.KSIExtenderClient#extend(InputStream)
+     * @see com.guardtime.ksi.service.client.KSIExtenderClient
      */
     public SimpleHttpPostRequestFuture extend(InputStream request) throws KSIClientException {
         return post(request);

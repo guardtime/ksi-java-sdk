@@ -40,7 +40,7 @@ class SigningTask implements Callable<AggregationResponse> {
      * @param dataHash
      *          {@link DataHash} of the data to be signed.
      * @param level
-     *          Level of the hash to be signed.
+     *          level of the hash to be signed.
      */
     public SigningTask(KSISigningService service, DataHash dataHash, Long level) {
         this.service = service;

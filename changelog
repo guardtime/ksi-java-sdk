@@ -24,6 +24,8 @@ Version 4.11
 
 Version 4.10
 
+2017-12-18 4.10.119
+* BUGFIX: CredentialsAwareHttpSettings is now using PDU V2 as default.
 * BUGFIX: Removed complex HTTP client initializing option using sub-clients.
 
 2017-08-31 4.10.117

@@ -74,7 +74,6 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
     public void testExtendToUserPublicationString_OK(KSI ksi) throws Exception {
-
         SignaturePublicationRecord publicationRecord = loadSignature(EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord();
         KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_2017_03_14), publicationRecord);
         Assert.assertTrue(extendedSignature.isExtended(), "Signature extension failed");

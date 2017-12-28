@@ -55,7 +55,7 @@ import static com.guardtime.ksi.util.Util.notNull;
 import static java.util.Arrays.asList;
 
 /**
- * Creates a list of unisigantures.
+ * Creates multiple signatures with one request..
  * <p>
  * Methods {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)},
  * {@link KsiBlockSigner#add(DataHash)} and/or
@@ -63,7 +63,7 @@ import static java.util.Arrays.asList;
  * to add new input hash to the block signer.
  * </p>
  * <p>
- * Method {@link KsiBlockSigner#sign()} must be called to get the final
+ * Method {@link KsiBlockSigner#sign()} must be called to get the final group of
  * signatures.
  * The signatures are returned the same order as the data hashes were added to block signer.
  * </p>
@@ -112,7 +112,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService}. Default hash algorithm is
-     * used to create signature.
+     * used to create signatures.
      *
      * @param signingService an instance of {@link KSISigningService}.
      */
@@ -139,7 +139,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}. Default hash algorithm is
-     * used to create signature.
+     * used to create signatures.
      *
      * @param signingClient an instance of {@link KSISigningClient}.
      */
@@ -285,9 +285,9 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     }
 
     /**
-     * Creates a block signature.
+     * Creates a block of multiple signatures.
      *
-     * @return Block signature.
+     * @return Multiple signatures, according to number of input hashes.
      *
      * @throws KSIException
      */

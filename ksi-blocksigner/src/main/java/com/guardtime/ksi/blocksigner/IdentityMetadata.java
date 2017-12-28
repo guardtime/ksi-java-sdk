@@ -23,6 +23,8 @@ import com.guardtime.ksi.util.Util;
 
 /**
  * Metadata to be added to the signature.
+ *
+ *<p>Note that adding metadata requires additional level in local aggregation tree.</p>
  */
 public class IdentityMetadata {
 

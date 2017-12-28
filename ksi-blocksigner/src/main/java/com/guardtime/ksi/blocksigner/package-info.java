@@ -18,6 +18,6 @@
  */
 
 /**
- * Classes and interfaces to create block signatures
+ * Classes and interfaces to create multiple signatures with one signing request
  */
 package com.guardtime.ksi.blocksigner;

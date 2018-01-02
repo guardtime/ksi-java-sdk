@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -45,10 +45,10 @@ class ExtensionResponsePayloadV1 extends PduResponsePayloadV1 implements Extensi
     private TLVElement hashChain;
 
     /**
-     * Create extension response.
+     * Creates extension response.
      *
      * @param element
-     *         inmemory element
+     *         inmemory element.
      */
     public ExtensionResponsePayloadV1(TLVElement element) throws KSIException {
         super(element);
@@ -77,28 +77,28 @@ class ExtensionResponsePayloadV1 extends PduResponsePayloadV1 implements Extensi
     }
 
     /**
-     * @return error number
+     * @return Error code.
      */
     public Long getError() {
         return status;
     }
 
     /**
-     * @return error message
+     * @return Error message.
      */
     public String getErrorMessage() {
         return errorMessage;
     }
 
     /**
-     * @return request id
+     * @return Request ID.
      */
     public final Long getRequestId() {
         return requestId;
     }
 
     /**
-     * @return returns last time
+     * @return Last time.
      */
     public Date getLastTime() {
         return lastTime;

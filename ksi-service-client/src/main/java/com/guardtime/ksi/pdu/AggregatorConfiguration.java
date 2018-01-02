@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -24,33 +24,33 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 import java.util.List;
 
 /**
- * Interface for aggregator configuration.
+ * The aggregator configuration.
  */
 public interface AggregatorConfiguration {
 
     /**
-     * Return the maximum level value that the client's aggregation tree are allowed to have.
+     * @return The maximum level value that the client's aggregation tree is allowed to have.
      */
     Long getMaximumLevel();
 
     /**
-     * Return the  hash function that the client is recommended to use in its aggregation trees.
+     * @return The hash function that the client is recommended to use in its aggregation trees.
      */
     HashAlgorithm getAggregationAlgorithm();
 
     /**
-     * Return the recommended duration of client's aggregation round, in milliseconds.
+     * @return The recommended duration of client's aggregation round, in milliseconds.
      */
     Long getAggregationPeriod();
 
     /**
-     * Returns the maximum number of requests the client is allowed to send within one aggregation period of the
+     * @return The maximum number of requests the client is allowed to send within one aggregation period of the
      * recommended duration.
      */
     Long getMaximumRequests();
 
     /**
-     * Returns a list of parent server URI-s
+     * @return List of parent server URIs
      */
     List<String> getParents();
 

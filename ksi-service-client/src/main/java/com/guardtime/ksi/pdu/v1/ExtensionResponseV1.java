@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -29,16 +29,17 @@ import com.guardtime.ksi.tlv.TLVElement;
 class ExtensionResponseV1 extends AbstractKSIResponse<ExtensionResponsePayloadV1>  {
 
     /**
-     * This constructor is used to parse response messages. Also does the basic validation.
+     * Constructor for parsing response messages. Also does the basic validation.
      *
      * @param rootElement
-     *         instance of{@link TLVElement}
+     *         instance of{@link TLVElement}.
      * @param context
-     *         instance of {@link KSIRequestContext}. may not be null
+     *         instance of {@link KSIRequestContext}, may not be null.
      * @param credentials
-     *         instance of {@link ServiceCredentials}. may not be null
+     *         instance of {@link ServiceCredentials}, may not be null.
+     *
      * @throws KSIProtocolException
-     *         - will be thrown when TLV message parsing fails
+     *         will be thrown when TLV message parsing fails.
      */
     public ExtensionResponseV1(TLVElement rootElement, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
         super(rootElement, context, credentials);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -68,21 +68,21 @@ class AggregationResponsePayloadV2 extends TLVStructure implements AggregationRe
     }
 
     /**
-     * @return error number
+     * @return Error code.
      */
     public Long getStatus() {
         return status;
     }
 
     /**
-     * returns an error message
+     * @return Error message.
      */
     public String getErrorMessage() {
         return errorMessage;
     }
 
     /**
-     * Returns the request identifier
+     * @return Request ID.
      */
     public final Long getRequestId() {
         return requestId;

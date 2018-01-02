@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -23,26 +23,26 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Interface for extender configuration.
+ * The extender configuration.
  */
 public interface ExtenderConfiguration {
     /**
-     * Returns the maximum number of requests the client is allowed to send within one second
+     * @return The maximum number of requests the client is allowed to send within one second.
      */
     Long getMaximumRequests();
 
     /**
-     * Returns a list of parent server URI-s
+     * @return List of parent server URIs.
      */
     List<String> getParents();
 
     /**
-     * Returns the aggregation time of the newest calendar record the extender has.
+     * @return The aggregation time of the newest calendar record the extender has.
      */
     Date getCalendarFirstTime();
 
     /**
-     * Return the aggregation time of the oldest calendar record the extender has
+     * @return The aggregation time of the oldest calendar record the extender has.
      */
     Date getCalendarLastTime();
 

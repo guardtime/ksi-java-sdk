@@ -29,7 +29,7 @@ import java.io.Closeable;
 import java.util.List;
 
 /**
- * Provides KSI services to communicate with aggregator(s).
+ * Provides KSI services to communicate with the aggregator(s).
  */
 public interface KSISigningService extends Closeable {
 
@@ -40,13 +40,15 @@ public interface KSISigningService extends Closeable {
      * @param level the dataHash's level in the local aggregation tree.
      *
      * @return Instance of {@link AggregationResponseFuture} containing Aggregation response data.
-     * @throws KSIException
+     * @throws KSIException in case any error occurs.
      */
     Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException;
 
     /**
      * Gets all the subservices in case of the implementation that combines multiple KSISigningServices. If the implementation
      * is a KSISigningService connecting directly to a single gateway, an empty list is returned.
+     *
+     * @return List of subservices.
      */
     List<KSISigningService> getSubSigningServices();
 
@@ -54,6 +56,9 @@ public interface KSISigningService extends Closeable {
      * Registers a new {@link ConfigurationListener}&lt;{@link AggregatorConfiguration}&gt;
      * for the KSISigningService. Each time KSISigningService's configuration is
      * updated, this listener is called.
+     *
+     * @param listener an instance of {@link ConfigurationListener}&lt;{@link AggregatorConfiguration}&gt;. 
+     *
      */
     void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener);
 
@@ -61,7 +66,7 @@ public interface KSISigningService extends Closeable {
      * Makes the KSISigningService ask for configuration update. On completion of the update, the registered {@link ConfigurationListener}s
      * are called.
      *
-     * @return Future of the {@link AggregatorConfiguration}
+     * @return Future of the {@link AggregatorConfiguration}.
      */
     Future<AggregatorConfiguration> getAggregationConfiguration();
 

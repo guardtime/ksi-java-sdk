@@ -18,6 +18,6 @@
  */
 
 /**
- * KSI exception classes
+ * KSI exception classes.
  */
 package com.guardtime.ksi.exceptions;

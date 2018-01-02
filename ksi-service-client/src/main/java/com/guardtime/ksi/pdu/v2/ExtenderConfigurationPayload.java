@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -29,7 +29,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * ExtenderConfigurationPayload provides additional information about the Extender.
+ * Extender's configuration response payload element, provides detailed information about
+ * the extender.
  */
 public class ExtenderConfigurationPayload extends TLVStructure implements ExtenderConfiguration {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -41,6 +41,10 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+/**
+ * Implementation of the {@link PduFactory}.
+ */
 
 public class PduV2Factory implements PduFactory {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -22,7 +22,7 @@ package com.guardtime.ksi.service.client;
 import com.guardtime.ksi.exceptions.KSIException;
 
 /**
- * This exception is thrown when exception occurs turning KSI protocol request.
+ * Thrown when exception occurs during KSI protocol request.
  */
 public class KSIClientException extends KSIException {
 

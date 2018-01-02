@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -25,16 +25,16 @@ import com.guardtime.ksi.tlv.TLVElement;
 import java.io.InputStream;
 
 /**
- * KSI client for extender service
+ * KSI client for extender service.
  */
 public interface KSIExtenderClient extends KSICredentialsAwareClient {
 
     /**
-     * Used to extend existing signatures.
+     * Extends the existing signatures.
      *
      * @param request
-     *         instance of {@link InputStream} that contains request data.
-     * @return instance of {@link Future} containing KSI response data.
+     *         instance of {@link InputStream} that contains request.
+     * @return Instance of {@link Future} containing KSI response.
      * @throws KSIClientException
      */
     Future<TLVElement> extend(InputStream request) throws KSIClientException;

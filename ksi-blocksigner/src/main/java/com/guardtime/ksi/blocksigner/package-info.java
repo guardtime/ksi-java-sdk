@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -18,6 +18,6 @@
  */
 
 /**
- * Classes and interfaces to create block signatures
+ * Classes and interfaces to create multiple signatures with one signing request
  */
 package com.guardtime.ksi.blocksigner;

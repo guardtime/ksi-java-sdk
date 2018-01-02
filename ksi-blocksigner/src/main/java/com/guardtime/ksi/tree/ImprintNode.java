@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -24,7 +24,7 @@ import static com.guardtime.ksi.util.Util.notNull;
 import com.guardtime.ksi.hashing.DataHash;
 
 /**
- * This class represents a hash tree node which every non-leaf node is labelled with the hash of the labels or values
+ * Represents a hash tree node. Every non-leaf node is labelled with the hash of the labels or values
  * (in case of leaves) of its child nodes.
  */
 public class ImprintNode implements TreeNode {

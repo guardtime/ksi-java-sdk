@@ -75,14 +75,18 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     public InMemoryKsiSignatureFactory() {
     }
 
-    public InMemoryKsiSignatureFactory(ContextAwarePolicy policy, KSISignatureComponentFactory signatureComponentFactory) {
-        Util.notNull(policy, "Signature verification policy");
+    public InMemoryKsiSignatureFactory(KSISignatureComponentFactory signatureComponentFactory) {
         Util.notNull(signatureComponentFactory, "Signature component factory");
+        this.signatureComponentFactory = signatureComponentFactory;
+    }
+
+    public InMemoryKsiSignatureFactory(ContextAwarePolicy policy, KSISignatureComponentFactory signatureComponentFactory) {
+        this(signatureComponentFactory);
+        Util.notNull(policy, "Signature verification policy");
         this.policy = policy;
         this.extendingService = policy.getPolicyContext().getExtendingService();
         this.extendingAllowed = policy.getPolicyContext().isExtendingAllowed();
         this.publicationsHandler = policy.getPolicyContext().getPublicationsHandler();
-        this.signatureComponentFactory = signatureComponentFactory;
         this.verifySignatures = true;
     }
 
@@ -90,6 +94,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter,
                                        KSIExtendingService extendingService, boolean extendingAllowed,
                                        KSISignatureComponentFactory signatureComponentFactory) {
+        this(signatureComponentFactory);
         Util.notNull(policy, "Signature verification policy");
         Util.notNull(publicationsFileClientAdapter, "Publications file client adapter");
         Util.notNull(extendingService, "KSI extending service");
@@ -97,10 +102,10 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         this.publicationsHandler = createPublicationsHandler(publicationsFileClientAdapter);
         this.extendingService = extendingService;
         this.extendingAllowed = extendingAllowed;
-        this.signatureComponentFactory = signatureComponentFactory;
         this.verifySignatures = true;
     }
 
+    @Deprecated
     public InMemoryKsiSignatureFactory(Policy policy, PublicationsFileClientAdapter publicationsFileClientAdapter,
                                        KSIExtenderClient extenderClient, boolean extendingAllowed,
                                        KSISignatureComponentFactory signatureComponentFactory) {

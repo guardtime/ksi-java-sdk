@@ -38,7 +38,6 @@ import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -237,7 +236,7 @@ public class HAServiceTest {
     private KSISigningService initSucceedingSigningClient(final AggregationResponse subclientResponse) throws KSIException {
         KSISigningService succeedingClient = mock(KSISigningService.class);
         when(succeedingClient.sign(any(DataHash.class), anyLong())).thenReturn(new Future<AggregationResponse>() {
-            public AggregationResponse getResult() throws KSIException {
+            public AggregationResponse getResult() {
                 return subclientResponse;
             }
 
@@ -257,7 +256,7 @@ public class HAServiceTest {
     private KSIExtendingService initSucceedingExtenderClient(final ExtensionResponse subclientResponse) throws KSIException {
         KSIExtendingService succeedingClient = mock(KSIExtendingService.class);
         when(succeedingClient.extend(any(Date.class), any(Date.class))).thenReturn(new Future<ExtensionResponse>() {
-            public ExtensionResponse getResult() throws KSIException {
+            public ExtensionResponse getResult() {
                 return subclientResponse;
             }
 
@@ -315,7 +314,7 @@ public class HAServiceTest {
             this.maxRequests = maxRequests;
         }
 
-        public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException {
+        public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) {
             return null;
         }
 
@@ -331,13 +330,13 @@ public class HAServiceTest {
             final ExtenderConfiguration confMock = Mockito.mock(ExtenderConfiguration.class);
             Mockito.when(confMock.getMaximumRequests()).thenReturn(maxRequests);
             extenderConfHandler.doConfigurationUpdate(new ConfigurationRequest<ExtenderConfiguration>() {
-                public ExtenderConfiguration invoke() throws KSIException {
+                public ExtenderConfiguration invoke() {
                     sleep(maxRequests); // Make sure better values take more time
                     return confMock;
                 }
             });
             return new Future<ExtenderConfiguration>() {
-                public ExtenderConfiguration getResult() throws KSIException {
+                public ExtenderConfiguration getResult() {
                     return confMock;
                 }
 
@@ -347,7 +346,7 @@ public class HAServiceTest {
             };
         }
 
-        public Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException {
+        public Future<AggregationResponse> sign(DataHash dataHash, Long level) {
             return null;
         }
 
@@ -362,14 +361,14 @@ public class HAServiceTest {
         public Future<AggregatorConfiguration> getAggregationConfiguration() {
             final AggregatorConfiguration confMock = Mockito.mock(AggregatorConfiguration.class);
             aggrConfHandler.doConfigurationUpdate(new ConfigurationRequest<AggregatorConfiguration>() {
-                public AggregatorConfiguration invoke() throws KSIException {
+                public AggregatorConfiguration invoke() {
                     sleep(maxRequests); // Make sure better values take more time
                     Mockito.when(confMock.getMaximumRequests()).thenReturn(maxRequests);
                     return confMock;
                 }
             });
             return new Future<AggregatorConfiguration>() {
-                public AggregatorConfiguration getResult() throws KSIException {
+                public AggregatorConfiguration getResult() {
                     return confMock;
                 }
 
@@ -379,7 +378,7 @@ public class HAServiceTest {
             };
         }
 
-        public void close() throws IOException {
+        public void close() {
 
         }
 

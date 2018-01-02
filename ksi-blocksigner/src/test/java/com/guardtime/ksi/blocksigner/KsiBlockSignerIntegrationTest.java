@@ -93,14 +93,14 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*The request indicated client-side aggregation tree larger than allowed for the client.*")
     public void testCreateSignatureLargeAggregationTree() throws Exception {
-        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).build();
         builder.add(DATA_HASH, 254L, metadata);
         builder.sign();
     }
 
     @Test
     public void testBlockSignerUsingDefaultHashingAlgorithm() throws Exception {
-        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).build();
         builder.add(DATA_HASH, metadata);
         builder.add(DATA_HASH_2, metadata2);
         builder.add(dataHashSha386, metadata3);
@@ -117,7 +117,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
     @Test(dataProvider = WORKING_HASH_ALGORITHMS)
     public void testBlockSignerWithAllWorkingHashAlgorithms(HashAlgorithm algorithm) throws Exception {
-        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setDefaultHashAlgorithm(algorithm).build();
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).setDefaultHashAlgorithm(algorithm).build();
         blockSigner.add(dataHashSha512, metadata4);
         blockSigner.add(dataHashRipemd160, metadata2);
         blockSigner.add(dataHashSha386, metadata3);
@@ -128,19 +128,19 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     @Test(expectedExceptions = IllegalArgumentException.class,
             expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
     public void testBlockSignerWithDeprecatedHashAlgorithms() throws Exception {
-        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).build();
         blockSigner.add(dataHashSha1, metadata);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class,
             expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
-    public void testInitBlockSignerWithDeprecatedHashAlgorithm() throws Exception {
-        new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setDefaultHashAlgorithm(HashAlgorithm.SHA1).build();
+    public void testInitBlockSignerWithDeprecatedHashAlgorithm() {
+        new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).setDefaultHashAlgorithm(HashAlgorithm.SHA1).build();
     }
 
     @Test
     public void testBlockSignerWithMaxTreeHeightAndPerformVerification() throws Exception {
-        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).setMaxTreeHeight(3).build();
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).setMaxTreeHeight(3).build();
         // Up to 4 hashes with meta data could be added without exceeding max tree height 3.
         assertTrue(blockSigner.add(DATA_HASH, metadata));
         assertTrue(blockSigner.add(DATA_HASH, metadata));
@@ -156,12 +156,12 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         PublicationsFileClientAdapter mockAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
         when(mockAdapter.getPublicationsFile()).thenReturn(ksi.getPublicationsFile());
         KsiBlockSigner blockSigner = new KsiBlockSignerBuilder()
-                .setKsiSigningClient(simpleHttpClient)
+                .setKsiSigningClient(signerClient)
                 .setMaxTreeHeight(3)
                 .setSignatureFactory(new InMemoryKsiSignatureFactory(
                         new KeyBasedVerificationPolicy(),
                         mockAdapter,
-                        simpleHttpClient,
+                        extenderClient,
                         false,
                         new InMemoryKsiSignatureComponentFactory()
                 )).build();
@@ -181,12 +181,12 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         PublicationsFileClientAdapter mockAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
         when(mockAdapter.getPublicationsFile()).thenReturn(ksi.getPublicationsFile());
         KsiBlockSigner blockSigner = new KsiBlockSignerBuilder()
-                .setKsiSigningClient(simpleHttpClient)
+                .setKsiSigningClient(signerClient)
                 .setMaxTreeHeight(4)
                 .setSignatureFactory(new InMemoryKsiSignatureFactory(
                         new KeyBasedVerificationPolicy(),
                         mockAdapter,
-                        simpleHttpClient,
+                        extenderClient,
                         false,
                         new InMemoryKsiSignatureComponentFactory()
                         )).build();
@@ -203,12 +203,12 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         PublicationsFileClientAdapter mockAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
         when(mockAdapter.getPublicationsFile()).thenReturn(ksi.getPublicationsFile());
         KsiBlockSigner blockSigner = new KsiBlockSignerBuilder()
-                .setKsiSigningClient(simpleHttpClient)
+                .setKsiSigningClient(signerClient)
                 .setMaxTreeHeight(5)
                 .setSignatureFactory(new InMemoryKsiSignatureFactory(
                         new KeyBasedVerificationPolicy(),
                         mockAdapter,
-                        simpleHttpClient,
+                        extenderClient,
                         false,
                         new InMemoryKsiSignatureComponentFactory()
                         )).build();
@@ -222,7 +222,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
     @Test
     public void testBlockSignerSignatureOutputOrder() throws Exception {
-        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).build();
         List<Input> input = Arrays.asList(new Input(DATA_HASH, 3L, metadata), new Input(DATA_HASH, 0L, metadata3),
                 new Input(DATA_HASH_2, 0L, metadata2), new Input(dataHashSha386, 3L, metadata),
                 new Input(DATA_HASH, 0L, metadata4), new Input(DATA_HASH, 0L, metadata), new Input(DATA_HASH, 2L, metadata3),
@@ -252,7 +252,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
     @Test
     public void testBlockSignerWithoutMetadata() throws Exception {
-        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).build();
         blockSigner.add(DATA_HASH);
         blockSigner.add(DATA_HASH);
         blockSigner.add(DATA_HASH);
@@ -261,14 +261,14 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
     @Test
     public void testBlockSignerOneHashWithoutMetadata() throws Exception {
-        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).build();
         blockSigner.add(DATA_HASH);
         signAndVerify(blockSigner, 1);
     }
 
     @Test
     public void testBlockSignerWithoutMetadataLevel() throws Exception {
-        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).build();
         List<Input> hashes = Arrays.asList(new Input(DATA_HASH, 2L, null), new Input(DATA_HASH, 3L, null),
                 new Input(DATA_HASH, 2L, null), new Input(DATA_HASH, 3L, null), new Input(DATA_HASH, 1L, null));
 
@@ -281,7 +281,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
     @Test
     public void testBlockSignerOneHashLevelWithoutMetadata() throws Exception {
-        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(simpleHttpClient).build();
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).build();
         List<Input> hashes = Collections.singletonList(new Input(DATA_HASH, 2L, null));
 
         for (Input hashWithLevel : hashes) {
@@ -308,7 +308,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         assertEquals(signatures.size(), hashes.size());
         int i = 0;
 
-        ContextAwarePolicy policy = ContextAwarePolicyAdapter.createKeyPolicy(getPublicationsHandler(simpleHttpClient));
+        ContextAwarePolicy policy = ContextAwarePolicyAdapter.createKeyPolicy(getPublicationsHandler(publicationsFileClient));
         for (KSISignature signature : signatures) {
             VerificationResult verificationResult =
                     ksi.verify(signature, hashes.get(i).getDataHash(), hashes.get(i).getLevel(), policy);

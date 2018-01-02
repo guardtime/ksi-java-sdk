@@ -42,7 +42,7 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
     public void testVerifySignatureWithNoPublicationRecordinExtendingAllowed_VerificationReturnsOk() throws Exception {
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
         PublicationData publicationData = new PublicationData(PUBLICATION_STRING_2017_03_15);
-        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
+        VerificationResult result = verify(ksi, extenderClient, signature, policy, publicationData, true);
         Assert.assertTrue(result.isOk());
         result = verifyWithContext(signature, publicationData, true);
         Assert.assertTrue(result.isOk());
@@ -52,7 +52,7 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
     public void testVerifySignatureWithCorrectData_VerificationReturnsOk() throws Exception {
         KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         VerificationResult result =
-                verify(ksi, simpleHttpClient, signature, policy, signature.getPublicationRecord().getPublicationData(), false);
+                verify(ksi, extenderClient, signature, policy, signature.getPublicationRecord().getPublicationData(), false);
         Assert.assertTrue(result.isOk());
         result = verifyWithContext(signature, signature.getPublicationRecord().getPublicationData(), false);
         Assert.assertTrue(result.isOk());
@@ -62,7 +62,7 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
     public void testVerifySignatureUsingDifferentPublication_VerificationReturnsOk() throws Exception {
         KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         PublicationData publicationData = new PublicationData(PUBLICATION_STRING_2017_03_18);
-        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, true);
+        VerificationResult result = verify(ksi, extenderClient, signature, policy, publicationData, true);
         Assert.assertTrue(result.isOk());
         result = verifyWithContext(signature, publicationData, true);
         Assert.assertTrue(result.isOk());
@@ -71,7 +71,7 @@ public class UserProvidedPublicationPolicyIntegrationTest extends AbstractCommon
 
     public VerificationResult verifyWithContext(KSISignature signature, PublicationData userPublication, boolean extendingAllowed)
             throws Exception {
-        Extender extender = getExtender(ksi.getExtendingService(), simpleHttpClient);
+        Extender extender = getExtender(ksi.getExtendingService(), publicationsFileClient);
         return ksi.verify(signature,
                 ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(userPublication, extendingAllowed ? extender : null));
     }

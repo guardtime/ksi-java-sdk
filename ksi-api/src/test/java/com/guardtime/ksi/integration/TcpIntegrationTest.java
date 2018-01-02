@@ -26,7 +26,7 @@ import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
+import com.guardtime.ksi.service.client.http.apache.ApacheHttpPublicationsFileClient;
 import com.guardtime.ksi.service.tcp.ExtenderTCPClient;
 import com.guardtime.ksi.service.tcp.KSITCPTransactionException;
 import com.guardtime.ksi.service.tcp.SigningTCPClient;
@@ -62,7 +62,7 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
             "alyPaM4eymvMn6Di8VIhEvUpJqfay5REg016NWopK0WfpU6ZcA" +
             "EX9g4vu0futr1JlGz5UoUAhS0AHRIz62ucr0k88aZI9YHlvJ6Y"; //Length: 252
 
-    private static ApacheHttpClient pubFileClient;
+    private static ApacheHttpPublicationsFileClient pubFileClient;
     private static KSISigningClient tcpSigningClient;
     private static KSIExtenderClient tcpExtenderClient;
 
@@ -70,7 +70,7 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
     public void setUp() throws Exception {
         tcpSigningClient = new SigningTCPClient(loadTCPSigningSettings());
         tcpExtenderClient = new ExtenderTCPClient(loadTCPExtendingSettings());
-        pubFileClient = new ApacheHttpClient(loadHTTPSettings());
+        pubFileClient = new ApacheHttpPublicationsFileClient(loadPublicationsFileSettings());
         this.ksi = createKsi(tcpExtenderClient, tcpSigningClient, pubFileClient);
     }
 
@@ -133,6 +133,12 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         KSI tcpKsi = createKsi(tcpExtenderClient, tcpSigningClient, pubFileClient);
         tcpSigningClient.close();
         tcpKsi.sign(new byte[0]);
+    }
+
+    @Test (groups = TEST_GROUP_INTEGRATION)
+    public void testTcpExtenderClient_OK() throws Exception {
+        KSI tcpKsi = createKsi(tcpExtenderClient, tcpSigningClient, pubFileClient);
+        tcpKsi.extend(loadSignature(SIGNATURE_2014_06_02));
     }
 
     @Test (groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "The connector is being disposed.")

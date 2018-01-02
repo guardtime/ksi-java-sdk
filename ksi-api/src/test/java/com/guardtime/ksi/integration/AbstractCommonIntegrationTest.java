@@ -39,6 +39,7 @@ import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings;
+import com.guardtime.ksi.service.client.http.HTTPConnectionParameters;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.client.http.HttpSettings;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
@@ -46,7 +47,6 @@ import com.guardtime.ksi.service.client.http.apache.ApacheHttpExtenderClient;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpPublicationsFileClient;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpSigningClient;
 import com.guardtime.ksi.service.ha.HAService;
-import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpExtenderClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpPublicationsFileClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpSigningClient;
@@ -102,22 +102,26 @@ public abstract class AbstractCommonIntegrationTest {
     protected static String javaKeyStorePath = null;
 
     protected KSI ksi;
-    protected SimpleHttpClient simpleHttpClient;
+    protected SimpleHttpSigningClient signerClient;
+    protected SimpleHttpExtenderClient extenderClient;
+    protected SimpleHttpPublicationsFileClient publicationsFileClient;
 
-    private static HttpClientSettings httpSettings;
-    protected static ApacheHttpClient apacheHttpClient;
-    private static ApacheHttpSigningClient apacheHttpSigningClient;
-    private static ApacheHttpExtenderClient apacheHttpExtenderClient;
-    private static ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient;
-    private static ApacheHttpClient failingClient;
-    private static KSISigningClient tcpClient;
+    private static CredentialsAwareHttpSettings signingSettings;
+    private static CredentialsAwareHttpSettings extenderSettings;
+    private static HttpSettings publicationsFileSettings;
     private static Properties properties;
 
     @BeforeClass
     protected void setUp() throws Exception {
-        httpSettings = loadHTTPSettings();
-        simpleHttpClient = new SimpleHttpClient(httpSettings);
-        ksi = createKsi(simpleHttpClient, simpleHttpClient, simpleHttpClient);
+        properties = loadProperties();
+        javaKeyStorePath = loadJavaKeyStorePath();
+        signingSettings = loadSignerSettings();
+        extenderSettings = loadExtenderSettings();
+        publicationsFileSettings = loadPublicationsFileSettings();
+        signerClient = new SimpleHttpSigningClient(signingSettings);
+        extenderClient = new SimpleHttpExtenderClient(extenderSettings);
+        publicationsFileClient = new SimpleHttpPublicationsFileClient(publicationsFileSettings);
+        ksi = createKsi(extenderClient, signerClient, publicationsFileClient);
     }
 
     public static DataHash getFileHash(String fileName, String name) throws Exception {
@@ -136,91 +140,61 @@ public abstract class AbstractCommonIntegrationTest {
 
     @DataProvider(name = KSI_DATA_GROUP_NAME)
     public static Object[][] transportProtocols() throws Exception {
-        if (apacheHttpClient == null) {
-            apacheHttpClient = new ApacheHttpClient(httpSettings);
-        }
-        if (failingClient == null) {
-            failingClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
+        if (signingSettings == null) {
+            signingSettings = loadSignerSettings();
         }
 
-        CredentialsAwareHttpSettings signingSettings = new CredentialsAwareHttpSettings(httpSettings.getSigningUrl().toString(), httpSettings.getCredentials());
-        CredentialsAwareHttpSettings extenderSettings = new CredentialsAwareHttpSettings(httpSettings.getExtendingUrl().toString(), httpSettings.getCredentials());
-        HttpSettings PublicationSettings = new HttpSettings(httpSettings.getPublicationsFileUrl().toString());
+        if (extenderSettings == null){
+            extenderSettings = loadExtenderSettings();
+        }
+
+        if (publicationsFileSettings == null) {
+            publicationsFileSettings = loadPublicationsFileSettings();
+        }
+
+        ApacheHttpClient failingClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
 
         SimpleHttpSigningClient simpleHttpSigningClient = new SimpleHttpSigningClient(signingSettings);
-        if (apacheHttpSigningClient == null) {
-            apacheHttpSigningClient = new ApacheHttpSigningClient(signingSettings);
-        }
+        ApacheHttpSigningClient apacheHttpSigningClient = new ApacheHttpSigningClient(signingSettings);
 
         SimpleHttpExtenderClient simpleHttpExtenderClient = new SimpleHttpExtenderClient(extenderSettings);
-        if (apacheHttpExtenderClient == null) {
-            apacheHttpExtenderClient = new ApacheHttpExtenderClient(extenderSettings);
-        }
-        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient = new SimpleHttpPublicationsFileClient(PublicationSettings);
-        if (apacheHttpPublicationsFileClient == null) {
-            apacheHttpPublicationsFileClient = new ApacheHttpPublicationsFileClient(PublicationSettings);
-        }
+        ApacheHttpExtenderClient apacheHttpExtenderClient = new ApacheHttpExtenderClient(extenderSettings);
 
-        if (tcpClient == null) {
-            tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
-        }
+        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient = new SimpleHttpPublicationsFileClient(publicationsFileSettings);
+        ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient = new ApacheHttpPublicationsFileClient(publicationsFileSettings);
 
-        SimpleHttpClient simpleHttpClient = new SimpleHttpClient(httpSettings);
+        KSISigningClient tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
 
         PendingKSIService pendingKSIService = new PendingKSIService();
 
         List<KSISigningClient> signingClientsForHa = new ArrayList<KSISigningClient>();
-        signingClientsForHa.add(apacheHttpSigningClient);
+        signingClientsForHa.add(simpleHttpSigningClient);
         signingClientsForHa.add(apacheHttpSigningClient);
         List<KSISigningService> signingServicesForHa = new ArrayList<KSISigningService>();
         signingServicesForHa.add(pendingKSIService);
 
         List<KSIExtenderClient> extenderClientsForHa = new ArrayList<KSIExtenderClient>();
-        extenderClientsForHa.add(apacheHttpExtenderClient);
+        extenderClientsForHa.add(simpleHttpExtenderClient);
         extenderClientsForHa.add(apacheHttpExtenderClient);
         List<KSIExtendingService> extendingServicesForHa = new ArrayList<KSIExtendingService>();
         extendingServicesForHa.add(pendingKSIService);
 
         HAService haService = new HAService.Builder()
                 .addSigningClients(signingClientsForHa)
-                .addSigningServices(signingServicesForHa).
-                        addExtenderClients(extenderClientsForHa)
+                .addSigningServices(signingServicesForHa)
+                .addExtenderClients(extenderClientsForHa)
                 .addExtenderServices(extendingServicesForHa)
                 .build();
 
         return new Object[][] {
                 new Object[] {createKsi(simpleHttpExtenderClient, simpleHttpSigningClient, simpleHttpPublicationsFileClient)},
                 new Object[] {createKsi(apacheHttpExtenderClient, apacheHttpSigningClient, apacheHttpPublicationsFileClient)},
-                new Object[] {createKsi(apacheHttpClient, apacheHttpClient, apacheHttpClient)},
-                new Object[] {createKsi((KSIExtenderClient) tcpClient, tcpClient, apacheHttpClient)},
-                new Object[] {createKsi(haService, haService, simpleHttpClient)}
+                new Object[] {createKsi((KSIExtenderClient) tcpClient, tcpClient, simpleHttpPublicationsFileClient)},
+                new Object[] {createKsi(haService, haService, apacheHttpPublicationsFileClient)}
         };
     }
 
-    protected static TCPClientSettings loadTCPSigningSettings() {
-        Properties props = loadProperties();
-        String signerIP = getProperty(props, "tcp.signerIP");
-        int signerPort = Integer.parseInt(getProperty(props, "tcp.signerPort"));
-        int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
-        String loginId = getProperty(props, "tcp.loginId");
-        String loginKey = getProperty(props, "tcp.loginKey");
-        ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
-        return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec,
-                serviceCredentials);
-    }
-
-    protected static TCPClientSettings loadTCPExtendingSettings(){
-        Properties props = loadProperties();
-        String extenderIp = getProperty(props, "tcp.extenderIP");
-        int extenderPort = Integer.parseInt(getProperty(props, "tcp.extenderPort"));
-        int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
-        String loginId = getProperty(props, "tcp.loginId");
-        String loginKey = getProperty(props, "tcp.loginKey");
-        ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
-        return new TCPClientSettings(new InetSocketAddress(extenderIp, extenderPort), tcpTransactionTimeoutSec,
-                serviceCredentials);
-    }
-
+    @Deprecated
     public static HttpClientSettings loadHTTPSettings(PduVersion pduVersion){
         Properties props = loadProperties();
         String extenderUrl = getProperty(props, "extenderUrl");
@@ -242,6 +216,87 @@ public abstract class AbstractCommonIntegrationTest {
         return serviceSettings;
     }
 
+
+    protected static TCPClientSettings loadTCPSigningSettings() {
+        Properties props = loadProperties();
+        String signerIP = getProperty(props, "tcp.signerIP");
+        int signerPort = Integer.parseInt(getProperty(props, "tcp.signerPort"));
+        int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
+        String loginId = getProperty(props, "tcp.loginId");
+        String loginKey = getProperty(props, "tcp.loginKey");
+        ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
+        return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec,
+                serviceCredentials);
+    }
+
+    protected static TCPClientSettings loadTCPExtendingSettings(){
+        Properties props = loadProperties();
+        String extenderIp = getProperty(props, "tcp.extenderIP");
+        int extenderPort = Integer.parseInt(getProperty(props, "tcp.extenderPort"));
+        int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
+        String loginId = (String) getProperty(props, "tcp.extenderLoginId", "tcp.loginId");
+        String loginKey = (String) getProperty(props, "tcp.extenderLoginKey", "tcp.loginKey");
+        ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
+        return new TCPClientSettings(new InetSocketAddress(extenderIp, extenderPort), tcpTransactionTimeoutSec,
+                serviceCredentials);
+    }
+
+    public static HttpSettings loadPublicationsFileSettings() {
+        if (publicationsFileSettings == null) {
+            Properties props = loadProperties();
+            HTTPConnectionParameters params = new HTTPConnectionParameters(DEFAULT_TIMEOUT, DEFAULT_TIMEOUT);
+            publicationsFileSettings = new HttpSettings(getProperty(props, "pubfileUrl"), params);
+        }
+        return publicationsFileSettings;
+    }
+
+    public static CredentialsAwareHttpSettings loadSignerSettings() {
+        if (signingSettings == null) {
+            signingSettings = loadSignerSettings(PduVersion.V2);
+        }
+        return signingSettings;
+    }
+
+    public static CredentialsAwareHttpSettings loadExtenderSettings() {
+        if (extenderSettings == null) {
+            extenderSettings = loadExtenderSettings(PduVersion.V2);
+        }
+        return extenderSettings;
+    }
+
+    public static CredentialsAwareHttpSettings loadSignerSettings(PduVersion pduVersion) {
+        Properties prop = loadProperties();
+        ServiceCredentials credentials = new KSIServiceCredentials(
+                getProperty(prop, "loginId"),
+                getProperty(prop, "loginKey"));
+        return loadSettings(getProperty(prop, "gatewayUrl"), credentials, pduVersion);
+    }
+
+    public static CredentialsAwareHttpSettings loadExtenderSettings(PduVersion pduVersion) {
+        Properties props = loadProperties();
+
+        ServiceCredentials credentials = new KSIServiceCredentials(
+                (String) getProperty(props, "extenderLoginId", "loginId"),
+                (String) getProperty(props, "extenderLoginKey", "loginKey"));
+
+        return loadSettings(getProperty(props, "extenderUrl"), credentials,  pduVersion);
+    }
+
+    public static CredentialsAwareHttpSettings loadSettings(String url, ServiceCredentials credentials, PduVersion pduVersion) {
+        HTTPConnectionParameters params = new HTTPConnectionParameters(DEFAULT_TIMEOUT, DEFAULT_TIMEOUT);
+        CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings(url, credentials, params);
+        settings.setPduVersion(pduVersion);
+        return settings;
+    }
+
+    private String loadJavaKeyStorePath() {
+        Properties props = loadProperties();
+        if (javaKeyStorePath == null && props.containsKey("javaKeyStorePath")) {
+            javaKeyStorePath = getProperty(props, "javaKeyStorePath");
+        }
+        return javaKeyStorePath;
+    }
+
     private static Properties loadProperties() {
         if (properties == null) {
             properties = new Properties();
@@ -255,12 +310,20 @@ public abstract class AbstractCommonIntegrationTest {
         return properties;
     }
 
-    private static String getProperty(Properties prop, String key) {
-        return Objects.requireNonNull(prop.getProperty(key), key + " is missing in " + PROPERTIES_INTEGRATION_TEST);
+    private static Object getProperty(Properties props, String preferredKey, String alternativeKey) {
+        Object value;
+        if (props.containsKey(preferredKey)) {
+            value = getProperty(props, preferredKey);
+        } else if (props.containsKey(alternativeKey)) {
+            value = getProperty(props, alternativeKey);
+        } else {
+            throw new NullPointerException(preferredKey + " is missing in " + PROPERTIES_INTEGRATION_TEST);
+        }
+        return value;
     }
 
-    public static HttpClientSettings loadHTTPSettings() throws IOException {
-        return loadHTTPSettings(PduVersion.V2);
+    private static String getProperty(Properties prop, String key) {
+        return Objects.requireNonNull(prop.getProperty(key), key + " is missing in " + PROPERTIES_INTEGRATION_TEST);
     }
 
     protected static Object[] createKsiObject(KSIExtenderClient extenderClient, KSISigningClient signingClient,
@@ -394,11 +457,11 @@ public abstract class AbstractCommonIntegrationTest {
 
             int linesCount = lines.size();
             Object[][] data = new Object[linesCount][1];
-            SimpleHttpClient httpClient = new SimpleHttpClient(loadHTTPSettings());
+            SimpleHttpExtenderClient extenderClient = new SimpleHttpExtenderClient(loadExtenderSettings());
 
             for (int i = 0; i < linesCount; i++) {
                 try{
-                    data[i] = new Object[]{new IntegrationTestDataHolder(path, lines.get(i).split(";"), httpClient)};
+                    data[i] = new Object[]{new IntegrationTestDataHolder(path, lines.get(i).split(";"), extenderClient)};
                 } catch (Exception e){
                     logger.warn("Error while parsing the following line: '" + lines.get(i) + "' from file: " + fileName);
                     throw e;

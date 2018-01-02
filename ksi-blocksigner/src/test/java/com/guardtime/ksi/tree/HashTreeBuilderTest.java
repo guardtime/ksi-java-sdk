@@ -39,7 +39,7 @@ public class HashTreeBuilderTest {
 
 
     @BeforeMethod
-    public void setUp() throws Exception {
+    public void setUp() {
         this.builder = new HashTreeBuilder();
         this.node = new ImprintNode(DATA_HASH);
         this.node2 = new ImprintNode(DATA_HASH_2);
@@ -47,22 +47,22 @@ public class HashTreeBuilderTest {
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Node can not be null")
-    public void testAddMissingNode() throws Exception {
+    public void testAddMissingNode() {
         builder.add((ImprintNode) null);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Nodes can not be null")
-    public void testAddMissingNodes() throws Exception {
+    public void testAddMissingNodes() {
         builder.add((ImprintNode[]) null);
     }
 
     @Test(expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "Add leaf nodes before building a tree")
-    public void testBuildTreeWithoutLeafs() throws Exception {
+    public void testBuildTreeWithoutLeafs() {
         builder.build();
     }
 
     @Test
-    public void testCreateTreeWithOneLeaf() throws Exception {
+    public void testCreateTreeWithOneLeaf() {
         builder.add(node);
         ImprintNode root = builder.build();
         assertNotNull(root);
@@ -74,7 +74,7 @@ public class HashTreeBuilderTest {
     }
 
     @Test
-    public void testCreateTreeWithMultipleLeafs() throws Exception {
+    public void testCreateTreeWithMultipleLeafs() {
         builder.add(node, node2, node2, node, node, node2, node2);
         ImprintNode root = builder.build();
         assertNotNull(root);
@@ -82,7 +82,7 @@ public class HashTreeBuilderTest {
     }
 
     @Test
-    public void testCreateTreeWithMultipleDifferentSubtrees() throws Exception {
+    public void testCreateTreeWithMultipleDifferentSubtrees() {
         builder.add(node, node, node3, node3, node3);
         ImprintNode root = builder.build();
         assertNotNull(root);
@@ -90,24 +90,24 @@ public class HashTreeBuilderTest {
     }
 
     @Test
-    public void testCalculateTreeHeightWithOneLeaf() throws Exception {
+    public void testCalculateTreeHeightWithOneLeaf() {
         assertEquals(builder.calculateHeight(node), 0);
     }
 
     @Test
-    public void testCalculateTreeHeightWithMultipleLeafs() throws Exception {
+    public void testCalculateTreeHeightWithMultipleLeafs() {
         builder.add(node, node2, node2, node, node, node2);
         assertEquals(builder.calculateHeight(node2), 3);
     }
 
     @Test
-    public void testCalculateTreeHeightWithMultipleDifferentSubtrees() throws Exception {
+    public void testCalculateTreeHeightWithMultipleDifferentSubtrees() {
         builder.add(node, node, node3, node3);
         assertEquals(builder.calculateHeight(node3), 3);
     }
 
     @Test
-    public void testCalculateTreeHeightInLoop() throws Exception {
+    public void testCalculateTreeHeightInLoop() {
         long level = 0;
         //check first 14 levels
         for(int i = 0; i <= 16384; i++){

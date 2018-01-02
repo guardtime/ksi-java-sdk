@@ -299,7 +299,7 @@ public class TLVElementTest {
     }
 
     @Test
-    public void testTlvWithLongTypeIsAlwaysEncodedAsTlv16() throws Exception {
+    public void testTlvWithLongTypeIsAlwaysEncodedAsTlv16() {
         TLVElement element = new TLVElement(false, false, 0x800);
         Assert.assertTrue(element.isOutputTlv16());
     }

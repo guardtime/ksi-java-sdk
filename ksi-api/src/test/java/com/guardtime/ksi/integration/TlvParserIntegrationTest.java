@@ -23,14 +23,14 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponseFuture;
-import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.RequestContextFactory;
 import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.service.Future;
+import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.KSIProtocolException;
-import com.guardtime.ksi.service.client.KSIServiceCredentials;
+import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.MultipleTLVElementException;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
@@ -142,7 +142,7 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
         Mockito.when(mockedExtenderService.extend(Mockito.any(Date.class), Mockito.any
                 (Date.class))).then(new Answer<Future>() {
             public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
-                KSIServiceCredentials credentials = new KSIServiceCredentials("anon", "anon");
+                ServiceCredentials credentials = loadExtenderSettings().getCredentials();
                 KSIRequestContext requestContext = RequestContextFactory.DEFAULT_FACTORY.createContext();
                 Date aggregationTime = (Date) invocationOnMock.getArguments()[0];
                 Date publicationTime = (Date) invocationOnMock.getArguments()[1];
@@ -156,7 +156,7 @@ public class TlvParserIntegrationTest extends AbstractCommonIntegrationTest{
                         (0x01).getDecodedLong());
 
                 payload.replace(payload.getFirstChildElement(CalendarHashChain.ELEMENT_TYPE), calendarChain);
-                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(simpleHttpClient.getServiceCredentials()
+                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(extenderClient.getServiceCredentials()
                         .getLoginKey(), responseTLV.getFirstChildElement(0x01), payload));
                 return new ExtensionResponseFuture(mockedFuture, requestContext, credentials, pduFactory);
             }

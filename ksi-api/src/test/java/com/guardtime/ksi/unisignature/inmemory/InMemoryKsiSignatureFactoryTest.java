@@ -43,11 +43,10 @@ public class InMemoryKsiSignatureFactoryTest {
     private static final String PUBLICATION_STRING = "AAAAAA-CTJR3I-AANBWU-RY76YF-7TH2M5-KGEZVA-WLLRGD-3GKYBG-AM5WWV-4MCLSP-XPRDDI-UFMHBA";
     private InMemoryKsiSignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
     private InMemoryKsiSignatureFactory signatureFactory;
-    private PublicationsFileClientAdapter mockedPublicationsFileAdapter;
 
     @BeforeMethod
     public void setUp() throws Exception {
-        this.mockedPublicationsFileAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
+        PublicationsFileClientAdapter mockedPublicationsFileAdapter = Mockito.mock(PublicationsFileClientAdapter.class);
         Mockito.when(mockedPublicationsFileAdapter.getPublicationsFile()).thenReturn(TestUtil.loadPublicationsFile(PUBLICATIONS_FILE));
 
         KSIExtenderClient extenderClient = Mockito.mock(KSIExtenderClient.class);

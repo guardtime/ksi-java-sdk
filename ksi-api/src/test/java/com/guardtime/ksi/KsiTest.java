@@ -54,10 +54,6 @@ public class KsiTest {
     private KSISigningClient mockedSigningClient;
     private KSIExtenderClient mockedExtenderClient;
     private KSIPublicationsFileClient mockedPublicationsFileClient;
-    private PKITrustStore mockedTrustStore;
-    private Future mockedPublicationsFileResponse;
-
-    private PduIdentifierProvider mockedIdentifierProvider;
 
     private KSI ksi;
 
@@ -67,8 +63,8 @@ public class KsiTest {
         mockedSigningClient = Mockito.mock(KSISigningClient.class);
         mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
         mockedPublicationsFileClient = Mockito.mock(KSIPublicationsFileClient.class);
-        mockedTrustStore = Mockito.mock(PKITrustStore.class);
-        mockedIdentifierProvider = Mockito.mock(PduIdentifierProvider.class);
+        PKITrustStore mockedTrustStore = Mockito.mock(PKITrustStore.class);
+        PduIdentifierProvider mockedIdentifierProvider = Mockito.mock(PduIdentifierProvider.class);
 
         Mockito.when(mockedSigningClient.getPduVersion()).thenReturn(PduVersion.V2);
         Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V2);
@@ -78,7 +74,7 @@ public class KsiTest {
 
         Mockito.when(mockedTrustStore.isTrusted(Mockito.any(X509Certificate.class), Mockito.any(Store.class))).thenReturn(true);
 
-        mockedPublicationsFileResponse = Mockito.mock(Future.class);
+        Future mockedPublicationsFileResponse = Mockito.mock(Future.class);
         Mockito.when(mockedPublicationsFileResponse.getResult()).thenReturn(ByteBuffer.wrap(Util.toByteArray(load(PUBLICATIONS_FILE))));
         Mockito.when(mockedPublicationsFileClient.getPublicationsFile()).thenReturn(mockedPublicationsFileResponse);
 

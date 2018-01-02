@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 
 public class UserProvidedPublicationBasedVerificationPolicyTest {
     @Test
-    public void testCreateNewUserProvidedPublicationBasedVerificationPolicy_Ok() throws Exception {
+    public void testCreateNewUserProvidedPublicationBasedVerificationPolicy_Ok() {
         UserProvidedPublicationBasedVerificationPolicy policy = new UserProvidedPublicationBasedVerificationPolicy();
         Assert.assertNotNull(policy.getRules());
         Assert.assertNotNull(policy.getName());

@@ -23,7 +23,7 @@ import static org.testng.Assert.assertNull;
 public class DefaultVerificationPolicyTest {
 
     @Test
-    public void testCreateDefaultVerificationPolicy_Ok() throws Exception {
+    public void testCreateDefaultVerificationPolicy_Ok() {
         DefaultVerificationPolicy policy = new DefaultVerificationPolicy();
         assertNotNull(policy.getFallbackPolicy());
         assertEquals(policy.getFallbackPolicy().getClass(), KeyBasedVerificationPolicy.class);
@@ -32,7 +32,7 @@ public class DefaultVerificationPolicyTest {
     }
 
     @Test
-    public void testSetFallbackForDefaultVerificationPolicy_Ok() throws Exception {
+    public void testSetFallbackForDefaultVerificationPolicy_Ok() {
         DefaultVerificationPolicy policy = new DefaultVerificationPolicy();
         policy.setFallbackPolicy(new CalendarBasedVerificationPolicy());
         assertNotNull(policy.getFallbackPolicy());
@@ -42,7 +42,7 @@ public class DefaultVerificationPolicyTest {
     }
 
     @Test
-    public void testSetFallbackNullForDefaultVerificationPolicy_Ok() throws Exception {
+    public void testSetFallbackNullForDefaultVerificationPolicy_Ok() {
         DefaultVerificationPolicy policy = new DefaultVerificationPolicy();
         policy.setFallbackPolicy(null);
         assertNotNull(policy.getFallbackPolicy());

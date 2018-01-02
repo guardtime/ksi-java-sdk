@@ -30,20 +30,20 @@ import static org.testng.Assert.assertTrue;
 public class TCPClientSettingsTest {
 
     @Test
-    public void testGetEndpointReturnsNewInstanceEveryTimeWhenCreatedWithString() throws Exception {
+    public void testGetEndpointReturnsNewInstanceEveryTimeWhenCreatedWithString() {
         String uriString = "tcp://www.guardtime.com:80";
         TCPClientSettings settings = new TCPClientSettings(uriString, 0, null, null);
         assertFalse(settings.getEndpoint() == settings.getEndpoint());
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testCreateWithNonURIString_ThrowsIllegalArgumentException() throws Exception {
+    public void testCreateWithNonURIString_ThrowsIllegalArgumentException() {
         String uriString = "notAcceptableUri";
         new TCPClientSettings(uriString, 0, null, null);
     }
 
     @Test
-    public void testGetEndpointReturnsSameInstanceEveryTimeWhenCreatedWithInetSocketAddress() throws Exception {
+    public void testGetEndpointReturnsSameInstanceEveryTimeWhenCreatedWithInetSocketAddress() {
         TCPClientSettings settings = new TCPClientSettings(Mockito.mock(InetSocketAddress.class), 0, null, null);
         assertTrue(settings.getEndpoint() == settings.getEndpoint());
     }

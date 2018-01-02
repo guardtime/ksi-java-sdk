@@ -23,7 +23,6 @@ import com.guardtime.ksi.KSIBuilder;
 import com.guardtime.ksi.Signer;
 import com.guardtime.ksi.SignerBuilder;
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
@@ -36,8 +35,8 @@ import com.guardtime.ksi.pdu.v2.PduV2Factory;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.service.client.http.HttpClientSettings;
-import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpExtenderClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpPublicationsFileClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -67,7 +66,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithSignerClient_Ok() throws Exception {
         Signer s = new SignerBuilder().setSigningService(ksi.getSigningService()).build();
         KSISignature sig = s.sign(loadFile(INPUT_FILE));
-        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, simpleHttpClient, getFileHash(INPUT_FILE)), new KeyBasedVerificationPolicy());
+        VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, extenderClient, getFileHash(INPUT_FILE)), new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
@@ -234,8 +233,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
      * @return KSI with mocked aggregation response.
      */
     private KSI mockSigning(final String responseFile) throws Exception {
-        HttpClientSettings settings = loadHTTPSettings();
-        final ServiceCredentials credentials = settings.getCredentials();
+        final ServiceCredentials signerCredentials =  loadSignerSettings().getCredentials();
 
         KSISigningService mockedSigningService = Mockito.mock(KSISigningService.class);
         final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
@@ -251,7 +249,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
 
                     PduFactory factory = new PduV2Factory();
                     KSIRequestContext context = RequestContextFactory.DEFAULT_FACTORY.createContext();
-                    AggregationRequest request = factory.createAggregationRequest(context, credentials, dataHash, level);
+                    AggregationRequest request = factory.createAggregationRequest(context, signerCredentials, dataHash, level);
                     ByteArrayInputStream bais = new ByteArrayInputStream(request.toByteArray());
                     TLVElement requestElement = TLVElement.create(Util.toByteArray(bais));
                     //Set header
@@ -261,13 +259,13 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
                     //Set Input hash
                     responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x801).getFirstChildElement(0x5).setDataHashContent(dataHash);
                     //Update HMAC
-                    responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(responseTLV, responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(), credentials.getLoginKey()));
-                    return new AggregationResponseFuture(mockedFuture, context, credentials, factory);
+                    responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(responseTLV, responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(), signerCredentials.getLoginKey()));
+                    return new AggregationResponseFuture(mockedFuture, context, signerCredentials, factory);
                 }
             });
 
-        return new KSIBuilder().setKsiProtocolExtenderClient(new SimpleHttpClient(settings)).
-                setKsiProtocolPublicationsFileClient(new SimpleHttpClient(settings)).
+        return new KSIBuilder().setKsiProtocolExtenderClient(new SimpleHttpExtenderClient(loadExtenderSettings())).
+                setKsiProtocolPublicationsFileClient(new SimpleHttpPublicationsFileClient(loadPublicationsFileSettings())).
                 setKsiProtocolSigningService(mockedSigningService).
                 setPublicationsFilePkiTrustStore(createKeyStore()).
                 setPublicationsFileTrustedCertSelector(createCertSelector()).

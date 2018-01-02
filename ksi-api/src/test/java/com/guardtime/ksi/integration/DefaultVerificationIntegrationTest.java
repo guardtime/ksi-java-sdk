@@ -24,7 +24,9 @@ import com.guardtime.ksi.KSIBuilder;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
-import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpExtenderClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpPublicationsFileClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpSigningClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
@@ -51,8 +53,10 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
 
     @BeforeMethod
     public void setUp() throws Exception {
-        SimpleHttpClient httpClient = new SimpleHttpClient(loadHTTPSettings());
-        ksiBuilder = initKsiBuilder(httpClient, httpClient, httpClient);
+        ksiBuilder = initKsiBuilder(
+                new SimpleHttpExtenderClient(loadExtenderSettings()),
+                new SimpleHttpSigningClient(loadSignerSettings()),
+                new SimpleHttpPublicationsFileClient(loadPublicationsFileSettings()));
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Verification inconclusive.*")

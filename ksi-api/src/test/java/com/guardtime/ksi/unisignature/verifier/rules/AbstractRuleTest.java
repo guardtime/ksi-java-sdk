@@ -54,7 +54,7 @@ public abstract class AbstractRuleTest {
         return build(signature, null, TestUtil.loadPublicationsFile(PUBLICATIONS_FILE), null, level);
     }
 
-    protected VerificationContext build(KSISignature signature, DataHash documentHash, PublicationsFile trustStore, PublicationData publication, Long level) throws Exception {
+    protected VerificationContext build(KSISignature signature, DataHash documentHash, PublicationsFile trustStore, PublicationData publication, Long level) {
         VerificationContextBuilder builder = new VerificationContextBuilder();
         KSIExtenderClient mockedExtenderClient = Mockito.mock(KSIExtenderClient.class);
         Mockito.when(mockedExtenderClient.getPduVersion()).thenReturn(PduVersion.V2);

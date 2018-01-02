@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 public class KeyBasedVerificationPolicyTest {
 
     @Test
-    public void testCreateNewKeyBasedVerificationPolicy_Ok() throws Exception {
+    public void testCreateNewKeyBasedVerificationPolicy_Ok() {
         KeyBasedVerificationPolicy policy = new KeyBasedVerificationPolicy();
         Assert.assertNotNull(policy.getRules());
         Assert.assertNotNull(policy.getName());

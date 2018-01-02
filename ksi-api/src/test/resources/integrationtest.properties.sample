@@ -16,19 +16,33 @@
 # Guardtime, Inc., and no license to trademarks is granted; Guardtime
 # reserves and retains all trademark rights.
 #
-pubfileUrl=publications.file.url
-gatewayUrl=signing.service.url:port
-extenderUrl=extending.service.url:port
-loginId=http-login-id
-loginKey=http-login-key
 
+#Common settings
 javaKeyStorePath=src/test/resources/truststore.jks
+pubfileUrl=publications.file.url
+
+
+#Http settings
+gatewayUrl=signing.service.url:port
+loginId=http-signing-login-id
+loginKey=http-signing-login-key
+
+extenderUrl=extending.service.url:port
+extenderLoginId=http-extender-login-id
+extenderLoginKey=http-extender-login-key
+
+
+# TCP settings
+tcp.maxParallelTransactions=100
+tcp.transactionTimeoutSec=transaction-Timeout-Sec
 
 tcp.signerIP=tcp.signing.service.ip
 tcp.signerPort=tcp-singing-service-port
-tcp.extenderIP=tcp.extender.service.ip
+tcp.loginId=tcp-singing-login-id
+tcp.loginKey=tcp-singing-login-key
+
+tcp.extenderIp=tcp.extender.service.ip
 tcp.extenderPort=tcp-extender-service-port
-tcp.transactionTimeoutSec=transaction-Timeout-Sec
-tcp.loginId=tcp-login-id
-tcp.loginKey=tcp-login-key
+tcp.extenderLoginId=tcp-extender-login-id
+tcp.extenderLoginKey=tcp-extender-login-key
 

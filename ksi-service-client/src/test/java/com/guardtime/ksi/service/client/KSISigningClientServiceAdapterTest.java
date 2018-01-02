@@ -32,7 +32,6 @@ import com.guardtime.ksi.tlv.TLVElement;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import static org.testng.Assert.assertEquals;
@@ -84,7 +83,7 @@ public class KSISigningClientServiceAdapterTest {
     }
 
     @Test
-    public void testGetSubSigningServices() throws Exception {
+    public void testGetSubSigningServices() {
         assertTrue(testService.getSubSigningServices().isEmpty());
     }
 
@@ -95,7 +94,7 @@ public class KSISigningClientServiceAdapterTest {
     }
 
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         assertEquals(testService.toString(), "KSISigningClientServiceAdapter{client=DummyClient}");
     }
 
@@ -103,7 +102,7 @@ public class KSISigningClientServiceAdapterTest {
 
         private boolean closed = false;
 
-        public Future<TLVElement> sign(InputStream request) throws KSIClientException {
+        public Future<TLVElement> sign(InputStream request) {
             throw new RuntimeException("signing client failed");
         }
 
@@ -115,7 +114,7 @@ public class KSISigningClientServiceAdapterTest {
             return PduVersion.V2;
         }
 
-        public void close() throws IOException {
+        public void close() {
             closed = true;
         }
 

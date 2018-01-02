@@ -30,7 +30,6 @@ import com.guardtime.ksi.tlv.TLVElement;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -81,7 +80,7 @@ public class KSIExtendingClientServiceAdapterTest {
     }
 
     @Test
-    public void testGetSubExtendingServices() throws Exception {
+    public void testGetSubExtendingServices() {
         assertTrue(testService.getSubExtendingServices().isEmpty());
     }
 
@@ -92,7 +91,7 @@ public class KSIExtendingClientServiceAdapterTest {
     }
 
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         assertEquals(testService.toString(), "KSIExtendingClientServiceAdapter{client=DummyClient}");
     }
 
@@ -100,7 +99,7 @@ public class KSIExtendingClientServiceAdapterTest {
 
         private boolean closed = false;
 
-        public Future<TLVElement> extend(InputStream request) throws KSIClientException {
+        public Future<TLVElement> extend(InputStream request) {
             throw new RuntimeException("extending client failed");
         }
 
@@ -112,7 +111,7 @@ public class KSIExtendingClientServiceAdapterTest {
             return PduVersion.V2;
         }
 
-        public void close() throws IOException {
+        public void close() {
             closed = true;
         }
 

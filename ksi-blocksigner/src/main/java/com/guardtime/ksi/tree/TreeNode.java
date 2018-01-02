@@ -35,7 +35,7 @@ public interface TreeNode {
     long getLevel();
 
     /**
-     * @return The parent node. In case of root (head) node the, null is returned.
+     * @return The parent node. In case of root (head) node, null is returned.
      */
     TreeNode getParent();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -55,13 +55,25 @@ import static com.guardtime.ksi.util.Util.notNull;
 import static java.util.Arrays.asList;
 
 /**
- * A signer class to create a list of unisigantures. Methods {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)},
- * {@link KsiBlockSigner#add(DataHash)} and/or {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)} can be used
- * to add new input hash to the block signer. Method {@link KsiBlockSigner#sign()} must be called to get the final
- * signatures. The signatures are returned the same order as the data hashes were added to block signer. <p/>
- * Current implementation returns one signature per input hash. <p/> Note that this class can not be
- * used multiple times. </p> The following sample shows how to use {@link KsiBlockSigner} class:
+ * Creates multiple signatures with one request..
  * <p>
+ * Methods {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)},
+ * {@link KsiBlockSigner#add(DataHash)} and/or
+ * {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)} can be used
+ * to add new input hash to the block signer.
+ * </p>
+ * <p>
+ * Method {@link KsiBlockSigner#sign()} must be called to get the final group of
+ * signatures.
+ * The signatures are returned the same order as the data hashes were added to block signer.
+ * </p>
+ * <p>
+ * Current implementation returns one signature per input hash.
+ * </p>
+ * <p>
+ * Note that this class can not be used multiple times. </p>
+ * <p> The following sample shows how to use {@link KsiBlockSigner} class:
+ * </p>
  * <pre>
  * {@code
  *
@@ -100,9 +112,9 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService}. Default hash algorithm is
-     * used to create signature.
+     * used to create signatures.
      *
-     * @param signingService an instance of {@link KSISigningService}
+     * @param signingService an instance of {@link KSISigningService}.
      */
     public KsiBlockSigner(KSISigningService signingService) {
         this(signingService, null);
@@ -110,6 +122,9 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService} and {@link HashAlgorithm}.
+     *
+     * @param signingService an instance of {@link KSISigningService}.
+     * @param algorithm hash algorithm to be used.
      */
     public KsiBlockSigner(KSISigningService signingService, HashAlgorithm algorithm) {
         notNull(signingService, "KSI signing service");
@@ -124,32 +139,46 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}. Default hash algorithm is
-     * used to create signature.
+     * used to create signatures.
      *
-     * @param signingClient an instance of {@link KSISigningClient}
+     * @param signingClient an instance of {@link KSISigningClient}.
      */
     public KsiBlockSigner(KSISigningClient signingClient) {
         this(signingClient, null);
     }
 
     /**
-     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient} and {@link HashAlgorithm}.
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}
+     * and {@link HashAlgorithm}.
+     *
+     * @param signingClient an instance of {@link KSISigningClient}.
+     * @param algorithm hash algorithm to be used.
      */
     public KsiBlockSigner(KSISigningClient signingClient, HashAlgorithm algorithm) {
        this(new KSISigningClientServiceAdapter(signingClient), algorithm);
     }
 
     /**
-     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}, {@link KSISignatureFactory}
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient},
+     * {@link KSISignatureFactory}
      * and {@link HashAlgorithm}.
+     *
+     * @param signingClient an instance of {@link KSISigningClient}.
+     * @param signatureFactory an instance of {@link KSISignatureFactory}.
+     * @param algorithm hash algorithm to be used.
      */
     public KsiBlockSigner(KSISigningClient signingClient, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
         this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm);
     }
 
     /**
-     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService}, {@link KSISignatureFactory}
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService},
+     * {@link KSISignatureFactory}
      * and {@link HashAlgorithm}.
+     *
+     * @param signingService an instance of {@link KSISigningService}.
+     * @param signatureFactory an instance of {@link KSISignatureFactory}.
+     * @param algorithm hash algorithm to be used.
      */
     public KsiBlockSigner(KSISigningService signingService, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
         this(signingService, algorithm);
@@ -176,6 +205,13 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     /**
      * Adds a hash and a signature metadata to the {@link KsiBlockSigner}.
+     *
+     * @param dataHash data hash.
+     * @param metadata metadata to be added.
+     *
+     * @return True, if data hash and metadata were added.
+     *
+     * @throws KSIException
      */
     public boolean add(DataHash dataHash, IdentityMetadata metadata) throws KSIException {
         return add(dataHash, 0L, metadata);
@@ -183,6 +219,12 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     /**
      * Adds a hash to the {@link KsiBlockSigner}.
+     *
+     * @param dataHash data hash.
+     *
+     * @return True, if data hash was added.
+     *
+     * @throws KSIException
      */
     public boolean add(DataHash dataHash) throws KSIException {
         return add(dataHash, 0L, null);
@@ -190,6 +232,14 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     /**
      * Adds a hash (with specific level) and a signature metadata to the {@link KsiBlockSigner}.
+     *
+     * @param dataHash data hash.
+     * @param level hash level.
+     * @param metadata metadata to be added.
+     *
+     * @return True, if data hash and metadata were added.
+     *
+     * @throws KSIException
      */
     public boolean add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException {
         notNull(dataHash, "DataHash");
@@ -235,7 +285,11 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     }
 
     /**
-     * Creates a block signature
+     * Creates a block of multiple signatures.
+     *
+     * @return Multiple signatures, according to number of input hashes.
+     *
+     * @throws KSIException
      */
     public List<KSISignature> sign() throws KSIException {
         TreeNode rootNode = treeBuilder.build();

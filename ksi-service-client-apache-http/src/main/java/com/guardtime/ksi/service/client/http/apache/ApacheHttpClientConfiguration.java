@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -20,27 +20,27 @@ package com.guardtime.ksi.service.client.http.apache;
 
 /**
  * Describes the configuration that {@link ApacheHttpClient} uses internally
- * to set up async connection
+ * to set up async connection.
  */
 public interface ApacheHttpClientConfiguration {
 
     /**
      *
-     * @return - integer value that represents the maximum allowed threads
+     * @return Integer value that represents the maximum allowed threads
      * for the client.
      */
     int getMaxThreadCount();
 
     /**
      *
-     * @return - integer value that represents the maximum connection
+     * @return Integer value that represents the maximum connection
      * count for the client across all routes.
      */
     int getMaxTotalConnectionCount();
 
     /**
      *
-     * @return - integer value that represents the maximum connection
+     * @return Integer value that represents the maximum connection
      * count per route.
      */
     int getMaxRouteConnectionCount();

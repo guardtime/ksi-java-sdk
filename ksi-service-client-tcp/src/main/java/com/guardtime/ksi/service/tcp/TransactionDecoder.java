@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -62,6 +62,8 @@ class TransactionDecoder extends CumulativeProtocolDecoder {
     /**
      * Returns the length of the next TLV element. Returns -1 when buffer doesn't contain enough data for next TLV
      * element.
+     *
+     * @return The length of the TLV element.
      */
     private int extractNextTlvElementLength(IoBuffer in) {
         if (!hasRemainingData(in, 2)) {

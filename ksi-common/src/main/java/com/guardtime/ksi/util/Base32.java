@@ -36,7 +36,8 @@ public final class Base32 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the base-32 string, or {@code null} if {@code in} is {@code null}.
+     *
+     * @return The base-32 string, or null if {@code in} is null.
      */
     public static String encode(byte[] in) {
         if (in == null) {
@@ -54,7 +55,8 @@ public final class Base32 {
      *            the start offset of the data within {@code in}.
      * @param len
      *            the number of bytes to encode.
-     * @return the base-32 string.
+     *
+     * @return The base-32 string.
      */
     public static String encode(byte[] in, int off, int len) {
         return inst.encode(in, off, len, null, 0).toString();
@@ -66,7 +68,8 @@ public final class Base32 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the formatted base-32 string, or {@code null} if {@code in} is {@code null}.
+     *
+     * @return The formatted base-32 string, or null if {@code in} is null.
      */
     public static String encodeWithDashes(byte[] in) {
         if (in == null) {
@@ -85,7 +88,8 @@ public final class Base32 {
      *            the start offset of the data within {@code in}.
      * @param len
      *            the number of bytes to encode.
-     * @return the formatted base-32 string.
+     *
+     * @return The formatted base-32 string.
      */
     public static String encodeWithDashes(byte[] in, int off, int len) {
         return inst.encode(in, off, len, "-", 6).toString();
@@ -97,7 +101,8 @@ public final class Base32 {
      *
      * @param in
      *            the base-32 string to decode.
-     * @return the decoded bytes, or {@code null} if {@code in} is {@code null}.
+     *
+     * @return The decoded bytes, or null if {@code in} is null.
      */
     public static byte[] decode(String in) {
         if (in == null) {
@@ -107,7 +112,7 @@ public final class Base32 {
     }
 
     /**
-     * This class should not be instantiated.
+     * Should not be instantiated.
      */
     private Base32() {
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -34,9 +34,11 @@ public abstract class TLVStructure {
      * Constructor for decoding TLV element.
      *
      * @param rootElement
-     *         - inmemory element to decode. not null.
+     *         inmemory element to decode, not null.
+     *
      * @throws TLVParserException
-     *         when root element is null or root element type does nto match with inmemory structure type
+     *         when root element is null or root element type does not match
+     *         with inmemory structure type.
      */
     public TLVStructure(TLVElement rootElement) throws TLVParserException {
         if (rootElement == null) {
@@ -56,10 +58,11 @@ public abstract class TLVStructure {
     }
 
     /**
-     * Checks that TLV element is critical or not.
+     * Checks if the TLV element is critical or not.
      *
      * @param element
-     *         element to check
+     *         TLV element to check.
+     *
      * @throws TLVParserException
      *         when unknown critical TLV element is encountered.
      */
@@ -71,10 +74,12 @@ public abstract class TLVStructure {
 
     /**
      * @param element
-     *         - element of type to read only once.
-     * @return instance of {@link TLVElement}
+     *         TLV element of type to read only once.
+     *
+     * @return Instance of {@link TLVElement}.
+     *
      * @throws TLVParserException
-     *         when TLV element with type is already processed.
+     *         when TLV element of given type is already processed.
      */
     protected TLVElement readOnce(TLVElement element) throws TLVParserException {
         int tlvElementType = element.getType();

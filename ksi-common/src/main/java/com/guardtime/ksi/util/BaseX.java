@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -33,7 +33,7 @@ public class BaseX {
     private char[] chars;
 
     /**
-     * A lookup table from character code points to values. A value of -1 in the
+     * A lookup table from character code points to values. A value of {@code -1} in the
      * table indicates the corresponding character is not used in the encoded
      * form. The indices {@code 0..values.length-1} correspond to code points
      * {@code min..max}.
@@ -173,7 +173,8 @@ public class BaseX {
      *            if {@code sep} is not {@code null} and {@code freq} is
      *            positive, the {@code sep} is inserted into the result between
      *            blocks of {@code freq} normal characters.
-     * @return a newly allocated buffer containing the encoded data.
+     *
+     * @return A newly allocated buffer containing the encoded data.
      */
     public final StringBuffer encode(byte[] in, int off, int len, String sep, int freq) {
 
@@ -244,7 +245,8 @@ public class BaseX {
      *
      * @param in
      *            the string to decode.
-     * @return the decoded bytes.
+     *
+     * @return The decoded bytes.
      */
     public final byte[] decode(String in) {
 

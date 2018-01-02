@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -34,7 +34,8 @@ public final class Base64 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the base-64 string, or {@code null} if {@code in} is {@code null}.
+     *
+     * @return The base-64 string, or null if {@code in} is null.
      */
     public static String encode(byte[] in) {
         if (in == null) {
@@ -52,7 +53,8 @@ public final class Base64 {
      *            the start offset of the data within {@code in}.
      * @param len
      *            the number of bytes to encode.
-     * @return the base-64 string.
+     *
+     * @return The base-64 string.
      */
     public static String encode(byte[] in, int off, int len) {
         return inst.encode(in, off, len, null, 0).toString();
@@ -64,7 +66,8 @@ public final class Base64 {
      *
      * @param in
      *            the base-64 string to decode.
-     * @return the decoded bytes, or {@code null} if {@code in} is {@code null}.
+     *
+     * @return The decoded bytes, or null if {@code in} is null.
      */
     public static byte[] decode(String in) {
         if (in == null) {
@@ -74,7 +77,7 @@ public final class Base64 {
     }
 
     /**
-     * This class should not be instantiated.
+     * Should not be instantiated.
      */
     private Base64() {
     }

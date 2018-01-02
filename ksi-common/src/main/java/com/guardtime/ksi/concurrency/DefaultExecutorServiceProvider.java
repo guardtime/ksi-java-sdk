@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * SDK's different components use this class to get access to a common default {@link ExecutorService} if one has not been
+ * KSI Java SDK's different components use this class to get access to a common default {@link ExecutorService} if one has not been
  * provided to them.
  */
 public class DefaultExecutorServiceProvider {
@@ -44,7 +44,9 @@ public class DefaultExecutorServiceProvider {
     }
 
     /**
-     * Used to get the default {@link ExecutorService} instance, which is a cached thread pool.
+     * Gets the default {@link ExecutorService} instance, which is a cached thread pool.
+     *
+     * @return The default {@link ExecutorService}.
      */
     public synchronized static ExecutorService getExecutorService() {
         if (executorService == null) {

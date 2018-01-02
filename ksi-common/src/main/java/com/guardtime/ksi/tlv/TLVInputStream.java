@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -47,9 +47,10 @@ public class TLVInputStream extends InputStream {
      * DataInputStream}.
      *
      * @param stream
-     *         the specified input stream to use. Not null.
+     *         the specified input stream to use, not null.
+     *
      * @throws TLVParserException
-     *         will be thrown when input stream is null
+     *         when input stream is null.
      */
     public TLVInputStream(final InputStream stream) throws TLVParserException {
         if (stream == null) {
@@ -65,9 +66,12 @@ public class TLVInputStream extends InputStream {
     /**
      * Reads the next TLV element from the stream.
      *
-     * @return the instance of {@link TLVElement}.
+     * @return Instance of {@link TLVElement}.
+     *
      * @throws IOException
      *         when reading from underlying stream fails.
+     * @throws TLVParserException
+     *         when input stream is null.
      */
     public TLVElement readElement() throws IOException, TLVParserException {
         TlvHeader header = readHeader();
@@ -84,7 +88,8 @@ public class TLVInputStream extends InputStream {
     /**
      * Checks if stream contains bytes to read.
      *
-     * @return returns true if stream contains at least on byte that can be read.
+     * @return True, if stream contains at least one byte that can be read.
+     *
      * @throws IOException
      *         when reading from underlying stream fails.
      */
@@ -100,8 +105,9 @@ public class TLVInputStream extends InputStream {
     /**
      * Reads the next byte of data from this input stream.
      *
-     * @return the total number of bytes read into the buffer, or <code>-1</code> if there is no more data because the
-     * end of the stream has been reached.
+     * @return The total number of bytes read into the buffer, or <code>-1</code> if there is
+     * no more data because the end of the stream has been reached.
+     *
      * @throws IOException
      *         when reading from underlying stream fails.
      */
@@ -119,9 +125,10 @@ public class TLVInputStream extends InputStream {
      * Reads the TLV header form input stream. Reads two (TLV8 encoding is used) or four (TLV16 encoding is used) bytes
      * from underlying stream.
      *
-     * @return instance of {@link TlvHeader}. Always present.
+     * @return Instance of {@link TlvHeader}, always present.
+     *
      * @throws IOException
-     *         - when reading from underlying stream fails.
+     *         when reading from underlying stream fails.
      */
     private TlvHeader readHeader() throws IOException {
         int firstByte = in.read();
@@ -195,8 +202,10 @@ public class TLVInputStream extends InputStream {
      * Reads the TLV content bytes from the underlying stream.
      *
      * @param header
-     *         instance of {@link TlvHeader}. not null.
-     * @return TLV content bytes
+     *         instance of {@link TlvHeader}, not null.
+     *
+     * @return TLV content bytes.
+     *
      * @throws IOException
      *         if an I/O error occurs.
      */
@@ -218,7 +227,7 @@ public class TLVInputStream extends InputStream {
     }
 
     /**
-     * helper class for parsing tlv stream
+     * Helper class for parsing TLV stream.
      */
     private final class TlvHeader {
         final boolean tlv16;
@@ -236,14 +245,14 @@ public class TLVInputStream extends InputStream {
         }
 
         /**
-         * Returns the length of the data.
+         * @return The length of the data.
          */
         int getDataLength() {
             return dataLength;
         }
 
         /**
-         * Returns the header size. If header is TLV16 encoded then the size will be four. If the header is TLV8 encoded
+         * @return The header size. If header is TLV16 encoded then the size will be four. If the header is TLV8 encoded
          * then the size will be two.
          */
         int getHeaderLength() {

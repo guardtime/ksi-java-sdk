@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -24,9 +24,7 @@ import static com.guardtime.ksi.util.Util.notNull;
 import static com.guardtime.ksi.util.Util.toUrl;
 
 /**
- * <p>HTTP settings</p>
- * HTTP Service settings consist of URL of KSI service and connections parameters.
- * Connection parameters hold HTTP connection settings like timeouts and proxy configuration.
+ * Configures HTTP service settings: URL and connection parameters of the KSI service. The connection parameters include HTTP connection settings like timeouts and proxy configuration.
  */
 public class HttpSettings {
 
@@ -34,7 +32,7 @@ public class HttpSettings {
     private HTTPConnectionParameters parameters = new HTTPConnectionParameters();
 
     /**
-     * Create HTTP Service settings with provided parameters.
+     * Creates HTTP service settings with provided parameters.
      *
      * @param url
      *         URL of KSI service
@@ -44,12 +42,12 @@ public class HttpSettings {
     }
 
     /**
-     * Create HTTP Service settings with provided parameters.
+     * Creates HTTP service settings with provided parameters.
      *
      * @param url
      *         URL of KSI service
      * @param parameters
-     *         Connection parameters.
+     *         connection parameters.
      */
     public HttpSettings(String url, HTTPConnectionParameters parameters) {
         notNull(url, "KSI service URL");
@@ -60,7 +58,7 @@ public class HttpSettings {
     }
 
     /**
-     * Returns the URL of the service.
+     * @return URL of the KSI service.
      */
     public URL getUrl() {
         return url;

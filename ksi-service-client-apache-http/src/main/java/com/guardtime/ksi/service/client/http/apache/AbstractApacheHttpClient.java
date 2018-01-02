@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -57,7 +57,7 @@ abstract class AbstractApacheHttpClient{
      * Constructs ApacheHttpClient with configuration values passed in.
      *
      * @param settings
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}
+     *         settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}.
      */
     AbstractApacheHttpClient(HttpSettings settings) {
         this(settings, new ApacheHttpClientSimpleConfiguration());
@@ -67,9 +67,9 @@ abstract class AbstractApacheHttpClient{
      * Constructs ApacheHttpClient with configuration values passed in
      *
      * @param settings
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}
+     *         settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}.
      * @param asyncConfiguration
-     *         - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
+     *         configuration defined by an instance of {@link ApacheHttpClientConfiguration}.
      */
     AbstractApacheHttpClient(HttpSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         Util.notNull(settings, "HTTP client settings");
@@ -119,10 +119,10 @@ abstract class AbstractApacheHttpClient{
      * Creates asynchronous Apache HTTP client.
      *
      * @param settings
-     *         - settings to use to create client
+     *         settings to use to create client.
      * @param conf
-     *         - configuration related to async connection
-     * @return instance of {@link CloseableHttpAsyncClient}
+     *         configuration related to async connection.
+     * @return Instance of {@link CloseableHttpAsyncClient}.
      */
     private CloseableHttpAsyncClient createClient(HttpSettings settings, ApacheHttpClientConfiguration conf) {
         IOReactorConfig ioReactor = IOReactorConfig.custom().setIoThreadCount(conf.getMaxThreadCount()).build();
@@ -141,13 +141,13 @@ abstract class AbstractApacheHttpClient{
     }
 
     /**
-     * Creates default proxy route planner
+     * Creates default proxy route planner.
      *
      * @param settings
-     *         - settings to use
+     *         settings to use.
      * @param httpClientBuilder
-     *         - http client builder
-     * @return instance of {@link DefaultProxyRoutePlanner}
+     *         http client builder.
+     * @return Instance of {@link DefaultProxyRoutePlanner}.
      */
     private DefaultProxyRoutePlanner createProxyRoutePlanner(HttpSettings settings, HttpAsyncClientBuilder httpClientBuilder) {
         HttpHost proxy = new HttpHost(settings.getProxyUrl().getHost(), settings.getProxyUrl().getPort());
@@ -163,11 +163,11 @@ abstract class AbstractApacheHttpClient{
     }
 
     /**
-     * Creates default request config
+     * Creates default request config.
      *
      * @param settings
-     *         settings to use
-     * @return instance of {@link RequestConfig}
+     *         settings to use.
+     * @return instance of {@link RequestConfig}.
      */
     private RequestConfig createDefaultRequestConfig(HttpSettings settings) {
         int connectionTimeout = settings.getConnectionTimeout();

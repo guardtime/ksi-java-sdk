@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -30,17 +30,17 @@ public class ApacheHttpPublicationsFileClient extends AbstractApacheHttpClient i
     /**
      * Constructs ApacheHttpSigningClient with configuration values passed in.
      *
-     * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}
+     * @param settings settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}.
      */
     public ApacheHttpPublicationsFileClient(HttpSettings settings) {
         super(settings);
     }
 
     /**
-     * Constructs ApacheHttpSigningClient with configuration values passed in
+     * Constructs ApacheHttpSigningClient with configuration values passed in.
      *
-     * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}
-     * @param asyncConfiguration - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
+     * @param settings settings defined by {@link com.guardtime.ksi.service.client.http.HttpSettings}.
+     * @param asyncConfiguration configuration defined by an instance of {@link ApacheHttpClientConfiguration}.
      */
     public ApacheHttpPublicationsFileClient(HttpSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         super(settings, asyncConfiguration);

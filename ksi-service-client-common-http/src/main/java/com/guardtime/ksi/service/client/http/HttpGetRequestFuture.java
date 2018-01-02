@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -32,12 +32,13 @@ public abstract class HttpGetRequestFuture implements Future<ByteBuffer> {
      * Validates HTTP response message.
      *
      * @param statusCode
-     *         - HTTP status code
+     *         HTTP status code.
      * @param responseMessage
-     *         - HTTP header response message
+     *         HTTP header response message.
      * @throws HttpProtocolException
-     *         will be thrown when HTTP status code is not 200 and response doesn't include data or HTTP status code is
-     *         not 200 and response content type isn't "application/ksi-response"
+     *         will be thrown when HTTP status code is not 200 and response doesn't include data,
+     *         or HTTP status code is not 200 and response content type isn't
+     *         "application/ksi-response".
      */
     protected void validateHttpResponse(int statusCode, String responseMessage) throws HttpProtocolException {
         if (statusCode != HttpURLConnection.HTTP_OK) {

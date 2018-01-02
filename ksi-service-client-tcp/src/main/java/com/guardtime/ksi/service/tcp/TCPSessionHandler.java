@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class that handles different events that occur during the lifetime of TCP connection.
+ * Handles different events that occur during the lifetime of TCP connection.
  */
 class TCPSessionHandler implements IoHandler {
 

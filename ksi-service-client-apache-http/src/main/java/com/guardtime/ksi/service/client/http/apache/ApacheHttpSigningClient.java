@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -36,7 +36,7 @@ public class ApacheHttpSigningClient extends AbstractApacheHttpClient implements
     /**
      * Constructs ApacheHttpSigningClient with configuration values passed in.
      *
-     * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings}
+     * @param settings settings defined by {@link com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings}.
      */
     public ApacheHttpSigningClient(CredentialsAwareHttpSettings settings) {
         super(settings);
@@ -44,10 +44,10 @@ public class ApacheHttpSigningClient extends AbstractApacheHttpClient implements
     }
 
     /**
-     * Constructs ApacheHttpSigningClient with configuration values passed in
+     * Constructs {@link ApacheHttpSigningClient} with configuration values passed in.
      *
-     * @param settings - Settings defined by {@link com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings}
-     * @param asyncConfiguration - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
+     * @param settings settings defined by {@link com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings}.
+     * @param asyncConfiguration configuration defined by an instance of {@link ApacheHttpClientConfiguration}.
      */
     public ApacheHttpSigningClient(CredentialsAwareHttpSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         super(settings, asyncConfiguration);

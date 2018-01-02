@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -25,7 +25,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 
 /**
- * Class that holds all the properties needed to configure the TCPClient.
+ * Holds all the properties needed to configure the TCPClient.
  *
  * <b>IMPORTANT!</b>
  * <p>When constructing the instance with a {@link InetSocketAddress} the IP of the endpoint is cached in this object. This can result to connection problems.</p>
@@ -43,8 +43,8 @@ public class TCPClientSettings {
      * Settings for TCP client.
      *
      * @param endpoint TCP gateway endpoint address.
-     * @param serviceCredentials Credentials for authenticating the client to the TCP gateway.
-     * @param tcpTransactionTimeoutSec Maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
+     * @param serviceCredentials credentials for authenticating the client to the TCP gateway.
+     * @param tcpTransactionTimeoutSec maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
      */
     public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials) {
         this(endpoint, tcpTransactionTimeoutSec, serviceCredentials, PduVersion.V2);
@@ -59,11 +59,11 @@ public class TCPClientSettings {
 
     /**
      * Settings for TCP client.
-     * The created TCPClientSettings instance constructs a new {@link InetSocketAddress} for every {@link #getEndpoint()} call.
+     * The created {@link TCPClientSettings} instance constructs a new {@link InetSocketAddress} for every {@link #getEndpoint()} call.
      *
-     * @param uri                             String containing the URI of endpoint. Must be in format: <protocol>://<host>:<port>
-     * @param tcpTransactionTimeoutSec        Maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
-     * @param serviceCredentials              Credentials for authenticating the client to the TCP gateway.
+     * @param uri                             string containing the URI of endpoint. Must be in format: &lt;protocol&gt;://&lt;host&gt;:&lt;port&gt;
+     * @param tcpTransactionTimeoutSec        maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
+     * @param serviceCredentials              credentials for authenticating the client to the TCP gateway.
      * @param pduVersion                      PDU version used for communication.
      */
     public TCPClientSettings(String uri, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials, PduVersion pduVersion) throws IllegalArgumentException {
@@ -83,6 +83,8 @@ public class TCPClientSettings {
 
     /**
      * Returns either the {@link InetSocketAddress} provided to the constructor or a new instance for every invocation based on the {@link String} provided to the constructor.
+     *
+     * @return An instance of {@link InetSocketAddress}.
      */
     public InetSocketAddress getEndpoint() {
         return endpoint == null ? new InetSocketAddress(uri.getHost(), uri.getPort()) : endpoint;

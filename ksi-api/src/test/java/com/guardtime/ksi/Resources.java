@@ -48,7 +48,7 @@ public class Resources {
     private static final String POLICY_VERIFICATION_RESOURCES = POLICY_VERIFICATION_SIGNATURES + "resources/";
     private static final String PUBLICATIONS_FILES = "publications-files/";
     private static final String EXTENDER_RESPONSES = "extender-responses/";
-    private static final String AGGREGATOR_RESPONSES = "aggregator-responses/";
+    private static final String AGGREGATION_RESPONSES = "aggregation-responses/";
     private static final String SIGNATURE = "TO-TESTPACK-signature/";
 
     /**
@@ -215,6 +215,22 @@ public class Resources {
     public static final String PUBLICATIONS_FILE_REORDERED = PUBLICATIONS_FILES + "publications-file-reordered.tlv";
     public static final String PUBLICATIONS_FILE_SIGANTURE_MISSING = PUBLICATIONS_FILES + "publications-file-signature-missing.tlv";
     public static final String PUBLICATIONS_FILE_WRONG_HASH = PUBLICATIONS_FILES + "publications-one-cert-one-publication-record-with-wrong-hash.tlv";
+
+    /**
+     * Aggregation responses
+     */
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-legacy-id.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-legacy-id-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-metadata.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA_AND_LEVEL  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-metadata-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-sibling-hash.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH_AND_LEVEL  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-sibling-hash-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-legacy-id.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID_AND_LEVEL = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-legacy-id-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-metadata.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA_AND_LEVEL = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-metadata-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-sibling-hash.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH_AND_LEVEL = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-sibling-hash-and-level-correction.tlv";
 
     /**
      * Extender responses

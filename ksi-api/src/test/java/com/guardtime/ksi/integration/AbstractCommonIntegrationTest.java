@@ -29,8 +29,16 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregationResponseFuture;
+import com.guardtime.ksi.pdu.KSIRequestContext;
+import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.PduVersion;
+import com.guardtime.ksi.pdu.RequestContextFactory;
+import com.guardtime.ksi.pdu.v2.PduV2Factory;
 import com.guardtime.ksi.publication.PublicationData;
+import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
@@ -52,12 +60,19 @@ import com.guardtime.ksi.service.http.simple.SimpleHttpPublicationsFileClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpSigningClient;
 import com.guardtime.ksi.service.tcp.TCPClient;
 import com.guardtime.ksi.service.tcp.TCPClientSettings;
+import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
+import com.guardtime.ksi.util.Util;
+
+import org.apache.commons.io.IOUtils;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -65,6 +80,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -84,6 +100,7 @@ import static com.guardtime.ksi.CommonTestUtil.loadFile;
 import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE;
 import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE_PASSWORD;
 import static com.guardtime.ksi.Resources.PROPERTIES_INTEGRATION_TEST;
+import static com.guardtime.ksi.TestUtil.calculateHash;
 
 public abstract class AbstractCommonIntegrationTest {
 
@@ -411,6 +428,41 @@ public abstract class AbstractCommonIntegrationTest {
             }
         }
     }
+
+    protected static KSISigningService mockSigningService(final String responseFile, final ServiceCredentials credentials) throws Exception {
+        KSISigningService mockedSigningService = Mockito.mock(KSISigningService.class);
+
+        final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
+        Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
+        final TLVElement responseTLV = TLVElement.create(IOUtils.toByteArray(load(responseFile)));
+        Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
+
+        Mockito.when(mockedSigningService.sign(Mockito.any(DataHash.class), Mockito.any
+                (long.class))).then(new Answer<Future>() {
+            public Future<AggregationResponse> answer(InvocationOnMock invocationOnMock) throws Throwable {
+                DataHash dataHash = (DataHash) invocationOnMock.getArguments()[0];
+                long level = (long) invocationOnMock.getArguments()[1];
+
+                PduFactory factory = new PduV2Factory();
+                KSIRequestContext context = RequestContextFactory.DEFAULT_FACTORY.createContext();
+                AggregationRequest request = factory.createAggregationRequest(context, credentials, dataHash, level);
+                ByteArrayInputStream bais = new ByteArrayInputStream(request.toByteArray());
+                TLVElement requestElement = TLVElement.create(Util.toByteArray(bais));
+                //Set header
+                responseTLV.getFirstChildElement(0x1).setContent(requestElement.getFirstChildElement(0x1).getEncoded());
+                //Set Request ID
+                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x1).setLongContent(requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong());
+                //Set Input hash
+                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x801).getFirstChildElement(0x5).setDataHashContent(dataHash);
+                //Update HMAC
+                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(responseTLV, responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(), credentials.getLoginKey()));
+                return new AggregationResponseFuture(mockedFuture, context, credentials, factory);
+            }
+        });
+
+        return mockedSigningService;
+    }
+
 
     protected void testExecution(IntegrationTestDataHolder testData) throws Exception {
         KSISignature signature;

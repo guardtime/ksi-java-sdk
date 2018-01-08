@@ -23,43 +23,35 @@ import com.guardtime.ksi.KSIBuilder;
 import com.guardtime.ksi.Signer;
 import com.guardtime.ksi.SignerBuilder;
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.pdu.AggregationRequest;
-import com.guardtime.ksi.pdu.AggregationResponse;
-import com.guardtime.ksi.pdu.AggregationResponseFuture;
-import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.RequestContextFactory;
-import com.guardtime.ksi.pdu.v2.PduV2Factory;
-import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSISigningService;
-import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
-import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
-import com.guardtime.ksi.util.Util;
 
-import org.apache.commons.io.IOUtils;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.ByteArrayInputStream;
-
-import static com.guardtime.ksi.CommonTestUtil.load;
 import static com.guardtime.ksi.CommonTestUtil.loadFile;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH_AND_LEVEL;
 import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.INPUT_FILE_REVERSED;
-import static com.guardtime.ksi.TestUtil.calculateHash;
 
 public class SignIntegrationTest extends AbstractCommonIntegrationTest {
 
@@ -123,7 +115,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first right link that has sibling data */
     @Test
     public void testSigningWithLevelRightLinkSiblingData() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-sibling-hash.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
         checkSignatureFirstLink(signature, 5L, false, 2);
     }
@@ -131,7 +123,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first right link that has legacy id */
     @Test
     public void testSigningWithLevelRightLinkLegacyId() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-legacy-id.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
         checkSignatureFirstLink(signature, 5L, false, 3);
     }
@@ -139,7 +131,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first right link that has metadata */
     @Test
     public void testSigningWithLevelRightLinkMetadata() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-metadata.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
         checkSignatureFirstLink(signature, 5L, false, 4);
     }
@@ -147,7 +139,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first right link that has sibling data and level correction */
     @Test
     public void testSigningWithLevelRightLinkSiblingDataAndLevel() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-sibling-hash-and-level-correction.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH_AND_LEVEL);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
         checkSignatureFirstLink(signature, 7L, false, 2);
     }
@@ -155,7 +147,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first right link that has legacy id and level correction */
     @Test
     public void testSigningWithLevelRightLinkLegacyIdAndLevel() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-legacy-id-and-level-correction.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID_AND_LEVEL);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
         checkSignatureFirstLink(signature, 7L, false, 3);
     }
@@ -163,7 +155,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first right link that has metadata and level correction */
     @Test
     public void testSigningWithLevelRightLinkMetadataAndLevel() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-metadata-and-level-correction.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA_AND_LEVEL);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
         checkSignatureFirstLink(signature, 7L, false, 4);
     }
@@ -171,7 +163,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first left link that has sibling data */
     @Test
     public void testSigningWithLevelLeftLinkSiblingData() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-left-link-with-sibling-hash.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
         checkSignatureFirstLink(signature, 5L, true, 2);
     }
@@ -179,7 +171,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first left link that has legacy id */
     @Test
     public void testSigningWithLevelLeftLinkLegacyId() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-left-link-with-legacy-id.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
         checkSignatureFirstLink(signature, 5L, true, 3);
     }
@@ -187,7 +179,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first left link that has metadata */
     @Test
     public void testSigningWithLevelLeftLinkMetadata() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-left-link-with-metadata.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
         checkSignatureFirstLink(signature, 5L, true, 4);
     }
@@ -195,7 +187,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first left link that has sibling data and level correction */
     @Test
     public void testSigningWithLevelLeftLinkSiblingDataAndLevel() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-left-link-with-sibling-hash-and-level-correction.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH_AND_LEVEL);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
         checkSignatureFirstLink(signature, 7L, true, 2);
     }
@@ -203,7 +195,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first left link that has legacy id and level correction */
     @Test
     public void testSigningWithLevelLeftLinkLegacyIdAndLevel() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-left-link-with-legacy-id-and-level-correction.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
         checkSignatureFirstLink(signature, 7L, true, 3);
     }
@@ -211,9 +203,26 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first left link that has metadata and level correction */
     @Test
     public void testSigningWithLevelLeftLinkMetadataAndLevel() throws Exception {
-        KSI ksi = mockSigning("aggregation-responses/aggr-resp-left-link-with-metadata-and-level-correction.tlv");
+        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA_AND_LEVEL);
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
         checkSignatureFirstLink(signature, 7L, true, 4);
+    }
+
+    /**
+     * Mocks PDU V2 aggregation response by changing request ID and updating HMAC.
+     * @param responseFile Aggregation response file.
+     * @return KSI with mocked aggregation response.
+     */
+    protected static KSI mockSigning(String responseFile) throws Exception {
+        HttpClientSettings settings = loadHTTPSettings();
+        KSISigningService mockedSigningService = mockSigningService(responseFile, settings.getCredentials());
+
+        return new KSIBuilder().setKsiProtocolExtenderClient(new SimpleHttpClient(settings)).
+                setKsiProtocolPublicationsFileClient(new SimpleHttpClient(settings)).
+                setKsiProtocolSigningService(mockedSigningService).
+                setPublicationsFilePkiTrustStore(createKeyStore()).
+                setPublicationsFileTrustedCertSelector(createCertSelector()).
+                build();
     }
 
     private void checkSignatureFirstLink(KSISignature signature, Long expectedLevel, boolean isLeft, int expectedSiblingType) {
@@ -226,51 +235,5 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
 
         Assert.assertNotNull(((TLVStructure)signature.getAggregationHashChains()[0].getChainLinks().get(0)).getRootElement().getFirstChildElement(expectedSiblingType),
                 "Expected sibling data type of " + expectedSiblingType + " was not found.");
-    }
-
-    /**
-     * Mocks PDU V2 aggregation response by changing request ID and updating HMAC.
-     * @param responseFile Aggregation response file.
-     * @return KSI with mocked aggregation response.
-     */
-    private KSI mockSigning(final String responseFile) throws Exception {
-        HttpClientSettings settings = loadHTTPSettings();
-        final ServiceCredentials credentials = settings.getCredentials();
-
-        KSISigningService mockedSigningService = Mockito.mock(KSISigningService.class);
-        final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
-        Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
-        final TLVElement responseTLV = TLVElement.create(IOUtils.toByteArray(load(responseFile)));
-        Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
-
-        Mockito.when(mockedSigningService.sign(Mockito.any(DataHash.class), Mockito.any
-            (long.class))).then(new Answer<Future>() {
-                public Future<AggregationResponse> answer(InvocationOnMock invocationOnMock) throws Throwable {
-                    DataHash dataHash = (DataHash) invocationOnMock.getArguments()[0];
-                    long level = (long) invocationOnMock.getArguments()[1];
-
-                    PduFactory factory = new PduV2Factory();
-                    KSIRequestContext context = RequestContextFactory.DEFAULT_FACTORY.createContext();
-                    AggregationRequest request = factory.createAggregationRequest(context, credentials, dataHash, level);
-                    ByteArrayInputStream bais = new ByteArrayInputStream(request.toByteArray());
-                    TLVElement requestElement = TLVElement.create(Util.toByteArray(bais));
-                    //Set header
-                    responseTLV.getFirstChildElement(0x1).setContent(requestElement.getFirstChildElement(0x1).getEncoded());
-                    //Set Request ID
-                    responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x1).setLongContent(requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong());
-                    //Set Input hash
-                    responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x801).getFirstChildElement(0x5).setDataHashContent(dataHash);
-                    //Update HMAC
-                    responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(responseTLV, responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(), credentials.getLoginKey()));
-                    return new AggregationResponseFuture(mockedFuture, context, credentials, factory);
-                }
-            });
-
-        return new KSIBuilder().setKsiProtocolExtenderClient(new SimpleHttpClient(settings)).
-                setKsiProtocolPublicationsFileClient(new SimpleHttpClient(settings)).
-                setKsiProtocolSigningService(mockedSigningService).
-                setPublicationsFilePkiTrustStore(createKeyStore()).
-                setPublicationsFileTrustedCertSelector(createCertSelector()).
-                build();
     }
 }

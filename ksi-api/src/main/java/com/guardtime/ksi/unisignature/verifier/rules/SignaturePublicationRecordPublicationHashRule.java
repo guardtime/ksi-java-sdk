@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This rule is used to check if keyless signature contains publication record or not. If publication record is missing
+ * Checks if keyless signature contains publication record or not. If publication record is missing
  * then status {@link VerificationResultCode#OK} will be returned.
  */
 public class SignaturePublicationRecordPublicationHashRule extends BaseRule {

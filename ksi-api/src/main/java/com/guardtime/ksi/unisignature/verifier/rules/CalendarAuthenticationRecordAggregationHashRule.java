@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This rule is used to verify that calendar authentication record publication hash equals to calendar hash chain
+ * Verifies that calendar authentication record publication hash equals to calendar hash chain
  * publication hash. If calendar authentication record is missing then status {@link VerificationResultCode#OK} is
  * returned.
  */

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * This rule is used verify that user provided publication time matches with extender response calendar chain shape.
+ * Verifies that user provided publication time matches with extender response calendar chain shape.
  */
 public class UserProvidedPublicationTimeMatchesExtendedResponseRule extends BaseRule {
 

@@ -30,7 +30,7 @@ import java.util.Map;
  * List of supported hash functions and some convenience functions.
  */
 public enum HashAlgorithm {
-    SHA1("SHA1", 0x00, 20, Status.NORMAL, new String[] {}, new Date(1467331200000L)/* 01.07.2016 */, null),
+    SHA1("SHA1", 0x00, 20, Status.NOT_TRUSTED, new String[] {}, new Date(1467331200000L)/* 01.07.2016 */, null),
     SHA2_256("SHA-256", 0x01, 32, Status.NORMAL, new String[]{"SHA2-256", "SHA2", "DEFAULT"}),
     RIPEMD_160("RIPEMD160", 0x02, 20, Status.NORMAL),
     SHA2_384("SHA-384", 0x04, 48, Status.NORMAL, new String[]{"SHA2-384"}),
@@ -278,7 +278,7 @@ public enum HashAlgorithm {
      */
     public boolean isDeprecated(Date givenDate) {
         Util.notNull(givenDate, "Given date");
-        return this.deprecatedSince != null && givenDate.after(this.deprecatedSince);
+        return this.deprecatedSince != null && !givenDate.before(this.deprecatedSince);
     }
 
     /**
@@ -288,7 +288,7 @@ public enum HashAlgorithm {
      */
     public boolean isObsolete(Date givenDate) {
         Util.notNull(givenDate, "Given date");
-        return this.obsoleteSince != null && givenDate.after(this.obsoleteSince);
+        return this.obsoleteSince != null && !givenDate.before(this.obsoleteSince);
     }
 
     /**

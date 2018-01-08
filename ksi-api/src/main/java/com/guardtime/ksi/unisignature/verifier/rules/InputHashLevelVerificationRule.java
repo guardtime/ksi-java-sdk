@@ -30,7 +30,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import java.util.List;
 
 /**
- * This rule verifies that user provided input hash level is less than or equal to first aggregation hash chain's first
+ * Verifies that user provided input hash level is less than or equal to first aggregation hash chain's first
  * link's level corrector value.
  */
 public class InputHashLevelVerificationRule extends BaseRule {

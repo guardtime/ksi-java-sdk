@@ -26,7 +26,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 
 /**
- * This rule is used to verify if user has provided the publication or not.
+ * Verifies if user has provided the publication or not.
  */
 public class UserProvidedPublicationExistenceRule extends BaseRule {
 

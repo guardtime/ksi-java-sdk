@@ -25,7 +25,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 
 /**
- * This rule can be used to check is signature extending is permitted or not. If extending isn't allowed the status
+ * Checks is signature extending is permitted or not. If extending isn't allowed the status
  * {@link VerificationResultCode#NA} will be returned.
  */
 public class ExtendingPermittedVerificationRule extends BaseRule {

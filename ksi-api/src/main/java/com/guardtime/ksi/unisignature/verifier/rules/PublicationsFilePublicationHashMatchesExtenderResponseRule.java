@@ -28,7 +28,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 
 /**
- * This rule is used verify that publications file publication hash matches with extender response calendar root hash.
+ * Verifies that publications file publication hash matches with extender response calendar root hash.
  */
 public class PublicationsFilePublicationHashMatchesExtenderResponseRule extends BaseRule {
 

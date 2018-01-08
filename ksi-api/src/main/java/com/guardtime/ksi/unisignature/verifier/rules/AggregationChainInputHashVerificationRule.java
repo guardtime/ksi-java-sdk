@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This rule verifies that if RFC3161 record is present then the calculated output hash (from RFC3161 record) equals to
+ * Verifies that if RFC3161 record is present then the calculated output hash (from RFC3161 record) equals to
  * aggregation chain input hash. If RFC3161 record is missing then the status {@link VerificationResultCode#OK} is
  * returned.
  */

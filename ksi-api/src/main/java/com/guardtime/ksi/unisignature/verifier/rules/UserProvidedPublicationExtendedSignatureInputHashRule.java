@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * This rule can be used to check that extender response input hash equals with signature aggregation root hash.
+ * Checks that extender response input hash equals with signature aggregation root hash.
  */
 public class UserProvidedPublicationExtendedSignatureInputHashRule extends BaseRule {
 

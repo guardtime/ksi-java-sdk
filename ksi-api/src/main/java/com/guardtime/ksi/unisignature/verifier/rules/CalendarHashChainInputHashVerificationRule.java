@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This rule is used to verify that last aggregation hash chain output hash equals to calendar hash chain input hash. If
+ * Verifies that last aggregation hash chain output hash equals to calendar hash chain input hash. If
  * calendar hash chain is missing then status {@link VerificationResultCode#OK} will be returned.
  */
 public class CalendarHashChainInputHashVerificationRule extends BaseRule {

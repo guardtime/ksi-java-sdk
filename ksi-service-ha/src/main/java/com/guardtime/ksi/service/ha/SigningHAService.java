@@ -62,7 +62,7 @@ public class SigningHAService implements KSISigningService {
     }
 
     /**
-     * Does a non-blocking signing request. Sends the request to all the subservices in parallel. First successful response is
+     * Creates a non-blocking signing request. Sends the request to all the subservices in parallel. First successful response is
      * used, others are cancelled. Request fails only if all the subservices fail.
      *
      * @see KSISigningService#sign(DataHash, Long)
@@ -70,30 +70,30 @@ public class SigningHAService implements KSISigningService {
     public Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException {
         Util.notNull(dataHash, "dataHash");
         Util.notNull(level, "level");
-        final Collection<Callable<AggregationResponse>> tasks = new ArrayList<Callable<AggregationResponse>>(subservices.size());
+        final Collection<Callable<AggregationResponse>> tasks = new ArrayList<>(subservices.size());
         for (KSISigningService subservice : subservices) {
             tasks.add(new SigningTask(subservice, dataHash, level));
         }
-        return new ServiceCallFuture<AggregationResponse>(
-                executorService.submit(new ServiceCallsTask<AggregationResponse>(executorService, tasks))
+        return new ServiceCallFuture<>(
+                executorService.submit(new ServiceCallsTask<>(executorService, tasks))
         );
     }
 
     /**
-     * @return List of signing services this signing service composes of.
+     * @return List of signing subservices this signing service composes of.
      */
     public List<KSISigningService> getSubSigningServices() {
         return subservices;
     }
 
     /**
-     * Registers configuration listeners that will be called if this SigningHAServices configuration changes. They will not be
-     * called if subservices configuration changes in a way that does not change the consolidated configuration. To get detailed
-     * info about subservices configurations one should register their own listeners directly on subservices. Listener will
+     * Registers configuration listeners that will be called if this {@link SigningHAService}'s configuration changes. They will not be
+     * called if subservice's configuration changes in a way that does not change the consolidated configuration. To get detailed
+     * info about subservices' configurations one should register their own listeners directly on subservices. Listener will
      * be called instantaneously once with the latest consolidation result as part of the registration if the latest result is
      * not null.
      *
-     * @param listener May not be null.
+     * @param listener may not be null.
      */
     public void registerAggregatorConfigurationListener(ConfigurationListener<AggregatorConfiguration> listener) {
         haConfListener.registerListener(listener);
@@ -128,20 +128,20 @@ public class SigningHAService implements KSISigningService {
     }
 
     /**
-     * For building the SigningHAService.
+     * Builds the {@link SigningHAService}.
      */
     public static class Builder {
 
-        private List<KSISigningService> services = new ArrayList<KSISigningService>();
+        private List<KSISigningService> services = new ArrayList<>();
         private ExecutorService executorService = DefaultExecutorServiceProvider.getExecutorService();
 
         /**
-         * For adding subclients. If both clients and services are set then they are combined.
+         * Adds subclients. If both, clients and services, are set then they are combined.
          * There should be either at least one subclient or one subservice and no more than three of them combined before
          * building. Do not have to call this if there is at least one subservice set.
          *
          * @param clients
-         *      List of subclients. May not be null.
+         *      list of subclients, may not be null.
          *
          * @return Instance of the builder itself.
          */
@@ -157,7 +157,7 @@ public class SigningHAService implements KSISigningService {
          * building. Do not have to call this if there is at least one subclient set.
          *
          * @param services
-         *      List of subservices. May not be null.
+         *      list of subservices, may not be null.
          *
          * @return Instance of the builder itself.
          */
@@ -169,7 +169,7 @@ public class SigningHAService implements KSISigningService {
 
         /**
          * @param executorService
-         *      {@link ExecutorService} used for  asynchronous tasks. May not be null. If not set then default will be used.
+         *      {@link ExecutorService} used for  asynchronous tasks, may not be null. If not set then default will be used.
          *
          * @return Instance of the builder itself.
          */
@@ -182,7 +182,7 @@ public class SigningHAService implements KSISigningService {
         /**
          * Builds the {@link SigningHAService} instance.
          *
-         * @return Instance of {@link SigningHAService}
+         * @return Instance of {@link SigningHAService}.
          */
         public SigningHAService build() {
             List<KSISigningService> subservices = Collections.unmodifiableList(this.services);
@@ -197,10 +197,10 @@ public class SigningHAService implements KSISigningService {
 
         /**
          * Converts list of {@link KSISigningClient} to a list of {@link KSISigningService} by wrapping them all with
-         * {@link KSISigningClientServiceAdapter}s
+         * {@link KSISigningClientServiceAdapter}s.
          */
         private List<KSISigningService> clientsToServices(List<KSISigningClient> clients) {
-            List<KSISigningService> services = new ArrayList<KSISigningService>(clients.size());
+            List<KSISigningService> services = new ArrayList<>(clients.size());
             for (KSISigningClient client : clients) {
                 services.add(new KSISigningClientServiceAdapter(client));
             }

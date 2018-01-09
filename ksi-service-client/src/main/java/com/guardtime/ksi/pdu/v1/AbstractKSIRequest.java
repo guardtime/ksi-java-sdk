@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -66,9 +66,9 @@ abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStructure {
      * Used to parse request TLV objects.
      *
      * @param element
-     *         - instance of {@link TLVElement}
+     *         an instance of {@link TLVElement}.
      * @param loginKey
-     *         - login key byte array
+     *         login key (byte array).
      */
     public AbstractKSIRequest(TLVElement element, byte[] loginKey) throws KSIException {
         super(element);
@@ -108,7 +108,7 @@ abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStructure {
     }
 
     /**
-     * Returns outgoing aggregation message HMAC
+     * Returns outgoing aggregation message HMAC.
      */
     public DataHash getMac() {
         return this.mac;
@@ -124,13 +124,14 @@ abstract class AbstractKSIRequest<P extends TLVStructure> extends TLVStructure {
     /**
      * Calculates the MAC based on header and payload TLVs.
      *
-     * @return calculated data hash
+     * @return Calculated data hash.
      * @throws KSIException
-     *         if hmac generation fails
+     *         if HMAC generation fails.
      */
     protected DataHash calculateMac() throws KSIException {
         try {
             HashAlgorithm algorithm = HashAlgorithm.getByName("DEFAULT");
+            algorithm.checkExpiration();
             return new DataHash(algorithm, Util.calculateHMAC(getContent(), this.loginKey, algorithm.getName()));
         } catch (IOException e) {
             throw new KSIProtocolException("Problem with HMAC", e);

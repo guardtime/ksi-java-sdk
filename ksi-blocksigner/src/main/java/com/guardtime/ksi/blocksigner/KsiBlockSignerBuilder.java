@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -20,11 +20,11 @@
 package com.guardtime.ksi.blocksigner;
 
 import com.guardtime.ksi.hashing.HashAlgorithm;
-import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
+import com.guardtime.ksi.service.KSISigningService;
+import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import org.slf4j.Logger;
@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * This class provides functionality to obtain {@link KsiBlockSigner} object(s). This cass offers multiple methods to configure
- * {@link KsiBlockSigner} object.
+ * Provides functionality to obtain {@link KsiBlockSigner} object(s), offering multiple
+ * methods to configure {@link KsiBlockSigner} object.
  */
 public class KsiBlockSignerBuilder {
 
@@ -58,6 +58,7 @@ public class KsiBlockSignerBuilder {
 
     public KsiBlockSignerBuilder setDefaultHashAlgorithm(HashAlgorithm algorithm) {
         notNull(algorithm, "Hash algorithm");
+        algorithm.checkExpiration();
         this.algorithm = algorithm;
         return this;
     }

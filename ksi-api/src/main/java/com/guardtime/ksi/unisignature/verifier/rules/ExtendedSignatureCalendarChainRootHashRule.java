@@ -26,7 +26,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import com.guardtime.ksi.unisignature.CalendarHashChain;
 
 /**
- * This rule is used to check that reproduced calendar hash chain (reproduced by sending extension request with the same
+ * Checks that reproduced calendar hash chain (reproduced by sending extension request with the same
  * aggregation and publication time as the attached calendar chain) matches with the already present calendar hash chain
  * root hash.
  * <p/>

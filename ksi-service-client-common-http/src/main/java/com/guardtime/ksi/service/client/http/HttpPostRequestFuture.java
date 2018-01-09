@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -37,13 +37,15 @@ public abstract class HttpPostRequestFuture implements Future<TLVElement> {
      * Validates HTTP response message.
      *
      * @param statusCode
-     *         - HTTP status code
+     *         HTTP status code.
      * @param responseMessage
-     *         - HTTP header response message
+     *         HTTP header response message.
      * @param response
-     *         - response input stream
+     *         response input stream.
+     *
+     * @return {@link TLVElement}
      * @throws HttpProtocolException
-     *         will be thrown when KSI HTTP response is not valid
+     *         will be thrown when KSI HTTP response is not valid.
      */
     protected TLVElement parse(int statusCode, String responseMessage, InputStream response) throws HttpProtocolException {
         try {

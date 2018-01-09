@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * This rule is used to check that aggregation hash chain aggregation times are consistent (e.g previous aggregation
+ * Checks that aggregation hash chain aggregation times are consistent (e.g previous aggregation
  * hash chain aggregation time to current aggregation hash chain aggregation time).
  */
 public class AggregationHashChainTimeConsistencyRule extends BaseRule {

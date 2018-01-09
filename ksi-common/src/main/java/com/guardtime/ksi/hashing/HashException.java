@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -20,7 +20,7 @@
 package com.guardtime.ksi.hashing;
 
 /**
- * This exception is common exception for exception thrown by {@link DataHasher}, {@link DataHash} or {@link
+ * Common exception for exceptions thrown by {@link DataHasher}, {@link DataHash} or {@link
  * HashAlgorithm} classes.
  */
 public class HashException extends RuntimeException {

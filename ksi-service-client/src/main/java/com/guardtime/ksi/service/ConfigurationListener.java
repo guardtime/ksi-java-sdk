@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -23,7 +23,7 @@ import com.guardtime.ksi.service.client.KSISigningClient;
 
 /**
  * Objects of this type can be registered to listen for configuration updates by {@link KSISigningClient} and
- * {@link KSIExtenderClient}
+ * {@link KSIExtenderClient}.
  *
  * @param <T> Configuration objects type.
  */
@@ -33,7 +33,7 @@ public interface ConfigurationListener<T> {
      * Called with the new configuration when it's received.
      *
      * @param configuration
-     *      Received configuration.
+     *      received configuration.
      */
     void updated(T configuration);
 
@@ -41,7 +41,7 @@ public interface ConfigurationListener<T> {
      * Called when receiving or calculating the new configuration failed for some reason.
      *
      * @param reason
-     *      Reason for failure.
+     *      reason for failure.
      */
     void updateFailed(Throwable reason);
 

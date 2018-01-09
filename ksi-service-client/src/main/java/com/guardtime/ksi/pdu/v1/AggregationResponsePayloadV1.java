@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -41,10 +41,10 @@ class AggregationResponsePayloadV1 extends PduResponsePayloadV1 implements Aggre
     private String errorMsg;
 
     /**
-     * Create aggregation response from TLVTag.
+     * Creates aggregation response from TLVTag.
      *
      * @param element
-     *         TLV element
+     *         TLV element.
      */
     public AggregationResponsePayloadV1(TLVElement element) throws KSIException {
         super(element);
@@ -75,21 +75,21 @@ class AggregationResponsePayloadV1 extends PduResponsePayloadV1 implements Aggre
     }
 
     /**
-     * @return error number
+     * @return Error code.
      */
     public Long getError() {
         return error;
     }
 
     /**
-     * @return error message
+     * @return Error message.
      */
     public String getErrorMessage() {
         return errorMsg;
     }
 
     /**
-     * @return request id
+     * @return Request ID.
      */
     public final Long getRequestId() {
         return requestId;

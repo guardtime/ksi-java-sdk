@@ -29,6 +29,7 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.DefaultVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
@@ -40,6 +41,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadFile;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_CHANGED_CHAINS;
 import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_TOO_LONG;
 import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE;
@@ -115,5 +117,19 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         Policy policy = new PublicationsFileBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
         ksiTest.read(loadFile(SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR));
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testDefaultPolicyAsDefaultVerificationPolicy_OK() throws Exception {
+        Policy policy = new DefaultVerificationPolicy();
+        KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
+        ksiTest.read(loadFile(SIGNATURE_2017_03_14));
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Extender response input hash mismatch.*")
+    public void testDefaultPolicyAsDefaultVerificationPolicy__InvalidSignatureContentException_PUB3() throws Exception {
+        Policy policy = new DefaultVerificationPolicy();
+        KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
+        ksiTest.read(loadFile(SIGNATURE_OTHER_CORE));
     }
 }

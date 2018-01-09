@@ -21,22 +21,22 @@ package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.publication.PublicationData;
+import com.guardtime.ksi.unisignature.CalendarHashChain;
+import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
-import com.guardtime.ksi.unisignature.CalendarHashChain;
-import com.guardtime.ksi.unisignature.KSISignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
 /**
- * This rule is used verify that user provided publication time matches with extender response calendar chain shape.
+ * Verifies that user provided publication time matches with extender response calendar chain shape.
  */
 public class UserProvidedPublicationTimeMatchesExtendedResponseRule extends BaseRule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserProvidedPublicationHashMatchesExtendedResponseRule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserProvidedPublicationTimeMatchesExtendedResponseRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         PublicationData userPublication = context.getUserProvidedPublication();

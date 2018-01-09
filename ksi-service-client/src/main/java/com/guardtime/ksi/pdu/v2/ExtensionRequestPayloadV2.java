@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -40,7 +40,7 @@ class ExtensionRequestPayloadV2 extends TLVStructure {
     private Date publicationTime;
 
     /**
-     * Creates a new instance of extension request payload
+     * Creates a new instance of extension request payload.
      */
     public ExtensionRequestPayloadV2(Date aggregationTime, Date publicationTime, Long requestId) throws KSIException {
         this.requestId = requestId;
@@ -55,7 +55,7 @@ class ExtensionRequestPayloadV2 extends TLVStructure {
             rootElement.addChildElement(TLVElement.create(ELEMENT_TYPE_PUBLICATION_TIME, publicationTime));
         }
     }
-    
+
     public Long getRequestId() {
         return requestId;
     }

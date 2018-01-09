@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class that handles different events that occur during the lifetime of TCP connection.
+ * Handles different events that occur during the lifetime of TCP connection.
  */
 class TCPSessionHandler implements IoHandler {
 
@@ -37,10 +37,12 @@ class TCPSessionHandler implements IoHandler {
     }
 
     public void messageReceived(IoSession session, Object message) throws Exception {
-        ActiveTransactionsHolder.responseReceived((KSITCPSigningTransaction) message);
+        LOGGER.debug("Message received. {}", message);
+        ActiveTransactionsHolder.responseReceived((KSITCPTransaction) message);
     }
 
     public void messageSent(IoSession session, Object message) throws Exception {
+        LOGGER.debug("Message sent. {}", message);
     }
 
     public void inputClosed(IoSession session) throws Exception {
@@ -51,14 +53,14 @@ class TCPSessionHandler implements IoHandler {
     }
 
     public void sessionCreated(IoSession session) throws Exception {
-        LOGGER.debug("TCP session {} with signer created.", session.getId());
+        LOGGER.debug("TCP session ID={} created.", session.getId());
     }
 
     public void sessionIdle(IoSession session, IdleStatus idleStatus) throws Exception {
-        LOGGER.debug("TCP session {} with signer is idle.", session.getId());
+        LOGGER.debug("TCP session ID={} is idle.", session.getId());
     }
 
     public void sessionOpened(IoSession session) throws Exception {
-        LOGGER.debug("TCP session {} with signer is opened.", session.getId());
+        LOGGER.debug("TCP session ID={} is opened.", session.getId());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -60,7 +60,7 @@ public final class KSISigningClientServiceAdapter implements KSISigningService {
         Util.notNull(executorService, "KSISigningClientServiceAdapter.executorService");
         this.client = client;
         this.pduFactory = PduFactoryProvider.get(client.getPduVersion());
-        this.aggregatorConfHandler = new ConfigurationHandler<AggregatorConfiguration>(executorService);
+        this.aggregatorConfHandler = new ConfigurationHandler<>(executorService);
     }
 
     public Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException {
@@ -82,7 +82,7 @@ public final class KSISigningClientServiceAdapter implements KSISigningService {
     }
 
     public Future<AggregatorConfiguration> getAggregationConfiguration() {
-        return new ConfigurationFuture<AggregatorConfiguration>(aggregatorConfHandler.doConfigurationUpdate(
+        return new ConfigurationFuture<>(aggregatorConfHandler.doConfigurationUpdate(
                 new ConfigurationRequest<AggregatorConfiguration>() {
                     public AggregatorConfiguration invoke() throws KSIException {
                         KSIRequestContext requestContext = requestContextFactory.createContext();

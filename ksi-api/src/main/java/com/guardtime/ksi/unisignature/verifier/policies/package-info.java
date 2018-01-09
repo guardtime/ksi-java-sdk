@@ -19,6 +19,6 @@
 
 
 /**
- * KSI signature verification policy
+ * KSI signature verification policies.
  */
 package com.guardtime.ksi.unisignature.verifier.policies;

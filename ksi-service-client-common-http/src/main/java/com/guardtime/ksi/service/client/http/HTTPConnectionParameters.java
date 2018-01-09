@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -21,8 +21,6 @@ package com.guardtime.ksi.service.client.http;
 import java.net.URL;
 
 /**
- * HTTP Connection parameters.
- * <p/>
  * Contains low level connection parameters for HTTP service.
  */
 public class HTTPConnectionParameters {
@@ -37,15 +35,15 @@ public class HTTPConnectionParameters {
     private int readTimeout = UNDEFINED_TIMEOUT;
 
     /**
-     * Create new HTTP Connection Parameters.
+     * Creates new set of HTTP connection parameters.
      */
     public HTTPConnectionParameters() {}
 
     /**
-     * Create new HTTP Connection Parameters.
+     * Creates new set of HTTP connection parameters.
      *
-     * @param connectionTimeout Timeout in milliseconds until a connection is established.
-     * @param readTimeout Socket read timeout in milliseconds.
+     * @param connectionTimeout timeout in milliseconds until a connection is established.
+     * @param readTimeout socket read timeout in milliseconds.
      */
     public HTTPConnectionParameters(int connectionTimeout, int readTimeout) {
         this.connectionTimeout = connectionTimeout;
@@ -57,8 +55,11 @@ public class HTTPConnectionParameters {
      * <p>
      * A timeout value of zero is interpreted as an infinite timeout. A negative value is interpreted as undefined
      * (system default).
-     * <p>
+     * </p><p>
      * Default value is -1.
+     * </p>
+     *
+     * @return Connection timeout in milliseconds as int.
      */
     public int getConnectionTimeout() {
         return connectionTimeout;
@@ -70,15 +71,18 @@ public class HTTPConnectionParameters {
      * <p>
      * A timeout value of zero is interpreted as an infinite timeout. A negative value is interpreted as undefined
      * (system default).
-     * <p>
+     * </p><p>
      * Default value is -1.
+     * </p>
+     *
+     * @return Read timeout in milliseconds as int.
      */
     public int getReadTimeout() {
         return readTimeout;
     }
 
     /**
-     * @return proxy password
+     * @return Proxy password.
      */
     public String getProxyPassword() {
         return proxyPassword;
@@ -87,7 +91,7 @@ public class HTTPConnectionParameters {
     /**
      * Set proxy password.
      *
-     * @param proxyPassword proxy password
+     * @param proxyPassword proxy password.
      */
     public void setProxyPassword(String proxyPassword) {
         this.proxyPassword = proxyPassword;
@@ -103,14 +107,14 @@ public class HTTPConnectionParameters {
     /**
      * Set proxy URL.
      *
-     * @param proxyUrl proxy url
+     * @param proxyUrl proxy URL.
      */
     public void setProxyUrl(URL proxyUrl) {
         this.proxyUrl = proxyUrl;
     }
 
-    /**
-     * @return proxy username
+    /**     
+     * @return Proxy username.
      */
     public String getProxyUser() {
         return proxyUser;
@@ -119,7 +123,7 @@ public class HTTPConnectionParameters {
     /**
      * Set proxy username.
      *
-     * @param proxyUser proxy user
+     * @param proxyUser proxy username.
      */
     public void setProxyUser(String proxyUser) {
         this.proxyUser = proxyUser;

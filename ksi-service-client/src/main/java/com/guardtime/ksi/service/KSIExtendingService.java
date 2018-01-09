@@ -28,36 +28,42 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Provides KSI services to communicate with extender(s).
+ * Provides KSI services to communicate with the extender(s).
  */
 public interface KSIExtendingService extends Closeable {
 
     /**
-     * Used to extend existing signatures.
+     * Extends existing signatures.
      *
-     * @param aggregationTime - aggregation time of the existing signature.
-     * @param publicationTime - publication time to which the existing signature is to be extended.
-     * @return instance of {@link ExtensionResponseFuture} containing calendar chains needed to extend the signature.
+     * @param aggregationTime aggregation time of the existing signature.
+     * @param publicationTime publication time to which the existing signature is to be extended.
+     *
+     * @return Instance of {@link ExtensionResponseFuture} containing calendar chains needed to extend the signature.
+     * @throws KSIException in case any error occurs.
      */
     Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException;
 
     /**
-     * If the implementation combines multiple clients then this method can be used to get those subservices. If the implementation
-     * is a client that directly connects to a single gateway then it will return an empty list.
+     * Gets the subclients in case of the implementation that combines multiple clients. If the implementation
+     * is a client that directly connects to a single gateway, an empty list will be returned.
+     *
+     * @return List of subclients.
      */
     List<KSIExtendingService> getSubExtendingServices();
 
     /**
-     * Registers a new {@link ConfigurationListener <ExtenderConfiguration>} for the client. Each time client's configuration is
-     * update is handled, this listener is called.
+     * Registers a new {@link ConfigurationListener}&lt;{@link ExtenderConfiguration}&gt; for the client. Each time client's configuration
+     * is updated, this listener is called.
+     *
+     * @param listener an instance of {@link ConfigurationListener}&lt;{@link ExtenderConfiguration}&gt;.
      */
     void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener);
 
     /**
-     * Makes the client ask for configuration update. On completion of the update config registered {@link ConfigurationListener}s
-     * are called
+     * Makes the client ask for configuration update. On completion of the update registered {@link ConfigurationListener}s
+     * are called.
      *
-     * @return Future of the {@link ExtenderConfiguration}
+     * @return Future of the {@link ExtenderConfiguration}.
      */
     Future<ExtenderConfiguration> getExtendingConfiguration();
 

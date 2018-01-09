@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * This rule is used to check that extended signature contains correct aggregation time.
+ * Checks that extended signature contains correct aggregation time.
  */
 public class ExtendedSignatureCalendarChainAggregationTimeRule extends BaseRule {
 

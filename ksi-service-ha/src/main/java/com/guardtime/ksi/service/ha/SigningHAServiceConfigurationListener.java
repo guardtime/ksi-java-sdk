@@ -26,17 +26,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Handles configuration consolidation and listener updates for SigningHAService
+ * Handles configuration consolidation and listener updates for {@link SigningHAService}.
  */
 class SigningHAServiceConfigurationListener extends AbstractHAConfigurationListener<AggregatorConfiguration> {
 
-    private final List<SubServiceConfListener<AggregatorConfiguration>> subServiceConfListeners = new ArrayList<SubServiceConfListener<AggregatorConfiguration>>();
+    private final List<SubServiceConfListener<AggregatorConfiguration>> subServiceConfListeners = new ArrayList<>();
     private final List<KSISigningService> subservices;
 
     SigningHAServiceConfigurationListener(List<KSISigningService> subservices) {
         this.subservices = subservices;
         for (KSISigningService subservice : subservices) {
-            SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<AggregatorConfiguration>(subservice.toString(), this);
+            SubServiceConfListener<AggregatorConfiguration> listener = new SubServiceConfListener<>(subservice.toString(), this);
             subservice.registerAggregatorConfigurationListener(listener);
             subServiceConfListeners.add(listener);
         }
@@ -62,12 +62,12 @@ class SigningHAServiceConfigurationListener extends AbstractHAConfigurationListe
     }
 
     /**
-     * Can be used to get aggregators configuration. Invokes configuration updates for all the subclients.
+     * Gets the aggregator's configuration. Invokes configuration updates for all the subclients.
      *
-     * @return {@link Future} which eventually provides subconfigurations consolidation result.
+     * @return {@link Future} which eventually provides subconfiguration's consolidation result.
      */
     Future<AggregatorConfiguration> getAggregationConfiguration() {
-        return new HAConfFuture<AggregatorConfiguration>(invokeSubServiceConfUpdates(),
+        return new HAConfFuture<>(invokeSubServiceConfUpdates(),
                 new HAConfFuture.ConfResultSupplier<ConsolidatedResult<AggregatorConfiguration>>() {
                     public ConsolidatedResult<AggregatorConfiguration> get() {
                         return lastConsolidatedConfiguration;
@@ -76,7 +76,7 @@ class SigningHAServiceConfigurationListener extends AbstractHAConfigurationListe
     }
 
     private List<Future<AggregatorConfiguration>> invokeSubServiceConfUpdates() {
-        List<Future<AggregatorConfiguration>> confFutures = new ArrayList<Future<AggregatorConfiguration>>();
+        List<Future<AggregatorConfiguration>> confFutures = new ArrayList<>();
         for (KSISigningService service : subservices) {
             confFutures.add(service.getAggregationConfiguration());
         }

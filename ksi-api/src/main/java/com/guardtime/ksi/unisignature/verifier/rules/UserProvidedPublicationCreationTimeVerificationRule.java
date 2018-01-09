@@ -27,14 +27,14 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import java.util.Date;
 
 /**
- * This rule checks that signature is created before user provided publication.
+ * Checks that signature is created before user provided publication.
  */
 public class UserProvidedPublicationCreationTimeVerificationRule extends BaseRule {
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
-        Date registrationTime = context.getCalendarHashChain().getAggregationTime();
+        Date aggregationTime = context.getSignature().getAggregationTime();
         Date userPublicationTime = context.getUserProvidedPublication().getPublicationTime();
-        if (registrationTime.after(userPublicationTime)) {
+        if (aggregationTime.after(userPublicationTime)) {
             return VerificationResultCode.NA;
         }
         return VerificationResultCode.OK;

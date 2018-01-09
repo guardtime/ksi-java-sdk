@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * Apache HTTP Client specific response future class.
+ * Apache HTTP client specific response future class.
  */
 public class ApacheHttpPostRequestFuture extends HttpPostRequestFuture {
 
@@ -53,11 +53,7 @@ public class ApacheHttpPostRequestFuture extends HttpPostRequestFuture {
             String responseMessage = response.getStatusLine().getReasonPhrase();
             input = response.getEntity().getContent();
             return parse(statusCode, responseMessage, input);
-        } catch (InterruptedException e) {
-            throw new KSIClientException("Getting KSI response failed", e);
-        } catch (ExecutionException e) {
-            throw new KSIClientException("Getting KSI response failed", e);
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException | ExecutionException e) {
             throw new KSIClientException("Getting KSI response failed", e);
         } finally {
             Util.closeQuietly(input);

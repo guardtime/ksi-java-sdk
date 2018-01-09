@@ -32,7 +32,7 @@ import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import java.util.List;
 
 /**
- * Signing request response future.
+ * The future of the signing request's response.
  *
  * @see Future
  */
@@ -41,20 +41,30 @@ public final class SigningFuture implements Future<KSISignature> {
     private final Future<AggregationResponse> aggregationResponseFuture;
     private KSISignatureFactory signatureFactory;
     private DataHash inputHash;
+    private long level;
 
     private KSISignature response;
 
-    public SigningFuture(Future<AggregationResponse> aggregationResponseFuture, KSISignatureFactory signatureFactory, DataHash inputHash) {
+    public SigningFuture(Future<AggregationResponse> aggregationResponseFuture, KSISignatureFactory signatureFactory,
+            DataHash inputHash) {
         this.aggregationResponseFuture = aggregationResponseFuture;
         this.signatureFactory = signatureFactory;
         this.inputHash = inputHash;
+    }
+
+    public SigningFuture(Future<AggregationResponse> aggregationResponseFuture, KSISignatureFactory signatureFactory,
+            DataHash inputHash, long level) {
+        this.aggregationResponseFuture = aggregationResponseFuture;
+        this.signatureFactory = signatureFactory;
+        this.inputHash = inputHash;
+        this.level = level;
     }
 
     public final KSISignature getResult() throws KSIException {
         try {
             if (response == null) {
                 AggregationResponse aggregationResponse = aggregationResponseFuture.getResult();
-                this.response = signatureFactory.createSignature(convert(aggregationResponse.getPayload()), inputHash);
+                this.response = signatureFactory.createSignature(convert(aggregationResponse.getPayload()), inputHash, level);
             }
             return response;
         } catch (HashException e) {

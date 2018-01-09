@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -31,7 +31,7 @@ import java.util.Date;
 public interface PduFactory {
 
     /**
-     * Creates a new aggregation request PDU message.
+     * Creates a new aggregation request.
      */
     AggregationRequest createAggregationRequest(KSIRequestContext context, ServiceCredentials credentials, DataHash imprint, Long level) throws KSIException;
 
@@ -55,7 +55,7 @@ public interface PduFactory {
     AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext requestContext, ServiceCredentials credentials, TLVElement input) throws KSIException;
 
     /**
-     * This method can be used to create an extension configuration request
+     * Creates an extension configuration request.
      */
     ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext requestContext, ServiceCredentials credentials) throws KSIException;
 

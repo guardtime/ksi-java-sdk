@@ -85,6 +85,6 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
         }
         build.setSignature(signature).setExtenderClient(extenderClient);
         build.setExtendingAllowed(extendingAllowed);
-        return ksi.verify(build.createVerificationContext(), policy);
+        return ksi.verify(build.build(), policy);
     }
 }

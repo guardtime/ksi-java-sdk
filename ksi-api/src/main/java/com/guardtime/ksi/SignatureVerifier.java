@@ -12,6 +12,10 @@ import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.PolicyContext;
 import com.guardtime.ksi.util.Util;
 
+/**
+ * Obtaining {@link Verifier} object(s) and using it to verify KSI signatures.
+ */
+
 public class SignatureVerifier implements Verifier {
 
     private KSISignatureVerifier verifier = new KSISignatureVerifier();

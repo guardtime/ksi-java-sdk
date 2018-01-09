@@ -18,6 +18,6 @@
  */
 
 /**
- * Contains KSI signature verification rules
+ * KSI signature verification rules.
  */
 package com.guardtime.ksi.unisignature.verifier.rules;

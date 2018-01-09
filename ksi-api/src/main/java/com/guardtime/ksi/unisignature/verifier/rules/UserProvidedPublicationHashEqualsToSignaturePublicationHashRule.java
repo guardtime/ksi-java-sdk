@@ -26,7 +26,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 
 /**
- * This rule is used verify that user provided publication data hash equals to signature publication record data hash.
+ * Verifies that user provided publication data hash equals to signature publication record data hash.
  */
 public class UserProvidedPublicationHashEqualsToSignaturePublicationHashRule extends BaseRule {
 

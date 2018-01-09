@@ -18,6 +18,6 @@
  */
 
 /**
- * Provides interfaces to decode and encode KSI signatures
+ * Interfaces to decode and encode KSI signatures.
  */
 package com.guardtime.ksi.unisignature;

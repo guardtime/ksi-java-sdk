@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * This rule is used to verify that calendar authentication record publication time equals to calendar hash chain
+ * Verifies that calendar authentication record publication time equals to calendar hash chain
  * publication time. If calendar authentication record is missing then status {@link VerificationResultCode#OK} is
  * returned.
  */

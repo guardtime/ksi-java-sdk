@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This rule checks that: <ul> <li>the extended calendar hash chain contains the same count of right
+ * Checks that: <ul> <li>the extended calendar hash chain contains the same count of right
  * links</li> <li>the extended calendar hash chain right links are equal to the not extended
  * calendar hash chain right links</li> </ul>
  */
@@ -71,7 +71,7 @@ public class ExtendedSignatureCalendarHashChainRightLinksMatchesRule extends Bas
     }
 
     private List<CalendarHashChainLink> getRightLinks(CalendarHashChain hashChain) {
-        List<CalendarHashChainLink> returnable = new LinkedList<CalendarHashChainLink>();
+        List<CalendarHashChainLink> returnable = new LinkedList<>();
         for (CalendarHashChainLink link : hashChain.getChainLinks()) {
             if (link.isRightLink()) {
                 returnable.add(link);

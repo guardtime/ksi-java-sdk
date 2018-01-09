@@ -34,7 +34,7 @@ import java.security.Signature;
 import java.security.cert.Certificate;
 
 /**
- * This rule is used to validate calendar authentication record signature. At first X.509 certificate is searched from
+ * Validates calendar authentication record signature. At first X.509 certificate is searched from
  * publications file and when the certificate is found then the PKI signature is validated.
  */
 public class CalendarAuthenticationRecordSignatureVerificationRule extends BaseRule {

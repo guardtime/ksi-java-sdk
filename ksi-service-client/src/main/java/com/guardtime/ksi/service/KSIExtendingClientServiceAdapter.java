@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -60,7 +60,7 @@ public final class KSIExtendingClientServiceAdapter implements KSIExtendingServi
         Util.notNull(executorService, "KSIExtendingClientServiceAdapter.executorService");
         this.client = client;
         this.pduFactory = PduFactoryProvider.get(client.getPduVersion());
-        this.extenderConfHandler = new ConfigurationHandler<ExtenderConfiguration>(executorService);
+        this.extenderConfHandler = new ConfigurationHandler<>(executorService);
     }
 
     public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException {
@@ -82,7 +82,7 @@ public final class KSIExtendingClientServiceAdapter implements KSIExtendingServi
     }
 
     public Future<ExtenderConfiguration> getExtendingConfiguration() {
-        return new ConfigurationFuture<ExtenderConfiguration>(extenderConfHandler.doConfigurationUpdate(
+        return new ConfigurationFuture<>(extenderConfHandler.doConfigurationUpdate(
                 new ConfigurationRequest<ExtenderConfiguration>() {
                     public ExtenderConfiguration invoke() throws KSIException {
                         KSIRequestContext requestContext = requestContextFactory.createContext();

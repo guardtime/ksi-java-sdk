@@ -83,7 +83,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         builder.setSignature(signature).setExtenderClient(simpleHttpClient).setPublicationsFile(publicationFile);
         builder.setUserPublication(publicationData);
         builder.setExtendingAllowed(false);
-        Assert.assertTrue(ksi.verify(builder.createVerificationContext(), policy).isOk());
+        Assert.assertTrue(ksi.verify(builder.build(), policy).isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)

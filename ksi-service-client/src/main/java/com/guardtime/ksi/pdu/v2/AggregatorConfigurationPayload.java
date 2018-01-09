@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Aggregation configuration response payload element.
+ * Aggregator's configuration response payload element, provides detailed information about
+ * the aggregator.
  */
 public class AggregatorConfigurationPayload extends TLVStructure implements AggregatorConfiguration {
 
@@ -43,7 +44,7 @@ public class AggregatorConfigurationPayload extends TLVStructure implements Aggr
     private HashAlgorithm aggregationAlgorithm;
     private Long aggregationPeriod;
     private Long maximumRequests;
-    private List<String> parentUris = new ArrayList<String>();
+    private List<String> parentUris = new ArrayList<>();
 
     public AggregatorConfigurationPayload(TLVElement element) throws TLVParserException {
         super(element);

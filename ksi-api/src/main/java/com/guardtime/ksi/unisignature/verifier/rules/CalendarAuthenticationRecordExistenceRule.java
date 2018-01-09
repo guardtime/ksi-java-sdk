@@ -25,7 +25,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 
 /**
- * This rule is used to verify that KSI signature contains calendar authentication record element.
+ * Verifies that KSI signature contains calendar authentication record element.
  */
 public class CalendarAuthenticationRecordExistenceRule extends BaseRule {
 

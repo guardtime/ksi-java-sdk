@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -21,12 +21,12 @@ package com.guardtime.ksi.pdu;
 import com.guardtime.ksi.tlv.TLVElement;
 
 /**
- * Aggregation response
+ * Common interface for aggregation response.
  */
 public interface AggregationResponse {
 
     /**
-     * Returns a payload element of the response
+     * @return Payload element of the response.
      */
     TLVElement getPayload();
 

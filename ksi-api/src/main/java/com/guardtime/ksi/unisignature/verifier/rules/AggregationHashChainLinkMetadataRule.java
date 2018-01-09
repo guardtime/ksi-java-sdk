@@ -34,13 +34,13 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * This rule verifies that all metadata structures in aggregation hash chain links are valid.
+ * Verifies that all metadata structures in aggregation hash chain links are valid.
  */
 public final class AggregationHashChainLinkMetadataRule extends BaseRule {
     private static final int EXPECTED_PADDING_CONTENT = 0x01;
     private static final int ELEMENT_TYPE_PADDING = 0x1E;
 
-    private static final Logger logger = LoggerFactory.getLogger(AggregationHashChainConsistencyRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(AggregationHashChainLinkMetadataRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         AggregationHashChain[] aggregationChains = context.getAggregationHashChains();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -27,17 +27,17 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 public interface ServiceCredentials {
 
     /**
-     * Returns ksi service login id
+     * Gets KSI service login ID.
      */
     String getLoginId();
 
     /**
-     * Returns ksi login key
+     * Gets KSI login key.
      */
     byte[] getLoginKey();
 
     /**
-     * Return the algorithm for verifying the HMAC of incoming messages
+     * Gets the algorithm for verifying the HMAC of incoming messages.
      */
     HashAlgorithm getHmacAlgorithm();
 

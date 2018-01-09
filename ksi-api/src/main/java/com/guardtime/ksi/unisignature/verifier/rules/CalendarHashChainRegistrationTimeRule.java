@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * This rule is used to verify that calendar hash chain registration time (calculated from the shape of the calendar
+ * Verifies that calendar hash chain registration time (calculated from the shape of the calendar
  * hash chain) equals to calendar hash chain aggregation time. If calendar hash chain is missing then status {@link
  * VerificationResultCode#OK} will be returned.
  */

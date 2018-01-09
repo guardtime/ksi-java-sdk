@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -31,7 +31,7 @@ import java.io.ByteArrayOutputStream;
 class TransactionEncoder extends ProtocolEncoderAdapter {
 
     public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
-        KSITCPSigningTransaction transaction = (KSITCPSigningTransaction) message;
+        KSITCPTransaction transaction = (KSITCPTransaction) message;
         ByteArrayOutputStream requestBytesStream = new ByteArrayOutputStream();
         transaction.getRequest().writeTo(requestBytesStream);
         byte[] requestBytes = requestBytesStream.toByteArray();

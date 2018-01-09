@@ -35,7 +35,7 @@ abstract class AbstractHAConfigurationListener<T> implements ConfigurationListen
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final List<ConfigurationListener<T>> consolidatedConfListeners = new ArrayList<ConfigurationListener<T>>();
+    private final List<ConfigurationListener<T>> consolidatedConfListeners = new ArrayList<>();
     ConsolidatedResult<T> lastConsolidatedConfiguration;
     private final Object lock = new Object();
 
@@ -96,9 +96,9 @@ abstract class AbstractHAConfigurationListener<T> implements ConfigurationListen
 
     private void resetLastConsolidatedConfiguration(T newConsolidatedConfiguration) {
         if (newConsolidatedConfiguration == null) {
-            lastConsolidatedConfiguration = new ConsolidatedResult<T>(new HAConfigurationConsolidationException());
+            lastConsolidatedConfiguration = new ConsolidatedResult<>(new HAConfigurationConsolidationException());
         } else {
-            lastConsolidatedConfiguration = new ConsolidatedResult<T>(newConsolidatedConfiguration);
+            lastConsolidatedConfiguration = new ConsolidatedResult<>(newConsolidatedConfiguration);
         }
     }
 

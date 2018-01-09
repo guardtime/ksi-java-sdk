@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -37,7 +37,7 @@ import static com.guardtime.ksi.service.client.http.AbstractHttpClient.HEADER_AP
 import static com.guardtime.ksi.service.client.http.AbstractHttpClient.HEADER_NAME_CONTENT_TYPE;
 
 /**
- * Abstract simple HTTP client
+ * Abstract simple HTTP client.
  */
 abstract class AbstractSimpleHttpClient{
 

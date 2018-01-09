@@ -23,15 +23,15 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.publication.PublicationsFile;
 
 /**
- * An instance of this class can be obtained using {@link PublicationsHandlerBuilder} class.
+ * Getting the publications file. An instance of this class can be obtained using {@link PublicationsHandlerBuilder} class.
  */
 public interface PublicationsHandler {
     /**
-     * This method is used to get the publications file. Uses the {@link com.guardtime.ksi.service.client.KSIPublicationsFileClient}
-     * to download the publications file.
+     * Gets the publications file. Uses the {@link com.guardtime.ksi.service.client.KSIPublicationsFileClient}
+     * for downloading.
      *
-     * @return instance of the {@link PublicationsFile}
-     * @throws KSIException when error occurs (e.g when communication with KSI service fails)
+     * @return The publications file ({@link PublicationsFile}).
+     * @throws KSIException when error occurs (e.g. when communication with KSI service fails).
      */
     PublicationsFile getPublicationsFile() throws KSIException;
 

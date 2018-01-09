@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -19,9 +19,9 @@
 package com.guardtime.ksi.pdu;
 
 /**
- * Helper class for KSI request/response. This class holds additional data that
- * specific data like request identifier and login key.
- * can be used when sending request and parsing responses.
+ * Helper class for KSI request/response. Holds specific
+ * data like request identifier and login key.
+ * Can be used when sending requests and parsing responses.
  */
 public final class KSIRequestContext {
 

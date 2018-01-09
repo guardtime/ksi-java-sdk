@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -41,41 +41,22 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
     private ApacheHttpPublicationsFileClient publicationsFileClient;
 
     /**
-     * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientSimpleConfiguration}
-     *
-     * @param signingClient
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.apache.ApacheHttpSigningClient}
-     *
-     * @param extenderClient
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.apache.ApacheHttpExtenderClient}
-     *
-     * @param publicationsFileClient
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.apache.ApacheHttpPublicationsFileClient}
-     */
-    public ApacheHttpClient(ApacheHttpSigningClient signingClient, ApacheHttpExtenderClient extenderClient,
-            ApacheHttpPublicationsFileClient publicationsFileClient) {
-        this.signingClient = signingClient;
-        this.extenderClient = extenderClient;
-        this.publicationsFileClient = publicationsFileClient;
-    }
-
-    /**
-     * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientSimpleConfiguration}
+     * Constructs ApacheHttpClient with configuration values defined by {@link ApacheHttpClientSimpleConfiguration}.
      *
      * @param settings
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     *         settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}.
      */
     public ApacheHttpClient(HttpClientSettings settings) {
         this(settings, new ApacheHttpClientSimpleConfiguration());
     }
 
     /**
-     * Constructs ApacheHttpClient with configuration values passed in
+     * Constructs ApacheHttpClient with configuration values passed in.
      *
      * @param settings
-     *         - Settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}
+     *         settings defined by {@link com.guardtime.ksi.service.client.http.HttpClientSettings}.
      * @param asyncConfiguration
-     *         - Configuration defined by an instance of {@link ApacheHttpClientConfiguration}
+     *         configuration defined by an instance of {@link ApacheHttpClientConfiguration}.
      */
     public ApacheHttpClient(AbstractHttpClientSettings settings, ApacheHttpClientConfiguration asyncConfiguration) {
         super(settings);
@@ -84,15 +65,8 @@ public class ApacheHttpClient extends AbstractHttpClient implements KSISigningCl
         params.setProxyUrl(settings.getProxyUrl());
         params.setProxyUser(settings.getProxyUser());
         params.setProxyPassword(settings.getProxyPassword());
-
-        CredentialsAwareHttpSettings signingSettings = new CredentialsAwareHttpSettings(settings.getSigningUrl().toString(), settings.getCredentials(), params);
-        signingSettings.setPduVersion(settings.getPduVersion());
-        signingClient = new ApacheHttpSigningClient(signingSettings, asyncConfiguration);
-
-        CredentialsAwareHttpSettings extendingSettings = new CredentialsAwareHttpSettings(settings.getExtendingUrl().toString(), settings.getCredentials(), params);
-        extendingSettings.setPduVersion(settings.getPduVersion());
-        extenderClient = new ApacheHttpExtenderClient(extendingSettings, asyncConfiguration);
-
+        signingClient = new ApacheHttpSigningClient(new CredentialsAwareHttpSettings(settings.getSigningUrl().toString(), settings.getCredentials(), params), asyncConfiguration);
+        extenderClient = new ApacheHttpExtenderClient(new CredentialsAwareHttpSettings(settings.getExtendingUrl().toString(), settings.getCredentials(), params), asyncConfiguration);
         publicationsFileClient = new ApacheHttpPublicationsFileClient(new HttpSettings(settings.getPublicationsFileUrl().toString(), params), asyncConfiguration);
     }
 

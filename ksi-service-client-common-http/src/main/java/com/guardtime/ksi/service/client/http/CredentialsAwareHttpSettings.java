@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2017 Guardtime, Inc.
  *
  * This file is part of the Guardtime client SDK.
  *
@@ -24,8 +24,7 @@ import com.guardtime.ksi.service.client.ServiceCredentials;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * <p>Credentials aware HTTP client settings</p>
- * HTTP Service settings consist of service credentials, URL of KSI service and connections parameters.
+ * HTTP service settings consisting of service credentials, URL of KSI service and connections parameters.
  * Connection parameters hold HTTP connection settings like timeouts and proxy configuration.
  */
 public class CredentialsAwareHttpSettings extends HttpSettings {
@@ -48,14 +47,16 @@ public class CredentialsAwareHttpSettings extends HttpSettings {
     }
 
     /**
-     * Returns the PDU version
+     * @return The PDU version.
      */
     public PduVersion getPduVersion() {
         return pduVersion;
     }
 
     /**
-     * Sets the PDU version
+     * Sets the PDU version.
+     *
+     * @param pduVersion the PDU version to be used for communication.
      */
     public void setPduVersion(PduVersion pduVersion) {
         this.pduVersion = pduVersion;

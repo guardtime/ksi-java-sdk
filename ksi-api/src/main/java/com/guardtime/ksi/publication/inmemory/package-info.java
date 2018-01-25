@@ -18,6 +18,6 @@
  */
 
 /**
- * Implementation to decode and encode in-memory publications files.
+ * Implementation to decode and encode in-memory publications files
  */
 package com.guardtime.ksi.publication.inmemory;

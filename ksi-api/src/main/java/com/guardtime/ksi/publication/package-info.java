@@ -18,6 +18,6 @@
  */
 
 /**
- * Interfaces to decode and encode publications files.
+ * Interfaces to decode and encode publications files
  */
 package com.guardtime.ksi.publication;

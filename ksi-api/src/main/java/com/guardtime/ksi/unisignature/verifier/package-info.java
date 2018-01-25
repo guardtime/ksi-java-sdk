@@ -18,6 +18,6 @@
  */
 
 /**
- * Classes and interfaces to verify KSI signatures.
+ * Classes and interfaces to verify KSI signatures
  */
 package com.guardtime.ksi.unisignature.verifier;

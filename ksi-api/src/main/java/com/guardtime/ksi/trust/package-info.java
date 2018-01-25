@@ -18,6 +18,6 @@
  */
 
 /**
- * Trust provider classes.
+ * Trust provider classes
  */
 package com.guardtime.ksi.trust;

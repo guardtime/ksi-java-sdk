@@ -19,7 +19,7 @@
 
 /**
  *
- * Classes to create and represent data hashes.
+ * Classes to create and represent data hashes
  *
  */
 package com.guardtime.ksi.hashing;

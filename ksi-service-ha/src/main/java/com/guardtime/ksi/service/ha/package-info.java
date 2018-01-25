@@ -18,6 +18,6 @@
  */
 
 /**
- * High Availability KSI service, combines other services to achieve redundancy.
+ * High Availability KSI service, combines other services to achieve redundancy
  */
 package com.guardtime.ksi.service.ha;

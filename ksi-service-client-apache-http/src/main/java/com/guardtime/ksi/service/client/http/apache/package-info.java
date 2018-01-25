@@ -18,6 +18,6 @@
  */
 
 /**
- * Apache HTTP client for KSI.
+ * Apache HTTP client for KSI
  */
 package com.guardtime.ksi.service.client.http.apache;

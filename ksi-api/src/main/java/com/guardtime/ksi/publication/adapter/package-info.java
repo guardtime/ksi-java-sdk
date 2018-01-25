@@ -18,6 +18,6 @@
  */
 
 /**
- * Adapters for publications file client.
+ * Adapters for publications file client
  */
 package com.guardtime.ksi.publication.adapter;

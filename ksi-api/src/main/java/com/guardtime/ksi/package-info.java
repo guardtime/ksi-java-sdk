@@ -18,6 +18,6 @@
  */
 
 /**
- * KSI API interface.
+ * KSI API interface
  */
 package com.guardtime.ksi;

@@ -39,7 +39,6 @@ class RightInMemoryCalendarHashChainLink extends InMemoryCalendarHashChainLink {
 
     @Override
     public final DataHash calculateChainStep(DataHash previous) throws InvalidCalendarHashChainException {
-        //TODO KSIJAVAAPI-201
         return calculateStep(dataHash.getImprint(), previous.getImprint(), previous.getAlgorithm());
     }
 

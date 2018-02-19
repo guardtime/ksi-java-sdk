@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.unisignature.verifier;
@@ -27,6 +28,7 @@ public enum VerificationErrorCode {
     GEN_01("GEN-01", "Wrong document"),
     GEN_02("GEN-02", "Verification inconclusive"),
     GEN_03("GEN-03", "Input hash level too large"),
+    GEN_04("GEN-04", "Wrong input hash algorithm"),
     INT_01("INT-01", "Inconsistent aggregation hash chains"),
     INT_02("INT-02", "Inconsistent aggregation hash chain aggregation times"),
     INT_03("INT-03", "Calendar hash chain input hash mismatch"),
@@ -39,6 +41,11 @@ public enum VerificationErrorCode {
     INT_10("INT-10", "Aggregation hash chain chain index mismatch"),
     INT_11("INT-11", "The metadata record in the aggregation hash chain may not be trusted"),
     INT_12("INT-12", "Inconsistent chain indexes"),
+    INT_13("INT-13", "Document hash algorithm deprecated at the time of signing"),
+    INT_14("INT-14", "RFC3161 compatibility record composed of hash algorithms that where deprecated at the time of signing"),
+    INT_15("INT-15", "Aggregation hash chain uses hash algorithm that was deprecated at the time of signing"),
+    INT_16("INT-16", "Calendar hash chain hash algorithm was obsolete at publication time"),
+    INT_17("INT-17", "The RFC3161 compatibility record output hash algorithm was deprecated at the time of signing"),
     PUB_01("PUB-01", "Extender response calendar root hash mismatch"),
     PUB_02("PUB-02", "Extender response inconsistent"),
     PUB_03("PUB-03", "Extender response input hash mismatch"),
@@ -46,6 +53,7 @@ public enum VerificationErrorCode {
     PUB_05("PUB-05", "Publication record hash and publications file publication hash mismatch"),
     KEY_01("KEY-01", "Certificate not found"),
     KEY_02("KEY-02", "PKI signature not verified with certificate"),
+    KEY_03("KEY-03", "Signing certificate not valid at aggregation time"),
     CAL_01("CAL-01", "Calendar root hash mismatch between signature and calendar database chain"),
     CAL_02("CAL-02", "Aggregation hash chain root hash and calendar database hash chain input hash mismatch"),
     CAL_03("CAL-03", "Aggregation time mismatch"),

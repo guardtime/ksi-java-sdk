@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.pdu;
 
@@ -26,9 +27,11 @@ import com.guardtime.ksi.tlv.TLVStructure;
 import java.util.List;
 
 /**
- * <p> Message header TLV object. The message header consist of the following fields: </p> <ul> <li>login identifier -
- * identifier of the client host for MAC key lookup by server <p/> <li>instance identifier - a number identifying
- * invocation of the sender <p/> <li>message identifier - message number for duplicate filtering </ul> <p/> <p/>
+ * Message header TLV object. The message header consist of the following fields:
+ * <ul> <li>login identifier - identifier of the client host for MAC key lookup by server
+ * <li>instance identifier - a number identifying invocation of the sender
+ * <li>message identifier - message number for duplicate filtering </ul>
+ * <br><br>
  * <pre>
  * TLV [01] header {
  *   TLV [01] login_id { utf8 string }
@@ -36,16 +39,17 @@ import java.util.List;
  *   TLV [03] msg_id { integer } // optional
  * }
  * </pre>
- * <p/> <p> The instance and message identifier fields, when present, are used for filtering duplicate messages. The
+ * The instance and message identifier fields, when present, are used for filtering duplicate messages. The
  * value of the `instance identifier' field should increase every time the sending process is restarted. The `message
  * identifier' should sequentially number the messages within a process invocation. Having seen messages with a higher
  * `instance identifier' value from a client, a server <b>may drop</b> future messages with lower `instance identifier'
  * values assuming these are delayed messages from a previous invocation and thus no longer relevant. Similarly, a
  * server may prioritize messages from a given client invocation by `message identifier' values under the assumption
- * that messages with lower values are more likely to be stale </p> <p/> <p> Messages where the `instance identifier'
- * and `message identifier' fields are absent should be considered unique. This is to accommodate short-lived client
- * applications that typically send only a single request; for long-lived processes the `instance identifier' and
- * `message identifier' fields should be considered mandatory. </p>
+ * that messages with lower values are more likely to be stale.
+ * <br><br>
+ * Messages where the `instance identifier' and `message identifier' fields are absent should be considered unique.
+ * This is to accommodate short-lived client applications that typically send only a single request; for long-lived
+ * processes the `instance identifier' and `message identifier' fields should be considered mandatory.
  */
 public class PduMessageHeader extends TLVStructure {
 
@@ -60,12 +64,12 @@ public class PduMessageHeader extends TLVStructure {
     private Long messageId;
 
     /**
-     * Constructor for creating a new message header object with client identifier. This constructor should be used by
-     * short-lived client applications that typically send only a single request; for long-lived processes the `instance
-     * identifier' and `message identifier' fields should be considered mandatory.
+     * Constructor for creating a new message header object with client identifier. Should be used by
+     * short-lived client applications that typically send only a single request; for long-lived processes
+     * the `instance identifier' and `message identifier' fields should be considered mandatory.
      *
      * @param loginId
-     *         - identifier of the client host for MAC key lookup
+     *         identifier of the client host for MAC key lookup.
      */
     public PduMessageHeader(String loginId) throws KSIException {
         if (loginId == null) {
@@ -82,11 +86,11 @@ public class PduMessageHeader extends TLVStructure {
      * Constructor for creating a new message header object with client, instance and message identifier.
      *
      * @param loginId
-     *         - identifier of the client host for MAC key lookup.
+     *         identifier of the client host for MAC key lookup.
      * @param instanceId
-     *         - a number identifying invocation of the sender. Must be not null when message identifier is present.
+     *         a number identifying invocation of the sender; can not be null when message identifier is present.
      * @param messageId
-     *         - message number for duplicate filtering. Must be not null when instance identifier is present.
+     *         message number for duplicate filtering; can not be null when instance identifier is present.
      */
     public PduMessageHeader(String loginId, Long instanceId, Long messageId) throws KSIException {
         this(loginId);
@@ -109,17 +113,17 @@ public class PduMessageHeader extends TLVStructure {
     }
 
     /**
-     * Constructor for creating a new message header object with given {@link KSIRequestContext}
+     * Constructor for creating a new message header object with given {@link KSIRequestContext}.
      */
     public PduMessageHeader(String loginId, KSIRequestContext context) throws KSIException {
         this(loginId, context.getInstanceId(), context.getMessageId());
     }
 
     /**
-     * Create new message header object from base TLV element.
+     * Creates new message header object from base TLV element.
      *
      * @param rootElement
-     *         instance of{@link TLVElement}
+     *         instance of{@link TLVElement}.
      */
     public PduMessageHeader(TLVElement rootElement) throws KSIException {
         super(rootElement);
@@ -145,7 +149,7 @@ public class PduMessageHeader extends TLVStructure {
     }
 
     /**
-     * @return returns a number identifying invocation of the sender. Must be not null when message identifier is
+     * @return The number identifying invocation of the sender; can not be null when message identifier is
      * present.
      */
     public Long getInstanceId() {
@@ -153,14 +157,14 @@ public class PduMessageHeader extends TLVStructure {
     }
 
     /**
-     * @return returns the message number for duplicate filtering. Must be not null when instance identifier is present.
+     * @return The message number for duplicate filtering; can not be null when instance identifier is present.
      */
     public Long getMessageId() {
         return messageId;
     }
 
     /**
-     * @return returns the identifier of the client host for MAC key lookup.
+     * @return The identifier of the client host for MAC key lookup.
      */
     public String getLoginId() {
         return loginId;

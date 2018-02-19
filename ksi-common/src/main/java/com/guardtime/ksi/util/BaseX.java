@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.util;
 
@@ -33,7 +34,7 @@ public class BaseX {
     private char[] chars;
 
     /**
-     * A lookup table from character code points to values. A value of -1 in the
+     * A lookup table from character code points to values. A value of {@code -1} in the
      * table indicates the corresponding character is not used in the encoded
      * form. The indices {@code 0..values.length-1} correspond to code points
      * {@code min..max}.
@@ -173,7 +174,8 @@ public class BaseX {
      *            if {@code sep} is not {@code null} and {@code freq} is
      *            positive, the {@code sep} is inserted into the result between
      *            blocks of {@code freq} normal characters.
-     * @return a newly allocated buffer containing the encoded data.
+     *
+     * @return A newly allocated buffer containing the encoded data.
      */
     public final StringBuffer encode(byte[] in, int off, int len, String sep, int freq) {
 
@@ -244,7 +246,8 @@ public class BaseX {
      *
      * @param in
      *            the string to decode.
-     * @return the decoded bytes.
+     *
+     * @return The decoded bytes.
      */
     public final byte[] decode(String in) {
 

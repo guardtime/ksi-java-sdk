@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.util;
 
@@ -26,6 +27,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -167,7 +170,7 @@ public class UtilTest {
 
     @Test
     public void testEqualsIgnoreOrderSameContentsDifferentOrder() {
-        Assert.assertTrue(Util.equalsIgnoreOrder(new ArrayList<String>(Arrays.asList("1", "2", "3")), new LinkedList<String>(Arrays.asList("2", "1", "3"))));
+        Assert.assertTrue(Util.equalsIgnoreOrder(new ArrayList<>(Arrays.asList("1", "2", "3")), new LinkedList<>(Arrays.asList("2", "1", "3"))));
     }
 
     @Test
@@ -178,6 +181,16 @@ public class UtilTest {
     @Test
     public void testIntArrayDoesNotContainsGivenKey() {
         Assert.assertFalse(Util.containsInt(new int[] {1, 2, 3, 4, 5}, 8));
+    }
+
+    @Test
+    public void testToUrlOk() throws MalformedURLException {
+        Assert.assertEquals(Util.toUrl("http://verify.guardtime.com"), new URL("http://verify.guardtime.com"));
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Malformed URL 'wrongURL'")
+    public void testToUrlMalformedUrl() throws MalformedURLException {
+        Util.toUrl("wrongURL");
     }
 
 }

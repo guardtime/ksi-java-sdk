@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.pdu.v2;
 
@@ -38,9 +39,13 @@ import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+/**
+ * Implementation of the {@link PduFactory}.
+ */
 
 public class PduV2Factory implements PduFactory {
 
@@ -53,14 +58,14 @@ public class PduV2Factory implements PduFactory {
         Util.notNull(imprint, "DataHash");
         Util.notNull(credentials,"ServiceCredentials");
         AggregationRequestPayloadV2 payload = new AggregationRequestPayloadV2(imprint, context.getRequestId(), level);
-        return new AggregationRequestPduV2(Arrays.asList(payload.getRootElement()), HashAlgorithm.SHA2_256, context, credentials);
+        return new AggregationRequestPduV2(Collections.singletonList(payload.getRootElement()), HashAlgorithm.SHA2_256, context, credentials);
     }
 
     public AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(credentials,"ServiceCredentials");
         TLVElement payload = new TLVElement(false, false, false, ELEMENT_TYPE_CONFIGURATION);
-        return new AggregationRequestPduV2(Arrays.asList(payload), HashAlgorithm.SHA2_256, context, credentials);
+        return new AggregationRequestPduV2(Collections.singletonList(payload), HashAlgorithm.SHA2_256, context, credentials);
     }
 
     public AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException {
@@ -86,14 +91,14 @@ public class PduV2Factory implements PduFactory {
             throw new KSIProtocolException("There is no suitable publication yet");
         }
         ExtensionRequestPayloadV2 payload = new ExtensionRequestPayloadV2(aggregationTime, publicationTime, context.getRequestId());
-        return new ExtensionRequestPduV2(Arrays.asList(payload.getRootElement()), HashAlgorithm.SHA2_256, context, credentials);
+        return new ExtensionRequestPduV2(Collections.singletonList(payload.getRootElement()), HashAlgorithm.SHA2_256, context, credentials);
     }
 
     public ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(credentials,"ServiceCredentials");
         TLVElement payload = new TLVElement(false, false, false, ELEMENT_TYPE_CONFIGURATION);
-        return new ExtensionRequestPduV2(Arrays.asList(payload), HashAlgorithm.SHA2_256, context, credentials);
+        return new ExtensionRequestPduV2(Collections.singletonList(payload), HashAlgorithm.SHA2_256, context, credentials);
     }
 
     public ExtensionResponse readExtensionResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException {

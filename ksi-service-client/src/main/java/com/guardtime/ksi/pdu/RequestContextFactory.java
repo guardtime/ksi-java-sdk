@@ -1,3 +1,23 @@
+/*
+ * Copyright 2013-2018 Guardtime, Inc.
+ *
+ *  This file is part of the Guardtime client SDK.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
+ */
+
 package com.guardtime.ksi.pdu;
 
 /**
@@ -6,21 +26,21 @@ package com.guardtime.ksi.pdu;
 public class RequestContextFactory {
 
     /**
-     * Instance of RequestContextFactory which uses {@link DefaultPduIdentifierProvider}
+     * Instance of RequestContextFactory which uses {@link DefaultPduIdentifierProvider}.
      */
     public static final RequestContextFactory DEFAULT_FACTORY = new RequestContextFactory(new DefaultPduIdentifierProvider());
 
     private final PduIdentifierProvider pduIdentifierProvider;
 
     /**
-     * @param pduIdentifierProvider to use for making the {@link KSIRequestContext}s
+     * @param pduIdentifierProvider to use for making the {@link KSIRequestContext}s.
      */
     public RequestContextFactory(PduIdentifierProvider pduIdentifierProvider) {
         this.pduIdentifierProvider = pduIdentifierProvider;
     }
 
     /**
-     * Creates a new {@link KSIRequestContext}
+     * Creates a new {@link KSIRequestContext}.
      */
     public KSIRequestContext createContext() {
         return new KSIRequestContext(pduIdentifierProvider.nextRequestId(), pduIdentifierProvider.getInstanceId(), pduIdentifierProvider.nextMessageId());

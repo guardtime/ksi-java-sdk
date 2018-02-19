@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.service.tcp;
 
@@ -43,8 +44,8 @@ class TransactionDecoder extends CumulativeProtocolDecoder {
         while (remaining >= tlvLength) {
             int limit = responseBuffer.position() + tlvLength;
             responseBuffer.limit(limit);
-            KSITCPSigningTransaction ksitcpSigningTransaction = KSITCPSigningTransaction.fromResponse(responseBuffer.slice());
-            decoder.write(ksitcpSigningTransaction);
+            KSITCPTransaction transaction = KSITCPTransaction.fromResponse(responseBuffer.slice());
+            decoder.write(transaction);
             responseBuffer.limit(initialLimit);
             responseBuffer.position(limit);
             if (remaining == tlvLength) {
@@ -62,6 +63,8 @@ class TransactionDecoder extends CumulativeProtocolDecoder {
     /**
      * Returns the length of the next TLV element. Returns -1 when buffer doesn't contain enough data for next TLV
      * element.
+     *
+     * @return The length of the TLV element.
      */
     private int extractNextTlvElementLength(IoBuffer in) {
         if (!hasRemainingData(in, 2)) {

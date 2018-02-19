@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.unisignature.inmemory;
@@ -63,12 +64,17 @@ public class InMemoryKsiSignatureFactoryTest {
         Assert.assertNotNull(signature);
     }
 
-    @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: GEN_01.*Wrong document.*")
-    public void testCreateSignatureWithInvalidInputHash_ThrowsInvalidSignatureContentException() throws Exception {
+    @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: GEN_04.*Wrong input hash algorithm.*")
+    public void testCreateSignatureWithInvalidInputHashAlgorithm_ThrowsInvalidSignatureContentException() throws Exception {
         signatureFactory.createSignature(TestUtil.loadTlv(SIGNATURE_2017_03_14), new DataHash(HashAlgorithm.SHA1, new byte[20]));
     }
 
-    @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: INT_09.*")
+    @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: GEN_01.*Wrong document.*")
+    public void testCreateSignatureWithInvalidInputHash_ThrowsInvalidSignatureContentException() throws Exception {
+        signatureFactory.createSignature(TestUtil.loadTlv(SIGNATURE_2017_03_14), new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
+    }
+
+    @Test(expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = "Signature .* is invalid: INT_07.*")
     public void testCreateSignatureFromInvalidComponents_ThrowsInvalidSignatureContentException() throws Exception {
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
         SignaturePublicationRecord publicationRecord = signatureComponentFactory.createPublicationRecord(new PublicationData(PUBLICATION_STRING), null, null);

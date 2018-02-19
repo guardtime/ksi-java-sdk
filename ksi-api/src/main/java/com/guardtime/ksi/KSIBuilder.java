@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi;
@@ -66,8 +67,8 @@ import static com.guardtime.ksi.util.Util.getDefaultTrustStore;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * <p>This class provides functionality to obtain {@link KSI} object(s). This cass offers multiple methods to configure
- * {@link KSI} object.</p> <p>It is mandatory to set signing, extender and publications file client.</p>
+ * <p>Obtaining and configuring the {@link KSI} object(s).</p>
+ * <p>It is mandatory to set signing, extender, publications file client and publications file trusted certificate selector.</p>
  */
 public final class KSIBuilder {
 
@@ -88,11 +89,11 @@ public final class KSIBuilder {
 
     /**
      * Sets the default signing algorithm to be used to create new KSI signatures. When using {@link KSI#sign(DataHash)}
-     * method then this algorithm is ignored. Default value is {@link HashAlgorithm#SHA2_256}
+     * method, this algorithm is ignored. Default value is {@link HashAlgorithm#SHA2_256}
      *
      * @param defaultHashAlgorithm
      *         the hash algorithm to be used to create new KSI signatures.
-     * @return the instance of the builder class
+     * @return Instance of {@link KSIBuilder}.
      */
     public KSIBuilder setDefaultSigningHashAlgorithm(HashAlgorithm defaultHashAlgorithm) {
         this.defaultHashAlgorithm = defaultHashAlgorithm;
@@ -104,8 +105,8 @@ public final class KSIBuilder {
      * Sets the signing service to be used in signing process.
      *
      * @param signingService
-     *         instance of signing service.
-     * @return the instance of the builder class
+     *         instance of {@link KSISigningService}.
+     * @return Instance of {@link KSIBuilder}.
      */
     public KSIBuilder setKsiProtocolSigningService(KSISigningService signingService) {
         this.signingService = signingService;
@@ -116,8 +117,8 @@ public final class KSIBuilder {
      * Sets the extending service to be used in extending process.
      *
      * @param extendingService
-     *         instance of extending service.
-     * @return the instance of the builder class
+     *         instance of {@link KSIExtendingService}.
+     * @return Instance of {@link KSIBuilder}.
      */
     public KSIBuilder setKsiProtocolExtendingService(KSIExtendingService extendingService) {
         this.extendingService = extendingService;
@@ -128,8 +129,8 @@ public final class KSIBuilder {
      * Sets the signer client to be used in signing process.
      *
      * @param signingClient
-     *         instance of signing client.
-     * @return the instance of the builder class
+     *         instance of {@link KSISigningClient}.
+     * @return Instance of {@link KSIBuilder}.
      */
     public KSIBuilder setKsiProtocolSignerClient(KSISigningClient signingClient) {
         Util.notNull(signingClient, "KSI Signing Client");
@@ -140,8 +141,8 @@ public final class KSIBuilder {
      * Sets the extender client to be used in verification and extending process.
      *
      * @param extenderClient
-     *         instance of extender client
-     * @return the instance of the builder class
+     *         instance of {@link KSIExtenderClient}.
+     * @return Instance of {@link KSIBuilder}.
      */
     public KSIBuilder setKsiProtocolExtenderClient(KSIExtenderClient extenderClient) {
         Util.notNull(extenderClient, "KSI Extender Client");
@@ -152,8 +153,8 @@ public final class KSIBuilder {
      * Sets the publications file client to be used to download publications file.
      *
      * @param publicationsFileClient
-     *         instance of publication file client
-     * @return instance of the builder class
+     *         instance of {@link KSIPublicationsFileClient}.
+     * @return Instance of {@link KSIBuilder}.
      */
     public KSIBuilder setKsiProtocolPublicationsFileClient(KSIPublicationsFileClient publicationsFileClient) {
         this.publicationsFileClient = publicationsFileClient;
@@ -161,14 +162,14 @@ public final class KSIBuilder {
     }
 
     /**
-     * Sets the {@link KeyStore} to be used as trust store to verify the certificate that was used to sign the
-     * publications file. If not set then the default java key store is used.
+     * Sets the {@link KeyStore} to be used as truststore to verify the certificate that was used to sign the
+     * publications file. If not set, the default Java keystore is used.
      *
      * @param trustStore
-     *         trust store to be used to verify certificates.
-     * @return instance of builder class
+     *         truststore to be used to verify certificates.
+     * @return Instance of {@link KSIBuilder}.
      * @throws KSIException
-     *         when error occurs
+     *         when any error occurs.
      */
     public KSIBuilder setPublicationsFilePkiTrustStore(KeyStore trustStore) throws KSIException {
         this.trustStore = trustStore;
@@ -176,16 +177,16 @@ public final class KSIBuilder {
     }
 
     /**
-     * Loads the {@link KeyStore} from the file system and sets the {@link KeyStore} to be used as trust store to verify
+     * Loads the {@link KeyStore} from the file system and sets the {@link KeyStore} to be used as a truststore to verify
      * the certificate that was used to sign the publications file.
      *
      * @param file
-     *         key store file on disk. not null.
+     *         keystore file on disk, not null.
      * @param password
-     *         password of the key store. null if key store isn't protected by password.
-     * @return instance of builder
+     *         password of the keystore, null if keystore isn't protected by password.
+     * @return Instance of {@link KSIBuilder}.
      * @throws KSIException
-     *         when error occurs
+     *         when any error occurs.
      */
     public KSIBuilder setPublicationsFilePkiTrustStore(File file, String password) throws KSIException {
         if (file == null) {
@@ -197,9 +198,7 @@ public final class KSIBuilder {
             char[] passwordCharArray = password == null ? null : password.toCharArray();
             input = new FileInputStream(file);
             trustStore.load(input, passwordCharArray);
-        } catch (GeneralSecurityException e) {
-            throw new KSIException("Loading java key store with path " + file + " failed", e);
-        } catch (IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
             throw new KSIException("Loading java key store with path " + file + " failed", e);
         } finally {
             Util.closeQuietly(input);
@@ -208,13 +207,13 @@ public final class KSIBuilder {
     }
 
     /**
-     * This method is used to set the {@link CertSelector} to be used to verify the certificate that was used to sign
-     * the publications file. {@link java.security.cert.X509CertSelector} can be used to instead of {@link
+     * Sets the {@link CertSelector} to be used to verify the certificate that was used to sign
+     * the publications file. {@link java.security.cert.X509CertSelector} can be used instead of {@link
      * X509CertificateSubjectRdnSelector}
      *
      * @param certSelector
      *         instance of {@link CertSelector}.
-     * @return instance of builder
+     * @return Instance of {@link KSIBuilder}.
      * @see java.security.cert.X509CertSelector
      */
     public KSIBuilder setPublicationsFileTrustedCertSelector(CertSelector certSelector) {
@@ -223,7 +222,7 @@ public final class KSIBuilder {
     }
 
     /**
-     * This method can be used to set the publications file expiration time. Default value is 0.
+     * Sets the publications file expiration time. Default value is 0.
      */
     public KSIBuilder setPublicationsFileCacheExpirationTime(long expirationTime) {
         this.publicationsFileCacheExpirationTime = expirationTime;
@@ -236,7 +235,7 @@ public final class KSIBuilder {
     }
 
     /**
-     * This method can be used to set a default verification policy. Default verification policy is used to perform
+     * Sets a default verification policy. Default verification policy is used to perform
      * signature verification in the following cases:
      * <ul>
      * <li>new signature is created</li>
@@ -252,15 +251,14 @@ public final class KSIBuilder {
      * </p>
      * The following values are used to build a verification context that will be used by default verification policy:
      * <ul>
-     * <li>{@link VerificationContextBuilder#setExtendingAllowed(boolean)} is set to true</li>
-     * <li>{@link VerificationContextBuilder#setExtenderClient(KSIExtenderClient)} - an extender client configure by
-     * {@link KSIBuilder} class is used</li>
+     * <li>{@link VerificationContextBuilder#setExtendingAllowed(boolean)} is set to true.</li>
+     * <li>{@link VerificationContextBuilder#setExtenderClient(KSIExtenderClient)} - an extender client configured by
+     * {@link KSIBuilder} class is used.</li>
      * <li>{@link VerificationContextBuilder#setPublicationsFile(PublicationsFile)} - a publication file configured
-     * by {@link KSIBuilder} class is used</li>
-     * <li>{@link VerificationContextBuilder#setDocumentHash(DataHash)} - in case of signature creation input hash
-     * is used, otherwise null value is used.</li>
-     * <li>{@link VerificationContextBuilder#setUserPublication(PublicationData)} - null value is always used</li>
-     * <li>{@link VerificationContextBuilder#setSignature(KSISignature)} - the signature to be returned to the user</li>
+     * by {@link KSIBuilder} class is used.</li>
+     * <li>{@link VerificationContextBuilder#setDocumentHash(DataHash)} - input hash is used only in case of signature creation, otherwise null value is used.</li>
+     * <li>{@link VerificationContextBuilder#setUserPublication(PublicationData)} - null value is always used.</li>
+     * <li>{@link VerificationContextBuilder#setSignature(KSISignature)} - the signature to be returned to the user.</li>
      * </ul>
      * </p>
      * Policies that are using {@link com.guardtime.ksi.publication.PublicationData} can not
@@ -279,7 +277,7 @@ public final class KSIBuilder {
     /**
      * Builds the {@link KSI} instance. Checks that the signing, extender and publications file clients are set.
      *
-     * @return instance of {@link KSI} class
+     * @return Instance of {@link KSI} class.
      * @throws KSIException
      *         will be thrown when some client is null.
      */
@@ -316,10 +314,7 @@ public final class KSIBuilder {
                 .setSigningService(signingService).build();
         Extender extender = new ExtenderBuilder().setDefaultVerificationPolicy(contextAwarePolicy)
                 .setExtendingService(extendingService)
-                .setKsiProtocolPublicationsFileClient(publicationsFileClient)
-                .setPublicationsFileCacheExpirationTime(publicationsFileCacheExpirationTime)
-                .setPublicationsFilePkiTrustStore(trustStore)
-                .setPublicationsFileCertificateConstraints(certSelector).build();
+                .setPublicationsHandler(publicationsHandler).build();
         return new KSIImpl(reader, signer, extender, publicationsHandler);
     }
 
@@ -356,6 +351,10 @@ public final class KSIBuilder {
             return signer.sign(dataHash);
         }
 
+        public KSISignature sign(DataHash dataHash, long level) throws KSIException {
+            return signer.sign(dataHash, level);
+        }
+
         public KSISignature sign(File file) throws KSIException {
             return signer.sign(file);
         }
@@ -366,6 +365,10 @@ public final class KSIBuilder {
 
         public Future<KSISignature> asyncSign(DataHash dataHash) throws KSIException {
             return signer.asyncSign(dataHash);
+        }
+
+        public Future<KSISignature> asyncSign(DataHash dataHash, long level) throws KSIException {
+            return signer.asyncSign(dataHash, level);
         }
 
         public Future<KSISignature> asyncSign(File file) throws KSIException {
@@ -436,7 +439,7 @@ public final class KSIBuilder {
             VerificationContextBuilder builder = new VerificationContextBuilder();
             builder.setDocumentHash(documentHash).setSignature(signature);
             builder.setExtendingService(extendingService).setExtendingAllowed(true).setUserPublication(publicationData);
-            VerificationContext context = builder.setPublicationsFile(getPublicationsFile()).createVerificationContext();
+            VerificationContext context = builder.setPublicationsFile(getPublicationsFile()).build();
             return verify(context, policy);
         }
 

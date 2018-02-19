@@ -58,32 +58,20 @@ In order to get trial access to the KSI platform, go to [https://guardtime.com/b
 
 A simple example how to obtain a signature:
 ```java
-HttpClientSettings clientSettings = new HttpClientSettings(
-                "signing-service-url",
-                "extending-service-url",
-                "publications-file-url",
-                KSIServiceCredentials,
-                PduVersion);
+CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings("signing-service-url", KSIServiceCredentials);
+SimpleHttpSigningClient signingClient = new SimpleHttpSigningClient(settings);
 
-SimpleHttpClient simpleHttpClient = new SimpleHttpClient(clientSettings);
+Signer signer = new SignerBuilder().setSigningService(new KSISigningClientServiceAdapter(signingClient)).build();
 
-KSI ksi = new KSIBuilder()
-    .setKsiProtocolSignerClient(simpleHttpClient)
-    .setKsiProtocolExtenderClient(simpleHttpClient)
-    .setKsiProtocolPublicationsFileClient(simpleHttpClient)
-    .setPublicationsFileTrustedCertSelector(new X509CertificateSubjectRdnSelector("E=test@test.com"))
-    .build();
-
-// synchronous signing
-KSISignature sig1 = ksi.sign(new File("file.txt"));
-// asynchronous signing
-Future<KSISignature> future = ksi.asyncSign(new File("asyncFile.txt"));
-KSISignature sig2 = future.getResult();
+KSISignature signature = signer.sign(new File("file.txt"));
 ```
-The API full reference is available here [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
+The API full reference is available at [http://guardtime.github.io/ksi-java-sdk/](http://guardtime.github.io/ksi-java-sdk/).
+Sample codes for signing, extending and verification are available at
+[https://github.com/guardtime/ksi-sdk-samples](https://github.com/guardtime/ksi-sdk-samples).
+
 
 ## Compiling the Code ##
-To compile the code you need JDK 1.5 (or later) and [Maven](https://maven.apache.org/).
+To compile the code you need JDK 1.7 (or later) and [Maven](https://maven.apache.org/).
 The project can be built via the command line by executing the following maven command:
 ```
 mvn clean install
@@ -113,7 +101,7 @@ mvn dependency:tree
 
 ## Compatibility ##
 
-Java 1.5 or newer.
+Java 1.7 or newer.
 
 ## Contributing ##
 

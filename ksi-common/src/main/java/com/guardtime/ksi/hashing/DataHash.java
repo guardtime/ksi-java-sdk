@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.hashing;
 
@@ -37,12 +38,13 @@ public class DataHash {
      * Constructor which initializes the DataHash.
      *
      * @param algorithm
-     *         HashAlgorithm used to compute this hash.
+     *         {@link HashAlgorithm} used to compute this hash.
      * @param value
      *         hash value computed for the input data.
-     * @throws NullPointerException when one of input parameters is null
+     *
+     * @throws NullPointerException when one of input parameters is null.
      * @throws IllegalArgumentException
-     *         when hash size does not match algorithm size,
+     *         when hash size does not match algorithm size.
      */
     public DataHash(HashAlgorithm algorithm, byte[] value) {
         Util.notNull(algorithm, "Hash algorithm");
@@ -62,10 +64,11 @@ public class DataHash {
      * Constructor which initializes the DataHash.
      *
      * @param hashImprint
-     *         Hash imprint
-     * @throws NullPointerException when input parameter is null
+     *         Hash imprint.
+     *
+     * @throws NullPointerException when input parameter is null.
      * @throws IllegalArgumentException
-     *         when hash imprint is not in correct format
+     *         when hash imprint is not in correct format.
      */
     public DataHash(byte[] hashImprint) {
         Util.notNull(hashImprint, "Hash imprint");
@@ -87,7 +90,12 @@ public class DataHash {
     }
 
     /**
-     * Returns true if the input byte array can be converted to the {@link DataHash} object
+     * Checks if the input byte array can be converted to the {@link DataHash} object.
+     *
+     * @param imprint byte array to be checked.
+     *
+     * @return True, if the input byte array can be converted to the {@link DataHash} object.
+     *
      * @throws NullPointerException when input is null
      */
     public static boolean isDataHash(byte[] imprint) {
@@ -103,9 +111,9 @@ public class DataHash {
     }
 
     /**
-     * Get the HashAlgorithm used to compute this DataHash.
+     * Gets the HashAlgorithm used to compute this DataHash.
      *
-     * @return HashAlgorithm used
+     * @return HashAlgorithm used.
      */
 
     public final HashAlgorithm getAlgorithm() {
@@ -114,11 +122,11 @@ public class DataHash {
 
 
     /**
-     * Get data imprint.
-     * <p/>
-     * Imprint is created by concatenating hash algorithm id with hash value.
+     * Gets data imprint.
+     * <p>
+     * Imprint is created by concatenating hash algorithm ID with hash value.</p>
      *
-     * @return imprint bytes
+     * @return Imprint bytes.
      */
     public final byte[] getImprint() {
         return imprint;
@@ -126,9 +134,9 @@ public class DataHash {
 
 
     /**
-     * Get the computed hash value for DataHash.
+     * Gets the computed hash value for DataHash.
      *
-     * @return computed hash value
+     * @return Computed hash value.
      */
     public final byte[] getValue() {
         return value;
@@ -136,9 +144,9 @@ public class DataHash {
 
 
     /**
-     * Get hash code of current object.
+     * Gets the hash code of current object.
      *
-     * @return hash code of current object
+     * @return Hash code of current object.
      */
     @Override
     public final int hashCode() {
@@ -147,11 +155,11 @@ public class DataHash {
 
 
     /**
-     * Check if object is equal to current DataHash.
+     * Checks if object is equal to current DataHash.
      *
-     * @param object
-     *         Object
-     * @return boolean where true means that objects are equal
+     * @param object object to be checked.
+     *
+     * @return True, if the object and the DataHash are equal.
      */
     @Override
     public final boolean equals(Object object) {
@@ -173,7 +181,7 @@ public class DataHash {
     /**
      * Get DataHash as a string including the algorithm name and computed hash value.
      *
-     * @return String representing algorithm name and value
+     * @return String representing algorithm name and value.
      */
     @Override
     public final String toString() {

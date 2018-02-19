@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.integration;
 
@@ -22,17 +23,16 @@ import com.guardtime.ksi.AsyncContext;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtenderConfiguration;
-
 import com.guardtime.ksi.pdu.PduVersion;
-import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.ConfigurationListener;
-import com.guardtime.ksi.service.client.KSIExtenderClient;
+import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
+import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.HAService;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
@@ -44,16 +44,20 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
     private HAService haServiceV2;
     private HAService haServiceV1;
     private KSI ksiV2;
+    private KSI ksiV1;
+    private SimpleHttpClient simpleHttpClientV1;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
         super.setUp();
         SimpleHttpClient simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
+        this.simpleHttpClientV1 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V1));
         haServiceV2 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClientV2))
-                .setExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV2)).build();
-        haServiceV1 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClient))
-                .setExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClient)).build();
+                .addExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV2)).build();
+        haServiceV1 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClientV1))
+                .addExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV1)).build();
         this.ksiV2 = createKsi(simpleHttpClientV2, simpleHttpClientV2, simpleHttpClientV2);
+        this.ksiV1 = createKsi(simpleHttpClientV1, simpleHttpClientV1, simpleHttpClientV1);
     }
 
     @Test
@@ -113,7 +117,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
     @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
     public void testExtenderConfigurationRequestWithSimpleHttpClientV1() throws Throwable {
         final AsyncContext ac = new AsyncContext();
-        KSIExtendingClientServiceAdapter simpleHttpService = new KSIExtendingClientServiceAdapter(simpleHttpClient);
+        KSIExtendingClientServiceAdapter simpleHttpService = new KSIExtendingClientServiceAdapter(simpleHttpClientV1);
         simpleHttpService.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
             public void updated(ExtenderConfiguration extenderConfiguration) {
                 try {
@@ -147,14 +151,14 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
 
     @Test
     public void testSynchronousExtenderConfigurationRequestV2() throws Exception {
-        ExtenderConfiguration response = ksiV2.getExtenderConfiguration();
+        ExtenderConfiguration response = ksiV2.getExtendingService().getExtendingConfiguration().getResult();
         Assert.assertNotNull(response);
     }
 
     @Test
     public void testSynchronousExtenderConfigurationRequestV1() throws Throwable {
         try {
-            ksi.getExtenderConfiguration();
+            ksiV1.getExtendingService().getExtendingConfiguration().getResult();
             Assert.fail("Configuration update was not supposed to succeed with PDU V1");
         } catch (Exception e) {
             assertCause(KSIException.class, "Not supported. Configure the SDK to use PDU v2 format.", e);

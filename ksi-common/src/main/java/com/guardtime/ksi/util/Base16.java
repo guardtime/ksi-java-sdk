@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.util;
 
@@ -36,7 +37,8 @@ public final class Base16 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the base-16 string, or {@code null} if {@code in} is {@code null}.
+     *
+     * @return The base-16 string, or null if {@code in} is null.
      */
     public static String encode(byte[] in) {
         if (in == null) {
@@ -54,7 +56,8 @@ public final class Base16 {
      *            the start offset of the data within {@code in}.
      * @param len
      *            the number of bytes to encode.
-     * @return the base-16 string.
+     *
+     * @return The base-16 string.
      */
     public static String encode(byte[] in, int off, int len) {
         return inst.encode(in, off, len, null, 0).toString();
@@ -66,7 +69,8 @@ public final class Base16 {
      *
      * @param in
      *            the bytes to encode.
-     * @return the formatted base-16 string, or {@code null} if {@code in} is {@code null}.
+     *
+     * @return The formatted base-16 string, or null if {@code in} is null.
      */
     public static String encodeWithColons(byte[] in) {
         if (in == null) {
@@ -85,7 +89,8 @@ public final class Base16 {
      *            the start offset of the data within {@code in}.
      * @param len
      *            the number of bytes to encode.
-     * @return the formatted base-16 string.
+     *
+     * @return The formatted base-16 string.
      */
     public static String encodeWithColons(byte[] in, int off, int len) {
         return inst.encode(in, off, len, ":", 2).toString();
@@ -97,7 +102,8 @@ public final class Base16 {
      *
      * @param in
      *            the base-16 string to decode.
-     * @return the decoded bytes, or {@code null} if {@code in} is {@code null}.
+     *
+     * @return The decoded bytes, or null if {@code in} is null.
      */
     public static byte[] decode(String in) {
         if (in == null) {
@@ -107,7 +113,7 @@ public final class Base16 {
     }
 
     /**
-     * This class should not be instantiated.
+     * Should not be instantiated.
      */
     private Base16() {
     }

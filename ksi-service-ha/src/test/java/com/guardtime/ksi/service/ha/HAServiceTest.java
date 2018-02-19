@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2017 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.service.ha;
 
@@ -140,17 +141,17 @@ public class HAServiceTest {
 
     @Test
     public void testGetSubclients() throws Exception {
-        List<KSISigningService> signingServices = new ArrayList<KSISigningService>();
+        List<KSISigningService> signingServices = new ArrayList<>();
         signingServices.add(initSlowSigningClient());
         signingServices.add(initFailingSigningClient("Failure!"));
         signingServices.add(initSucceedingSigningClient(mock(AggregationResponse.class)));
 
-        List<KSIExtendingService> extendingServices = new ArrayList<KSIExtendingService>();
+        List<KSIExtendingService> extendingServices = new ArrayList<>();
         extendingServices.add(initSlowExtenderClient());
         extendingServices.add(initFailingExtenderClient("Failure!"));
         extendingServices.add(initSucceedingExtenderClient(mock(ExtensionResponse.class)));
 
-        HAService haService = new HAService.Builder().addSigningServices(signingServices).setExtendingServices(extendingServices).build();
+        HAService haService = new HAService.Builder().addSigningServices(signingServices).addExtenderServices(extendingServices).build();
         List<KSIExtendingService> requestedExtenderClients = haService.getSubExtendingServices();
         List<KSISigningService> requestedSigningClients = haService.getSubSigningServices();
 
@@ -183,7 +184,7 @@ public class HAServiceTest {
     @Test
     public void testSigningConfigurationListening() throws Exception {
         final AsyncContext context = new AsyncContext(3);
-        List<KSISigningService> signingServices = new ArrayList<KSISigningService>();
+        List<KSISigningService> signingServices = new ArrayList<>();
         signingServices.add(new DummyClient(300L));
         signingServices.add(new DummyClient(200L));
         signingServices.add(new DummyClient(100L));
@@ -210,7 +211,7 @@ public class HAServiceTest {
     @Test
     public void testExtenderConfigurationListening() throws Exception {
         final AsyncContext context = new AsyncContext(3);
-        List<KSIExtendingService> extendingServices = new ArrayList<KSIExtendingService>();
+        List<KSIExtendingService> extendingServices = new ArrayList<>();
         extendingServices.add(new DummyClient(300L));
         extendingServices.add(new DummyClient(200L));
         extendingServices.add(new DummyClient(100L));
@@ -306,8 +307,8 @@ public class HAServiceTest {
 
     private static class DummyClient implements KSISigningService, KSIExtendingService {
 
-        private final ConfigurationHandler<AggregatorConfiguration> aggrConfHandler = new ConfigurationHandler<AggregatorConfiguration>(DefaultExecutorServiceProvider.getExecutorService());
-        private final ConfigurationHandler<ExtenderConfiguration> extenderConfHandler = new ConfigurationHandler<ExtenderConfiguration>(DefaultExecutorServiceProvider.getExecutorService());
+        private final ConfigurationHandler<AggregatorConfiguration> aggrConfHandler = new ConfigurationHandler<>(DefaultExecutorServiceProvider.getExecutorService());
+        private final ConfigurationHandler<ExtenderConfiguration> extenderConfHandler = new ConfigurationHandler<>(DefaultExecutorServiceProvider.getExecutorService());
 
         private final Long maxRequests;
 
@@ -395,7 +396,7 @@ public class HAServiceTest {
     private static class AsyncContext {
 
         private CountDownLatch countDownLatch;
-        private AtomicReference<AssertionError> potentialFailure = new AtomicReference<AssertionError>();
+        private AtomicReference<AssertionError> potentialFailure = new AtomicReference<>();
 
         AsyncContext(int initialLockCount) {
             this.countDownLatch = new CountDownLatch(initialLockCount);

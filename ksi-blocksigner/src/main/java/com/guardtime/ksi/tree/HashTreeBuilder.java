@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.tree;
@@ -32,13 +33,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class is a hash tree (aka Merkle tree) builder implementation. Hash tree is a tree in which every non-leaf node
+ * Hash tree (aka Merkle tree) builder implementation.
+ * <p>Hash tree is a tree in which every non-leaf node
  * is labelled with the hash of the labels or values (in case of leaves) of its child nodes.
- * <p/>
- * Note that {@link HashTreeBuilder} works only with {@link ImprintNode} objects. Current implementation calculates the
- * parent hash by connecting the child node values and the parent node height before hashing.
- * <p/>
- * Note that this builder can not be used multiple times.
+ * </p>
+ * <p>
+ * Note that {@link HashTreeBuilder} works only with {@link ImprintNode} objects.
+ * Current implementation calculates the parent hash by connecting the child node
+ * values and the parent node height before hashing.
+ * </p>
+ * This builder can not be used multiple times.
  */
 public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
 
@@ -49,7 +53,7 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     /**
      * Queue for holding the head (root) nodes of hash subtrees.
      */
-    private final LinkedList<ImprintNode> heads = new LinkedList<ImprintNode>();
+    private final LinkedList<ImprintNode> heads = new LinkedList<>();
 
     /**
      * Hash algorithm used to calculate the tree hashes.
@@ -60,7 +64,7 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
      * Creates a new hash tree builder with given hash algorithm.
      *
      * @param algorithm
-     *         hash algorithm to be used to calculate tree node hashes
+     *         hash algorithm to be used to calculate tree node hashes.
      */
     public HashTreeBuilder(HashAlgorithm algorithm) {
         this.algorithm = algorithm;
@@ -74,14 +78,29 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     }
 
     /**
-     * Adds a new single child node to the hash tree
+     * Adds a new single child node to the hash tree.
+     *
+     * @param node child node to be added.
+     *
+     * @throws HashException
      */
     public void add(ImprintNode node) throws HashException {
         addToHeads(heads, node);
     }
 
+    /**
+     * Calculates the height of the hash tree in case a new node would be added.
+     *
+     * @param node
+     *         a leaf to be added to the tree, must not be null.
+     *
+     * @return Height of the hash tree.
+     *
+     * @throws HashException
+     */
+
     public long calculateHeight(ImprintNode node) throws HashException {
-        LinkedList<ImprintNode> tmpHeads = new LinkedList<ImprintNode>();
+        LinkedList<ImprintNode> tmpHeads = new LinkedList<>();
         for (ImprintNode in : heads) {
             tmpHeads.add(new ImprintNode(in));
         }
@@ -95,7 +114,11 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     }
 
     /**
-     * Adds a new array of child nodes to the hash tree
+     * Adds a new array of child nodes to the hash tree.
+     *
+     * @param nodes array of nodes to be added.
+     *
+     * @throws HashException
      */
     public void add(ImprintNode... nodes) throws HashException {
         notNull(nodes, "Nodes");
@@ -106,6 +129,10 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
 
     /**
      * Builds the hash tree and returns the root hash of the tree.
+     *
+     * @return Root hash of the finished tree.
+     *
+     * @throws HashException
      */
     public ImprintNode build() throws HashException {
         if (heads.isEmpty()) {

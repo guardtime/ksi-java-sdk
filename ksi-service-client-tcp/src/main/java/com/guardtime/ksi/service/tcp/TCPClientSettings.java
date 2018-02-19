@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.service.tcp;
 
@@ -25,7 +26,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 
 /**
- * Class that holds all the properties needed to configure the TCPClient.
+ * Holds all the properties needed to configure the TCPClient.
  *
  * <b>IMPORTANT!</b>
  * <p>When constructing the instance with a {@link InetSocketAddress} the IP of the endpoint is cached in this object. This can result to connection problems.</p>
@@ -35,19 +36,19 @@ public class TCPClientSettings {
 
     private URI uri;
     private InetSocketAddress endpoint;
-    private int tcpTransactionTimeoutSec;
-    private ServiceCredentials serviceCredentials;
-    private PduVersion pduVersion;
+    private final int tcpTransactionTimeoutSec;
+    private final ServiceCredentials serviceCredentials;
+    private final PduVersion pduVersion;
 
     /**
      * Settings for TCP client.
      *
-     * @param endpoint TCP signer endpoint address.
-     * @param serviceCredentials Credentials for authenticating the client to the TCP signer.
-     * @param tcpTransactionTimeoutSec Maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
+     * @param endpoint TCP gateway endpoint address.
+     * @param serviceCredentials credentials for authenticating the client to the TCP gateway.
+     * @param tcpTransactionTimeoutSec maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
      */
     public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials) {
-        this(endpoint, tcpTransactionTimeoutSec, serviceCredentials, PduVersion.V1);
+        this(endpoint, tcpTransactionTimeoutSec, serviceCredentials, PduVersion.V2);
     }
 
     public TCPClientSettings(InetSocketAddress endpoint, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials, PduVersion pduVersion) {
@@ -59,11 +60,11 @@ public class TCPClientSettings {
 
     /**
      * Settings for TCP client.
-     * The created TCPClientSettings instance constructs a new {@link InetSocketAddress} for every {@link #getEndpoint()} call.
+     * The created {@link TCPClientSettings} instance constructs a new {@link InetSocketAddress} for every {@link #getEndpoint()} call.
      *
-     * @param uri                             String containing the URI of endpoint. Must be in format: <protocol>://<host>:<port>
-     * @param tcpTransactionTimeoutSec        Maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
-     * @param serviceCredentials              Credentials for authenticating the client to the TCP signer.
+     * @param uri                             string containing the URI of endpoint. Must be in format: &lt;protocol&gt;://&lt;host&gt;:&lt;port&gt;
+     * @param tcpTransactionTimeoutSec        maximum time in seconds when a TCP transaction should time out from initiating the connection to receiving the whole response.
+     * @param serviceCredentials              credentials for authenticating the client to the TCP gateway.
      * @param pduVersion                      PDU version used for communication.
      */
     public TCPClientSettings(String uri, int tcpTransactionTimeoutSec, ServiceCredentials serviceCredentials, PduVersion pduVersion) throws IllegalArgumentException {
@@ -83,6 +84,8 @@ public class TCPClientSettings {
 
     /**
      * Returns either the {@link InetSocketAddress} provided to the constructor or a new instance for every invocation based on the {@link String} provided to the constructor.
+     *
+     * @return An instance of {@link InetSocketAddress}.
      */
     public InetSocketAddress getEndpoint() {
         return endpoint == null ? new InetSocketAddress(uri.getHost(), uri.getPort()) : endpoint;

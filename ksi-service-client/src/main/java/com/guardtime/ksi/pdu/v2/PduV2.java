@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.pdu.v2;
 
@@ -41,7 +42,7 @@ import java.util.List;
 import static com.guardtime.ksi.util.Util.containsInt;
 
 /**
- * Common PDU implementation for aggregation and extension request/response classes
+ * Common PDU implementation for aggregation and extension request/response classes.
  */
 abstract class PduV2 extends TLVStructure {
 
@@ -49,12 +50,12 @@ abstract class PduV2 extends TLVStructure {
 
     private static final int[] PUSHABLE_ELEMENT_TYPES = new int[] {0x04};
 
-    protected List<TLVElement> payloads = new LinkedList<TLVElement>();
+    protected List<TLVElement> payloads = new LinkedList<>();
     private PduMessageHeader header;
     private MessageMac mac;
 
     /**
-     * Constructor for creating a request PDU message
+     * Constructor for creating a request PDU message.
      */
     public PduV2(PduMessageHeader header, List<TLVElement> payloads, HashAlgorithm macAlgorithm, byte[] loginKey) throws KSIException {
         // root element
@@ -73,6 +74,7 @@ abstract class PduV2 extends TLVStructure {
         }
 
         // calculate mac
+        macAlgorithm.checkExpiration();
         this.mac = new MessageMac(macAlgorithm);
         rootElement.addChildElement(mac.getRootElement());
         mac.setMac(calculateMac(macAlgorithm, loginKey));
@@ -81,7 +83,7 @@ abstract class PduV2 extends TLVStructure {
     }
 
     /**
-     * Constructor for reading a response PDU message
+     * Constructor for reading a response PDU message.
      */
     public PduV2(TLVElement rootElement, ServiceCredentials credentials) throws KSIException {
         super(rootElement);
@@ -95,27 +97,28 @@ abstract class PduV2 extends TLVStructure {
     }
 
     /**
-     * Returns the header of the PDU
+     * @return The header of the PDU.
      */
     public PduMessageHeader getHeader() {
         return header;
     }
 
     /**
-     * Returns an array of supported PDU payload types
+     * @return An array of supported PDU payload types.
      */
     public abstract int[] getSupportedPayloadTypes();
 
     /**
-     * In some cases where server lacks the information needed to populate header, request identifier, etc components
-     * the special error payload is returned. This method returns the error payload type.
+     * In some cases where server lacks the information needed to populate header,
+     * request identifier, etc components the special error payload is returned.
+     * This method returns the error payload type.
      */
     public int getErrorPayloadType() {
         return 0x03;
     }
 
     public List<TLVElement> getPayloads(int tlvType) throws TLVParserException {
-        List<TLVElement> payloadElements = new ArrayList<TLVElement>();
+        List<TLVElement> payloadElements = new ArrayList<>();
         for (TLVElement payload : payloads) {
             if (payload.getType() == tlvType) {
                 payloadElements.add(payload);

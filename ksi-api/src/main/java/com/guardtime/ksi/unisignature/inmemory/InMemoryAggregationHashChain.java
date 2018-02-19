@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.unisignature.inmemory;
@@ -49,9 +50,9 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
     private static final int ELEMENT_TYPE_INPUT_HASH = 0x05;
     private static final int ELEMENT_TYPE_AGGREGATION_ALGORITHM = 0x06;
 
-    protected LinkedList<AggregationChainLink> chain = new LinkedList<AggregationChainLink>();
+    protected LinkedList<AggregationChainLink> chain = new LinkedList<>();
     private Date aggregationTime;
-    private List<Long> chainIndex = new LinkedList<Long>();
+    private List<Long> chainIndex = new LinkedList<>();
     @SuppressWarnings("unused")
     private byte[] inputData;
     private DataHash inputHash;
@@ -185,7 +186,8 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
 
         for (int i = chain.size()-1; i >=0 ; i--) {
             AggregationChainLink aggregationChainLink = chain.get(i);
-            String id = aggregationChainLink.getIdentity();
+            Identity linkIdentity = aggregationChainLink.getLinkIdentity();
+            String id = linkIdentity == null ? "" : linkIdentity.getDecodedClientId();
             if (identity.length() > 0 && id.length() > 0) {
                 identity.append(separator);
             }
@@ -195,7 +197,7 @@ class InMemoryAggregationHashChain extends TLVStructure implements AggregationHa
     }
 
     public Identity[] getIdentity() {
-        List<Identity> identities = new LinkedList<Identity>();
+        List<Identity> identities = new LinkedList<>();
         for (int i = chain.size()-1; i >=0 ; i--) {
             AggregationChainLink aggregationChainLink = chain.get(i);
             Identity linkIdentity = aggregationChainLink.getLinkIdentity();

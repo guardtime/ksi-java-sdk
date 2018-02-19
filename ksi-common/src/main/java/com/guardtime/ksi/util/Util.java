@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.util;
 
@@ -26,6 +27,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -62,12 +65,15 @@ public final class Util {
 
     /**
      * Computes the CRC32 checksum for the given data.
-     * <p/>
+     * <p>
      * The checksum is appended to the original data and the result returned in a newly allocated array.
+     * </p>
      *
      * @param b
      *         the data to compute the checksum for.
+     *
      * @return an array containing the original data with the CRC appended to it.
+     *
      * @throws NullPointerException
      *         if {@code b} is {@code null}.
      * @throws ArrayIndexOutOfBoundsException
@@ -79,16 +85,19 @@ public final class Util {
 
     /**
      * Computes the CRC32 checksum for {@code len} bytes of the given data, starting from {@code off}.
-     * <p/>
+     * <p>
      * The checksum is appended to the original data and the result returned in a newly allocated array.
+     * </p>
      *
      * @param b
-     *         the buffer containing the data to compute the checksum for.
+     *         the data to compute the checksum for.
      * @param off
      *         the buffer containing the data to compute the checksum for.
      * @param len
      *         number of bytes to include in the checksum.
-     * @return an array containing specified data bytes with CRC appended to it.
+     *
+     * @return An array containing specified data bytes with CRC appended to it.
+     *
      * @throws NullPointerException
      *         if {@code b} is {@code null}.
      * @throws ArrayIndexOutOfBoundsException
@@ -106,12 +115,13 @@ public final class Util {
      * Computes the CRC32 checksum for {@code length} bytes of the given data, starting from {@code off}.
      *
      * @param b
-     *         the buffer containing the data to compute the checksum for.
+     *         the the data to compute the checksum for.
      * @param off
      *         the buffer containing the data to compute the checksum for.
      * @param length
      *         number of bytes to include in the checksum.
-     * @return an array containing calculated CRC32 value.
+     *
+     * @return An array containing calculated CRC32 value.
      */
     public static byte[] calculateCrc32(byte[] b, int off, int length) {
         CRC32 crc32 = new CRC32();
@@ -128,7 +138,8 @@ public final class Util {
      *         offset of the UTF-8 data in the buffer.
      * @param len
      *         length of the UTF-8 data to decode.
-     * @return the decoded string.
+     *
+     * @return The decoded string.
      * @throws CharacterCodingException
      *         when the specified data is not in valid UTF-8 format.
      */
@@ -147,7 +158,8 @@ public final class Util {
      *
      * @param value
      *         the string to encode.
-     * @return a newly allocated array containing the encoding result.
+     *
+     * @return A newly allocated array containing the encoding result.
      */
     public static byte[] toByteArray(String value) {
         if (value == null) {
@@ -172,7 +184,9 @@ public final class Util {
      *
      * @param in
      *         input stream to copy data from.
-     * @return array of bytes read from input stream
+     *
+     * @return An array of bytes read from input stream.
+     *
      * @throws IOException
      */
     public static byte[] toByteArray(InputStream in) throws IOException {
@@ -187,8 +201,10 @@ public final class Util {
      * @param in
      *         input stream to copy data from.
      * @param bufferSize
-     *         buffer size to use
-     * @return array of bytes read from input stream
+     *         buffer size to use.
+     *
+     * @return An array of bytes read from input stream.
+     *
      * @throws IOException
      */
     public static byte[] toByteArray(InputStream in, int bufferSize) throws IOException {
@@ -202,7 +218,8 @@ public final class Util {
      *
      * @param b
      *         the array to copy.
-     * @return copy of {@code b}, or {@code null} if {@code b} is {@code null}.
+     *
+     * @return The copy of {@code b}, or null if {@code b} is null.
      */
     public static byte[] copyOf(byte[] b) {
         if (b == null) {
@@ -220,9 +237,11 @@ public final class Util {
      *         the start offset of the data within {@code b}.
      * @param len
      *         the number of bytes to copy.
-     * @return copy of the requested section of {@code b}.
+     *
+     * @return The copy of the requested section of {@code b}.
+     *
      * @throws NullPointerException
-     *         if {@code b} is {@code null}.
+     *         if {@code b} is null.
      * @throws ArrayIndexOutOfBoundsException
      *         if the half-range {@code [off..off+len)} is not in {@code [0..b.length)}.
      */
@@ -240,13 +259,14 @@ public final class Util {
     }
 
     /**
-     * Joins two byte arrays to one
+     * Joins two byte arrays into one.
      *
      * @param a
-     *         first byte array to join. not null
+     *         first byte array to join, not null.
      * @param b
-     *         second byte array to join. not null.
-     * @return joined byte array.
+     *         second byte array to join, not null.
+     *
+     * @return Joined byte array.
      */
     public static byte[] join(byte[] a, byte[] b) {
         byte[] result = new byte[a.length + b.length];
@@ -257,15 +277,18 @@ public final class Util {
 
     /**
      * Computes the least common multiple (LCM) of two integers.
-     * <p/>
+     * <p>
      * Least common multiple is the smallest positive integer that can be divided by both numbers without a remainder.
+     * </p>
      *
      * @param a
      *         the first integer.
      * @param b
      *         the second integer.
-     * @return the least common multiple of {@code a} and {@code b}, or {@code 0}, if either {@code a} or {@code b} is
-     * {@code 0}.
+     *
+     * @return The least common multiple of {@code a} and {@code b}, or null,
+     * if either {@code a} or {@code b} is null.
+     *
      * @throws ArithmeticException
      *         when the result is too big to fit into an {@code int}.
      */
@@ -283,15 +306,17 @@ public final class Util {
 
     /**
      * Computes the greatest common divisor (GCD) of two integers.
-     * <p/>
+     * <p>
      * Greatest common divisor is the largest integer that divides both numbers without remainder.
+     * </p>
      *
      * @param a
      *         the first integer.
      * @param b
      *         the second integer.
-     * @return the greatest common divisor of {@code a} and {@code b}, or {@code 0}, if both {@code a} and {@code b} are
-     * {@code 0}.
+     *
+     * @return The greatest common divisor of {@code a} and {@code b}, or null,
+     * if both {@code a} and {@code b} are null.
      */
     public static int gcd(int a, int b) {
         a = Math.abs(a);
@@ -306,12 +331,14 @@ public final class Util {
 
     /**
      * Converts {@code value} to two-byte array.
-     * <p/>
+     * <p>
      * Bytes are returned in network byte order (ordered from the most to the least significant byte).
+     * </p>
      *
      * @param value
      *         the value to convert.
-     * @return the converted bytes as an array.
+     *
+     * @return The converted bytes as an array.
      */
     public static byte[] toByteArray(short value) {
         return new byte[]{(byte) (value >>> 8), (byte) value};
@@ -319,12 +346,14 @@ public final class Util {
 
     /**
      * Converts {@code value} to four-byte array.
-     * <p/>
+     * <p>
      * Bytes are returned in network byte order (ordered from the most to the least significant byte).
+     * </p>
      *
      * @param value
      *         the value to convert.
-     * @return the converted bytes as an array.
+     *
+     * @return The converted bytes as an array.
      */
     public static byte[] toByteArray(int value) {
         return new byte[]{(byte) (value >>> 24), (byte) (value >>> 16), (byte) (value >>> 8), (byte) value};
@@ -332,12 +361,14 @@ public final class Util {
 
     /**
      * Converts {@code value} to eight-byte array.
-     * <p/>
+     * <p>
      * Bytes are returned in network byte order (ordered from the most to the least significant byte).
+     * </p>
      *
      * @param value
      *         the value to convert.
-     * @return the converted bytes as an array.
+     *
+     * @return The converted bytes as an array.
      */
     public static byte[] toByteArray(long value) {
         return new byte[]{(byte) (value >>> 56), (byte) (value >>> 48), (byte) (value >>> 40), (byte) (value >>> 32), (byte) (value >>> 24),
@@ -346,12 +377,14 @@ public final class Util {
 
     /**
      * Converts the first two bytes of {@code b} to a 16-bit signed integer.
-     * <p/>
+     * <p>
      * Assumes network byte order (ordered from the most to the least significant byte).
+     * </p>
      *
      * @param b
      *         the buffer to read from.
-     * @return the converted value.
+     *
+     * @return The converted value.
      */
     public static short toShort(byte[] b) {
         return toShort(b, 0);
@@ -359,14 +392,16 @@ public final class Util {
 
     /**
      * Converts two bytes of {@code b}, starting from {@code offset}, to a 16-bit signed integer.
-     * <p/>
+     * <p>
      * Assumes network byte order (ordered from the most to the least significant byte).
+     * </p>
      *
      * @param b
      *         the buffer to read from.
      * @param offset
      *         start offset in the buffer.
-     * @return the converted value.
+     *
+     * @return The converted value.
      */
     public static short toShort(byte[] b, int offset) {
         return (short) ((b[offset++] << 8) + (b[offset++] & 0xff));
@@ -374,12 +409,14 @@ public final class Util {
 
     /**
      * Converts the first four bytes of {@code b} to a 32-bit signed integer.
-     * <p/>
+     * <p>
      * Assumes network byte order (ordered from the most to the least significant byte).
+     * </p>
      *
      * @param b
      *         the buffer to read from.
-     * @return the converted value.
+     *
+     * @return The converted value.
      */
     public static int toInt(byte[] b) {
         return toInt(b, 0);
@@ -387,14 +424,16 @@ public final class Util {
 
     /**
      * Converts four bytes of {@code b}, starting from {@code offset}, to a 32-bit signed integer.
-     * <p/>
+     * <p>
      * Assumes network byte order (ordered from the most to the least significant byte).
+     * </p>
      *
      * @param b
      *         the buffer to read from.
      * @param offset
      *         start offset in the buffer.
-     * @return the converted value.
+     *
+     * @return The converted value.
      */
     public static int toInt(byte[] b, int offset) {
         return (toShort(b, offset) << 16) + (toShort(b, offset + 2) & 0xffff);
@@ -402,12 +441,14 @@ public final class Util {
 
     /**
      * Converts the first eight bytes of {@code b} to a 64-bit signed integer.
-     * <p/>
+     * <p>
      * Assumes network byte order (ordered from the most to the least significant byte).
+     * </p>
      *
      * @param b
      *         the buffer to read from.
-     * @return the converted value.
+     *
+     * @return The converted value.
      */
     public static long toLong(byte[] b) {
         return toLong(b, 0);
@@ -415,14 +456,16 @@ public final class Util {
 
     /**
      * Converts eight bytes of {@code b}, starting from {@code offset}, to a 64-bit signed integer.
-     * <p/>
+     * <p>
      * Assumes network byte order (ordered from the most to the least significant byte).
+     * </p>
      *
      * @param b
      *         the buffer to read from.
      * @param offset
      *         start offset in the buffer.
-     * @return the converted value.
+     *
+     * @return The converted value.
      */
     public static long toLong(byte[] b, int offset) {
         return ((long) toInt(b, offset) << 32) + (toInt(b, offset + 4) & 0xffffffffL);
@@ -437,7 +480,9 @@ public final class Util {
      *         offset of the data in the buffer.
      * @param len
      *         length of the data to decode.
-     * @return the decoded value.
+     *
+     * @return The decoded value.
+     *
      * @throws IllegalArgumentException
      *         when result does not fit into 63-bit unsigned integer.
      */
@@ -460,7 +505,8 @@ public final class Util {
      *
      * @param value
      *         the value to encode (the encoding is unsigned, so only non-negative values are supported).
-     * @return a newly allocated array containing the encoding result.
+     *
+     * @return A newly allocated array containing the encoding result.
      */
     public static byte[] encodeUnsignedLong(long value) {
         if (value < 0) {
@@ -478,21 +524,23 @@ public final class Util {
     }
 
     /**
-     * Calculates the RFC 2104 compatible HMAC for the given message, key and algorithm.
+     * Calculates the RFC 2104 compatible HMAC for the given message, key, and algorithm.
      *
      * @param message
-     *         message for which the MAC is to be calculated
+     *         message for which the MAC is to be calculated.
      * @param keyBytes
-     *         key for calculation
+     *         key for calculation.
      * @param algorithm
-     *         algorithm to be used (MD5, SHA1, SHA256)
-     * @return hmac as byte array
+     *         algorithm to be used (MD5, SHA1, SHA256).
+     *
+     * @return HMAC as byte array.
+     *
      * @throws NoSuchAlgorithmException
-     *         if invalid algorithm is provided
+     *         if invalid algorithm is provided.
      * @throws InvalidKeyException
-     *         if invalid key is provided
+     *         if invalid key is provided.
      * @throws IllegalArgumentException
-     *         if hmac key is nll
+     *         if HMAC key is null.
      */
     public static byte[] calculateHMAC(byte[] message, byte[] keyBytes, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         if (keyBytes == null) {
@@ -508,14 +556,17 @@ public final class Util {
 
     /**
      * Copies all available data from {@code in} to {@code out}.
-     * <p/>
+     * <p>
      * Allocates a temporary memory buffer of {@link #DEFAULT_BUFFER_SIZE} bytes for this.
+     * </p>
      *
      * @param in
      *         input stream to copy data from.
      * @param out
      *         output stream to copy data to.
-     * @return the number of bytes actually copied.
+     *
+     * @return The number of bytes actually copied.
+     *
      * @throws IOException
      *         if one is thrown by either {@code in} or {@code out}.
      */
@@ -525,10 +576,11 @@ public final class Util {
 
     /**
      * Copies up to {@code limit} bytes of data from {@code in} to {@code out}.
-     * <p/>
+     * <p>
      * May copy less than {@code limit} bytes if {@code in} does not have that much data available.
-     * <p/>
+     * </p> <p>
      * Allocates a temporary memory buffer of {@code bufSize} bytes for this.
+     * </p>
      *
      * @param in
      *         input stream to copy data from.
@@ -538,7 +590,9 @@ public final class Util {
      *         maximum number of bytes to copy ({@code -1} to copy all bytes).
      * @param bufSize
      *         size of the buffer to allocate (larger buffer may speed up the process).
-     * @return the number of bytes actually copied.
+     *
+     * @return The number of bytes actually copied.
+     *
      * @throws IOException
      *         if one is thrown by either {@code in} or {@code out}.
      */
@@ -564,10 +618,11 @@ public final class Util {
 
     /**
      * Copies up to {@code limit} bytes of data from {@code in} to {@code out}.
-     * <p/>
+     * <p>
      * May copy less than {@code limit} bytes if {@code in} does not have that much data available.
-     * <p/>
+     * </p><p>
      * Allocates a temporary memory buffer of {@link #DEFAULT_BUFFER_SIZE} bytes for this.
+     * </p>
      *
      * @param in
      *         input stream to copy data from.
@@ -575,7 +630,9 @@ public final class Util {
      *         output stream to copy data to.
      * @param limit
      *         maximum number of bytes to copy.
-     * @return the number of bytes actually copied.
+     *
+     * @return The number of bytes actually copied.
+     *
      * @throws IOException
      *         if one is thrown by either {@code in} or {@code out}.
      */
@@ -585,12 +642,13 @@ public final class Util {
 
     /**
      * Closes an {@code InputStream} unconditionally.
-     * <p/>
+     * <p>
      * Equivalent to {@code InputStream.close()}, except any exceptions will be ignored. This is typically used in
      * {@code finally} blocks.
+     * </p>
      *
      * @param input
-     *         {@link InputStream} to close
+     *         {@link InputStream} to close.
      */
     public static void closeQuietly(InputStream input) {
         if (input != null) {
@@ -603,12 +661,13 @@ public final class Util {
 
     /**
      * Closes an {@code OutputStream} unconditionally.
-     * <p/>
+     * <p>
      * Equivalent to {@code OutputStream.close()}, except any exceptions will be ignored. This is typically used in
      * {@code finally} blocks.
+     * </p>
      *
      * @param output
-     *         {@link OutputStream} to close
+     *         {@link OutputStream} to close.
      */
     public static void closeQuietly(OutputStream output) {
         if (output != null) {
@@ -620,10 +679,10 @@ public final class Util {
     }
 
     /**
-     * <p> Returns the next pseudorandom, uniformly distributed long value from the Math.random() sequence. </p> N!B!
-     * All values are greater than or equal to zero.
+     * <p> Returns the next pseudorandom, uniformly distributed long value from the Math.random() sequence. </p>
+     * NB! All values are greater than or equal to zero.
      *
-     * @return the random long
+     * @return The random long.
      */
     public static Long nextLong() {
         long randomLong = RANDOM.nextLong();
@@ -636,8 +695,9 @@ public final class Util {
 
     /**
      * Checks if the input object is null or not.
-     * @param o input object
-     * @param name input object name
+     *
+     * @param o input object.
+     * @param name input object name.
      */
     public static void notNull(Object o, String name) {
         if (o == null) {
@@ -647,9 +707,11 @@ public final class Util {
 
     /**
      * Checks if two objects are equal. It's safe to pass null objects.
-     * @param o1 first input object
-     * @param o2 second input object
-     * @return true if both inputs are null or equal to each other
+     *
+     * @param o1 first input object.
+     * @param o2 second input object.
+     *
+     * @return True, if both inputs are null or equal to each other.
      */
     public static boolean equals(Object o1, Object o2) {
         return (o1 == null && o2 == null) || (o1 != null && o2 != null && o1.equals(o2));
@@ -657,20 +719,23 @@ public final class Util {
 
     /**
      * Checks if two collections are equal ignoring the order of components. It's safe to pass collections that might be null.
-     * @param c1 first collection
-     * @param c2 second collection
-     * @return true if both lists are null or if they have exactly the same components.
+     *
+     * @param c1 first collection.
+     * @param c2 second collection.
+     *
+     * @return True, if both lists are null or if they have exactly the same components.
      */
     public static boolean equalsIgnoreOrder(Collection<?> c1, Collection<?> c2) {
         return (c1 == null && c2 == null) || (c1 != null && c2 != null  && c1.size() == c2.size() && c1.containsAll(c2) && c2.containsAll(c1));
     }
 
     /**
-     * Method for checking if an element is present in int array.
+     * Checks if an element is present in an int array.
      *
-     * @param array an array of int values
-     * @param key a primitive int value
-     * @return if element is present in array
+     * @param array an array of int values.
+     * @param key an int value.
+     *
+     * @return True, if element is present in array.
      */
     public static boolean containsInt(final int[] array, final int key) {
         for (int element : array) {
@@ -682,9 +747,22 @@ public final class Util {
     }
 
     /**
-     * Returns the default location of Java Runtime Environment certificate store.
+     * Creates an URL object from the String representation.
      *
-     * @return default certificate store location
+     * @param url the String to parse as an URL.
+     *
+     * @return Uniform Resource Locator object.
+     */
+    public static URL toUrl(String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Malformed URL '" + url + "'", e);
+        }
+    }
+
+    /**
+     * @return The default location of Java Runtime Environment certificate store.
      */
     public static String getDefaultTrustStore() {
         return System.getProperty("java.home") + File.separatorChar + "lib" + File.separatorChar
@@ -693,6 +771,13 @@ public final class Util {
 
     /**
      * Loads and returns the {@link java.security.KeyStore} from the file system.
+     *
+     * @param file file to load from file system.
+     * @param password password to access the keystore.
+     *
+     * @return {@link java.security.KeyStore}
+     *
+     * @throws KSIException
      */
     public static KeyStore loadKeyStore(File file, String password) throws KSIException {
         notNull(file, "Trust store file");
@@ -703,9 +788,7 @@ public final class Util {
             char[] passwordCharArray = password == null ? null : password.toCharArray();
             input = new FileInputStream(file);
             keyStore.load(input, passwordCharArray);
-        } catch (GeneralSecurityException e) {
-            throw new KSIException("Loading java key store with path " + file + " failed", e);
-        } catch (IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
             throw new KSIException("Loading java key store with path " + file + " failed", e);
         } finally {
             closeQuietly(input);
@@ -714,7 +797,7 @@ public final class Util {
     }
 
     /**
-     * This class should not be instantiated.
+     * Should not be instantiated.
      */
     private Util() {}
 }

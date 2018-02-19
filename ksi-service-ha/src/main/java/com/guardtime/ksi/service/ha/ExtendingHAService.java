@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2017 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.service.ha;
 
@@ -62,7 +63,7 @@ public class ExtendingHAService implements KSIExtendingService {
     }
 
     /**
-     * Does a non-blocking extending request. Sends the request to all the subservices in parallel. First successful response is
+     * Creates a non-blocking extending request. Sends the request to all the subservices in parallel. First successful response is
      * used, others are cancelled. Request fails only if all the subservices fail.
      *
      * @see KSIExtendingService#extend(Date, Date)
@@ -70,30 +71,30 @@ public class ExtendingHAService implements KSIExtendingService {
     public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException {
         Util.notNull(aggregationTime, "aggregationTime");
         Collection<KSIExtendingService> services = subservices;
-        Collection<Callable<ExtensionResponse>> tasks = new ArrayList<Callable<ExtensionResponse>>(services.size());
+        Collection<Callable<ExtensionResponse>> tasks = new ArrayList<>(services.size());
         for (KSIExtendingService service : services) {
             tasks.add(new ExtendingTask(service, aggregationTime, publicationTime));
         }
-        return new ServiceCallFuture<ExtensionResponse>(
-                executorService.submit(new ServiceCallsTask<ExtensionResponse>(executorService, tasks))
+        return new ServiceCallFuture<>(
+                executorService.submit(new ServiceCallsTask<>(executorService, tasks))
         );
     }
 
     /**
-     * @return List of extender services this service composes of.
+     * @return List of extender subservices this service composes of.
      */
     public List<KSIExtendingService> getSubExtendingServices() {
         return subservices;
     }
 
     /**
-     * Registers configuration listeners that will be called if this ExtenderHAServices configuration changes. They will not be
-     * called if subservices configuration changes in a way that does not change the consolidated configuration. To get detailed
-     * info about subservices configurations one should register their own listeners directly on subservices. Listener will
+     * Registers configuration listeners that will be called if this {@link ExtendingHAService}'s configuration changes. They will not be
+     * called if subservice's configuration changes in a way that does not change the consolidated configuration. To get detailed
+     * info about subservices' configurations one should register their own listeners directly on subservices. Listener will
      * be called instantaneously once with the latest consolidation result as part of the registration if the latest result is
      * not null.
      *
-     * @param listener May not be null.
+     * @param listener may not be null.
      */
     public void registerExtenderConfigurationListener(ConfigurationListener<ExtenderConfiguration> listener) {
         haConfListener.registerListener(listener);
@@ -123,19 +124,19 @@ public class ExtendingHAService implements KSIExtendingService {
     }
 
     /**
-     * For building the ExtendingHAService.
+     * Builds the {@link ExtendingHAService}.
      */
     public static class Builder {
 
-        private List<KSIExtendingService> services = new ArrayList<KSIExtendingService>();
+        private List<KSIExtendingService> services = new ArrayList<>();
         private ExecutorService executorService = DefaultExecutorServiceProvider.getExecutorService();
 
         /**
-         * For adding subclients. If both clients and services are set then they are combined.
+         * Adds subclients. If both, clients and services, are set then they are combined.
          * There should be either at least one subclient or one subservice and no more than three of them combined before
          * building. Do not have to call this if there is at least one subservice set.
          *
-         * @param clients List of subclients. May not be null.
+         * @param clients list of subclients, may not be null.
          * @return Instance of the builder itself.
          */
         public Builder addClients(List<KSIExtenderClient> clients) {
@@ -145,11 +146,11 @@ public class ExtendingHAService implements KSIExtendingService {
         }
 
         /**
-         * For adding subservices. If both clients and services are set then they are combined.
+         * Adds subservices. If both, clients and services, are set then they are combined.
          * There should be either at least one subclient or one subservice and no more than three of them combined before
          * building. Do not have to call this if there is at least one subclient set.
          *
-         * @param services List of subservices. May not be null.
+         * @param services list of subservices, may not be null.
          * @return Instance of the builder itself.
          */
         public Builder addServices(List<KSIExtendingService> services) {
@@ -172,7 +173,7 @@ public class ExtendingHAService implements KSIExtendingService {
         /**
          * Builds the {@link ExtendingHAService} instance.
          *
-         * @return Instance of {@link ExtendingHAService}
+         * @return Instance of {@link ExtendingHAService}.
          */
         public ExtendingHAService build() {
             List<KSIExtendingService> subservices = Collections.unmodifiableList(this.services);
@@ -187,10 +188,10 @@ public class ExtendingHAService implements KSIExtendingService {
 
         /**
          * Converts list of {@link KSIExtenderClient} to a list of {@link KSIExtendingService} by wrapping them all with
-         * {@link KSIExtendingClientServiceAdapter}s
+         * {@link KSIExtendingClientServiceAdapter}s.
          */
         private List<KSIExtendingService> clientsToServices(List<KSIExtenderClient> clients) {
-            List<KSIExtendingService> services = new ArrayList<KSIExtendingService>(clients.size());
+            List<KSIExtendingService> services = new ArrayList<>(clients.size());
             for (KSIExtenderClient client : clients) {
                 services.add(new KSIExtendingClientServiceAdapter(client));
             }

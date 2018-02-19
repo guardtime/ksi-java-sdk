@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.pdu.v1;
 
@@ -41,12 +42,12 @@ class ExtensionRequestPayloadV1 extends TLVStructure {
     private Date publicationTime;
 
     /**
-     * Create extension request with aggregation time.
+     * Creates extension request with aggregation time.
      *
      * @param aggregationTime
-     *         aggregation time
+     *         aggregation time.
      * @param requestId
-     *         request identifier
+     *         request ID.
      */
     public ExtensionRequestPayloadV1(Date aggregationTime, Long requestId) throws KSIException {
         if (aggregationTime == null) {
@@ -69,16 +70,16 @@ class ExtensionRequestPayloadV1 extends TLVStructure {
     }
 
     /**
-     * Create extension request with aggregation and publication time.
+     * Creates extension request with aggregation and publication time.
      *
      * @param aggregationTime
-     *         aggregation time
+     *         aggregation time.
      * @param publicationTime
-     *         publication time
+     *         publication time.
      * @param requestId
-     *         request identifier
+     *         request ID.
      * @throws KSIProtocolException
-     *         if request requires hash chain going backwards in time
+     *         if request requires hash chain going backwards in time.
      */
     public ExtensionRequestPayloadV1(Date aggregationTime, Date publicationTime, Long requestId) throws KSIException {
         this(aggregationTime, requestId);
@@ -122,7 +123,7 @@ class ExtensionRequestPayloadV1 extends TLVStructure {
 
 
     /**
-     * @return request id
+     * @return Request ID.
      */
     public final Long getRequestId() {
         return requestId;

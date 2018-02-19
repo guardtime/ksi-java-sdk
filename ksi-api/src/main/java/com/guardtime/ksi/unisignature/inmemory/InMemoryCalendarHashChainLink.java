@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.unisignature.inmemory;
@@ -45,11 +46,15 @@ abstract class InMemoryCalendarHashChainLink extends TLVStructure implements Cal
 
     public abstract boolean isRightLink();
 
+    public DataHash getDataHash(){
+        return dataHash;
+    }
+
     protected DataHash calculateStep(byte[] imprintA, byte[] imprintB, HashAlgorithm algorithm) throws InvalidCalendarHashChainException {
         if (!algorithm.isImplemented()) {
             throw new InvalidCalendarHashChainException("Invalid calendar hash chain. Hash algorithm " +algorithm.getName() + " is not implemented");
         }
-        DataHasher hasher = new DataHasher(algorithm);
+        DataHasher hasher = new DataHasher(algorithm, false);
         hasher.addData(imprintA);
         hasher.addData(imprintB);
         hasher.addData(new byte[]{(byte) 0xFF});
@@ -58,9 +63,15 @@ abstract class InMemoryCalendarHashChainLink extends TLVStructure implements Cal
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
         InMemoryCalendarHashChainLink that = (InMemoryCalendarHashChainLink) o;
         return dataHash.equals(that.dataHash);
     }

@@ -1,30 +1,30 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.unisignature;
 
-import java.io.OutputStream;
-import java.util.Date;
-
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.publication.PublicationRecord;
+
+import java.io.OutputStream;
+import java.util.Date;
 
 /**
  * This interface represents a keyless uni-signature. KSI signature consist of the following components: <ul> <li>One or
@@ -83,29 +83,6 @@ public interface KSISignature {
      * Returns the publication time.
      */
     Date getPublicationTime();
-
-    /**
-     * Extends the signature to the given calendar hash chain and publication.
-     *
-     * @param calendarHashChain
-     *         new calendar hash chain
-     * @param publicationRecord
-     *         publication record. may be null
-     * @return extended signature. NB! signature isn't verified
-     * @throws KSIException
-     *         when extending fails
-     * @deprecated  use {@link com.guardtime.ksi.KSI#extend(KSISignature)} or
-     * {@link com.guardtime.ksi.KSI#asyncExtend(KSISignature)} instead
-     */
-    @Deprecated
-    KSISignature extend(CalendarHashChain calendarHashChain, PublicationRecord publicationRecord) throws KSIException;
-
-    /**
-     * Returns the identity of the signature.
-     * @deprecated  use {@link KSISignature#getAggregationHashChainIdentity()} instead
-     */
-    @Deprecated
-    String getIdentity();
 
     /**
      * Returns an array of the identities present in all aggregation hash chains. The identities in the array are

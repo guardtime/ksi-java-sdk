@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.publication.inmemory;
@@ -29,6 +30,7 @@ import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Collections;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 import static com.guardtime.ksi.Resources.PUBLICATION_RECORD_IN_FILE_OK;
@@ -65,7 +67,7 @@ public class PublicationsFilePublicationRecordTest {
 
     @Test
     public void testCreateNewPublicationFileRecord_Ok() throws Exception {
-        PublicationsFilePublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(PUBLICATION_STRING), asList("ref1", "ref2"), asList("uri1"));
+        PublicationsFilePublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(PUBLICATION_STRING), asList("ref1", "ref2"), Collections.singletonList("uri1"));
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationReferences());
         Assert.assertNotNull(publicationRecord.getRootElement());

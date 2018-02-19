@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.integration;
@@ -29,6 +30,7 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.DefaultVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
@@ -40,6 +42,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadFile;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_CHANGED_CHAINS;
 import static com.guardtime.ksi.Resources.SIGNATURE_METADATA_PADDING_TOO_LONG;
 import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE;
@@ -115,5 +118,19 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         Policy policy = new PublicationsFileBasedVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
         ksiTest.read(loadFile(SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR));
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testDefaultPolicyAsDefaultVerificationPolicy_OK() throws Exception {
+        Policy policy = new DefaultVerificationPolicy();
+        KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
+        ksiTest.read(loadFile(SIGNATURE_2017_03_14));
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Extender response input hash mismatch.*")
+    public void testDefaultPolicyAsDefaultVerificationPolicy__InvalidSignatureContentException_PUB3() throws Exception {
+        Policy policy = new DefaultVerificationPolicy();
+        KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
+        ksiTest.read(loadFile(SIGNATURE_OTHER_CORE));
     }
 }

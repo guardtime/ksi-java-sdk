@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.unisignature.inmemory;
@@ -61,7 +62,7 @@ class InMemoryRFC3161Record extends TLVStructure implements RFC3161Record {
 
     private Date aggregationTime;
 
-    private List<Long> chainIndex = new LinkedList<Long>();
+    private List<Long> chainIndex = new LinkedList<>();
 
     private DataHash inputHash;
 
@@ -156,20 +157,20 @@ class InMemoryRFC3161Record extends TLVStructure implements RFC3161Record {
     public DataHash getOutputHash(HashAlgorithm hashAlgorithm) throws HashException {
         DataHash hash = getInputHash();
 
-        DataHasher hasher = new DataHasher(HashAlgorithm.getById(tstInfoAlgorithm.intValue()));
+        DataHasher hasher = new DataHasher(HashAlgorithm.getById(tstInfoAlgorithm.intValue()), false);
         hasher.addData(tstInfoPrefix);
         hasher.addData(hash.getValue());
         hasher.addData(tstInfoSuffix);
 
         hash = hasher.getHash();
 
-        hasher = new DataHasher(HashAlgorithm.getById(signedAttributesAlgorithm.intValue()));
+        hasher = new DataHasher(HashAlgorithm.getById(signedAttributesAlgorithm.intValue()), false);
         hasher.addData(signedAttributesPrefix);
         hasher.addData(hash.getValue());
         hasher.addData(signedAttributesSuffix);
         hash = hasher.getHash();
 
-        hasher = new DataHasher(hashAlgorithm);
+        hasher = new DataHasher(hashAlgorithm, false);
         hasher.addData(hash.getImprint());
 
         return hasher.getHash();
@@ -182,6 +183,14 @@ class InMemoryRFC3161Record extends TLVStructure implements RFC3161Record {
     @Override
     public int getElementType() {
         return ELEMENT_TYPE;
+    }
+
+    public HashAlgorithm getTstInfoAlgorithm() {
+        return HashAlgorithm.getById(tstInfoAlgorithm.intValue());
+    }
+
+    public HashAlgorithm getSignedAttributesAlgorithm() {
+        return HashAlgorithm.getById(signedAttributesAlgorithm.intValue());
     }
 
 }

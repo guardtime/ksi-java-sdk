@@ -1,21 +1,21 @@
 /*
-
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi;
@@ -48,7 +48,7 @@ public class Resources {
     private static final String POLICY_VERIFICATION_RESOURCES = POLICY_VERIFICATION_SIGNATURES + "resources/";
     private static final String PUBLICATIONS_FILES = "publications-files/";
     private static final String EXTENDER_RESPONSES = "extender-responses/";
-    private static final String AGGREGATOR_RESPONSES = "aggregator-responses/";
+    private static final String AGGREGATION_RESPONSES = "aggregation-responses/";
     private static final String SIGNATURE = "TO-TESTPACK-signature/";
 
     /**
@@ -82,7 +82,7 @@ public class Resources {
     public static final String RFC3161_SIGNATURE_INVALID_CHAIN_INDEX = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-chain-index-int-value-wrong.tlv";
     public static final String RFC3161_SIGNATURE_INVALID_AGGREGATION_TIME = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-aggr-time-future-value.tlv";
     public static final String RFC3161_SIGNATURE_WRONG_RECORD_OUTPUT_HASH = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-input-hash-wrong.tlv";
-    public static final String RFC3161_SIGNATURE_DEPRECATED_OUTPUT_HASH = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-and-aggregation-input-hash-has-deprecated-algorithm.tlv";
+    public static final String RFC3161_SIGNATURE_DEPRECATED_OUTPUT_HASH = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-and-aggregation-input-hash-has-deprecated-algorithm.tlv";
     public static final String RFC3161_SHA1_INPUT_HASH_2016 = VALID_SIGNATURES + "signature-SHA1-in-rfc3161-record-input-hash.ksig";
     public static final String RFC3161_SHA1_SIG_ATR_2016 = VALID_SIGNATURES + "signature-SHA1-in-rfc3161-record-sig-atr-algorithm.ksig";
     public static final String RFC3161_SHA1_TST_ALGORITHM_2016 = VALID_SIGNATURES + "signature-SHA1-in-rfc3161-record-tst-info-algorithm.ksig";
@@ -215,6 +215,22 @@ public class Resources {
     public static final String PUBLICATIONS_FILE_REORDERED = PUBLICATIONS_FILES + "publications-file-reordered.tlv";
     public static final String PUBLICATIONS_FILE_SIGANTURE_MISSING = PUBLICATIONS_FILES + "publications-file-signature-missing.tlv";
     public static final String PUBLICATIONS_FILE_WRONG_HASH = PUBLICATIONS_FILES + "publications-one-cert-one-publication-record-with-wrong-hash.tlv";
+
+    /**
+     * Aggregation responses
+     */
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-legacy-id.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-legacy-id-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-metadata.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA_AND_LEVEL  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-metadata-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-sibling-hash.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH_AND_LEVEL  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-sibling-hash-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-legacy-id.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID_AND_LEVEL = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-legacy-id-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-metadata.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA_AND_LEVEL = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-metadata-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-sibling-hash.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH_AND_LEVEL = AGGREGATION_RESPONSES + "aggr-resp-right-link-with-sibling-hash-and-level-correction.tlv";
 
     /**
      * Extender responses

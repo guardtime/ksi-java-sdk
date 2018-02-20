@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2017 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.hashing;
 
@@ -30,7 +31,7 @@ import java.util.Map;
  * List of supported hash functions and some convenience functions.
  */
 public enum HashAlgorithm {
-    SHA1("SHA1", 0x00, 20, Status.NORMAL, new String[] {}, new Date(1467331200000L)/* 01.07.2016 */, null),
+    SHA1("SHA1", 0x00, 20, Status.NOT_TRUSTED, new String[] {}, new Date(1467331200000L)/* 01.07.2016 */, null),
     SHA2_256("SHA-256", 0x01, 32, Status.NORMAL, new String[]{"SHA2-256", "SHA2", "DEFAULT"}),
     RIPEMD_160("RIPEMD160", 0x02, 20, Status.NORMAL),
     SHA2_384("SHA-384", 0x04, 48, Status.NORMAL, new String[]{"SHA2-384"}),
@@ -278,7 +279,7 @@ public enum HashAlgorithm {
      */
     public boolean isDeprecated(Date givenDate) {
         Util.notNull(givenDate, "Given date");
-        return this.deprecatedSince != null && givenDate.after(this.deprecatedSince);
+        return this.deprecatedSince != null && !givenDate.before(this.deprecatedSince);
     }
 
     /**
@@ -288,7 +289,7 @@ public enum HashAlgorithm {
      */
     public boolean isObsolete(Date givenDate) {
         Util.notNull(givenDate, "Given date");
-        return this.obsoleteSince != null && givenDate.after(this.obsoleteSince);
+        return this.obsoleteSince != null && !givenDate.before(this.obsoleteSince);
     }
 
     /**

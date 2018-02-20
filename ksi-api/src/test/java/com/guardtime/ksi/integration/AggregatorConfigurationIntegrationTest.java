@@ -33,9 +33,9 @@ import com.guardtime.ksi.service.http.simple.SimpleHttpPublicationsFileClient;
 import com.guardtime.ksi.service.http.simple.SimpleHttpSigningClient;
 
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
 import java.util.Collections;
 
 import static com.guardtime.ksi.TestUtil.assertCause;
@@ -68,6 +68,15 @@ public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegr
         this.ksiV2 = createKsi(extenderClientV2, signingClientV2, publicationsFileClient);
         this.ksiV1 = createKsi(extenderClientV1, signingClientV1, publicationsFileClient);
     }
+    @AfterClass
+    public void tearDown() throws Exception {
+        if (signingClientV1 != null) signingClientV1.close();
+        if (haServiceV1 != null) haServiceV1.close();
+        if (haServiceV2 != null) haServiceV2.close();
+        if (ksiV1 != null) ksiV1.close();
+        if (ksiV2 != null) ksiV2.close();
+    }
+
 
     @Test
     public void testAggregationConfigurationRequestV2() throws Exception {

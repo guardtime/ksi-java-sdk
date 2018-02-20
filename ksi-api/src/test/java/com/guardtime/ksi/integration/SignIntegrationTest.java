@@ -64,8 +64,9 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test
     public void testSigningWithSignerClient_Ok() throws Exception {
-        Signer s = new SignerBuilder().setSigningService(ksi.getSigningService()).build();
-        KSISignature sig = s.sign(loadFile(INPUT_FILE));
+        Signer signer = new SignerBuilder().setSigningService(ksi.getSigningService()).build();
+        KSISignature sig = signer.sign(loadFile(INPUT_FILE));
+        signer.close();
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, extenderClient, getFileHash(INPUT_FILE)), new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
@@ -74,6 +75,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSignFile_Ok(KSI ksi) throws Exception {
         KSISignature sig = ksi.sign(loadFile(INPUT_FILE));
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, ksi.getExtendingService(), getFileHash(INPUT_FILE)), new KeyBasedVerificationPolicy());
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -81,6 +83,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSignHash_Ok(KSI ksi) throws Exception {
         KSISignature sig = ksi.sign(getFileHash(INPUT_FILE));
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, ksi.getExtendingService(), getFileHash(INPUT_FILE)), new KeyBasedVerificationPolicy());
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -88,6 +91,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSignHashWithLevel_Ok(KSI ksi) throws Exception {
         KSISignature sig = ksi.sign(getFileHash(INPUT_FILE), 3L);
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, ksi.getExtendingService(), getFileHash(INPUT_FILE), 3L), new KeyBasedVerificationPolicy());
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -95,6 +99,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSignFileAndUseInvalidHashForVerification_VerificationFailsWithErrorGen1(KSI ksi) throws Exception {
         KSISignature sig = ksi.sign(loadFile(INPUT_FILE));
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, ksi.getExtendingService(), getFileHash(INPUT_FILE_REVERSED)), new KeyBasedVerificationPolicy());
+        ksi.close();
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_01);
     }
@@ -106,17 +111,26 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(sig.getAggregationHashChains()[0].getChainLinks().get(0).getLevelCorrection() >= 2L,
                 "Signature's first link's level correction is smaller than used for sining.");
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, ksi.getExtendingService(), dataHash), new KeyBasedVerificationPolicy());
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Level must be between 0 and 255")
     public void testSignWithTooLargeLevel_Ok(KSI ksi) throws Exception {
-        ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 257L);
+        try {
+            ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 257L);
+        } finally {
+            ksi.close();
+        }
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Level must be between 0 and 255")
     public void testSignWithLessThanZeroLevel_Ok(KSI ksi) throws Exception {
-        ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), -1L);
+        try {
+            ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), -1L);
+        } finally {
+            ksi.close();
+        }
     }
 
     /** Response with first right link that has sibling data */
@@ -124,6 +138,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithLevelRightLinkSiblingData() throws Exception {
         KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-sibling-hash.tlv");
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+        ksi.close();
         checkSignatureFirstLink(signature, 5L, false, 2);
     }
 
@@ -132,6 +147,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithLevelRightLinkLegacyId() throws Exception {
         KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-legacy-id.tlv");
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+        ksi.close();
         checkSignatureFirstLink(signature, 5L, false, 3);
     }
 
@@ -140,6 +156,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithLevelRightLinkMetadata() throws Exception {
         KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-metadata.tlv");
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+        ksi.close();
         checkSignatureFirstLink(signature, 5L, false, 4);
     }
 
@@ -148,6 +165,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithLevelRightLinkSiblingDataAndLevel() throws Exception {
         KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-sibling-hash-and-level-correction.tlv");
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+        ksi.close();
         checkSignatureFirstLink(signature, 7L, false, 2);
     }
 
@@ -156,6 +174,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithLevelRightLinkLegacyIdAndLevel() throws Exception {
         KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-legacy-id-and-level-correction.tlv");
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+        ksi.close();
         checkSignatureFirstLink(signature, 7L, false, 3);
     }
 
@@ -164,6 +183,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithLevelRightLinkMetadataAndLevel() throws Exception {
         KSI ksi = mockSigning("aggregation-responses/aggr-resp-right-link-with-metadata-and-level-correction.tlv");
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+        ksi.close();
         checkSignatureFirstLink(signature, 7L, false, 4);
     }
 
@@ -172,6 +192,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithLevelLeftLinkSiblingData() throws Exception {
         KSI ksi = mockSigning("aggregation-responses/aggr-resp-left-link-with-sibling-hash.tlv");
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+        ksi.close();
         checkSignatureFirstLink(signature, 5L, true, 2);
     }
 
@@ -188,6 +209,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithLevelLeftLinkMetadata() throws Exception {
         KSI ksi = mockSigning("aggregation-responses/aggr-resp-left-link-with-metadata.tlv");
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+        ksi.close();
         checkSignatureFirstLink(signature, 5L, true, 4);
     }
 
@@ -196,6 +218,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithLevelLeftLinkSiblingDataAndLevel() throws Exception {
         KSI ksi = mockSigning("aggregation-responses/aggr-resp-left-link-with-sibling-hash-and-level-correction.tlv");
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+        ksi.close();
         checkSignatureFirstLink(signature, 7L, true, 2);
     }
 
@@ -212,6 +235,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     public void testSigningWithLevelLeftLinkMetadataAndLevel() throws Exception {
         KSI ksi = mockSigning("aggregation-responses/aggr-resp-left-link-with-metadata-and-level-correction.tlv");
         KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+        ksi.close();
         checkSignatureFirstLink(signature, 7L, true, 4);
     }
 

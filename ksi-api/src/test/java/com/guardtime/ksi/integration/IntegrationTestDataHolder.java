@@ -63,6 +63,7 @@ import org.mockito.stubbing.Answer;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -81,7 +82,7 @@ import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadEx
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadPublicationsFileSettings;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadSignerSettings;
 
-public class IntegrationTestDataHolder {
+public class IntegrationTestDataHolder implements Closeable {
 
     private String testFile;
     private final IntegrationTestAction action;
@@ -329,5 +330,10 @@ public class IntegrationTestDataHolder {
 
     public KSI getKsi() {
         return ksi;
+    }
+
+    public void close() throws IOException {
+        if (ksi != null) ksi.close();
+        if (extenderClient != null) extenderClient.close();
     }
 }

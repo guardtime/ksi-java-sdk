@@ -51,6 +51,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
     public void testExtendToNearest_OK(KSI ksi) throws Exception {
         KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_2017_03_14));
         Assert.assertTrue(extendedSignature.isExtended(), "Signature extension failed.");
+        ksi.close();
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
@@ -61,6 +62,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
         VerificationResult verificationResult = ksi.verify(signature, new PublicationsFileBasedVerificationPolicy());
         Assert.assertTrue(verificationResult.isOk(), "Verification of extended signature failed with " + verificationResult.getErrorCode());
+        ksi.close();
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
@@ -70,6 +72,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
         PublicationRecord publicationRecord = publicationsFile.getPublicationRecord(signature.getPublicationTime());
         KSISignature extendedSignature = ksi.extend(signature, publicationRecord);
         Assert.assertTrue(extendedSignature.isExtended());
+        ksi.close();
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
@@ -79,6 +82,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(extendedSignature.isExtended(), "Signature extension failed");
         VerificationResult result = ksi.verify(extendedSignature, new UserProvidedPublicationBasedVerificationPolicy(), publicationRecord.getPublicationData());
         Assert.assertTrue(result.isOk());
+        ksi.close();
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
@@ -93,6 +97,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
         VerificationResult verificationResult = ksi.verify(signature, new PublicationsFileBasedVerificationPolicy());
         Assert.assertTrue(verificationResult.isOk(), "Verification of extended signature failed with " + verificationResult.getErrorCode());
+        ksi.close();
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
@@ -113,6 +118,8 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
             Assert.assertFalse(e.getVerificationResult().isOk());
             Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.INT_09);
             Assert.assertTrue(e.getSignature().isExtended());
+        } finally {
+            ksi.close();
         }
     }
 }

@@ -42,7 +42,6 @@ import com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings;
 import com.guardtime.ksi.service.client.http.HTTPConnectionParameters;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.client.http.HttpSettings;
-import com.guardtime.ksi.service.client.http.apache.ApacheHttpClient;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpExtenderClient;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpPublicationsFileClient;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpSigningClient;
@@ -58,9 +57,11 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 
@@ -124,6 +125,14 @@ public abstract class AbstractCommonIntegrationTest {
         ksi = createKsi(extenderClient, signerClient, publicationsFileClient);
     }
 
+    @AfterClass
+    protected void tearDown() throws Exception {
+        if (ksi != null) ksi.close();
+        if (signerClient != null) signerClient.close();
+        if (extenderClient != null) extenderClient.close();
+        if (publicationsFileClient != null) publicationsFileClient.close();
+    }
+
     public static DataHash getFileHash(String fileName, String name) throws Exception {
         return getFileHash(fileName, HashAlgorithm.getByName(name));
     }
@@ -152,16 +161,16 @@ public abstract class AbstractCommonIntegrationTest {
             publicationsFileSettings = loadPublicationsFileSettings();
         }
 
-        ApacheHttpClient failingClient = new ApacheHttpClient(FAULTY_HTTP_SETTINGS);
-
         SimpleHttpSigningClient simpleHttpSigningClient = new SimpleHttpSigningClient(signingSettings);
         ApacheHttpSigningClient apacheHttpSigningClient = new ApacheHttpSigningClient(signingSettings);
 
         SimpleHttpExtenderClient simpleHttpExtenderClient = new SimpleHttpExtenderClient(extenderSettings);
         ApacheHttpExtenderClient apacheHttpExtenderClient = new ApacheHttpExtenderClient(extenderSettings);
 
-        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient = new SimpleHttpPublicationsFileClient(publicationsFileSettings);
-        ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient = new ApacheHttpPublicationsFileClient(publicationsFileSettings);
+        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient1 = new SimpleHttpPublicationsFileClient(publicationsFileSettings);
+        ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient1 = new ApacheHttpPublicationsFileClient(publicationsFileSettings);
+        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient2 = new SimpleHttpPublicationsFileClient(publicationsFileSettings);
+        ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient2 = new ApacheHttpPublicationsFileClient(publicationsFileSettings);
 
         KSISigningClient tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
 
@@ -187,10 +196,10 @@ public abstract class AbstractCommonIntegrationTest {
                 .build();
 
         return new Object[][] {
-                new Object[] {createKsi(simpleHttpExtenderClient, simpleHttpSigningClient, simpleHttpPublicationsFileClient)},
-                new Object[] {createKsi(apacheHttpExtenderClient, apacheHttpSigningClient, apacheHttpPublicationsFileClient)},
-                new Object[] {createKsi((KSIExtenderClient) tcpClient, tcpClient, simpleHttpPublicationsFileClient)},
-                new Object[] {createKsi(haService, haService, apacheHttpPublicationsFileClient)}
+                new Object[] {createKsi(simpleHttpExtenderClient, simpleHttpSigningClient, simpleHttpPublicationsFileClient1)},
+                new Object[] {createKsi(apacheHttpExtenderClient, apacheHttpSigningClient, apacheHttpPublicationsFileClient1)},
+                new Object[] {createKsi((KSIExtenderClient) tcpClient, tcpClient, simpleHttpPublicationsFileClient2)},
+                new Object[] {createKsi(haService, haService, apacheHttpPublicationsFileClient2)}
         };
     }
 
@@ -487,7 +496,7 @@ public abstract class AbstractCommonIntegrationTest {
             try {
                 ksi.read(new File(testData.getTestFile()));
                 throw new IntegrationTestFailureException("Did not fail at parinsg while expected to. " + testData.toString());
-            } catch(KSIException e) {
+            } catch (KSIException e) {
                 return;
             }
         }

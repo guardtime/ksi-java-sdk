@@ -59,22 +59,38 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = VALID_SIGNATURES)
     public void testValidSignatures(IntegrationTestDataHolder testData) throws Exception {
-        testExecution(testData);
+        try {
+            testExecution(testData);
+        } finally {
+            testData.close();
+        }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = INVALID_SIGNATURES)
     public void testInvalidSignatures(IntegrationTestDataHolder testData) throws Exception {
-        testExecution(testData);
+        try {
+            testExecution(testData);
+        } finally {
+            testData.close();
+        }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = INTERNAL_POLICY_SIGNATURES)
-    public void testInternalPolicySignatures(IntegrationTestDataHolder testDataHolder) throws Exception {
-        testExecution(testDataHolder);
+    public void testInternalPolicySignatures(IntegrationTestDataHolder testData) throws Exception {
+        try {
+            testExecution(testData);
+        } finally {
+            testData.close();
+        }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = POLICY_VERIFICATION_SIGNATURES)
     public void testPolicyVerificationSignatures(IntegrationTestDataHolder testData) throws Exception {
-        testExecution(testData);
+        try {
+            testExecution(testData);
+        } finally {
+            testData.close();
+        }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -88,6 +104,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     public void testVerifySignatureUsingCalendarBasedPolicy_Ok(KSI ksi) throws Exception {
         KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, new KSIExtendingClientServiceAdapter(extenderClient), sig, new CalendarBasedVerificationPolicy());
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -95,6 +112,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     public void testVerifySignatureWithUsingPublicationsFileBasedVerificationPolicy_Ok(KSI ksi) throws Exception {
         KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, extenderClient, sig, new PublicationsFileBasedVerificationPolicy(), true);
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -120,6 +138,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     public void testVerifyExtendedSignatureUsingCalendarBasedPolicy_Ok(KSI ksi) throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, new KSIExtendingClientServiceAdapter(extenderClient), sig, new CalendarBasedVerificationPolicy());
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -127,6 +146,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     public void testVerifyExtendedSignatureUsingPublicationsFileBasedPolicy_Ok(KSI ksi) throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         VerificationResult result = verify(ksi, extenderClient, sig, new PublicationsFileBasedVerificationPolicy(), true);
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -136,6 +156,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         PublicationRecord publication = ksi.getPublicationsFile().getPublicationRecord(sig.getAggregationTime());
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, extenderClient, publication.getPublicationData
                 (), true), new UserProvidedPublicationBasedVerificationPolicy());
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -152,6 +173,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         KSISignature signature = loadSignature(RFC3161_SIGNATURE);
         VerificationResult result = ksi.verify(TestUtil.buildContext(signature, ksi, extenderClient, getFileHash(INPUT_FILE,
                 "SHA2-256")), new CalendarBasedVerificationPolicy());
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -185,6 +207,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result =
                 ksi.verify(sig, ContextAwarePolicyAdapter.createCalendarPolicy(getExtender(ksi.getExtendingService(), publicationsFileClient)));
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -195,6 +218,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         VerificationResult result =
                 ksi.verify(sig, ContextAwarePolicyAdapter.createPublicationsFilePolicy(getPublicationsHandler(publicationsFileClient),
                         getExtender(ksi.getExtendingService(), publicationsFileClient)));
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 
@@ -204,6 +228,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
         VerificationResult result =
                 ksi.verify(sig, ContextAwarePolicyAdapter.createPublicationsFilePolicy(getPublicationsHandler(publicationsFileClient)));
+        ksi.close();
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
     }
@@ -224,6 +249,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
                 ksi.verify(sig, ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(
                         sig.getPublicationRecord().getPublicationData(),
                         getExtender(ksi.getExtendingService(), publicationsFileClient)));
+        ksi.close();
         Assert.assertTrue(result.isOk());
     }
 

@@ -30,6 +30,28 @@ dependencies in your pom.xml:
 ```
 If you need the latest version, download the source and build using Maven.
 
+## Proxy Configuration ##
+
+KSI Java SDK can be configured to use proxy either via `ApacheHttpClient` or `SimpleHttpClient`, see details in the <a href="http://guardtime.github.io/ksi-java-sdk/" target="java-api-ref">API reference</a>.
+
+The example of the use of proxy with KSI Java SDK using `SimpleHttpClient` would be:
+
+  ```
+  HttpClientSettings.HTTPConnectionParameters proxyParam =
+                new HttpClientSettings.HTTPConnectionParameters();
+  proxyParam.setProxyUrl(new URL("<proxyUrl>"));
+  proxyParam.setProxyUser("<proxyUsername>");
+  proxyParam.setProxyPassword("<proxyKey");
+
+  HttpClientSettings settings =
+      new HttpClientSettings(aggregatorUrl,
+                            extenderUrl,
+                            publicationsFileUrl,
+                            credentials);
+  settings.setParameters(proxyParam);
+  SimpleHttpClient simpleHttpClient = new SimpleHttpClient(settings);
+  ```
+
 ## Usage ##
 
 In order to get trial access to the KSI platform, go to [https://guardtime.com/blockchain-developers](https://guardtime.com/blockchain-developers).

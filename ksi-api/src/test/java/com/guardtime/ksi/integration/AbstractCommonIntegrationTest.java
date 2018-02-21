@@ -250,8 +250,8 @@ public abstract class AbstractCommonIntegrationTest {
         String signerIP = getProperty(props, "tcp.signerIP");
         int signerPort = Integer.parseInt(getProperty(props, "tcp.signerPort"));
         int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
-        String loginId = getProperty(props, "tcp.loginId");
-        String loginKey = getProperty(props, "tcp.loginKey");
+        String loginId = getProperty(props, "tcp.signerLoginId", "tcp.loginId");
+        String loginKey = getProperty(props, "tcp.signerLoginKey", "tcp.loginKey");
         ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
         return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec,
                 serviceCredentials);
@@ -262,8 +262,8 @@ public abstract class AbstractCommonIntegrationTest {
         String extenderIp = getProperty(props, "tcp.extenderIP");
         int extenderPort = Integer.parseInt(getProperty(props, "tcp.extenderPort"));
         int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
-        String loginId = (String) getProperty(props, "tcp.extenderLoginId", "tcp.loginId");
-        String loginKey = (String) getProperty(props, "tcp.extenderLoginKey", "tcp.loginKey");
+        String loginId = getProperty(props, "tcp.extenderLoginId", "tcp.loginId");
+        String loginKey = getProperty(props, "tcp.extenderLoginKey", "tcp.loginKey");
         ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
         return new TCPClientSettings(new InetSocketAddress(extenderIp, extenderPort), tcpTransactionTimeoutSec,
                 serviceCredentials);
@@ -293,19 +293,19 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     public static CredentialsAwareHttpSettings loadSignerSettings(PduVersion pduVersion) {
-        Properties prop = loadProperties();
+        Properties props = loadProperties();
         ServiceCredentials credentials = new KSIServiceCredentials(
-                getProperty(prop, "loginId"),
-                getProperty(prop, "loginKey"));
-        return loadSettings(getProperty(prop, "gatewayUrl"), credentials, pduVersion);
+                getProperty(props, "signerLoginId", "loginId"),
+                getProperty(props, "signerLoginKey", "loginKey"));
+        return loadSettings(getProperty(props, "signerUrl", "gatewayUrl"), credentials, pduVersion);
     }
 
     public static CredentialsAwareHttpSettings loadExtenderSettings(PduVersion pduVersion) {
         Properties props = loadProperties();
 
         ServiceCredentials credentials = new KSIServiceCredentials(
-                (String) getProperty(props, "extenderLoginId", "loginId"),
-                (String) getProperty(props, "extenderLoginKey", "loginKey"));
+                getProperty(props, "extenderLoginId", "loginId"),
+                getProperty(props, "extenderLoginKey", "loginKey"));
 
         return loadSettings(getProperty(props, "extenderUrl"), credentials,  pduVersion);
     }
@@ -338,8 +338,8 @@ public abstract class AbstractCommonIntegrationTest {
         return properties;
     }
 
-    private static Object getProperty(Properties props, String preferredKey, String alternativeKey) {
-        Object value;
+    private static String getProperty(Properties props, String preferredKey, String alternativeKey) {
+        String value = null;
         if (props.containsKey(preferredKey)) {
             value = getProperty(props, preferredKey);
         } else if (props.containsKey(alternativeKey)) {

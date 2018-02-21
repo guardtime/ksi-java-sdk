@@ -23,9 +23,9 @@ pubfileUrl=publications.file.url
 
 
 #Http settings
-gatewayUrl=signing.service.url:port
-loginId=http-signing-login-id
-loginKey=http-signing-login-key
+signerUrl=signing.service.url:port
+signerLoginId=http-signing-login-id
+signerLoginKey=http-signing-login-key
 
 extenderUrl=extending.service.url:port
 extenderLoginId=http-extender-login-id
@@ -38,8 +38,8 @@ tcp.transactionTimeoutSec=transaction-Timeout-Sec
 
 tcp.signerIP=tcp.signing.service.ip
 tcp.signerPort=tcp-singing-service-port
-tcp.loginId=tcp-singing-login-id
-tcp.loginKey=tcp-singing-login-key
+tcp.signerLoginId=tcp-singing-login-id
+tcp.signerLoginKey=tcp-singing-login-key
 
 tcp.extenderIp=tcp.extender.service.ip
 tcp.extenderPort=tcp-extender-service-port

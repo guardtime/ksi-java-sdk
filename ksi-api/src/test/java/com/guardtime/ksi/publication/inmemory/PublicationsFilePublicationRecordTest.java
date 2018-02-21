@@ -67,7 +67,11 @@ public class PublicationsFilePublicationRecordTest {
 
     @Test
     public void testCreateNewPublicationFileRecord_Ok() throws Exception {
-        PublicationsFilePublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(PUBLICATION_STRING), asList("ref1", "ref2"), Collections.singletonList("uri1"));
+        PublicationsFilePublicationRecord publicationRecord = new PublicationsFilePublicationRecord(
+                new PublicationData(PUBLICATION_STRING),
+                asList("ref1", "ref2"),
+                Collections.singletonList("uri1")
+        );
         Assert.assertNotNull(publicationRecord.getPublicationData());
         Assert.assertNotNull(publicationRecord.getPublicationReferences());
         Assert.assertNotNull(publicationRecord.getRootElement());
@@ -79,7 +83,8 @@ public class PublicationsFilePublicationRecordTest {
         Assert.assertEquals(rootElement.getChildElements(ELEMENT_TAG_PUBLICATION_REPOSITORY_URI).size(), 1);
     }
 
-    @Test(expectedExceptions = InvalidPublicationRecordException.class, expectedExceptionsMessageRegExp = "Required field publicationData\\(TLV\\[0x10\\]\\) missing in # PublicationRecord TLV\\[0x703\\]")
+    @Test(expectedExceptions = InvalidPublicationRecordException.class,
+            expectedExceptionsMessageRegExp = "Required field publicationData\\(TLV\\[0x10\\]\\) missing in # PublicationRecord TLV\\[0x703\\]")
     public void testDecodePublicationsFilePublicationRecordWithoutPublicationData_ThrowsInvalidPublicationRecordException() throws Exception {
         load(new ByteArrayInputStream(new byte[]{(byte) 0x87, 0x03, 0x0, 0x0}));
     }

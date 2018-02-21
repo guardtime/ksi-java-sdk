@@ -93,7 +93,8 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(result2.isOk());
     }
 
-    @Test(dataProvider = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = {KSITCPTransactionException.class, IllegalArgumentException.class})
+    @Test(dataProvider = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = {KSITCPTransactionException.class, IllegalArgumentException.class})
     public void testTCPIncorrectLoginCredentialsWithSHA2_256(KSI ksi) throws Exception {
         try {
             ksi.sign(getFileHash(INPUT_FILE, HashAlgorithm.SHA2_256));
@@ -102,7 +103,8 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         }
     }
 
-    @Test(dataProvider = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = {KSITCPTransactionException.class, IllegalArgumentException.class})
+    @Test(dataProvider = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = {KSITCPTransactionException.class, IllegalArgumentException.class})
     public void testTCPIncorrectLoginCredentialsWithSHA2_384(KSI ksi) throws Exception {
         try {
             ksi.sign(getFileHash(INPUT_FILE, HashAlgorithm.SHA2_384));
@@ -111,7 +113,8 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         }
     }
 
-    @Test(dataProvider = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = {KSITCPTransactionException.class, IllegalArgumentException.class})
+    @Test(dataProvider = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = {KSITCPTransactionException.class, IllegalArgumentException.class})
     public void testTCPIncorrectLoginCredentialsWithSHA2_512(KSI ksi) throws Exception {
         try {
             ksi.sign(getFileHash(INPUT_FILE,HashAlgorithm.SHA2_512));
@@ -120,7 +123,8 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         }
     }
 
-    @Test(dataProvider = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = {KSITCPTransactionException.class, IllegalArgumentException.class})
+    @Test(dataProvider = KSI_INVALID_CREDENTIALS_TCP_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = {KSITCPTransactionException.class, IllegalArgumentException.class})
     public void testTCPIncorrectLoginCredentialsWithRIPEMD_160(KSI ksi) throws Exception {
         try {
             ksi.sign(getFileHash(INPUT_FILE, HashAlgorithm.RIPEMD_160));
@@ -129,19 +133,22 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         }
     }
 
-    @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash size.* does not match .* size.*")
+    @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash size.* does not match .* size.*")
     public void testTcpWithShortHash(HashAlgorithm hashAlgorithm) throws Exception {
         int hashLength = hashAlgorithm.getLength();
         ksi.sign(new DataHash(hashAlgorithm, new byte[hashLength - 1]));
     }
 
-    @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash size.* does not match .* size.*")
+    @Test(dataProvider = VALID_HASH_ALGORITHMS_DATA_PROVIDER, groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash size.* does not match .* size.*")
     public void testTcpWithLongHash(HashAlgorithm hashAlgorithm) throws Exception {
         int hashLength = hashAlgorithm.getLength();
         ksi.sign(new DataHash(hashAlgorithm, new byte[hashLength + 1]));
     }
 
-    @Test (groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "The connector is being disposed.")
+    @Test (groups = TEST_GROUP_INTEGRATION
+            , expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "The connector is being disposed.")
     public void tcpSigningClientSettingsConnector() throws Exception {
         KSI tcpKsi = createKsi(tcpExtenderClient, tcpSigningClient, pubFileClient);
         tcpSigningClient.close();
@@ -159,7 +166,8 @@ public class TcpIntegrationTest extends AbstractCommonIntegrationTest {
         tcpKsi.close();
     }
 
-    @Test (groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "The connector is being disposed.")
+    @Test (groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "The connector is being disposed.")
     public void testTcpExtenderClientSettingsConnector() throws Exception {
         KSI tcpKsi = createKsi(tcpExtenderClient, tcpSigningClient, pubFileClient);
         tcpExtenderClient.close();

@@ -49,29 +49,34 @@ public class PublicationsFileIntegrationTest extends AbstractCommonIntegrationTe
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithPublicationWithNewNonCriticalElementInPublicationRecordLvl1() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD, true, extenderClient);
+        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD,
+                true, extenderClient);
         Assert.assertTrue(results.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithPublicationWithNewNonCriticalElementInPublicationRecordLvl2() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD2, true, extenderClient);
+        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_RECORD2,
+                true, extenderClient);
         Assert.assertTrue(results.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithPublicationWithNewNonCriticalElementInCertificateRecord() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_CERT, true, extenderClient);
+        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_CERT,
+                true, extenderClient);
         Assert.assertTrue(results.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureWithPublicationWithNewNonCriticalElementInPublicationHeader() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_HEADER, true, extenderClient);
+        VerificationResult results = publicationFileBasedVerification(SIGNATURE_2014_06_02, PUBLICATIONS_FILE_NON_CRITICAL_ELEMENT_IN_HEADER,
+                true, extenderClient);
         Assert.assertTrue(results.isOk());
     }
 
-    private VerificationResult publicationFileBasedVerification(String signatureFile, String publicationFile, boolean extendingAllowed, KSIExtenderClient extenderClient) throws Exception {
+    private VerificationResult publicationFileBasedVerification(String signatureFile, String publicationFile, boolean extendingAllowed,
+                                                                KSIExtenderClient extenderClient) throws Exception {
         VerificationContextBuilder build = new VerificationContextBuilder();
         build.setPublicationsFile(new InMemoryPublicationsFileFactory(new PKITrustStore() {
             public boolean isTrusted(X509Certificate certificate, Store certStore) throws CryptoException {

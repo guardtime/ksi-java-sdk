@@ -69,7 +69,8 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         if (ksiTest != null) ksiTest.close();
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Verification inconclusive.*")
+    @Test(groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Verification inconclusive.*")
     public void testSigningWithPublicationFileBasedVerification_InvalidSignatureContentException_GEN2() throws Exception {
         Policy policy = new PublicationsFileBasedVerificationPolicy();
         ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
@@ -83,12 +84,15 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         }
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Calendar hash chain input hash mismatch.*")
+    @Test(groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Calendar hash chain input hash mismatch.*")
     public void testExtendInvalidSignature_InvalidSignatureContentException_INT3() throws Exception {
         ksiTest = ksiBuilder.build();
         KSISignature signature = ksiTest.read(loadFile(SIGNATURE_CHANGED_CHAINS));
 
-        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData("AAAAAA-CX5TF7-IAOXTG-6N4TGI-AIGLHG-ZD2NOX-WHGLYG-HHOXAD-XJ3FIN-GXJSGS-72NPRL-3ECEBJ"));
+        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(
+                new PublicationData("AAAAAA-CX5TF7-IAOXTG-6N4TGI-AIGLHG-ZD2NOX-WHGLYG-HHOXAD-XJ3FIN-GXJSGS-72NPRL-3ECEBJ")
+        );
         try {
             ksiTest.extend(signature, publicationRecord);
         } catch (InvalidSignatureContentException e) {
@@ -98,33 +102,40 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         }
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*The metadata record in the aggregation hash chain may not be trusted.*")
+    @Test(groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = InvalidSignatureContentException.class,
+            expectedExceptionsMessageRegExp = ".*The metadata record in the aggregation hash chain may not be trusted.*")
     public void testInternalVerificationAsDefaultPolicy_InvalidSignatureContentException_INT11() throws Exception {
         Policy policy = new InternalVerificationPolicy();
         ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
         ksiTest.read(loadFile(SIGNATURE_METADATA_PADDING_TOO_LONG));
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Certificate not found.*")
+    @Test(groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Certificate not found.*")
     public void testKeyBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_KEY1() throws Exception {
         Policy policy = new KeyBasedVerificationPolicy();
         ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
         ksiTest.read(loadFile(SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE));
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*Unsupported default verification policy.*")
+    @Test(groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*Unsupported default verification policy.*")
     public void testUserProvidedPublicationBasedVerificationAsDefaultVerificationPolicy() throws Exception {
         ksiBuilder.setDefaultVerificationPolicy(new UserProvidedPublicationBasedVerificationPolicy()).build();
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Aggregation hash chain root hash and calendar database hash chain input hash mismatch.*")
+    @Test(groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = InvalidSignatureContentException.class,
+            expectedExceptionsMessageRegExp = ".*Aggregation hash chain root hash and calendar database hash chain input hash mismatch.*")
     public void testCalendarBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_CAL2() throws Exception {
         Policy policy = new CalendarBasedVerificationPolicy();
         ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
         ksiTest.read(loadFile(SIGNATURE_OTHER_CORE));
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Extender response input hash mismatch.*")
+    @Test(groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Extender response input hash mismatch.*")
     public void testPublicationFileBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_PUB3() throws Exception {
         Policy policy = new PublicationsFileBasedVerificationPolicy();
         ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
@@ -138,7 +149,8 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
         ksiTest.read(loadFile(SIGNATURE_2017_03_14));
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Extender response input hash mismatch.*")
+    @Test(groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Extender response input hash mismatch.*")
     public void testDefaultPolicyAsDefaultVerificationPolicy__InvalidSignatureContentException_PUB3() throws Exception {
         Policy policy = new DefaultVerificationPolicy();
         KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();

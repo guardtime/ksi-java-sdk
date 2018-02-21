@@ -101,17 +101,24 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
         ksi.close();
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
+    @Test(groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
     public void testExtendPublicationBeforeSignature_NOK() throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
-        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(new Date(signature.getAggregationTime().getTime() - 1000000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(
+                new Date(signature.getAggregationTime().getTime() - 1000000L),
+                new DataHash(HashAlgorithm.SHA2_256, new byte[32])
+        ));
         ksi.extend(signature, publicationRecord);
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
     public void testExtendSignatureFromAnotherCore_NOK(KSI ksi) throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
-        PublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData(new Date(signature.getPublicationTime().getTime() + 100000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        PublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData(
+                new Date(signature.getPublicationTime().getTime() + 100000L),
+                new DataHash(HashAlgorithm.SHA2_256, new byte[32])
+        ));
         try {
             ksi.extend(signature, record);
             Assert.assertTrue(false, "Extended signature internal verification had to fail.");

@@ -72,7 +72,8 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
         Assert.assertTrue(result.isOk());
     }
 
-    private VerificationResult publicationFileBasedVerification(String signatureFile, String publicationFile, boolean extendingAllowed, KSIExtenderClient extenderClient) throws Exception {
+    private VerificationResult publicationFileBasedVerification(String signatureFile, String publicationFile,
+                                                                boolean extendingAllowed, KSIExtenderClient extenderClient) throws Exception {
         KSISignature signature = TestUtil.loadSignature(signatureFile);
         VerificationContextBuilder build = new VerificationContextBuilder();
         if (publicationFile != null) {

@@ -200,9 +200,17 @@ public class IntegrationTestDataHolder implements Closeable {
                 ByteArrayInputStream bais = new ByteArrayInputStream(request.toByteArray());
                 TLVElement requestElement = TLVElement.create(Util.toByteArray(bais));
 
-                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x01).setLongContent(requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong());
+                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x01).setLongContent(
+                        requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong()
+                );
 
-                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(responseTLV, responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(), extenderSettings.getCredentials().getLoginKey()));
+                responseTLV.getFirstChildElement(0x1F).setDataHashContent(
+                        calculateHash(
+                                responseTLV,
+                                responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(),
+                                extenderSettings.getCredentials().getLoginKey()
+                        )
+                );
                 return new ExtensionResponseFuture(mockedFuture, context, credentials, factory);
             }
         });

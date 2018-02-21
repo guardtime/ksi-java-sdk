@@ -257,36 +257,54 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyWithExtendedSignature_OK() throws Exception{
         KSISignature signature = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
-        VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null));
+        VerificationResult result =  new SignatureVerifier().verify(
+                signature,
+                ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient),null)
+        );
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyWithNotExtendedSignatureAndExtending_OK() throws Exception{
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
-        VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), createExtender(loadExtenderSettings())));
+        VerificationResult result =  new SignatureVerifier().verify(
+                signature,
+                ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), createExtender(loadExtenderSettings()))
+        );
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyWithNotExtendedSignatureAndNoExtender_OK() throws Exception{
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
-        VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null));
+        VerificationResult result =  new SignatureVerifier().verify(
+                signature,
+                ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null)
+        );
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyWithExtendedSignatureAndInvalidExtender_OK() throws Exception{
-        CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings("http://random.url.com:1234", new KSIServiceCredentials("user", "pass"));
+        CredentialsAwareHttpSettings settings = new CredentialsAwareHttpSettings(
+                "http://random.url.com:1234",
+                new KSIServiceCredentials("user", "pass")
+        );
         KSISignature signature = loadSignature(EXTENDED_SIGNATURE_2014_06_02);
-        VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), createExtender(settings)));
+        VerificationResult result =  new SignatureVerifier().verify(
+                signature,
+                ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), createExtender(settings))
+        );
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyWithExtendedSignatureAndNoExtender_NA() throws Exception{
         KSISignature signature = loadSignature(SIGNATURE_ONLY_AGGR_CHAINS_AND_CALENDAR_CHAIN);
-        VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null));
+        VerificationResult result =  new SignatureVerifier().verify(
+                signature,
+                ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null)
+        );
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
     }
@@ -294,7 +312,10 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyWithExtendedSignatureAndErrorAtPublicationRecord_Fail() throws Exception{
         KSISignature signature = loadSignature(SIGNATURE_PUBLICATION_RECORD_DOES_NOT_MATCH_PUBLICATION);
-        VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null));
+        VerificationResult result =  new SignatureVerifier().verify(
+                signature,
+                ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null)
+        );
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_05);
     }
@@ -302,7 +323,10 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyWithNotExtendedSignatureAndErrorAtExtending_Fail() throws Exception{
         KSISignature signature = loadSignature(SIGNATURE_OTHER_CORE);
-        VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), createExtender(loadExtenderSettings())));
+        VerificationResult result =  new SignatureVerifier().verify(
+                signature,
+                ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), createExtender(loadExtenderSettings()))
+        );
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_03);
     }
@@ -310,7 +334,10 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyWithNotExtendedSignatureAndFailAtkeybasedVerification_Fail() throws Exception{
         KSISignature signature = loadSignature(SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE);
-        VerificationResult result =  new SignatureVerifier().verify(signature, ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null));
+        VerificationResult result =  new SignatureVerifier().verify(
+                signature,
+                ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null)
+        );
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_01);
     }

@@ -525,11 +525,19 @@ public abstract class AbstractCommonIntegrationTest {
                 //Set header
                 responseTLV.getFirstChildElement(0x1).setContent(requestElement.getFirstChildElement(0x1).getEncoded());
                 //Set Request ID
-                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x1).setLongContent(requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong());
+                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x1).setLongContent(
+                        requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong()
+                );
                 //Set Input hash
                 responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x801).getFirstChildElement(0x5).setDataHashContent(dataHash);
                 //Update HMAC
-                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(responseTLV, responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(), credentials.getLoginKey()));
+                responseTLV.getFirstChildElement(0x1F).setDataHashContent(
+                        calculateHash(
+                                responseTLV,
+                                responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(),
+                                credentials.getLoginKey()
+                        )
+                );
                 return new AggregationResponseFuture(mockedFuture, context, credentials, factory);
             }
         });

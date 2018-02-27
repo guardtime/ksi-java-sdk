@@ -51,9 +51,12 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
 import static com.guardtime.ksi.CommonTestUtil.loadFile;
@@ -72,19 +75,20 @@ import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_
 import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.INPUT_FILE_REVERSED;
 import static com.guardtime.ksi.TestUtil.calculateHash;
+import static com.guardtime.ksi.integration.AbstractKsiDataProviderIntegrationTest.KSI_DATA_GROUP_NAME;
 
-public class SignIntegrationTest extends AbstractCommonIntegrationTest {
+public class SignIntegrationTest extends AbstractKsiDataProviderIntegrationTest {
 
     @Test
     public void testSigningWithSignerClient_Ok() throws Exception {
-        Signer signer = new SignerBuilder().setSigningService(ksi.getSigningService()).build();
-        KSISignature sig = signer.sign(loadFile(INPUT_FILE));
-        VerificationResult result = ksi.verify(
-                TestUtil.buildContext(sig, ksi, extenderClient, getFileHash(INPUT_FILE)),
-                new KeyBasedVerificationPolicy()
-        );
-        Assert.assertTrue(result.isOk());
-        signer.close();
+        try (Signer signer = new SignerBuilder().setSigningService(ksi.getSigningService()).build()) {
+            KSISignature sig = signer.sign(loadFile(INPUT_FILE));
+            VerificationResult result = ksi.verify(
+                    TestUtil.buildContext(sig, ksi, extenderClient, getFileHash(INPUT_FILE)),
+                    new KeyBasedVerificationPolicy()
+            );
+            Assert.assertTrue(result.isOk());
+        }
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
@@ -95,7 +99,6 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
                 new KeyBasedVerificationPolicy()
         );
         Assert.assertTrue(result.isOk());
-        ksi.close();
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
@@ -106,7 +109,6 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
                 new KeyBasedVerificationPolicy()
         );
         Assert.assertTrue(result.isOk());
-        ksi.close();
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
@@ -117,7 +119,6 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
                 new KeyBasedVerificationPolicy()
         );
         Assert.assertTrue(result.isOk());
-        ksi.close();
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
@@ -129,7 +130,6 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
         );
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_01);
-        ksi.close();
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
@@ -140,133 +140,126 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
                 "Signature's first link's level correction is smaller than used for sining.");
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, ksi.getExtendingService(), dataHash), new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
-        ksi.close();
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION,
             expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Level must be between 0 and 255")
     public void testSignWithTooLargeLevel_Ok(KSI ksi) throws Exception {
-        try {
-            ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 257L);
-        } finally {
-            ksi.close();
-        }
+        ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 257L);
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION,
             expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Level must be between 0 and 255")
     public void testSignWithLessThanZeroLevel_Ok(KSI ksi) throws Exception {
-        try {
-            ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), -1L);
-        } finally {
-            ksi.close();
-        }
+        ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), -1L);
     }
 
     /** Response with first right link that has sibling data */
     @Test
     public void testSigningWithLevelRightLinkSiblingData() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
-        checkSignatureFirstLink(signature, 5L, false, 2);
-        ksi.close();
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+            checkSignatureFirstLink(signature, 5L, false, 2);
+        }
     }
 
     /** Response with first right link that has legacy id */
     @Test
     public void testSigningWithLevelRightLinkLegacyId() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
-        checkSignatureFirstLink(signature, 5L, false, 3);
-        ksi.close();
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+            checkSignatureFirstLink(signature, 5L, false, 3);
+        }
     }
 
     /** Response with first right link that has metadata */
     @Test
     public void testSigningWithLevelRightLinkMetadata() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
-        checkSignatureFirstLink(signature, 5L, false, 4);
-        ksi.close();
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+            checkSignatureFirstLink(signature, 5L, false, 4);
+        }
     }
 
     /** Response with first right link that has sibling data and level correction */
     @Test
     public void testSigningWithLevelRightLinkSiblingDataAndLevel() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH_AND_LEVEL);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
-        checkSignatureFirstLink(signature, 7L, false, 2);
-        ksi.close();
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH_AND_LEVEL)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+            checkSignatureFirstLink(signature, 7L, false, 2);
+        }
     }
 
     /** Response with first right link that has legacy id and level correction */
     @Test
     public void testSigningWithLevelRightLinkLegacyIdAndLevel() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID_AND_LEVEL);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
-        checkSignatureFirstLink(signature, 7L, false, 3);
-        ksi.close();
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID_AND_LEVEL)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+            checkSignatureFirstLink(signature, 7L, false, 3);
+        }
     }
 
     /** Response with first right link that has metadata and level correction */
     @Test
     public void testSigningWithLevelRightLinkMetadataAndLevel() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA_AND_LEVEL);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
-        checkSignatureFirstLink(signature, 7L, false, 4);
-        ksi.close();
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA_AND_LEVEL)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+            checkSignatureFirstLink(signature, 7L, false, 4);
+        }
     }
 
     /** Response with first left link that has sibling data */
     @Test
     public void testSigningWithLevelLeftLinkSiblingData() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
-        checkSignatureFirstLink(signature, 5L, true, 2);
-        ksi.close();
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+            checkSignatureFirstLink(signature, 5L, true, 2);
+        }
     }
 
     /** Response with first left link that has legacy id */
     @Test
     public void testSigningWithLevelLeftLinkLegacyId() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
-        checkSignatureFirstLink(signature, 5L, true, 3);
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+            checkSignatureFirstLink(signature, 5L, true, 3);
+        }
     }
 
     /** Response with first left link that has metadata */
     @Test
     public void testSigningWithLevelLeftLinkMetadata() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
-        checkSignatureFirstLink(signature, 5L, true, 4);
-        ksi.close();
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 5);
+            checkSignatureFirstLink(signature, 5L, true, 4);
+        }
     }
 
     /** Response with first left link that has sibling data and level correction */
     @Test
     public void testSigningWithLevelLeftLinkSiblingDataAndLevel() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH_AND_LEVEL);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
-        checkSignatureFirstLink(signature, 7L, true, 2);
-        ksi.close();
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH_AND_LEVEL)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+            checkSignatureFirstLink(signature, 7L, true, 2);
+        }
     }
 
     /** Response with first left link that has legacy id and level correction */
     @Test
     public void testSigningWithLevelLeftLinkLegacyIdAndLevel() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
-        checkSignatureFirstLink(signature, 7L, true, 3);
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL)) {
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+            checkSignatureFirstLink(signature, 7L, true, 3);
+        }
     }
 
     /** Response with first left link that has metadata and level correction */
     @Test
     public void testSigningWithLevelLeftLinkMetadataAndLevel() throws Exception {
-        KSI ksi = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA_AND_LEVEL);
-        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
-        checkSignatureFirstLink(signature, 7L, true, 4);
-        ksi.close();
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA_AND_LEVEL)){
+            KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
+            checkSignatureFirstLink(signature, 7L, true, 4);
+        }
     }
 
     /**

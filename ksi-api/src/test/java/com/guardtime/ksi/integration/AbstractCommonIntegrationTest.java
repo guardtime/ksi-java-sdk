@@ -109,11 +109,7 @@ public abstract class AbstractCommonIntegrationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractCommonIntegrationTest.class);
     protected static final String TEST_GROUP_INTEGRATION = "integration";
-    protected static final String KSI_DATA_GROUP_NAME = "ksiDataProvider";
-    protected static final String INTERNAL_POLICY_SIGNATURES = "INTERNAL_POLICY_SIGNATURES";
-    protected static final String INVALID_SIGNATURES = "INVALID_SIGNATURES";
-    protected static final String POLICY_VERIFICATION_SIGNATURES = "POLICY_VERIFICATION_SIGNATURES";
-    protected static final String VALID_SIGNATURES = "VALID_SIGNATURES";
+    protected static final String TEST_GROUP_TCP_INTEGRATION = "TcpIntegration";
     protected static final String DEFAULT_HASH_ALGORITHM = "DEFAULT";
     private static final int DEFAULT_TIMEOUT = 5000;
     private static final String DEFAULT_PUBFILE_URL = "http://verify.guardtime.com/gt-controlpublications.bin";
@@ -126,10 +122,10 @@ public abstract class AbstractCommonIntegrationTest {
     protected SimpleHttpExtenderClient extenderClient;
     protected SimpleHttpPublicationsFileClient publicationsFileClient;
 
-    private static CredentialsAwareHttpSettings signingSettings;
-    private static CredentialsAwareHttpSettings extenderSettings;
-    private static HttpSettings publicationsFileSettings;
-    private static Properties properties;
+    protected static CredentialsAwareHttpSettings signingSettings;
+    protected static CredentialsAwareHttpSettings extenderSettings;
+    protected static HttpSettings publicationsFileSettings;
+    protected static Properties properties;
 
     @BeforeClass
     protected void setUp() throws Exception {
@@ -166,61 +162,6 @@ public abstract class AbstractCommonIntegrationTest {
         return getFileHash(fileName, DEFAULT_HASH_ALGORITHM);
     }
 
-    @DataProvider(name = KSI_DATA_GROUP_NAME)
-    public static Object[][] transportProtocols() throws Exception {
-        if (signingSettings == null) {
-            signingSettings = loadSignerSettings();
-        }
-
-        if (extenderSettings == null){
-            extenderSettings = loadExtenderSettings();
-        }
-
-        if (publicationsFileSettings == null) {
-            publicationsFileSettings = loadPublicationsFileSettings();
-        }
-
-        SimpleHttpSigningClient simpleHttpSigningClient = new SimpleHttpSigningClient(signingSettings);
-        ApacheHttpSigningClient apacheHttpSigningClient = new ApacheHttpSigningClient(signingSettings);
-
-        SimpleHttpExtenderClient simpleHttpExtenderClient = new SimpleHttpExtenderClient(extenderSettings);
-        ApacheHttpExtenderClient apacheHttpExtenderClient = new ApacheHttpExtenderClient(extenderSettings);
-
-        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient1 = new SimpleHttpPublicationsFileClient(publicationsFileSettings);
-        ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient1 = new ApacheHttpPublicationsFileClient(publicationsFileSettings);
-        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient2 = new SimpleHttpPublicationsFileClient(publicationsFileSettings);
-        ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient2 = new ApacheHttpPublicationsFileClient(publicationsFileSettings);
-
-        KSISigningClient tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
-
-        PendingKSIService pendingKSIService = new PendingKSIService();
-
-        List<KSISigningClient> signingClientsForHa = new ArrayList<KSISigningClient>();
-        signingClientsForHa.add(simpleHttpSigningClient);
-        signingClientsForHa.add(apacheHttpSigningClient);
-        List<KSISigningService> signingServicesForHa = new ArrayList<KSISigningService>();
-        signingServicesForHa.add(pendingKSIService);
-
-        List<KSIExtenderClient> extenderClientsForHa = new ArrayList<KSIExtenderClient>();
-        extenderClientsForHa.add(simpleHttpExtenderClient);
-        extenderClientsForHa.add(apacheHttpExtenderClient);
-        List<KSIExtendingService> extendingServicesForHa = new ArrayList<KSIExtendingService>();
-        extendingServicesForHa.add(pendingKSIService);
-
-        HAService haService = new HAService.Builder()
-                .addSigningClients(signingClientsForHa)
-                .addSigningServices(signingServicesForHa)
-                .addExtenderClients(extenderClientsForHa)
-                .addExtenderServices(extendingServicesForHa)
-                .build();
-
-        return new Object[][] {
-                new Object[] {createKsi(simpleHttpExtenderClient, simpleHttpSigningClient, simpleHttpPublicationsFileClient1)},
-                new Object[] {createKsi(apacheHttpExtenderClient, apacheHttpSigningClient, apacheHttpPublicationsFileClient1)},
-                new Object[] {createKsi((KSIExtenderClient) tcpClient, tcpClient, simpleHttpPublicationsFileClient2)},
-                new Object[] {createKsi(haService, haService, apacheHttpPublicationsFileClient2)}
-        };
-    }
 
     @Deprecated
     public static HttpClientSettings loadHTTPSettings(PduVersion pduVersion){
@@ -432,75 +373,6 @@ public abstract class AbstractCommonIntegrationTest {
         builder.setUserPublication(userPublication);
         builder.setExtendingAllowed(extendingAllowed);
         return ksi.verify(builder.build(), policy);
-    }
-
-    @DataProvider(name = VALID_SIGNATURES)
-    public static Object[][] getTestDataAndResultsForValidSignatures() throws Exception {
-        try{
-            return getTestFilesAndResults("valid-signatures/", "signature-results.csv");
-        } catch (Throwable e){
-            return new Object[][] {{}};
-        }
-    }
-
-    @DataProvider(name = INTERNAL_POLICY_SIGNATURES)
-    public static Object[][] getTestDataAndResultsForInternalPolicySignatures() throws Exception {
-        try{
-            return getTestFilesAndResults("internal-policy-signatures/", "internal-policy-results.csv");
-        } catch (Throwable e){
-            return new Object[][] {{}};
-        }
-    }
-
-    @DataProvider(name = INVALID_SIGNATURES)
-    public static Object[][] getTestDataAndResultsForInvalidSignatures() throws Exception {
-        try{
-            return getTestFilesAndResults("invalid-signatures/", "invalid-signature-results.csv");
-        } catch (Throwable e){
-            return new Object[][] {{}};
-        }
-    }
-
-    @DataProvider(name = POLICY_VERIFICATION_SIGNATURES)
-    public static Object[][] getTestDataAndResultsForPolicyVerificationSignatures() throws Exception {
-        try{
-            return getTestFilesAndResults("policy-verification-signatures/", "policy-verification-results.csv");
-        } catch (Throwable e){
-            return new Object[][] {{}};
-        }
-    }
-
-    private static Object[][] getTestFilesAndResults(String path, String fileName) throws Exception {
-        BufferedReader fileReader = null;
-        try {
-            fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(CommonTestUtil.loadFile(path + fileName))));
-            ArrayList<String> lines = new ArrayList<>();
-            String line;
-            while ((line = fileReader.readLine()) != null) {
-                if (!line.startsWith("#") && line.trim().length() > 17 && !line.contains(IntegrationTestAction.NOT_IMPLEMENTED.getName())) {
-                    line = line.replace(";", "; ");
-                    lines.add(line);
-                }
-            }
-
-            int linesCount = lines.size();
-            Object[][] data = new Object[linesCount][1];
-            SimpleHttpExtenderClient extenderClient = new SimpleHttpExtenderClient(loadExtenderSettings());
-
-            for (int i = 0; i < linesCount; i++) {
-                try{
-                    data[i] = new Object[]{new IntegrationTestDataHolder(path, lines.get(i).split(";"), extenderClient)};
-                } catch (Exception e){
-                    logger.warn("Error while parsing the following line: '" + lines.get(i) + "' from file: " + fileName);
-                    throw e;
-                }
-            }
-            return data;
-        } finally {
-            if (fileReader != null) {
-                fileReader.close();
-            }
-        }
     }
 
     protected static KSISigningService mockSigningService(final String responseFile, final ServiceCredentials credentials) throws Exception {

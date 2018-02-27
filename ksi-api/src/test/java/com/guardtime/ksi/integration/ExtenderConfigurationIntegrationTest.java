@@ -46,11 +46,11 @@ import static com.guardtime.ksi.TestUtil.assertCause;
 
 public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
-    private HAService haServiceV2;
-    private HAService haServiceV1;
-    private KSI ksiV2;
-    private KSI ksiV1;
-    private SimpleHttpExtenderClient extenderClientV1;
+    private HAService haServiceV2 = null;
+    private HAService haServiceV1 = null;
+    private KSI ksiV2 = null;
+    private KSI ksiV1 = null;
+    private SimpleHttpExtenderClient extenderClientV1 = null;
 
     @BeforeClass
     public void setUp() throws Exception {
@@ -75,6 +75,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
 
     @AfterClass
     public void tearDown() throws Exception {
+        super.tearDown();
         if (extenderClientV1 != null) extenderClientV1.close();
         if (haServiceV2 != null) haServiceV2.close();
         if (haServiceV1 != null) haServiceV1.close();

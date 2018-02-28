@@ -19,7 +19,6 @@
  */
 package com.guardtime.ksi.integration;
 
-import com.guardtime.ksi.CommonTestUtil;
 import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.ExtenderBuilder;
 import com.guardtime.ksi.KSI;
@@ -63,7 +62,6 @@ import com.guardtime.ksi.service.tcp.TCPClientSettings;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
@@ -78,18 +76,13 @@ import org.mockito.stubbing.Answer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -114,16 +107,15 @@ public abstract class AbstractCommonIntegrationTest {
 
     protected static final String KSI_DATA_GROUP_NAME = "ksiDataProvider";
     protected static final String TEST_GROUP_INTEGRATION = "integration";
-    protected static final String TEST_GROUP_TCP_INTEGRATION = "TcpIntegration";
     protected static final String DEFAULT_HASH_ALGORITHM = "DEFAULT";
     private static final int DEFAULT_TIMEOUT = 5000;
     private static final String DEFAULT_PUBFILE_URL = "http://verify.guardtime.com/gt-controlpublications.bin";
     protected static final HttpClientSettings FAULTY_HTTP_SETTINGS =
             new HttpClientSettings("http://.", "http://.", "http://.", new KSIServiceCredentials(".", "."));
     protected static String javaKeyStorePath = null;
-    private static List<Closeable> ksiObjects = new LinkedList<>();
+    private static List<Closeable> listOfCloseables = new LinkedList<>();
 
-    protected KSI ksi;
+    protected KSI ksi = null;
     protected SimpleHttpSigningClient signerClient;
     protected SimpleHttpExtenderClient extenderClient;
     protected SimpleHttpPublicationsFileClient publicationsFileClient;
@@ -149,10 +141,7 @@ public abstract class AbstractCommonIntegrationTest {
     @AfterClass
     public void tearDown() throws Exception {
         if (ksi != null) ksi.close();
-        if (signerClient != null) signerClient.close();
-        if (extenderClient != null) extenderClient.close();
-        if (publicationsFileClient != null) publicationsFileClient.close();
-        for (Closeable object : ksiObjects) {
+        for (Closeable object : listOfCloseables) {
             object.close();
         }
     }
@@ -318,19 +307,19 @@ public abstract class AbstractCommonIntegrationTest {
         return new Object[][] {
                 new Object[] {addToList(
                         createKsi(simpleHttpExtenderClient, simpleHttpSigningClient, simpleHttpPublicationsFileClient1),
-                        ksiObjects
+                        listOfCloseables
                 )},
                 new Object[] {addToList(
                         createKsi(apacheHttpExtenderClient, apacheHttpSigningClient, apacheHttpPublicationsFileClient1),
-                        ksiObjects
+                        listOfCloseables
                 )},
                 new Object[] {addToList(
                         createKsi((KSIExtenderClient) tcpClient, tcpClient, simpleHttpPublicationsFileClient2),
-                        ksiObjects
+                        listOfCloseables
                 )},
                 new Object[] {addToList(
                         createKsi(haService, haService, apacheHttpPublicationsFileClient2),
-                        ksiObjects
+                        listOfCloseables
                 )}
         };
     }

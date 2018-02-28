@@ -39,9 +39,9 @@ import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
 import com.guardtime.ksi.util.Util;
+
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadFile;

@@ -51,8 +51,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
@@ -75,9 +73,9 @@ import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_
 import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.INPUT_FILE_REVERSED;
 import static com.guardtime.ksi.TestUtil.calculateHash;
-import static com.guardtime.ksi.integration.AbstractKsiDataProviderIntegrationTest.KSI_DATA_GROUP_NAME;
+import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.KSI_DATA_GROUP_NAME;
 
-public class SignIntegrationTest extends AbstractKsiDataProviderIntegrationTest {
+public class SignIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test
     public void testSigningWithSignerClient_Ok() throws Exception {

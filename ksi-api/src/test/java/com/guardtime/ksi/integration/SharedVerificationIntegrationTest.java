@@ -21,21 +21,37 @@
 package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.CommonTestUtil;
+import com.guardtime.ksi.KSI;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.http.simple.SimpleHttpExtenderClient;
+import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.verifier.VerificationContext;
+import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-public class SharedVerificationIntegrationTest extends AbstractCommonIntegrationTest {
+import static com.guardtime.ksi.CommonTestUtil.load;
+import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.TEST_GROUP_INTEGRATION;
+import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.addToList;
+import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadExtenderSettings;
+
+public class SharedVerificationIntegrationTest {
     protected static final String INTERNAL_POLICY_SIGNATURES = "INTERNAL_POLICY_SIGNATURES";
     protected static final String INVALID_SIGNATURES = "INVALID_SIGNATURES";
     protected static final String POLICY_VERIFICATION_SIGNATURES = "POLICY_VERIFICATION_SIGNATURES";
@@ -43,11 +59,13 @@ public class SharedVerificationIntegrationTest extends AbstractCommonIntegration
 
     private static final Logger logger = LoggerFactory.getLogger(SharedVerificationIntegrationTest.class);
 
-    private static IntegrationTestDataHolder testData = null;
+    private static List<Closeable> testData = new LinkedList<>();
 
-    @AfterMethod
+    @AfterClass
     public void testTearDown() throws IOException {
-        if (testData != null) testData.close();
+        for (Closeable object : testData) {
+            object.close();
+        }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION, dataProvider = VALID_SIGNATURES)
@@ -70,7 +88,7 @@ public class SharedVerificationIntegrationTest extends AbstractCommonIntegration
         testExecution(testData);
     }
 
-    @DataProvider(name = VALID_SIGNATURES)
+    @DataProvider(name = VALID_SIGNATURES, parallel = true)
     public static Object[][] getTestDataAndResultsForValidSignatures() throws Exception {
         try{
             return getTestFilesAndResults("valid-signatures/", "signature-results.csv");
@@ -79,7 +97,7 @@ public class SharedVerificationIntegrationTest extends AbstractCommonIntegration
         }
     }
 
-    @DataProvider(name = INTERNAL_POLICY_SIGNATURES)
+    @DataProvider(name = INTERNAL_POLICY_SIGNATURES, parallel = true)
     public static Object[][] getTestDataAndResultsForInternalPolicySignatures() throws Exception {
         try{
             return getTestFilesAndResults("internal-policy-signatures/", "internal-policy-results.csv");
@@ -88,7 +106,7 @@ public class SharedVerificationIntegrationTest extends AbstractCommonIntegration
         }
     }
 
-    @DataProvider(name = INVALID_SIGNATURES)
+    @DataProvider(name = INVALID_SIGNATURES, parallel = true)
     public static Object[][] getTestDataAndResultsForInvalidSignatures() throws Exception {
         try{
             return getTestFilesAndResults("invalid-signatures/", "invalid-signature-results.csv");
@@ -97,7 +115,7 @@ public class SharedVerificationIntegrationTest extends AbstractCommonIntegration
         }
     }
 
-    @DataProvider(name = POLICY_VERIFICATION_SIGNATURES)
+    @DataProvider(name = POLICY_VERIFICATION_SIGNATURES, parallel = true)
     public static Object[][] getTestDataAndResultsForPolicyVerificationSignatures() throws Exception {
         try{
             return getTestFilesAndResults("policy-verification-signatures/", "policy-verification-results.csv");
@@ -126,8 +144,10 @@ public class SharedVerificationIntegrationTest extends AbstractCommonIntegration
 
             for (int i = 0; i < linesCount; i++) {
                 try{
-                     testData= new IntegrationTestDataHolder(path, lines.get(i).split(";"), extenderClient);
-                    data[i] = new Object[]{testData};
+                    data[i] = new Object[]{addToList(
+                            new IntegrationTestDataHolder(path, lines.get(i).split(";"), extenderClient),
+                            testData
+                    )};
                 } catch (Exception e){
                     logger.warn("Error while parsing the following line: '" + lines.get(i) + "' from file: " + fileName);
                     throw e;
@@ -137,6 +157,47 @@ public class SharedVerificationIntegrationTest extends AbstractCommonIntegration
         } finally {
             if (fileReader != null) {
                 fileReader.close();
+            }
+        }
+    }
+
+    private void testExecution(IntegrationTestDataHolder testData) throws Exception {
+        KSISignature signature;
+        KSI ksi = testData.getKsi();
+
+        if (testData.getAction().equals(IntegrationTestAction.NOT_IMPLEMENTED)) {
+            return;
+        }
+
+        if (testData.getAction().equals(IntegrationTestAction.FAIL_AT_PARSING)) {
+            try {
+                ksi.read(new File(testData.getTestFile()));
+                throw new IntegrationTestFailureException("Did not fail at parinsg while expected to. " + testData.toString());
+            } catch (KSIException e) {
+                return;
+            }
+        }
+
+        try {
+            signature = ksi.read(load(testData.getTestFile()));
+        } catch (Exception e) {
+            throw new IntegrationTestFailureException("Failure at signature parsing was not expected. " + testData.toString(), e);
+        }
+
+        VerificationContext context = testData.getVerificationContext(signature);
+        VerificationResult result = ksi.verify(context, testData.getAction().getPolicy());
+
+        if (testData.getErrorCode() == null) {
+            Assert.assertTrue(result.isOk(), "Verification result is not OK. " + testData.toString());
+        } else {
+            if (!(testData.getErrorCode().getCode().equals(result.getErrorCode().getCode()))) {
+                throw new IntegrationTestFailureException("Expected verification result error code '" + testData.getErrorCode().getCode() +
+                        "' but received '" + result.getErrorCode().getCode() + "'. " + testData.toString());
+            } else {
+                if (!result.getErrorCode().getMessage().equals(testData.getErrorMessage())) {
+                    throw new IntegrationTestFailureException("Expected error message '" + testData.getErrorMessage() +
+                            "' but received '" + result.getErrorCode().getMessage() + "'. " + testData.toString());
+                }
             }
         }
     }

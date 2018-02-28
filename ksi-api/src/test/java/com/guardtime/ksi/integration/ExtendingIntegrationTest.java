@@ -45,10 +45,8 @@ import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.TestUtil.loadSignature;
-import static com.guardtime.ksi.integration.AbstractKsiDataProviderIntegrationTest.KSI_DATA_GROUP_NAME;
 
-public class ExtendingIntegrationTest extends AbstractKsiDataProviderIntegrationTest {
-
+public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
     public void testExtendToNearest_OK(KSI ksi) throws Exception {

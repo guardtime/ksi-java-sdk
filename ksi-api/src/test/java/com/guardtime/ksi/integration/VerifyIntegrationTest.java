@@ -55,9 +55,8 @@ import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE;
 import static com.guardtime.ksi.Resources.SIGNATURE_PUBLICATION_RECORD_DOES_NOT_MATCH_PUBLICATION;
 import static com.guardtime.ksi.Resources.SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE;
 import static com.guardtime.ksi.TestUtil.loadSignature;
-import static com.guardtime.ksi.integration.AbstractKsiDataProviderIntegrationTest.KSI_DATA_GROUP_NAME;
 
-public class VerifyIntegrationTest extends AbstractKsiDataProviderIntegrationTest {
+public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingKeyBasedPolicy_Ok() throws Exception {

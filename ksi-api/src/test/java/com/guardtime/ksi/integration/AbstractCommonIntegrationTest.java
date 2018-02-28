@@ -66,6 +66,7 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
+import com.guardtime.ksi.unisignature.verifier.policies.InternalVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 
 import com.guardtime.ksi.util.Util;
@@ -84,6 +85,7 @@ import org.testng.annotations.DataProvider;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -94,6 +96,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -108,6 +111,8 @@ import static com.guardtime.ksi.TestUtil.calculateHash;
 public abstract class AbstractCommonIntegrationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractCommonIntegrationTest.class);
+
+    protected static final String KSI_DATA_GROUP_NAME = "ksiDataProvider";
     protected static final String TEST_GROUP_INTEGRATION = "integration";
     protected static final String TEST_GROUP_TCP_INTEGRATION = "TcpIntegration";
     protected static final String DEFAULT_HASH_ALGORITHM = "DEFAULT";
@@ -116,6 +121,7 @@ public abstract class AbstractCommonIntegrationTest {
     protected static final HttpClientSettings FAULTY_HTTP_SETTINGS =
             new HttpClientSettings("http://.", "http://.", "http://.", new KSIServiceCredentials(".", "."));
     protected static String javaKeyStorePath = null;
+    private static List<Closeable> ksiObjects = new LinkedList<>();
 
     protected KSI ksi;
     protected SimpleHttpSigningClient signerClient;
@@ -128,7 +134,7 @@ public abstract class AbstractCommonIntegrationTest {
     protected static Properties properties;
 
     @BeforeClass
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         properties = loadProperties();
         javaKeyStorePath = loadJavaKeyStorePath();
         signingSettings = loadSignerSettings();
@@ -141,11 +147,14 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     @AfterClass
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (ksi != null) ksi.close();
         if (signerClient != null) signerClient.close();
         if (extenderClient != null) extenderClient.close();
         if (publicationsFileClient != null) publicationsFileClient.close();
+        for (Closeable object : ksiObjects) {
+            object.close();
+        }
     }
 
     public static DataHash getFileHash(String fileName, String name) throws Exception {
@@ -258,6 +267,79 @@ public abstract class AbstractCommonIntegrationTest {
         return settings;
     }
 
+    @DataProvider(name = KSI_DATA_GROUP_NAME, parallel = true)
+    public static Object[][] transportProtocols() throws Exception {
+        if (signingSettings == null) {
+            signingSettings = loadSignerSettings();
+        }
+
+        if (extenderSettings == null){
+            extenderSettings = loadExtenderSettings();
+        }
+
+        if (publicationsFileSettings == null) {
+            publicationsFileSettings = loadPublicationsFileSettings();
+        }
+
+        SimpleHttpSigningClient simpleHttpSigningClient = new SimpleHttpSigningClient(signingSettings);
+        ApacheHttpSigningClient apacheHttpSigningClient = new ApacheHttpSigningClient(signingSettings);
+
+        SimpleHttpExtenderClient simpleHttpExtenderClient = new SimpleHttpExtenderClient(extenderSettings);
+        ApacheHttpExtenderClient apacheHttpExtenderClient = new ApacheHttpExtenderClient(extenderSettings);
+
+        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient1 = new SimpleHttpPublicationsFileClient(publicationsFileSettings);
+        ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient1 = new ApacheHttpPublicationsFileClient(publicationsFileSettings);
+        SimpleHttpPublicationsFileClient simpleHttpPublicationsFileClient2 = new SimpleHttpPublicationsFileClient(publicationsFileSettings);
+        ApacheHttpPublicationsFileClient apacheHttpPublicationsFileClient2 = new ApacheHttpPublicationsFileClient(publicationsFileSettings);
+
+        KSISigningClient tcpClient = new TCPClient(loadTCPSigningSettings(), loadTCPExtendingSettings());
+
+        PendingKSIService pendingKSIService = new PendingKSIService();
+
+        List<KSISigningClient> signingClientsForHa = new ArrayList<KSISigningClient>();
+        signingClientsForHa.add(simpleHttpSigningClient);
+        signingClientsForHa.add(apacheHttpSigningClient);
+        List<KSISigningService> signingServicesForHa = new ArrayList<KSISigningService>();
+        signingServicesForHa.add(pendingKSIService);
+
+        List<KSIExtenderClient> extenderClientsForHa = new ArrayList<KSIExtenderClient>();
+        extenderClientsForHa.add(simpleHttpExtenderClient);
+        extenderClientsForHa.add(apacheHttpExtenderClient);
+        List<KSIExtendingService> extendingServicesForHa = new ArrayList<KSIExtendingService>();
+        extendingServicesForHa.add(pendingKSIService);
+
+        HAService haService = new HAService.Builder()
+                .addSigningClients(signingClientsForHa)
+                .addSigningServices(signingServicesForHa)
+                .addExtenderClients(extenderClientsForHa)
+                .addExtenderServices(extendingServicesForHa)
+                .build();
+
+        return new Object[][] {
+                new Object[] {addToList(
+                        createKsi(simpleHttpExtenderClient, simpleHttpSigningClient, simpleHttpPublicationsFileClient1),
+                        ksiObjects
+                )},
+                new Object[] {addToList(
+                        createKsi(apacheHttpExtenderClient, apacheHttpSigningClient, apacheHttpPublicationsFileClient1),
+                        ksiObjects
+                )},
+                new Object[] {addToList(
+                        createKsi((KSIExtenderClient) tcpClient, tcpClient, simpleHttpPublicationsFileClient2),
+                        ksiObjects
+                )},
+                new Object[] {addToList(
+                        createKsi(haService, haService, apacheHttpPublicationsFileClient2),
+                        ksiObjects
+                )}
+        };
+    }
+
+    protected static Closeable addToList(Closeable object, List<Closeable> list) {
+        list.add(object);
+        return object;
+    }
+
     private String loadJavaKeyStorePath() {
         Properties props = loadProperties();
         if (javaKeyStorePath == null && props.containsKey("javaKeyStorePath")) {
@@ -311,7 +393,8 @@ public abstract class AbstractCommonIntegrationTest {
                 setKsiProtocolPublicationsFileClient(publicationsFileClient).
                 setKsiProtocolSignerClient(signingClient).
                 setPublicationsFilePkiTrustStore(createKeyStore()).
-                setPublicationsFileTrustedCertSelector(createCertSelector());
+                setPublicationsFileTrustedCertSelector(createCertSelector()).
+                setDefaultVerificationPolicy(new InternalVerificationPolicy());
     }
 
     protected PublicationsHandler getPublicationsHandler(KSIPublicationsFileClient publicationsFileClient) throws Exception {
@@ -415,47 +498,5 @@ public abstract class AbstractCommonIntegrationTest {
         });
 
         return mockedSigningService;
-    }
-
-
-    protected void testExecution(IntegrationTestDataHolder testData) throws Exception {
-        KSISignature signature;
-        KSI ksi = testData.getKsi();
-
-        if (testData.getAction().equals(IntegrationTestAction.NOT_IMPLEMENTED)) {
-            return;
-        }
-
-        if (testData.getAction().equals(IntegrationTestAction.FAIL_AT_PARSING)) {
-            try {
-                ksi.read(new File(testData.getTestFile()));
-                throw new IntegrationTestFailureException("Did not fail at parinsg while expected to. " + testData.toString());
-            } catch (KSIException e) {
-                return;
-            }
-        }
-
-        try {
-            signature = ksi.read(load(testData.getTestFile()));
-        } catch (Exception e) {
-            throw new IntegrationTestFailureException("Failure at signature parsing was not expected. " + testData.toString(), e);
-        }
-
-        VerificationContext context = testData.getVerificationContext(signature);
-        VerificationResult result = ksi.verify(context, testData.getAction().getPolicy());
-
-        if (testData.getErrorCode() == null) {
-            Assert.assertTrue(result.isOk(), "Verification result is not OK. " + testData.toString());
-        } else {
-            if (!(testData.getErrorCode().getCode().equals(result.getErrorCode().getCode()))) {
-                throw new IntegrationTestFailureException("Expected verification result error code '" + testData.getErrorCode().getCode() +
-                        "' but received '" + result.getErrorCode().getCode() + "'. " + testData.toString());
-            } else {
-                if (!result.getErrorCode().getMessage().equals(testData.getErrorMessage())) {
-                    throw new IntegrationTestFailureException("Expected error message '" + testData.getErrorMessage() +
-                            "' but received '" + result.getErrorCode().getMessage() + "'. " + testData.toString());
-                }
-            }
-        }
     }
 }

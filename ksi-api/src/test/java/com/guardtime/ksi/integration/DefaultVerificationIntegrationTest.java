@@ -54,51 +54,50 @@ import static com.guardtime.ksi.Resources.SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE;
 
 public class DefaultVerificationIntegrationTest extends AbstractCommonIntegrationTest {
     private static KSIBuilder ksiBuilder;
-    private KSI ksiTest = null;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
+        super.setUp();
         this.ksiBuilder = initKsiBuilder(
                 new SimpleHttpExtenderClient(loadExtenderSettings()),
                 new SimpleHttpSigningClient(loadSignerSettings()),
                 new SimpleHttpPublicationsFileClient(loadPublicationsFileSettings()));
     }
 
-    @AfterMethod
-    public void tearDown() throws Exception {
-        if (ksiTest != null) ksiTest.close();
-    }
-
     @Test(groups = TEST_GROUP_INTEGRATION,
             expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Verification inconclusive.*")
     public void testSigningWithPublicationFileBasedVerification_InvalidSignatureContentException_GEN2() throws Exception {
         Policy policy = new PublicationsFileBasedVerificationPolicy();
-        ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
+        try (KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build()){
 
-        try{
-            ksiTest.sign(new byte[32]);
-        } catch (InvalidSignatureContentException e) {
-            Assert.assertNotNull(e.getSignature(), "Signature is not provided with exception.");
-            Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.GEN_02);
-            throw e;
+            try {
+                ksiTest.sign(new byte[32]);
+            } catch (InvalidSignatureContentException e) {
+                Assert.assertNotNull(e.getSignature(), "Signature is not provided with exception.");
+                Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.GEN_02);
+                throw e;
+            }
         }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION,
-            expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Calendar hash chain input hash mismatch.*")
+            expectedExceptions = InvalidSignatureContentException.class,
+            expectedExceptionsMessageRegExp = ".*Calendar hash chain input hash mismatch.*")
     public void testExtendInvalidSignature_InvalidSignatureContentException_INT3() throws Exception {
-        ksiTest = ksiBuilder.build();
-        KSISignature signature = ksiTest.read(loadFile(SIGNATURE_CHANGED_CHAINS));
+        Policy policy = new InternalVerificationPolicy();
+        try (KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build()) {
+            KSISignature signature = ksiTest.read(loadFile(SIGNATURE_CHANGED_CHAINS));
 
-        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(
-                new PublicationData("AAAAAA-CX5TF7-IAOXTG-6N4TGI-AIGLHG-ZD2NOX-WHGLYG-HHOXAD-XJ3FIN-GXJSGS-72NPRL-3ECEBJ")
-        );
-        try {
-            ksiTest.extend(signature, publicationRecord);
-        } catch (InvalidSignatureContentException e) {
-            Util.notNull(e.getSignature(), "Signature is not provided with exception.");
-            Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.INT_03);
-            throw e;
+            PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(
+                    new PublicationData("AAAAAA-CX5TF7-IAOXTG-6N4TGI-AIGLHG-ZD2NOX-WHGLYG-HHOXAD-XJ3FIN-GXJSGS-72NPRL-3ECEBJ")
+            );
+            try {
+                ksiTest.extend(signature, publicationRecord);
+            } catch (InvalidSignatureContentException e) {
+                Util.notNull(e.getSignature(), "Signature is not provided with exception.");
+                Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.INT_03);
+                throw e;
+            }
         }
     }
 
@@ -107,16 +106,18 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
             expectedExceptionsMessageRegExp = ".*The metadata record in the aggregation hash chain may not be trusted.*")
     public void testInternalVerificationAsDefaultPolicy_InvalidSignatureContentException_INT11() throws Exception {
         Policy policy = new InternalVerificationPolicy();
-        ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile(SIGNATURE_METADATA_PADDING_TOO_LONG));
+        try (KSI ksiTest =ksiBuilder.setDefaultVerificationPolicy(policy).build()) {
+            ksiTest.read(loadFile(SIGNATURE_METADATA_PADDING_TOO_LONG));
+        }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION,
             expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Certificate not found.*")
     public void testKeyBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_KEY1() throws Exception {
         Policy policy = new KeyBasedVerificationPolicy();
-        ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile(SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE));
+        try (KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build()) {
+            ksiTest.read(loadFile(SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE));
+        }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION,
@@ -130,30 +131,34 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
             expectedExceptionsMessageRegExp = ".*Aggregation hash chain root hash and calendar database hash chain input hash mismatch.*")
     public void testCalendarBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_CAL2() throws Exception {
         Policy policy = new CalendarBasedVerificationPolicy();
-        ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile(SIGNATURE_OTHER_CORE));
+        try (KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build()) {
+            ksiTest.read(loadFile(SIGNATURE_OTHER_CORE));
+        }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION,
             expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Extender response input hash mismatch.*")
     public void testPublicationFileBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_PUB3() throws Exception {
         Policy policy = new PublicationsFileBasedVerificationPolicy();
-        ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile(SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR));
+        try (KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build()) {
+            ksiTest.read(loadFile(SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR));
+        }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyAsDefaultVerificationPolicy_OK() throws Exception {
         Policy policy = new DefaultVerificationPolicy();
-        KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile(SIGNATURE_2017_03_14));
+        try (KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build()) {
+            ksiTest.read(loadFile(SIGNATURE_2017_03_14));
+        }
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION,
             expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Extender response input hash mismatch.*")
     public void testDefaultPolicyAsDefaultVerificationPolicy__InvalidSignatureContentException_PUB3() throws Exception {
         Policy policy = new DefaultVerificationPolicy();
-        KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build();
-        ksiTest.read(loadFile(SIGNATURE_OTHER_CORE));
+        try (KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build()) {
+            ksiTest.read(loadFile(SIGNATURE_OTHER_CORE));
+        }
     }
 }

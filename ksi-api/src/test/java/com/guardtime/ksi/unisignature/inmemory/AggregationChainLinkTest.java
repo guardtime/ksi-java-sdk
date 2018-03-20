@@ -56,7 +56,8 @@ public class AggregationChainLinkTest {
         legacyId.setContent(LEGACY_ID_CONTENT);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount 257")
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class,
+            expectedExceptionsMessageRegExp = "Unsupported level correction amount 257")
     public void testCorrectionLevelExceeds8bits_ThrowsInvalidAggregationHashChainException() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x08);
         TLVElement correctionLevel = new TLVElement(false, false, 0x01);
@@ -66,14 +67,16 @@ public class AggregationChainLinkTest {
         new RightAggregationChainLink(element);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "AggregationChainLink sibling data must consist of one of the following: 'sibling hash', 'legacy id' or 'metadata'")
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class,
+            expectedExceptionsMessageRegExp = "AggregationChainLink sibling data must consist of one of the following: 'sibling hash', 'legacy id' or 'metadata'")
     public void testLinkMustHaveSiblingHashOrLegacyIdOrMetaData_ThrowsInvalidAggregationHashChainException() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x07);
         element.setStringContent("");
         new LeftAggregationChainLink(element);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Sibling hash and legacy id are present")
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class,
+            expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Sibling hash and legacy id are present")
     public void testLinkMustNotHaveSiblingHashAndLegacyId_ThrowsInvalidAggregationHashChainException() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(siblingHash);
@@ -81,7 +84,8 @@ public class AggregationChainLinkTest {
         new LeftAggregationChainLink(element);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Sibling hash and metadata are present")
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class,
+            expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Sibling hash and metadata are present")
     public void testLinkMustNotHaveSiblingHashAndMetadata_ThrowsInvalidAggregationHashChainException() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(siblingHash);
@@ -89,7 +93,8 @@ public class AggregationChainLinkTest {
         new LeftAggregationChainLink(element);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Legacy id and metadata are present")
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class,
+            expectedExceptionsMessageRegExp = "Multiple sibling data items in hash step. Legacy id and metadata are present")
     public void testLinkMustNotHaveLegacyIdAndMetadata_ThrowsInvalidAggregationHashChainException() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x07);
         element.addChildElement(legacyId);
@@ -97,7 +102,8 @@ public class AggregationChainLinkTest {
         new LeftAggregationChainLink(element);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "AggregationChainLink metadata does not contain clientId element")
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class,
+            expectedExceptionsMessageRegExp = "AggregationChainLink metadata does not contain clientId element")
     public void testLinkMetadataDoesNotContainClientId_ThrowsInvalidAggregationHashChainException() throws Exception {
         TLVElement metadata = new TLVElement(false, false, 0x04);
         TLVElement element = new TLVElement(false, false, 0x07);
@@ -105,17 +111,20 @@ public class AggregationChainLinkTest {
         new LeftAggregationChainLink(element);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount -2")
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class,
+            expectedExceptionsMessageRegExp = "Unsupported level correction amount -2")
     public void testNegativeLevelCorrectionWithMetadata_ThrowsInvalidAggregationHashChainException() throws Exception {
         new LeftAggregationChainLink(new InMemoryLinkMetadata(TEST_CLIENT_ID), -2L);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount 300")
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class,
+            expectedExceptionsMessageRegExp = "Unsupported level correction amount 300")
     public void testLargeLevelCorrectionWithMetadata_ThrowsInvalidAggregationHashChainException() throws Exception {
         new LeftAggregationChainLink(new InMemoryLinkMetadata(TEST_CLIENT_ID), 300L);
     }
 
-    @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Unsupported level correction amount -2")
+    @Test(expectedExceptions = InvalidAggregationHashChainException.class,
+            expectedExceptionsMessageRegExp = "Unsupported level correction amount -2")
     public void testNegativeLevelCorrectionSiblingHash_ThrowsInvalidAggregationHashChainException() throws Exception {
         new LeftAggregationChainLink(new DataHash(HashAlgorithm.SHA2_256, new byte[32]), -2L);
     }

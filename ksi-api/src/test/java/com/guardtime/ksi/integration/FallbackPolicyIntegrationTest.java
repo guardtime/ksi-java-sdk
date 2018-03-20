@@ -81,7 +81,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         PublicationData publicationData = signature.getPublicationRecord().getPublicationData();
 
         VerificationContextBuilder builder = new VerificationContextBuilder();
-        builder.setSignature(signature).setExtenderClient(simpleHttpClient).setPublicationsFile(publicationFile);
+        builder.setSignature(signature).setExtenderClient(extenderClient).setPublicationsFile(publicationFile);
         builder.setUserPublication(publicationData);
         builder.setExtendingAllowed(false);
         Assert.assertTrue(ksi.verify(builder.build(), policy).isOk());
@@ -145,12 +145,12 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
     }
 
     private void verification(KSISignature signature, Policy policy, boolean enableExtender) throws Exception {
-        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, enableExtender);
+        VerificationResult result = verify(ksi, extenderClient, signature, policy, enableExtender);
         Assert.assertTrue(result.isOk());
     }
 
     private void verificationWithPublicationData(KSISignature signature, Policy policy, PublicationData publicationData, boolean enableExtender) throws Exception{
-        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, enableExtender);
+        VerificationResult result = verify(ksi, extenderClient, signature, policy, publicationData, enableExtender);
         Assert.assertTrue(result.isOk());
     }
 }

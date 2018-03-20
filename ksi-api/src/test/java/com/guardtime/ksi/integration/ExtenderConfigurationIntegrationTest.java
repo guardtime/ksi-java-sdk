@@ -30,8 +30,13 @@ import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.ha.HAService;
-import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpExtenderClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpPublicationsFileClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpSigningClient;
+
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -45,19 +50,37 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
     private HAService haServiceV1;
     private KSI ksiV2;
     private KSI ksiV1;
-    private SimpleHttpClient simpleHttpClientV1;
+    private SimpleHttpExtenderClient extenderClientV1;
 
     @BeforeClass
     public void setUp() throws Exception {
         super.setUp();
-        SimpleHttpClient simpleHttpClientV2 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V2));
-        this.simpleHttpClientV1 = new SimpleHttpClient(loadHTTPSettings(PduVersion.V1));
-        haServiceV2 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClientV2))
-                .addExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV2)).build();
-        haServiceV1 = new HAService.Builder().addSigningClients(Collections.singletonList((KSISigningClient) simpleHttpClientV1))
-                .addExtenderClients(Collections.singletonList((KSIExtenderClient) simpleHttpClientV1)).build();
-        this.ksiV2 = createKsi(simpleHttpClientV2, simpleHttpClientV2, simpleHttpClientV2);
-        this.ksiV1 = createKsi(simpleHttpClientV1, simpleHttpClientV1, simpleHttpClientV1);
+
+        SimpleHttpSigningClient signingClientV1 = new SimpleHttpSigningClient(loadSignerSettings(PduVersion.V1));
+        SimpleHttpSigningClient signingClientV2 = new SimpleHttpSigningClient(loadSignerSettings(PduVersion.V2));
+
+        extenderClientV1 = new SimpleHttpExtenderClient(loadExtenderSettings(PduVersion.V1));
+        SimpleHttpExtenderClient extenderClientV2 = new SimpleHttpExtenderClient(loadExtenderSettings(PduVersion.V2));
+
+        SimpleHttpPublicationsFileClient publicationsFileClient = new SimpleHttpPublicationsFileClient(loadPublicationsFileSettings());
+
+        haServiceV2 = new HAService.Builder().addSigningClients(Collections.<KSISigningClient>singletonList(signingClientV2))
+                .addExtenderClients(Collections.<KSIExtenderClient>singletonList(extenderClientV2)).build();
+        haServiceV1 = new HAService.Builder().addSigningClients(Collections.<KSISigningClient>singletonList(signingClientV1))
+                .addExtenderClients(Collections.<KSIExtenderClient>singletonList(extenderClientV1)).build();
+
+        this.ksiV2 = createKsi(extenderClientV2, signingClientV2, publicationsFileClient);
+        this.ksiV1 = createKsi(extenderClientV1, signingClientV1, publicationsFileClient);
+    }
+
+    @AfterClass
+    public void tearDown() throws Exception {
+        super.tearDown();
+        if (extenderClientV1 != null) extenderClientV1.close();
+        if (haServiceV2 != null) haServiceV2.close();
+        if (haServiceV1 != null) haServiceV1.close();
+        if (ksiV2 != null) ksiV2.close();
+        if (ksiV1 != null) ksiV1.close();
     }
 
     @Test
@@ -117,7 +140,7 @@ public class ExtenderConfigurationIntegrationTest extends AbstractCommonIntegrat
     @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Not supported. Configure the SDK to use PDU v2 format.")
     public void testExtenderConfigurationRequestWithSimpleHttpClientV1() throws Throwable {
         final AsyncContext ac = new AsyncContext();
-        KSIExtendingClientServiceAdapter simpleHttpService = new KSIExtendingClientServiceAdapter(simpleHttpClientV1);
+        KSIExtendingClientServiceAdapter simpleHttpService = new KSIExtendingClientServiceAdapter(extenderClientV1);
         simpleHttpService.registerExtenderConfigurationListener(new ConfigurationListener<ExtenderConfiguration>() {
             public void updated(ExtenderConfiguration extenderConfiguration) {
                 try {

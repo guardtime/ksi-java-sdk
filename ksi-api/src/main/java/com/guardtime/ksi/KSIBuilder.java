@@ -450,6 +450,7 @@ public final class KSIBuilder {
         public void close() throws IOException {
             signer.close();
             extender.close();
+            publicationsFileClient.close();
         }
     }
 }

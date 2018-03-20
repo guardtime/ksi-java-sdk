@@ -58,7 +58,8 @@ public class InMemorySignaturePublicationRecordTest {
         Assert.assertEquals(publicationRecord.getPublicationRepositoryURIs().size(), 4);
     }
 
-    @Test(expectedExceptions = InvalidPublicationRecordException.class, expectedExceptionsMessageRegExp = "Required field publicationData\\(TLV\\[0x10\\]\\) missing in # PublicationRecord TLV\\[0x803\\]")
+    @Test(expectedExceptions = InvalidPublicationRecordException.class,
+            expectedExceptionsMessageRegExp = "Required field publicationData\\(TLV\\[0x10\\]\\) missing in # PublicationRecord TLV\\[0x803\\]")
     public void testDecodeInMemorySignaturePublicationRecordWithoutPublicationData_ThrowsInvalidPublicationRecordException() throws Exception {
         load(new ByteArrayInputStream(new byte[]{(byte) 0x88, 0x03, 0x0, 0x0}));
     }

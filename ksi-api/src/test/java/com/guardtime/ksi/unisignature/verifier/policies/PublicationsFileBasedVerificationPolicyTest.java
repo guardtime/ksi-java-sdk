@@ -26,7 +26,7 @@ import org.testng.annotations.Test;
 public class PublicationsFileBasedVerificationPolicyTest {
 
     @Test
-    public void testCreatePublicationsFileBasedVerificationPolicy_Ok() throws Exception {
+    public void testCreatePublicationsFileBasedVerificationPolicy_Ok() {
         PublicationsFileBasedVerificationPolicy policy = new PublicationsFileBasedVerificationPolicy();
         Assert.assertNotNull(policy.getRules());
         Assert.assertNotNull(policy.getName());

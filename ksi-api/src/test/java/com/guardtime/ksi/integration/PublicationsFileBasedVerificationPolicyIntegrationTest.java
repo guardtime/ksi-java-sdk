@@ -46,21 +46,21 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureWithCorrectDataAndSuitablePublicationInPublicationFile_VerificationReturnsOK() throws Exception {
-        VerificationResult results = publicationFileBasedVerification(EXTENDED_SIGNATURE_2017_03_14, null, false, simpleHttpClient);
+        VerificationResult results = publicationFileBasedVerification(EXTENDED_SIGNATURE_2017_03_14, null, false, extenderClient);
         Assert.assertTrue(results.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyUnextendedSignatureWithCorrectDataExtendingAllowed_VerificationReturnsOk() throws Exception {
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
-        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, true);
+        VerificationResult result = verify(ksi, extenderClient, signature, policy, true);
         Assert.assertTrue(result.isOk());
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyUnextendedSignatureWithCorrectDataExtendingNotAllowed_VerificationReturnsGen2() throws Exception {
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
-        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, false);
+        VerificationResult result = verify(ksi, extenderClient, signature, policy, false);
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
     }
@@ -68,11 +68,12 @@ public class PublicationsFileBasedVerificationPolicyIntegrationTest extends Abst
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyExtendedSignatureWithCorrectDataExtendingAllowed_OK() throws Exception {
         KSISignature signature = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14);
-        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, true);
+        VerificationResult result = verify(ksi, extenderClient, signature, policy, true);
         Assert.assertTrue(result.isOk());
     }
 
-    private VerificationResult publicationFileBasedVerification(String signatureFile, String publicationFile, boolean extendingAllowed, KSIExtenderClient extenderClient) throws Exception {
+    private VerificationResult publicationFileBasedVerification(String signatureFile, String publicationFile,
+                                                                boolean extendingAllowed, KSIExtenderClient extenderClient) throws Exception {
         KSISignature signature = TestUtil.loadSignature(signatureFile);
         VerificationContextBuilder build = new VerificationContextBuilder();
         if (publicationFile != null) {

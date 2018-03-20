@@ -78,32 +78,32 @@ public class SigningHAServiceConfigurationTest {
     }
 
     @Test
-    public void testConsolidatedMaximumLevel() throws Exception {
+    public void testConsolidatedMaximumLevel() {
         assertEquals(new SigningHAServiceConfiguration(c1, c2).getMaximumLevel(), c1.getMaximumLevel());
     }
 
     @Test
-    public void testConsolidatedAggregationAlgorithm() throws Exception {
+    public void testConsolidatedAggregationAlgorithm() {
         assertEquals(new SigningHAServiceConfiguration(c1, c2).getAggregationAlgorithm(), c1.getAggregationAlgorithm());
     }
 
     @Test
-    public void testConsolidatedAggregationPeriod() throws Exception {
+    public void testConsolidatedAggregationPeriod() {
         assertEquals(new SigningHAServiceConfiguration(c1, c2).getAggregationPeriod(), c1.getAggregationPeriod());
     }
 
     @Test
-    public void testConsolidatedMaximumRequests() throws Exception {
+    public void testConsolidatedMaximumRequests() {
         assertEquals(new SigningHAServiceConfiguration(c1, c2).getMaximumRequests(), c1.getMaximumRequests());
     }
 
     @Test
-    public void testConsolidatedParents() throws Exception {
+    public void testConsolidatedParents() {
         assertEquals(new SigningHAServiceConfiguration(c1, c2).getParents(), c2.getParents());
     }
 
     @Test
-    public void testConsolidateWithInsaneValues() throws Exception {
+    public void testConsolidateWithInsaneValues() {
         when(c1.getMaximumLevel()).thenReturn(21L);
         when(c1.getAggregationPeriod()).thenReturn(0L);
         when(c1.getMaximumRequests()).thenReturn(0L);

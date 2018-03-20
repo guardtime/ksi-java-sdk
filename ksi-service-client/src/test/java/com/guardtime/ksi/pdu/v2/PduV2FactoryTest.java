@@ -370,7 +370,7 @@ public class PduV2FactoryTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class,
             expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since .*")
-    public void testConstructDeprecatedHmacAlgorithm() throws Exception {
+    public void testConstructDeprecatedHmacAlgorithm() {
         new KSIServiceCredentials("anon", "anon", HashAlgorithm.SHA1);
     }
 

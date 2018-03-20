@@ -74,22 +74,22 @@ public class ExtendingHAServiceConfigurationTest {
     }
 
     @Test
-    public void testConsolidatedMaximumRequests() throws Exception {
+    public void testConsolidatedMaximumRequests() {
         assertEquals(c1.getMaximumRequests(), new ExtendingHAServiceConfiguration(c1, c2).getMaximumRequests());
     }
 
     @Test
-    public void testConsolidatedParents() throws Exception {
+    public void testConsolidatedParents() {
         assertEquals(c2.getParents(), new ExtendingHAServiceConfiguration(c1, c2).getParents());
     }
 
     @Test
-    public void testConsolidatedCalendarFirstTime() throws Exception {
+    public void testConsolidatedCalendarFirstTime() {
         assertEquals(c1.getCalendarFirstTime(), new ExtendingHAServiceConfiguration(c1, c2).getCalendarFirstTime());
     }
 
     @Test
-    public void testConsolidatedCalendarLastTime() throws Exception {
+    public void testConsolidatedCalendarLastTime() {
         assertEquals(c2.getCalendarLastTime(), new ExtendingHAServiceConfiguration(c1, c2).getCalendarLastTime());
     }
 

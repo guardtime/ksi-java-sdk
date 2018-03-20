@@ -31,20 +31,20 @@ public class ImprintNodeTest {
     public static final byte[] INPUT_HASH_VALUE = new byte[32];
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "InputHash can not be null")
-    public void testCreateImprintNodeWithoutDataHash() throws Exception {
+    public void testCreateImprintNodeWithoutDataHash() {
         DataHash dataHash = null;
         new ImprintNode(dataHash);
     }
 
     @Test
-    public void testCreateImprintNode() throws Exception {
+    public void testCreateImprintNode() {
         ImprintNode node = new ImprintNode(new DataHash(HashAlgorithm.SHA2_256, INPUT_HASH_VALUE));
         assertTrue(node.isLeaf());
         assertTrue(node.isRoot());
     }
 
     @Test
-    public void testCreateHashTree() throws Exception {
+    public void testCreateHashTree() {
         ImprintNode left = new ImprintNode(new DataHash(HashAlgorithm.SHA2_256, INPUT_HASH_VALUE));
         ImprintNode right = new ImprintNode(new DataHash(HashAlgorithm.SHA2_256, INPUT_HASH_VALUE));
         ImprintNode root = new ImprintNode(left, right, new DataHash(HashAlgorithm.SHA1, new byte[20]), 2);
@@ -62,7 +62,7 @@ public class ImprintNodeTest {
     }
 
     @Test
-    public void testCopyImprintNode() throws Exception {
+    public void testCopyImprintNode() {
         DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, INPUT_HASH_VALUE);
         ImprintNode childNode = new ImprintNode(dataHash);
         ImprintNode root = new ImprintNode(childNode, childNode, dataHash, 2);

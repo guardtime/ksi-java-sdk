@@ -46,7 +46,7 @@ public class DocumentHashAlgorithmVerificationRuleTest extends AbstractRuleTest 
     }
 
     @Test
-    public void testSignatureVerificationWithValidDocumentHashReturnsOkStatus_Ok() throws Exception {;
+    public void testSignatureVerificationWithValidDocumentHashReturnsOkStatus_Ok() throws Exception {
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
         Assert.assertEquals(rule.verify(build(signature, signature.getInputHash())).getResultCode(), VerificationResultCode.OK);
     }

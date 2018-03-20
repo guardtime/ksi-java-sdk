@@ -121,7 +121,8 @@ public class InMemoryKsiSignatureTest {
         Assert.assertNotNull(signature);
     }
 
-    @Test(expectedExceptions = InvalidSignatureException.class, expectedExceptionsMessageRegExp = "Found calendar authentication record and publication record. Given elements can not coexist")
+    @Test(expectedExceptions = InvalidSignatureException.class,
+            expectedExceptionsMessageRegExp = "Found calendar authentication record and publication record. Given elements can not coexist")
     public void testParseSignatureWithPublicationRecordAndCalendarAuthenticationRecord_ThrowsInvalidSignatureException() throws Exception {
         TestUtil.loadSignature(SIGNATURE_WITH_CAL_AUTH_AND_PUB_REC);
     }

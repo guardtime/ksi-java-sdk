@@ -40,8 +40,12 @@ import com.guardtime.ksi.service.KSIExtendingClientServiceAdapter;
 import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
+import com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings;
 import com.guardtime.ksi.service.client.http.HttpClientSettings;
+import com.guardtime.ksi.service.client.http.HttpSettings;
 import com.guardtime.ksi.service.http.simple.SimpleHttpClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpPublicationsFileClient;
+import com.guardtime.ksi.service.http.simple.SimpleHttpSigningClient;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.trust.JKSTrustStore;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -60,6 +64,7 @@ import org.mockito.stubbing.Answer;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -74,9 +79,11 @@ import static com.guardtime.ksi.CommonTestUtil.load;
 import static com.guardtime.ksi.TestUtil.calculateHash;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.createCertSelector;
 import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.createKeyStore;
-import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadHTTPSettings;
+import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadExtenderSettings;
+import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadPublicationsFileSettings;
+import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadSignerSettings;
 
-public class IntegrationTestDataHolder {
+public class IntegrationTestDataHolder implements Closeable {
 
     private String testFile;
     private final IntegrationTestAction action;
@@ -96,7 +103,7 @@ public class IntegrationTestDataHolder {
 
     private KSIExtenderClient extenderClient;
     private KSI ksi;
-    private final HttpClientSettings settings;
+    private final CredentialsAwareHttpSettings extenderSettings;
 
     public IntegrationTestDataHolder(String testFilePath, String[] inputData, KSIExtenderClient httpClient) throws Exception {
         notNull(inputData, "Input data");
@@ -134,22 +141,23 @@ public class IntegrationTestDataHolder {
         userPublication = inputData[10].length() == 0 ? null : new PublicationData(inputData[10]);
         extendingPermitted = inputData[11].length() == 0 ? false : Boolean.valueOf(inputData[11]);
 
-        this.settings = loadHTTPSettings();
+        this.extenderSettings = loadExtenderSettings();
         buildKsi();
     }
 
     private void buildKsi() throws IOException, KSIException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
-        SimpleHttpClient httpClient = new SimpleHttpClient(settings);
+        CredentialsAwareHttpSettings signerSettings = loadSignerSettings();
+        HttpSettings publicationSettings = loadPublicationsFileSettings();
         KSIBuilder builder = new KSIBuilder();
         builder.setPublicationsFilePkiTrustStore(getKeyStore()).
                 setKsiProtocolExtendingService(getExtendingService()).
-                setKsiProtocolSignerClient(httpClient).
+                setKsiProtocolSignerClient(new SimpleHttpSigningClient(signerSettings)).
                 setPublicationsFileTrustedCertSelector(createCertSelector()).
                 setDefaultVerificationPolicy(new AlwaysSuccessfulPolicy()).
                 setDefaultSigningHashAlgorithm(HashAlgorithm.SHA2_256);
 
         if (publicationsFile == null) {
-            builder.setKsiProtocolPublicationsFileClient(httpClient);
+            builder.setKsiProtocolPublicationsFileClient(new SimpleHttpPublicationsFileClient(publicationSettings));
         } else {
             builder.setKsiProtocolPublicationsFileClient(new PublicationsFileClientFromFile(publicationsFile));
         }
@@ -192,9 +200,17 @@ public class IntegrationTestDataHolder {
                 ByteArrayInputStream bais = new ByteArrayInputStream(request.toByteArray());
                 TLVElement requestElement = TLVElement.create(Util.toByteArray(bais));
 
-                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x01).setLongContent(requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong());
+                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x01).setLongContent(
+                        requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong()
+                );
 
-                responseTLV.getFirstChildElement(0x1F).setDataHashContent(calculateHash(responseTLV, responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(), settings.getCredentials().getLoginKey()));
+                responseTLV.getFirstChildElement(0x1F).setDataHashContent(
+                        calculateHash(
+                                responseTLV,
+                                responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(),
+                                extenderSettings.getCredentials().getLoginKey()
+                        )
+                );
                 return new ExtensionResponseFuture(mockedFuture, context, credentials, factory);
             }
         });
@@ -323,5 +339,10 @@ public class IntegrationTestDataHolder {
 
     public KSI getKsi() {
         return ksi;
+    }
+
+    public void close() throws IOException {
+        if (ksi != null) ksi.close();
+        if (extenderClient != null) extenderClient.close();
     }
 }

@@ -43,16 +43,15 @@ import static com.guardtime.ksi.TestUtil.assertCause;
 
 public class AggregatorConfigurationIntegrationTest extends AbstractCommonIntegrationTest {
 
-    private HAService haServiceV2 = null;
-    private HAService haServiceV1 = null;
-    private KSI ksiV2 = null;
-    private KSI ksiV1 = null;
-    private SimpleHttpSigningClient signingClientV1 = null;
+    private HAService haServiceV2;
+    private HAService haServiceV1;
+    private KSI ksiV2;
+    private KSI ksiV1;
+    private SimpleHttpSigningClient signingClientV1;
 
     @BeforeClass
     public void setUp() throws Exception {
         super.setUp();
-
         signingClientV1 = new SimpleHttpSigningClient(loadSignerSettings(PduVersion.V1));
         SimpleHttpSigningClient signingClientV2 = new SimpleHttpSigningClient(loadSignerSettings(PduVersion.V2));
 

@@ -115,7 +115,7 @@ public abstract class AbstractCommonIntegrationTest {
     protected static String javaKeyStorePath = null;
     private static List<Closeable> listOfCloseables = new LinkedList<>();
 
-    protected KSI ksi = null;
+    protected KSI ksi;
     protected SimpleHttpSigningClient signerClient;
     protected SimpleHttpExtenderClient extenderClient;
     protected SimpleHttpPublicationsFileClient publicationsFileClient;
@@ -351,7 +351,7 @@ public abstract class AbstractCommonIntegrationTest {
     }
 
     private static String getProperty(Properties props, String preferredKey, String alternativeKey) {
-        String value = null;
+        String value;
         if (props.containsKey(preferredKey)) {
             value = getProperty(props, preferredKey);
         } else if (props.containsKey(alternativeKey)) {

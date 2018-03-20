@@ -1,4 +1,12 @@
+Version 4.12
+
+* BUGFIX: KSI close now closes publications client/service.
+* BUGFIX: Tests are now closing services, clients and KSI.
+* IMPROVEMENT: Separated extender and signer settings in tests and properties.
+
 Version 4.11
+
+2018-01-09 4.11.153
 
 * FEATURE: Now Possible to extend with TCPClient. Also possible to initialize SigingTCPClient and ExtenderTCPClient separately. Deprecated TCPClient(TCPClientSettings) constructor.
 * IMPROVEMENT: Added support for Java 9. Removed support for Java 5 and Java 6.
@@ -16,13 +24,14 @@ Version 4.11
 * IMPROVEMENT: Upgraded maven-javadoc-plugin plugin dependency from version 2.10.3 to 3.0.0-M1
 * IMPROVEMENT: Upgraded maven-source-plugin plugin dependency from version  2.4 to 3.0.1
 * IMPROVEMENT: Upgraded maven-jar-plugin dependency plugin from version 2.6 to 3.0.2
-* IMPROVEMENT: Test resource update
+* IMPROVEMENT: Test resource update.
 * BUGFIX: Made extender optional for publication based verification policies.
 * BUGFIX: Fixed test resource loading functionality.
 
 Version 4.10
 
 2017-12-18 4.10.119
+
 * BUGFIX: CredentialsAwareHttpSettings is now using PDU V2 as default.
 * BUGFIX: Removed complex HTTP client initializing option using sub-clients.
 

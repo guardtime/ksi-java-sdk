@@ -32,6 +32,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
 
+import static com.guardtime.ksi.util.Util.join;
+import static com.guardtime.ksi.util.Util.toByteArray;
+
 /**
  * Functionality for hashing data.
  * <p> Data hasher is stateful, all new data added is added to the
@@ -191,7 +194,8 @@ public class DataHasher {
     }
 
     /**
-     * Adds the {@link DataHash#getValue()} to the digest.
+     * Adds {@link DataHash#getAlgorithm()}.{@link HashAlgorithm#getId() getId()} and
+     * {@link DataHash#getValue()} to the digest.
      *
      * @param dataHash input digest.
      *
@@ -201,7 +205,7 @@ public class DataHasher {
      */
     public final DataHasher addData(DataHash dataHash) {
         Util.notNull(dataHash, "DataHash");
-        return addData(dataHash.getValue());
+        return addData(join(toByteArray(dataHash.getAlgorithm().getId()), dataHash.getValue()));
     }
 
     /**

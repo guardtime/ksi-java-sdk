@@ -169,7 +169,7 @@ public class DataHasherTest {
         hasher.reset();
 
         hasher.addData(hash);
-        Assert.assertEquals(Base16.encode(hasher.getHash().getValue()), "58457D8062CA8F1E688E6DDF4FBD5239D899C586E32EFF76A6CD81B732702623");
+        Assert.assertEquals(Base16.encode(hasher.getHash().getValue()), "646715CF2CB0EA0AF0465571477C3783D1B3ECE2505D87787445C68198B305EC");
     }
 
     @Test(expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "Output hash has already been calculated")

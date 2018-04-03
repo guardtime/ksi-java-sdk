@@ -2,6 +2,7 @@ Version 4.12
 
 * BUGFIX: KSI close now closes publications client/service.
 * BUGFIX: Tests are now closing services, clients and KSI.
+* BUGFIX: Hash data imprint when hashing DataHash object.
 * IMPROVEMENT: Separated extender and signer settings in tests and properties.
 
 Version 4.11

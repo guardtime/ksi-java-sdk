@@ -145,7 +145,9 @@ public final class TLVElement {
      * @throws TLVParserException
      */
     public static TLVElement create(int type, Date value) throws TLVParserException {
-        return create(type, value.getTime() / 1000);
+        TLVElement element = create(type);
+        element.setDateContent(value);
+        return element;
     }
 
     /**
@@ -182,7 +184,41 @@ public final class TLVElement {
         return element;
     }
 
-    private static TLVElement create(int type) throws TLVParserException {
+    /**
+     * Creates TLV element with byte array content.
+     * TLV element nonCritical and forwarded flags are set to false.
+     *
+     * @param type TLV element type.
+     * @param value value to be the content of the TLV element.
+     *
+     * @return {@link TLVElement}
+     *
+     * @throws TLVParserException
+     */
+    public static TLVElement create(int type, byte[] value) throws TLVParserException {
+        TLVElement element = create(type);
+        element.setContent(value);
+        return element;
+    }
+
+    /**
+     * Creates TLV element with {@link HashAlgorithm} content.
+     * TLV element nonCritical and forwarded flags are set to false.
+     *
+     * @param type TLV element type.
+     * @param value value to be the content of the TLV element.
+     *
+     * @return {@link TLVElement}
+     *
+     * @throws TLVParserException
+     */
+    public static TLVElement create(int type, HashAlgorithm value) throws TLVParserException {
+        TLVElement element = create(type);
+        element.setHashAlgorithmContent(value);
+        return element;
+    }
+
+    private static TLVElement create(int type) {
         return new TLVElement(false, false, type);
     }
 
@@ -325,6 +361,15 @@ public final class TLVElement {
 
     public void setDataHashContent(DataHash dataHash) throws TLVParserException {
         setContent(dataHash.getImprint());
+    }
+
+    public void setDateContent(Date date) throws TLVParserException {
+        setLongContent(date.getTime() / 1000);
+    }
+
+    public void setHashAlgorithmContent(HashAlgorithm hashAlgorithm) throws TLVParserException {
+        new Long(hashAlgorithm.getId());
+        setLongContent((long) hashAlgorithm.getId());
     }
 
     /**

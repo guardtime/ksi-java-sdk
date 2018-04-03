@@ -191,7 +191,7 @@ public class DataHasher {
     }
 
     /**
-     * Adds the {@link DataHash#getValue()} to the digest.
+     * Adds {@link DataHash#getImprint()} to the digest.
      *
      * @param dataHash input digest.
      *
@@ -201,7 +201,7 @@ public class DataHasher {
      */
     public final DataHasher addData(DataHash dataHash) {
         Util.notNull(dataHash, "DataHash");
-        return addData(dataHash.getValue());
+        return addData(dataHash.getImprint());
     }
 
     /**

@@ -161,6 +161,17 @@ public class DataHasherTest {
         Assert.assertEquals(hash, hasher.getHash());
     }
 
+    @Test
+    public void testAddDataHash() {
+        DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
+        hasher.addData(testData);
+        DataHash hash = hasher.getHash();
+        hasher.reset();
+
+        hasher.addData(hash);
+        Assert.assertEquals(Base16.encode(hasher.getHash().getValue()), "646715CF2CB0EA0AF0465571477C3783D1B3ECE2505D87787445C68198B305EC");
+    }
+
     @Test(expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "Output hash has already been calculated")
     public void testAddDataAfterGettingResult() {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);

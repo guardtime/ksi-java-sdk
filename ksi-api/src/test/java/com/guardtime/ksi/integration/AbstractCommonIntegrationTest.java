@@ -189,9 +189,10 @@ public abstract class AbstractCommonIntegrationTest {
         String signerIP = getProperty(props, "tcp.signerIP");
         int signerPort = Integer.parseInt(getProperty(props, "tcp.signerPort"));
         int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
-        String loginId = getProperty(props, "tcp.signerLoginId", "tcp.loginId");
-        String loginKey = getProperty(props, "tcp.signerLoginKey", "tcp.loginKey");
-        ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
+        ServiceCredentials serviceCredentials = new KSIServiceCredentials(
+                getProperty(props, "tcp.signerLoginId", "tcp.loginId"),
+                getProperty(props, "tcp.signerLoginKey", "tcp.loginKey"),
+                HashAlgorithm.getByName(props.getProperty("tcp.signerHmacAlgorithm", DEFAULT_HASH_ALGORITHM)));
         return new TCPClientSettings(new InetSocketAddress(signerIP, signerPort), tcpTransactionTimeoutSec,
                 serviceCredentials);
     }
@@ -201,9 +202,10 @@ public abstract class AbstractCommonIntegrationTest {
         String extenderIp = getProperty(props, "tcp.extenderIP");
         int extenderPort = Integer.parseInt(getProperty(props, "tcp.extenderPort"));
         int tcpTransactionTimeoutSec = Integer.parseInt(getProperty(props, "tcp.transactionTimeoutSec"));
-        String loginId = getProperty(props, "tcp.extenderLoginId", "tcp.loginId");
-        String loginKey = getProperty(props, "tcp.extenderLoginKey", "tcp.loginKey");
-        ServiceCredentials serviceCredentials = new KSIServiceCredentials(loginId, loginKey);
+        ServiceCredentials serviceCredentials = new KSIServiceCredentials(
+                getProperty(props, "tcp.extenderLoginId", "tcp.loginId"),
+                getProperty(props, "tcp.extenderLoginKey", "tcp.loginKey"),
+                HashAlgorithm.getByName(props.getProperty("tcp.extenderHmacAlgorithm", DEFAULT_HASH_ALGORITHM)));
         return new TCPClientSettings(new InetSocketAddress(extenderIp, extenderPort), tcpTransactionTimeoutSec,
                 serviceCredentials);
     }
@@ -235,7 +237,8 @@ public abstract class AbstractCommonIntegrationTest {
         Properties props = loadProperties();
         ServiceCredentials credentials = new KSIServiceCredentials(
                 getProperty(props, "signerLoginId", "loginId"),
-                getProperty(props, "signerLoginKey", "loginKey"));
+                getProperty(props, "signerLoginKey", "loginKey"),
+                HashAlgorithm.getByName(props.getProperty("signerHmacAlgorithm", DEFAULT_HASH_ALGORITHM)));
         return loadSettings(getProperty(props, "signerUrl", "gatewayUrl"), credentials, pduVersion);
     }
 
@@ -244,8 +247,8 @@ public abstract class AbstractCommonIntegrationTest {
 
         ServiceCredentials credentials = new KSIServiceCredentials(
                 getProperty(props, "extenderLoginId", "loginId"),
-                getProperty(props, "extenderLoginKey", "loginKey"));
-
+                getProperty(props, "extenderLoginKey", "loginKey"),
+                HashAlgorithm.getByName(props.getProperty("extenderHmacAlgorithm", DEFAULT_HASH_ALGORITHM)));
         return loadSettings(getProperty(props, "extenderUrl"), credentials,  pduVersion);
     }
 

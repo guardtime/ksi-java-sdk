@@ -368,7 +368,6 @@ public final class TLVElement {
     }
 
     public void setHashAlgorithmContent(HashAlgorithm hashAlgorithm) throws TLVParserException {
-        new Long(hashAlgorithm.getId());
         setLongContent((long) hashAlgorithm.getId());
     }
 

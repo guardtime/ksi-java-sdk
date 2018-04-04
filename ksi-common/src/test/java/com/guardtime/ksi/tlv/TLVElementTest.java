@@ -329,8 +329,8 @@ public class TLVElementTest {
 
     @Test
     public void testGetDecodedHashAlgorithm_OK() throws Exception {
-        TLVElement element = TLVElement.create(new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
-        element.setLongContent(0x0A);
+        TLVElement element = new TLVElement(false, false, 0x0f);
+        element.setHashAlgorithmContent(HashAlgorithm.SHA3_512);
         Assert.assertEquals(element.getDecodedHashAlgorithm(), HashAlgorithm.SHA3_512);
     }
 
@@ -344,7 +344,7 @@ public class TLVElementTest {
     @Test
     public void testGetDecodedDate_OK() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x1);
-        element.setLongContent(1442837678);
+        element.setDateContent(new Date(1442837678000L));
         Assert.assertEquals(element.getDecodedDate(), new Date(1442837678000L));
     }
 

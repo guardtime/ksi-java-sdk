@@ -21,7 +21,6 @@ package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregatorConfiguration;
@@ -58,14 +57,14 @@ public class PduV2Factory implements PduFactory {
         Util.notNull(imprint, "DataHash");
         Util.notNull(credentials,"ServiceCredentials");
         AggregationRequestPayloadV2 payload = new AggregationRequestPayloadV2(imprint, context.getRequestId(), level);
-        return new AggregationRequestPduV2(Collections.singletonList(payload.getRootElement()), HashAlgorithm.SHA2_256, context, credentials);
+        return new AggregationRequestPduV2(Collections.singletonList(payload.getRootElement()), context, credentials);
     }
 
     public AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(credentials,"ServiceCredentials");
         TLVElement payload = new TLVElement(false, false, false, ELEMENT_TYPE_CONFIGURATION);
-        return new AggregationRequestPduV2(Collections.singletonList(payload), HashAlgorithm.SHA2_256, context, credentials);
+        return new AggregationRequestPduV2(Collections.singletonList(payload), context, credentials);
     }
 
     public AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException {
@@ -91,14 +90,14 @@ public class PduV2Factory implements PduFactory {
             throw new KSIProtocolException("There is no suitable publication yet");
         }
         ExtensionRequestPayloadV2 payload = new ExtensionRequestPayloadV2(aggregationTime, publicationTime, context.getRequestId());
-        return new ExtensionRequestPduV2(Collections.singletonList(payload.getRootElement()), HashAlgorithm.SHA2_256, context, credentials);
+        return new ExtensionRequestPduV2(Collections.singletonList(payload.getRootElement()), context, credentials);
     }
 
     public ExtensionRequest createExtensionConfigurationRequest(KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(credentials,"ServiceCredentials");
         TLVElement payload = new TLVElement(false, false, false, ELEMENT_TYPE_CONFIGURATION);
-        return new ExtensionRequestPduV2(Collections.singletonList(payload), HashAlgorithm.SHA2_256, context, credentials);
+        return new ExtensionRequestPduV2(Collections.singletonList(payload), context, credentials);
     }
 
     public ExtensionResponse readExtensionResponse(KSIRequestContext context, ServiceCredentials credentials, TLVElement input) throws KSIException {

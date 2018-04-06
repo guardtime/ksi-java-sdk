@@ -20,7 +20,6 @@
 package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
@@ -33,8 +32,8 @@ import java.util.List;
 
 class AggregationRequestPduV2 extends PduV2 implements AggregationRequest {
 
-    public AggregationRequestPduV2(List<TLVElement> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
-        super(new PduMessageHeader(credentials.getLoginId(), context), payloads, macAlgorithm, credentials.getLoginKey());
+    AggregationRequestPduV2(List<TLVElement> payloads, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
+        super(new PduMessageHeader(credentials.getLoginId(), context), payloads, credentials.getHmacAlgorithm(), credentials.getLoginKey());
     }
 
     @Override

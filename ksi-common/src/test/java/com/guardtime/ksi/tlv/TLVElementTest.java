@@ -273,9 +273,64 @@ public class TLVElementTest {
     }
 
     @Test
-    public void testGetDecodedHashAlgorithm_OK() throws Exception {
-        TLVElement element = TLVElement.create(new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
-        element.setLongContent(0x0A);
+    public void testCreateTlvElementWithLongContent() throws Exception {
+        TLVElement element = TLVElement.create(2, 42L);
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getDecodedLong().longValue(), 42L);
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testCreateTlvElementWithDateContent() throws Exception {
+        TLVElement element = TLVElement.create(2, new Date(152275149000L));
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getDecodedDate(), new Date(152275149000L));
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testCreateTlvElementWithDataHashContent() throws Exception {
+        DataHash value = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
+        TLVElement element = TLVElement.create(2, value);
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getDecodedDataHash(), value);
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testCreateTlvElementWithStringContent() throws Exception {
+        TLVElement element = TLVElement.create(2, "string");
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getDecodedString(), "string");
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testCreateTlvElementWithByteArrayContent() throws Exception {
+        TLVElement element = TLVElement.create(2, new byte[]{1, 2, 3});
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getContent(), new byte[]{1, 2, 3});
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testCreateTlvElementWithHashAlgorithmContent() throws Exception {
+        TLVElement element = TLVElement.create(2, HashAlgorithm.SHA2_256);
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getDecodedHashAlgorithm(), HashAlgorithm.SHA2_256);
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testSetHashAlgorithm_OK() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x0f);
+        element.setHashAlgorithmContent(HashAlgorithm.SHA3_512);
         Assert.assertEquals(element.getDecodedHashAlgorithm(), HashAlgorithm.SHA3_512);
     }
 
@@ -287,9 +342,9 @@ public class TLVElementTest {
     }
 
     @Test
-    public void testGetDecodedDate_OK() throws Exception {
+    public void testSetDate_OK() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x1);
-        element.setLongContent(1442837678);
+        element.setDateContent(new Date(1442837678000L));
         Assert.assertEquals(element.getDecodedDate(), new Date(1442837678000L));
     }
 
@@ -350,6 +405,12 @@ public class TLVElementTest {
 
     private TLVElement load(InputStream input) throws Exception {
         return loadTlv(input);
+    }
+
+    private void assertElementFlagsAreFalse(TLVElement element) {
+        Assert.assertFalse(element.isInputTlv16());
+        Assert.assertFalse(element.isNonCritical());
+        Assert.assertFalse(element.isForwarded());
     }
 
 }

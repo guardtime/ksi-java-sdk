@@ -2,6 +2,8 @@ Version 4.12
 
 * IMPROVEMENT: Separated extender and signer settings in tests and properties.
 * IMPROVEMENT: Added convenience methods for creating TLVElement and setting its content.
+* IMPROVEMENT: For aggregation and extension requests take HMAC algorithm from credentials.
+* IMPROVEMENT: Add option to set HMAC algorithm that is used in tests via integrationtest.properties.
 * BUGFIX: KSI close now closes publications client/service.
 * BUGFIX: Tests are now closing services, clients and KSI.
 * BUGFIX: Hash data imprint when hashing DataHash object.

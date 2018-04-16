@@ -20,7 +20,6 @@
 package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduMessageHeader;
@@ -35,8 +34,8 @@ class ExtensionRequestPduV2 extends PduV2 implements ExtensionRequest {
 
     private static final int[] SUPPORTED_PAYLOAD_TYPES = new int[]{0x02, 0x04};
 
-    public ExtensionRequestPduV2(List<TLVElement> payloads, HashAlgorithm macAlgorithm, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
-        super(new PduMessageHeader(credentials.getLoginId(), context), payloads, macAlgorithm, credentials.getLoginKey());
+    ExtensionRequestPduV2(List<TLVElement> payloads, KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
+        super(new PduMessageHeader(credentials.getLoginId(), context), payloads, credentials.getHmacAlgorithm(), credentials.getLoginKey());
     }
 
     @Override

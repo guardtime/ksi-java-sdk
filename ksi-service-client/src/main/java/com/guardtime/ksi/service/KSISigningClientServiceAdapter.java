@@ -23,14 +23,7 @@ package com.guardtime.ksi.service;
 import com.guardtime.ksi.concurrency.DefaultExecutorServiceProvider;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.pdu.AggregationRequest;
-import com.guardtime.ksi.pdu.AggregationResponse;
-import com.guardtime.ksi.pdu.AggregationResponseFuture;
-import com.guardtime.ksi.pdu.AggregatorConfiguration;
-import com.guardtime.ksi.pdu.KSIRequestContext;
-import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.PduFactoryProvider;
-import com.guardtime.ksi.pdu.RequestContextFactory;
+import com.guardtime.ksi.pdu.*;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
@@ -60,8 +53,9 @@ public final class KSISigningClientServiceAdapter implements KSISigningService {
         Util.notNull(client, "KSISigningClientServiceAdapter.client");
         Util.notNull(executorService, "KSISigningClientServiceAdapter.executorService");
         this.client = client;
-        this.pduFactory = PduFactoryProvider.get(client.getPduVersion());
         this.aggregatorConfHandler = new ConfigurationHandler<>(executorService);
+        this.pduFactory = PduFactoryProvider.withAggregatorConfListener(client.getPduVersion(),
+                new PushConfigurationListener<>(aggregatorConfHandler));
     }
 
     public Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException {

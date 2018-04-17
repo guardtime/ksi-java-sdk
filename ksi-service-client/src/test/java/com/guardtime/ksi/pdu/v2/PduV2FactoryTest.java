@@ -30,12 +30,14 @@ import com.guardtime.ksi.pdu.ExtensionRequest;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.exceptions.InvalidMessageAuthenticationCodeException;
+import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.GlobalTlvTypes;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVParserException;
+import org.mockito.ArgumentCaptor;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -43,6 +45,10 @@ import org.testng.annotations.Test;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class PduV2FactoryTest {
 
@@ -213,6 +219,54 @@ public class PduV2FactoryTest {
     }
 
     @Test
+    public void testExtensionResponseParsingWithoutConfUpdate() throws Exception {
+        ConfigurationListener<ExtenderConfiguration> extenderConfigurationListener = mock(ConfigurationListener.class);
+        PduV2Factory pduFactoryWithConfHandler = new PduV2Factory(new ExtenderPduV2Factory(extenderConfigurationListener));
+
+        KSIRequestContext context = new KSIRequestContext(4846851148188931472L, 42L, 42L);
+        ExtensionResponse response = pduFactoryWithConfHandler.readExtensionResponse(context, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2.tlv"));
+        Assert.assertNotNull(response);
+        verify(extenderConfigurationListener, times(0)).updated(any(ExtenderConfiguration.class));
+        verify(extenderConfigurationListener, times(0)).updateFailed(any(Throwable.class));
+    }
+
+    @Test
+    public void testExtensionResponseParsingWithConfigurationUpdate() throws Exception {
+        ArgumentCaptor<ExtenderConfiguration> argumentCaptor = ArgumentCaptor.forClass(ExtenderConfiguration.class);
+        ConfigurationListener<ExtenderConfiguration> extenderConfigurationListener = mock(ConfigurationListener.class);
+        PduV2Factory pduFactoryWithConfHandler = new PduV2Factory(new ExtenderPduV2Factory(extenderConfigurationListener));
+        KSIRequestContext context = new KSIRequestContext(8396215651691691389L, 42L, 42L);
+
+        ExtensionResponse response = pduFactoryWithConfHandler.readExtensionResponse(context, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-multiple-mixed-and-duplicate-payloads.tlv"));
+
+        verify(extenderConfigurationListener, times(1)).updated(argumentCaptor.capture());
+        verify(extenderConfigurationListener, times(0)).updateFailed(any(Throwable.class));
+        ExtenderConfiguration configuration = argumentCaptor.getValue();
+        Assert.assertEquals((long) configuration.getMaximumRequests(), 4L);
+        Assert.assertEquals(configuration.getCalendarFirstTime(), new Date(5557150000L));
+        Assert.assertEquals(configuration.getCalendarLastTime(), new Date(1422630579000L));
+        for (String parent : configuration.getParents()){
+            Assert.assertTrue(parent.contains(".url"));
+        }
+        Assert.assertNotNull(response);
+    }
+
+    @Test
+    public void testExtensionResponseParsingWithBrokenConfigurationUpdate() throws Exception {
+        ArgumentCaptor<Throwable> argumentCaptor = ArgumentCaptor.forClass(Throwable.class);
+        ConfigurationListener<ExtenderConfiguration> extenderConfigurationListener = mock(ConfigurationListener.class);
+        PduV2Factory pduFactoryWithConfHandler = new PduV2Factory(new ExtenderPduV2Factory(extenderConfigurationListener));
+        KSIRequestContext context = new KSIRequestContext(8396215651691691389L, 42L, 42L);
+
+        ExtensionResponse response = pduFactoryWithConfHandler.readExtensionResponse(context, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-with-broken-conf.tlv"));
+
+        Assert.assertNotNull(response);
+        verify(extenderConfigurationListener, times(0)).updated(any(ExtenderConfiguration.class));
+        verify(extenderConfigurationListener, times(1)).updateFailed(argumentCaptor.capture());
+        Assert.assertEquals(argumentCaptor.getValue().getMessage(), "Unknown critical TLV element with tag=0x5 encountered");
+    }
+
+    @Test
     public void testCreateAggregationConfigurationRequest() throws Exception {
         AggregationRequest request = pduFactory.createAggregatorConfigurationRequest(requestContext, CREDENTIALS);
         Assert.assertNotNull(request);
@@ -238,6 +292,53 @@ public class PduV2FactoryTest {
     public void testAggregationResponseParsingWithMultipleResponses() throws Exception {
         AggregationResponse response = pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregator-response-v2-multiple-mixed-and-duplicate-payloads.tlv"));
         Assert.assertNotNull(response);
+    }
+
+    @Test
+    public void testAggregationResponseParsingWithoutConfUpdate() throws Exception {
+        ConfigurationListener<AggregatorConfiguration> aggregatorConfigurationListener = mock(ConfigurationListener.class);
+
+        PduV2Factory pduFactoryWithConfListener = new PduV2Factory(new AggregatorPduV2Factory(aggregatorConfigurationListener));
+
+        KSIRequestContext context = new KSIRequestContext(123456L, 42L, 42L);
+        AggregationResponse response = pduFactoryWithConfListener.readAggregationResponse(context, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2.tlv"));
+        Assert.assertNotNull(response);
+        verify(aggregatorConfigurationListener, times(0)).updated(any(AggregatorConfiguration.class));
+        verify(aggregatorConfigurationListener, times(0)).updateFailed(any(Throwable.class));
+    }
+
+    @Test
+    public void testAggregationResponseParsingWithConfigurationUpdate() throws Exception {
+        ArgumentCaptor<AggregatorConfiguration> argumentCaptor = ArgumentCaptor.forClass(AggregatorConfiguration.class);
+        ConfigurationListener<AggregatorConfiguration> aggregatorConfigurationListener = mock(ConfigurationListener.class);
+        PduV2Factory pduFactoryWithConfHandler = new PduV2Factory(new AggregatorPduV2Factory(aggregatorConfigurationListener));
+
+        AggregationResponse response = pduFactoryWithConfHandler.readAggregationResponse(requestContext, CREDENTIALS,
+                loadTlv("pdu/aggregation/aggregator-response-v2-multiple-mixed-and-duplicate-payloads.tlv"));
+
+        Assert.assertNotNull(response);
+        verify(aggregatorConfigurationListener, times(1)).updated(argumentCaptor.capture());
+        verify(aggregatorConfigurationListener, times(0)).updateFailed(any(Throwable.class));
+        AggregatorConfiguration configuration = argumentCaptor.getValue();
+        Assert.assertEquals((long) configuration.getMaximumLevel(), 19L);
+        Assert.assertEquals((long) configuration.getAggregationPeriod(), 12288L);
+        Assert.assertEquals((long) configuration.getMaximumRequests(), 17L);
+        Assert.assertEquals(configuration.getAggregationAlgorithm(), HashAlgorithm.SHA2_384);
+        Assert.assertEquals(configuration.getParents().size(), 3);
+    }
+
+    @Test
+    public void testAggregationResponseParsingWithBrokenConfigurationUpdate() throws Exception {
+        ArgumentCaptor<Throwable> argumentCaptor = ArgumentCaptor.forClass(Throwable.class);
+        ConfigurationListener<AggregatorConfiguration> aggregatorConfigurationListener = mock(ConfigurationListener.class);
+        PduV2Factory pduFactoryWithConfHandler = new PduV2Factory(new AggregatorPduV2Factory(aggregatorConfigurationListener));
+
+        AggregationResponse response = pduFactoryWithConfHandler.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-with-broken-conf.tlv"));
+
+        Assert.assertNotNull(response);
+        verify(aggregatorConfigurationListener, times(0)).updated(any(AggregatorConfiguration.class));
+        verify(aggregatorConfigurationListener, times(1)).updateFailed(argumentCaptor.capture());
+        Assert.assertEquals(argumentCaptor.getValue().getMessage(), "Unknown critical TLV element with tag=0x5 encountered");
     }
 
     @Test
@@ -330,6 +431,18 @@ public class PduV2FactoryTest {
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator")
     public void testReadV1AggregatorConfigurationResponse() throws Exception {
         pduFactory.readAggregatorConfigurationResponse(requestContext, CREDENTIALS, loadTlv("aggregation-203-error.tlv"));
+    }
+
+    @Test
+    public void testCreateExtenderRequest_Ok() throws Exception {
+        ExtensionRequest request = pduFactory.createExtensionRequest(requestContext, CREDENTIALS, new Date(1489520040000L), new Date(1489520040000L));
+        Assert.assertNotNull(request);
+    }
+
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "There is no suitable publication yet")
+    public void testCreateExtenderRequestWithAggregationTimeAfterPublicationTime_ThrowsKSIProtocolException() throws Exception {
+        ExtensionRequest request = pduFactory.createExtensionRequest(requestContext, CREDENTIALS, new Date(1489520050000L), new Date(1489520040000L));
+        Assert.assertNotNull(request);
     }
 
     @Test

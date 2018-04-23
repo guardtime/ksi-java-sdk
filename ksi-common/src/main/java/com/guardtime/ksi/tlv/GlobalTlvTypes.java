@@ -42,4 +42,6 @@ public final class GlobalTlvTypes {
     public static final int ELEMENT_TYPE_EXTENSION_REQUEST_PDU_V2 = 0x0320;
     public static final int ELEMENT_TYPE_EXTENSION_RESPONSE_PDU_V2 = 0x0321;
 
+    public static final int ELEMENT_TYPE_REQUEST_ID = 0x01;
+    public static final int ELEMENT_TYPE_CONFIGURATION = 0x04;
 }

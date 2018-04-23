@@ -17,11 +17,26 @@
  *  reserves and retains all trademark rights.
  *
  */
-package com.guardtime.ksi.pdu;
+package com.guardtime.ksi.service;
 
-/**
- * An abstract factory interface to support multiple ways to create KSI Protocol Data Unit (PDU) messages.
- */
-public interface PduFactory extends AggregatorPduFactory, ExtenderPduFactory {
+import com.guardtime.ksi.util.Util;
 
+class PushConfigurationListener<T> implements ConfigurationListener<T> {
+
+    private final ConfigurationHandler<T> configurationHandler;
+
+    PushConfigurationListener(ConfigurationHandler<T> configurationHandler) {
+        Util.notNull(configurationHandler, "ConfigurationHandler");
+        this.configurationHandler = configurationHandler;
+    }
+
+    @Override
+    public void updated(T configuration) {
+        this.configurationHandler.updateListenersWithNewConfiguration(configuration);
+    }
+
+    @Override
+    public void updateFailed(Throwable reason) {
+        this.configurationHandler.updateListenersWithFailure(reason);
+    }
 }

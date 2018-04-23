@@ -82,7 +82,12 @@ public class ConfigurationHandler<T> {
         });
     }
 
-    private void updateListenersWithNewConfiguration(T newConfiguration) {
+    /**
+     * Updates listeners with provided configuration
+     *
+     * @param newConfiguration configuration to be applied
+     */
+    void updateListenersWithNewConfiguration(T newConfiguration) {
         for (ConfigurationListener<T> listener : listeners) {
             try {
                 listener.updated(newConfiguration);
@@ -92,7 +97,12 @@ public class ConfigurationHandler<T> {
         }
     }
 
-    private void updateListenersWithFailure(Throwable t) {
+    /**
+     * Updates listeners with failure
+     *
+     * @param t reason
+     */
+    void updateListenersWithFailure(Throwable t) {
         for (ConfigurationListener<T> listener : listeners) {
             try {
                 listener.updateFailed(t);

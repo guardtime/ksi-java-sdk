@@ -60,8 +60,9 @@ public final class KSIExtendingClientServiceAdapter implements KSIExtendingServi
         Util.notNull(client, "KSIExtendingClientServiceAdapter.client");
         Util.notNull(executorService, "KSIExtendingClientServiceAdapter.executorService");
         this.client = client;
-        this.pduFactory = PduFactoryProvider.get(client.getPduVersion());
         this.extenderConfHandler = new ConfigurationHandler<>(executorService);
+        this.pduFactory = PduFactoryProvider.withExtenderConfListener(client.getPduVersion(),
+                new PushConfigurationListener<>(extenderConfHandler));
     }
 
     public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException {

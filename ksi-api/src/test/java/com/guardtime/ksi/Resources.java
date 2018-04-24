@@ -104,8 +104,11 @@ public class Resources {
     public static final String SIGNATURE_INPUT_HASH_LEVEL_5 =  VALID_SIGNATURES + "signature-provided-input-hash-level-is-5.ksig";
     public static final String SIGNATURE_SHA1_INPUT_HASH_OK =  VALID_SIGNATURES + "signature-SHA1-in-aggregation-chain-input-hash.ksig";
     public static final String SIGNATURE_SHA1_AGGREGATION_LINK_OK =  VALID_SIGNATURES + "signature-SHA1-in-aggregation-chain-aggregation-algorithm.ksig";
+    public static final String SIGNATURE_WITH_LEVEL_CORRECTION_3 =  SIGNATURES + "signature-with-level-correction-3.ksig";
     //Aggregation Hash Chains
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_OK = SIGNATURES + "single-long-aggregation-hash-chain-ok.tlv";
+    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_2 = SIGNATURES + "aggregation-hash-chain-with-height-2.tlv";
+    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3 = SIGNATURES + "aggregation-hash-chain-with-height-3.tlv";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INDEX = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-missing-tag.tlv";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INPUT_HASH = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-input-hash-missing-tag.tlv";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_ALGORITHM = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-aggr-algo-missing-tag.tlv";

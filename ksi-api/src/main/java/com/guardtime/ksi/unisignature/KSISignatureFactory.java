@@ -90,4 +90,15 @@ public interface KSISignatureFactory {
      */
     KSISignature createSignature(List<AggregationHashChain> aggregationHashChains, CalendarHashChain calendarHashChain, CalendarAuthenticationRecord authenticationRecord, PublicationRecord publicationRecord, RFC3161Record rfc3161Record) throws KSIException;
 
+
+    /**
+     * Creates keyless uni-signature by prepending lower aggregation hash chain to a signature.
+     *
+     * @param signature            instance of {@link KSISignature} to be prepended, not null
+     * @param aggregationHashChain instance of lower {@link AggregationHashChain} to prepend, not null
+     * @param originalInputHash    original input hash. It is used to verify signature if it is present.
+     * @return instance of {@link KSISignature}
+     * @throws KSIException when error occurs (e.g input data is invalid)
+     */
+    KSISignature createSignature(KSISignature signature, AggregationHashChain aggregationHashChain, DataHash originalInputHash) throws KSIException;
 }

@@ -123,7 +123,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     public KSISignature createSignature(InputStream input) throws KSIException {
         TLVInputStream tlvInput = new TLVInputStream(input);
         try {
-            return createSignature(tlvInput.readElement(), extendingAllowed);
+            return createSignature(tlvInput.readElement(), extendingAllowed, null);
         } catch (IOException e) {
             throw new KSIException("Reading signature data from input stream failed", e);
         } finally {
@@ -142,6 +142,46 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     public KSISignature createSignature(List<AggregationHashChain> aggregationHashChains,
                                         CalendarHashChain calendarChain, CalendarAuthenticationRecord calendarAuthenticationRecord,
                                         PublicationRecord signaturePublicationRecord, RFC3161Record rfc3161Record) throws KSIException {
+        return createSignature(aggregationHashChains, calendarChain, calendarAuthenticationRecord,
+                signaturePublicationRecord, rfc3161Record,  null);
+    }
+
+    public KSISignature createSignature(KSISignature signature, AggregationHashChain newAggregationHashChain,
+                                        DataHash originalInputHash) throws KSIException {
+        Util.notNull(signature, "Signature");
+        Util.notNull(newAggregationHashChain, "Aggregation hash chain");
+        long newChainLevel = newAggregationHashChain.calculateOutputHash(0L).getLevel();
+        AggregationHashChain firstChainInSignature = signature.getAggregationHashChains()[0];
+        Long firstChainLevelCorrection = firstChainInSignature.getChainLinks().get(0).getLevelCorrection();
+        if (newChainLevel > firstChainLevelCorrection) {
+            throw new KSIException("The aggregation hash chain cannot be added as lowest level chain. " +
+                    "Its output level (" + newChainLevel + ") is bigger than level correction of the first link of the " +
+                    "first aggregation hash chain of the base signature (" + firstChainLevelCorrection + ").");
+        }
+        if (!firstChainInSignature.getInputHash().equals(newAggregationHashChain.getOutputHash())) {
+            throw new KSIException("The aggregation hash chain cannot be added as lowest level chain. " +
+                    "Its output hash (" + newAggregationHashChain.getOutputHash() + ") does not match base signature " +
+                    "input hash (" + firstChainInSignature.getInputHash() + ").");
+        }
+
+        // level correction is negative because when creating a new chain link from another chain link then provided
+        // level correction is added to provided chain link's level correction. But in case of prepending hash chains
+        // level correction of first link has to be decreased.
+        long levelCorrection = (-1) * newChainLevel;
+
+        List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
+        AggregationHashChain firstChain = aggregationHashChains.get(0);
+        aggregationHashChains.set(0, createHashChainWithLevelCorrection(firstChain.getInputHash(), levelCorrection, firstChain));
+        aggregationHashChains.add(0, newAggregationHashChain);
+        return createSignature(aggregationHashChains, signature.getCalendarHashChain(),
+                signature.getCalendarAuthenticationRecord(), signature.getPublicationRecord(),
+                signature.getRfc3161Record(), originalInputHash);
+    }
+
+    private KSISignature createSignature(List<AggregationHashChain> aggregationHashChains,
+                                         CalendarHashChain calendarChain, CalendarAuthenticationRecord calendarAuthenticationRecord,
+                                         PublicationRecord signaturePublicationRecord, RFC3161Record rfc3161Record,
+                                         DataHash inputHash) throws KSIException {
 
         TLVElement root = new TLVElement(false, false, InMemoryKsiSignature.ELEMENT_TYPE);
         for (AggregationHashChain chain : aggregationHashChains) {
@@ -156,25 +196,18 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
             }
         }
         addTlvStructure(root, (TLVStructure) rfc3161Record);
-        return createSignature(root, extendingAllowed);
+        return createSignature(root, extendingAllowed, inputHash);
     }
 
-    private KSISignature createSignature(TLVElement element, boolean extendingAllowed) throws KSIException {
-        return createSignature(element, extendingAllowed, null, 0L);
+    private KSISignature createSignature(TLVElement element, boolean extendingAllowed, DataHash inputHash) throws KSIException {
+        return createSignature(element, extendingAllowed, inputHash, 0L);
     }
 
     private KSISignature createSignature(TLVElement element, boolean extendingAllowed, DataHash inputHash, long level) throws KSIException {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(element);
         if (level > 0) {
-            AggregationHashChain firstChain = signature.getAggregationHashChains()[0];
-            LinkedList<AggregationChainLink> links = new LinkedList<>(firstChain.getChainLinks());
-            AggregationChainLink link = createLinkWithLevelCorrection(firstChain.getChainLinks().get(0), level);
-            links.set(0, link);
-
-            LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
             List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
-            AggregationHashChain aggregationHashChain = signatureComponentFactory.createAggregationHashChain(inputHash,
-                    firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
+            AggregationHashChain aggregationHashChain = createHashChainWithLevelCorrection(inputHash, level, aggregationHashChains.get(0));
             aggregationHashChains.set(0, aggregationHashChain);
 
             signature = (InMemoryKsiSignature) createSignature(aggregationHashChains, signature.getCalendarHashChain(),
@@ -220,11 +253,23 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         }
     }
 
-    private AggregationChainLink createLinkWithLevelCorrection(AggregationChainLink link, long level) throws KSIException {
+    private AggregationHashChain createHashChainWithLevelCorrection(DataHash inputHash, long levelCorrection,
+                                                                    AggregationHashChain firstChain) throws KSIException {
+        LinkedList<AggregationChainLink> links = new LinkedList<>(firstChain.getChainLinks());
+        AggregationChainLink firstLink = createLinkWithLevelCorrection(links.get(0), levelCorrection);
+        links.set(0, firstLink);
+
+        LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
+
+        return signatureComponentFactory.createAggregationHashChain(inputHash,
+                firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
+    }
+
+    private AggregationChainLink createLinkWithLevelCorrection(AggregationChainLink link, long levelCorrection) throws KSIException {
         if (link.isLeft()) {
-            return signatureComponentFactory.createLeftAggregationChainLink(link, level);
+            return signatureComponentFactory.createLeftAggregationChainLink(link, levelCorrection);
         } else {
-            return signatureComponentFactory.createRightAggregationChainLink(link, level);
+            return signatureComponentFactory.createRightAggregationChainLink(link, levelCorrection);
         }
     }
 }

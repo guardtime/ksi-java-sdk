@@ -164,14 +164,11 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
                     "input hash (" + firstChainInSignature.getInputHash() + ").");
         }
 
-        // level correction is negative because when creating a new chain link from another chain link then provided
-        // level correction is added to provided chain link's level correction. But in case of prepending hash chains
-        // level correction of first link has to be decreased.
-        long levelCorrection = (-1) * newChainLevel;
+        long levelCorrection = firstChainLevelCorrection - newChainLevel;
 
         List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
         AggregationHashChain firstChain = aggregationHashChains.get(0);
-        aggregationHashChains.set(0, createHashChainWithLevelCorrection(firstChain.getInputHash(), levelCorrection, firstChain));
+        aggregationHashChains.set(0, createHashChainWithLevelCorrection(firstChain.getInputHash(), firstChain, levelCorrection));
         aggregationHashChains.add(0, aggregationHashChain);
         return createSignature(aggregationHashChains, signature.getCalendarHashChain(),
                 signature.getCalendarAuthenticationRecord(), signature.getPublicationRecord(),
@@ -207,7 +204,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(element);
         if (level > 0) {
             List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
-            AggregationHashChain aggregationHashChain = createHashChainWithLevelCorrection(inputHash, level, aggregationHashChains.get(0));
+            AggregationHashChain aggregationHashChain = createHashChainWithAddedLevelCorrection(inputHash, aggregationHashChains.get(0), level);
             aggregationHashChains.set(0, aggregationHashChain);
 
             signature = (InMemoryKsiSignature) createSignature(aggregationHashChains, signature.getCalendarHashChain(),
@@ -253,14 +250,22 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         }
     }
 
-    private AggregationHashChain createHashChainWithLevelCorrection(DataHash inputHash, long levelCorrection,
-                                                                    AggregationHashChain firstChain) throws KSIException {
+    private AggregationHashChain createHashChainWithAddedLevelCorrection(DataHash inputHash, AggregationHashChain firstChain, long levelCorrection) throws KSIException {
+        LinkedList<AggregationChainLink> links = new LinkedList<>(firstChain.getChainLinks());
+        AggregationChainLink firstLink = createLinkWithLevelCorrection(links.get(0), links.get(0).getLevelCorrection() + levelCorrection);
+        links.set(0, firstLink);
+        return createHashChain(inputHash, firstChain, links);
+    }
+
+    private AggregationHashChain createHashChainWithLevelCorrection(DataHash inputHash, AggregationHashChain firstChain, long levelCorrection) throws KSIException {
         LinkedList<AggregationChainLink> links = new LinkedList<>(firstChain.getChainLinks());
         AggregationChainLink firstLink = createLinkWithLevelCorrection(links.get(0), levelCorrection);
         links.set(0, firstLink);
+        return createHashChain(inputHash, firstChain, links);
+    }
 
+    private AggregationHashChain createHashChain(DataHash inputHash, AggregationHashChain firstChain, LinkedList<AggregationChainLink> links) throws KSIException {
         LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
-
         return signatureComponentFactory.createAggregationHashChain(inputHash,
                 firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
     }

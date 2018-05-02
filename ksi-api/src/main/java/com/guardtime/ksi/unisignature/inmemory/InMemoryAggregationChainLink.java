@@ -95,7 +95,7 @@ abstract class InMemoryAggregationChainLink extends TLVStructure implements Aggr
             element.setContent(link.getSiblingData());
         }
         rootElement.addChildElement(element);
-        addLevelCorrection(link.getLevelCorrection() + levelCorrection);
+        addLevelCorrection(levelCorrection);
     }
 
     InMemoryAggregationChainLink(TLVElement element) throws KSIException {

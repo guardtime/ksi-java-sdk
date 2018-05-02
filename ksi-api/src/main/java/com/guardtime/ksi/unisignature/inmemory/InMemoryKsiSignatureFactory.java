@@ -204,7 +204,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(element);
         if (level > 0) {
             List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
-            AggregationHashChain aggregationHashChain = createHashChainWithAddedLevelCorrection(inputHash, aggregationHashChains.get(0), level);
+            AggregationHashChain aggregationHashChain = createHashChainWithAddingLevelCorrection(inputHash, aggregationHashChains.get(0), level);
             aggregationHashChains.set(0, aggregationHashChain);
 
             signature = (InMemoryKsiSignature) createSignature(aggregationHashChains, signature.getCalendarHashChain(),
@@ -250,7 +250,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         }
     }
 
-    private AggregationHashChain createHashChainWithAddedLevelCorrection(DataHash inputHash, AggregationHashChain firstChain, long levelCorrection) throws KSIException {
+    private AggregationHashChain createHashChainWithAddingLevelCorrection(DataHash inputHash, AggregationHashChain firstChain, long levelCorrection) throws KSIException {
         LinkedList<AggregationChainLink> links = new LinkedList<>(firstChain.getChainLinks());
         AggregationChainLink firstLink = createLinkWithLevelCorrection(links.get(0), links.get(0).getLevelCorrection() + levelCorrection);
         links.set(0, firstLink);

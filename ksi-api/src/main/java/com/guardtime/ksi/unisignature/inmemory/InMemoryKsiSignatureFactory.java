@@ -146,11 +146,11 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
                 signaturePublicationRecord, rfc3161Record,  null);
     }
 
-    public KSISignature createSignature(KSISignature signature, AggregationHashChain newAggregationHashChain,
+    public KSISignature createSignature(KSISignature signature, AggregationHashChain aggregationHashChain,
                                         DataHash originalInputHash) throws KSIException {
         Util.notNull(signature, "Signature");
-        Util.notNull(newAggregationHashChain, "Aggregation hash chain");
-        long newChainLevel = newAggregationHashChain.calculateOutputHash(0L).getLevel();
+        Util.notNull(aggregationHashChain, "Aggregation hash chain");
+        long newChainLevel = aggregationHashChain.calculateOutputHash(0L).getLevel();
         AggregationHashChain firstChainInSignature = signature.getAggregationHashChains()[0];
         Long firstChainLevelCorrection = firstChainInSignature.getChainLinks().get(0).getLevelCorrection();
         if (newChainLevel > firstChainLevelCorrection) {
@@ -158,9 +158,9 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
                     "Its output level (" + newChainLevel + ") is bigger than level correction of the first link of the " +
                     "first aggregation hash chain of the base signature (" + firstChainLevelCorrection + ").");
         }
-        if (!firstChainInSignature.getInputHash().equals(newAggregationHashChain.getOutputHash())) {
+        if (!firstChainInSignature.getInputHash().equals(aggregationHashChain.getOutputHash())) {
             throw new KSIException("The aggregation hash chain cannot be added as lowest level chain. " +
-                    "Its output hash (" + newAggregationHashChain.getOutputHash() + ") does not match base signature " +
+                    "Its output hash (" + aggregationHashChain.getOutputHash() + ") does not match base signature " +
                     "input hash (" + firstChainInSignature.getInputHash() + ").");
         }
 
@@ -172,7 +172,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
         AggregationHashChain firstChain = aggregationHashChains.get(0);
         aggregationHashChains.set(0, createHashChainWithLevelCorrection(firstChain.getInputHash(), levelCorrection, firstChain));
-        aggregationHashChains.add(0, newAggregationHashChain);
+        aggregationHashChains.add(0, aggregationHashChain);
         return createSignature(aggregationHashChains, signature.getCalendarHashChain(),
                 signature.getCalendarAuthenticationRecord(), signature.getPublicationRecord(),
                 signature.getRfc3161Record(), originalInputHash);

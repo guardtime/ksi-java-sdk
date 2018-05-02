@@ -29,13 +29,13 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Interface for creating keyless signatures. Implementation of this class can be used to get instance of {@link
+ * Interface for creating signatures. Implementation of this class can be used to get instance of {@link
  * KSISignature}.
  */
 public interface KSISignatureFactory {
 
     /**
-     * Creates keyless uni-signature from input stream.
+     * Creates a signature from input stream.
      *
      * @param input
      *         input stream to be used to createSignature data
@@ -47,7 +47,7 @@ public interface KSISignatureFactory {
 
 
     /**
-     * Creates keyless uni-signature from input TLV element.
+     * Creates a signature from input TLV element.
      *
      * @param element
      *         instance of {@link TLVElement}. not null
@@ -59,7 +59,7 @@ public interface KSISignatureFactory {
     KSISignature createSignature(TLVElement element, DataHash originalInputHash) throws KSIException;
 
     /**
-     * Creates keyless uni-signature from input TLV element.
+     * Creates a signature from input TLV element.
      *
      * @param element
      *         instance of {@link TLVElement}. not null
@@ -72,7 +72,7 @@ public interface KSISignatureFactory {
     KSISignature createSignature(TLVElement element, DataHash originalInputHash, long level) throws KSIException;
 
     /**
-     * Creates keyless uni-signature from given elements.
+     * Creates a signature from given elements.
      *
      * @param aggregationHashChains
      *         list of aggregation hash chain element. not null
@@ -92,7 +92,7 @@ public interface KSISignatureFactory {
 
 
     /**
-     * Creates keyless uni-signature by prepending lower aggregation hash chain to a signature.
+     * Creates a signature by prepending lower aggregation hash chain to a signature.
      *
      * @param signature            instance of {@link KSISignature} to be prepended, not null
      * @param aggregationHashChain instance of lower {@link AggregationHashChain} to prepend, not null

@@ -84,7 +84,7 @@ public class InMemoryKsiSignatureFactoryTest {
 
     @Test
     public void testCreateSignatureWithAggregationHashChainWithLeftLinksOnly_Ok() throws Exception {
-        testCreateSignatureWithAggregationChain(
+        createSignatureWithAggregationChainAndVerify(
                 SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3,
                 SIGNATURE_WITH_LEVEL_CORRECTION_3,
                 "01580192B0D06E48884432DFFC26A67C6C685BEAF0252B9DD2A0B4B05D1724C5F2");
@@ -92,7 +92,7 @@ public class InMemoryKsiSignatureFactoryTest {
 
     @Test
     public void testCreateSignatureWithAggregationHashChainWithLeftAndRightLinks_Ok() throws Exception {
-        testCreateSignatureWithAggregationChain(
+        createSignatureWithAggregationChainAndVerify(
                 SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_AND_RIGHT_LINKS_AND_HEIGHT_3,
                 SIGNATURE_WITH_LEVEL_CORRECTION_3,
                 "018D982C6911831201C5CF15E937514686A2169E2AD57BA36FD92CBEBD99A67E34");
@@ -100,7 +100,7 @@ public class InMemoryKsiSignatureFactoryTest {
 
     @Test
     public void testCreateSignatureWithAggregationHashChainWithRightLinksOnly_Ok() throws Exception {
-        testCreateSignatureWithAggregationChain(
+        createSignatureWithAggregationChainAndVerify(
                 SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_RIGHT_LINKS_AND_HEIGHT_3,
                 SIGNATURE_WITH_LEVEL_CORRECTION_3,
                 "019D982C6911831201C5CF15E937514686A2169E2AD57BA36FD92CBEBD99A67E32");
@@ -108,7 +108,7 @@ public class InMemoryKsiSignatureFactoryTest {
 
     @Test
     public void testCreateSignatureWithAggregationHashChainWithLeftLinksAndMetadata_Ok() throws Exception {
-        testCreateSignatureWithAggregationChain(
+        createSignatureWithAggregationChainAndVerify(
                 SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_LINKS_AND_HEIGHT_5,
                 SIGNATURE_WITH_LEVEL_CORRECTION_5,
                 "04000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
@@ -116,7 +116,7 @@ public class InMemoryKsiSignatureFactoryTest {
 
     @Test
     public void testCreateSignatureWithAggregationHashChainWithHeightLessThanLevelCorrection_Ok() throws Exception {
-        testCreateSignatureWithAggregationChain(
+        createSignatureWithAggregationChainAndVerify(
                 SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1,
                 SIGNATURE_WITH_LEVEL_CORRECTION_14,
                 "0111A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D");
@@ -157,7 +157,7 @@ public class InMemoryKsiSignatureFactoryTest {
         signatureFactory.createSignature(asList(signature.getAggregationHashChains()), signature.getCalendarHashChain(), signature.getCalendarAuthenticationRecord(), publicationRecord, null);
     }
 
-    private void testCreateSignatureWithAggregationChain(String chainFilename, String signatureFilename, String inputHashImprint) throws Exception {
+    private void createSignatureWithAggregationChainAndVerify(String chainFilename, String signatureFilename, String inputHashImprint) throws Exception {
         AggregationHashChain chain = new InMemoryAggregationHashChain(loadTlv(chainFilename));
         KSISignature signature = TestUtil.loadSignature(signatureFilename);
         DataHash inputHash = new DataHash(Base16.decode(inputHashImprint));
@@ -168,12 +168,8 @@ public class InMemoryKsiSignatureFactoryTest {
         KSISignature newSignature = signatureFactory.createSignature(signature, chain, inputHash);
         signature.writeTo(signatureBytesAfterSignatureCreation);
 
-        verifySignature(newSignature, inputHash);
         Assert.assertEquals(signatureBytesAfterSignatureCreation.toByteArray(), signatureBytes.toByteArray());
-    }
-
-    private void verifySignature(KSISignature signature, DataHash inputHash) throws KSIException {
-        VerificationResult result = verifier.verify(signature, inputHash, this.policy);
+        VerificationResult result = verifier.verify(newSignature, inputHash, this.policy);
         Assert.assertTrue(result.isOk());
     }
 }

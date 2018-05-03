@@ -168,7 +168,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
 
         List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
         AggregationHashChain firstChain = aggregationHashChains.get(0);
-        aggregationHashChains.set(0, createHashChainWithLevelCorrection(firstChain.getInputHash(), firstChain, levelCorrection));
+        aggregationHashChains.set(0, createHashChainWithLevelCorrection(firstChain, levelCorrection));
         aggregationHashChains.add(0, aggregationHashChain);
         return createSignature(aggregationHashChains, signature.getCalendarHashChain(),
                 signature.getCalendarAuthenticationRecord(), signature.getPublicationRecord(),
@@ -204,7 +204,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         InMemoryKsiSignature signature = new InMemoryKsiSignature(element);
         if (level > 0) {
             List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
-            AggregationHashChain aggregationHashChain = createHashChainWithAddingLevelCorrection(inputHash, aggregationHashChains.get(0), level);
+            AggregationHashChain aggregationHashChain = createHashChainWithAddingLevelCorrection(aggregationHashChains.get(0), level);
             aggregationHashChains.set(0, aggregationHashChain);
 
             signature = (InMemoryKsiSignature) createSignature(aggregationHashChains, signature.getCalendarHashChain(),
@@ -250,23 +250,23 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         }
     }
 
-    private AggregationHashChain createHashChainWithAddingLevelCorrection(DataHash inputHash, AggregationHashChain firstChain, long levelCorrection) throws KSIException {
+    private AggregationHashChain createHashChainWithAddingLevelCorrection(AggregationHashChain firstChain, long levelCorrection) throws KSIException {
         LinkedList<AggregationChainLink> links = new LinkedList<>(firstChain.getChainLinks());
         AggregationChainLink firstLink = createLinkWithLevelCorrection(links.get(0), links.get(0).getLevelCorrection() + levelCorrection);
         links.set(0, firstLink);
-        return createHashChain(inputHash, firstChain, links);
+        return createHashChain(firstChain, links);
     }
 
-    private AggregationHashChain createHashChainWithLevelCorrection(DataHash inputHash, AggregationHashChain firstChain, long levelCorrection) throws KSIException {
+    private AggregationHashChain createHashChainWithLevelCorrection(AggregationHashChain firstChain, long levelCorrection) throws KSIException {
         LinkedList<AggregationChainLink> links = new LinkedList<>(firstChain.getChainLinks());
         AggregationChainLink firstLink = createLinkWithLevelCorrection(links.get(0), levelCorrection);
         links.set(0, firstLink);
-        return createHashChain(inputHash, firstChain, links);
+        return createHashChain(firstChain, links);
     }
 
-    private AggregationHashChain createHashChain(DataHash inputHash, AggregationHashChain firstChain, LinkedList<AggregationChainLink> links) throws KSIException {
+    private AggregationHashChain createHashChain(AggregationHashChain firstChain, LinkedList<AggregationChainLink> links) throws KSIException {
         LinkedList<Long> chainIndex = new LinkedList<>(firstChain.getChainIndex());
-        return signatureComponentFactory.createAggregationHashChain(inputHash,
+        return signatureComponentFactory.createAggregationHashChain(firstChain.getInputHash(),
                 firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
     }
 

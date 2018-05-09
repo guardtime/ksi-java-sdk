@@ -58,7 +58,7 @@ public class ExtendedSignatureCalendarHashChainRightLinksMatchesRule extends Bas
         for (int i = 0; i < extendedSignatureRightLinks.size(); i++) {
             CalendarHashChainLink link = extendedSignatureRightLinks.get(i);
             CalendarHashChainLink initialLink = signatureRightLinks.get(i);
-            if (!link.equals(initialLink)) {
+            if (!link.getDataHash().equals(initialLink.getDataHash())) {
                 LOGGER.info("Extended signature contains different calendar hash chain right link");
                 return VerificationResultCode.FAIL;
             }

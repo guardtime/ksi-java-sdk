@@ -272,6 +272,37 @@ public class TLVElementTest {
         TLVElement.create(new byte[]{0, 0, 0});
     }
 
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Byte array can not be null")
+    public void testCreateTlvElementFromNullByteArray_throwsNullPointerException() throws Exception {
+        TLVElement.create(null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Date can not be null")
+    public void testCreateTlvElementWithNullDateContent_throwsNullPointerException() throws Exception {
+        TLVElement.create(1, (Date) null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Data hash can not be null")
+    public void testCreateTlvElementWithNullDataHashContent_throwsNullPointerException() throws Exception {
+        TLVElement.create(1, (DataHash) null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Content can not be null")
+    public void testCreateTlvElementWithNullByteArrayContent_throwsNullPointerException() throws Exception {
+        TLVElement.create(1, (byte[]) null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Hash algorithm can not be null")
+    public void testCreateTlvElementWithNullHashAlgorithmContent_throwsNullPointerException() throws Exception {
+        TLVElement.create(1, (HashAlgorithm) null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Output stream can not be null")
+    public void testWriteTlvElementToNullStream_throwsNullPointerException() throws Exception {
+        TLVElement element = new TLVElement(false, false, 2);
+        element.writeTo(null);
+    }
+
     @Test
     public void testCreateTlvElementWithLongContent() throws Exception {
         TLVElement element = TLVElement.create(2, 42L);
@@ -401,6 +432,18 @@ public class TLVElementTest {
         child2.setContent(new byte[9]);
         root.addChildElement(child1);
         root.addChildElement(child2);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Child TLV element can not be null")
+    public void testAddChildElement_throwsNullPointerException() throws Exception {
+        TLVElement element = new TLVElement(false, false, 2);
+        element.addChildElement(null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Child TLV element can not be null")
+    public void testAddFirstChildElement_throwsNullPointerException() throws Exception {
+        TLVElement element = new TLVElement(false, false, 2);
+        element.addFirstChildElement(null);
     }
 
     private TLVElement load(InputStream input) throws Exception {

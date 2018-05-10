@@ -34,7 +34,9 @@ import org.testng.annotations.Test;
 import java.io.InputStream;
 import java.util.Date;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.fail;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
 
 public class KSIExtendingClientServiceAdapterTest {
 

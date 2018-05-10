@@ -20,11 +20,14 @@
 
 package com.guardtime.ksi.tree;
 
-import static org.testng.Assert.*;
-
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotSame;
+import static org.testng.Assert.assertTrue;
 
 public class ImprintNodeTest {
 

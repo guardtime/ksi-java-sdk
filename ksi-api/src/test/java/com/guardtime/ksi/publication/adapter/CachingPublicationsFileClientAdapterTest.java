@@ -24,7 +24,9 @@ import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.testng.AssertJUnit.assertNotNull;
 

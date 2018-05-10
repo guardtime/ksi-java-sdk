@@ -336,7 +336,7 @@ public final class TLVElement {
      * @throws TLVParserException
      */
     public void setContent(byte[] content) throws TLVParserException {
-        Util.notNull(content, "TLV element content");
+        Util.notNull(content, "Content");
         assertActualContentLengthIsInTLVLimits(content.length);
         this.content = content;
     }
@@ -362,17 +362,17 @@ public final class TLVElement {
     }
 
     public void setDataHashContent(DataHash dataHash) throws TLVParserException {
-        Util.notNull(dataHash, "TLV data hash content");
+        Util.notNull(dataHash, "Data hash");
         setContent(dataHash.getImprint());
     }
 
     public void setDateContent(Date date) throws TLVParserException {
-        Util.notNull(date, "TLV date content");
+        Util.notNull(date, "Date");
         setLongContent(date.getTime() / 1000);
     }
 
     public void setHashAlgorithmContent(HashAlgorithm hashAlgorithm) throws TLVParserException {
-        Util.notNull(hashAlgorithm, "TLV hash algorithm content");
+        Util.notNull(hashAlgorithm, "Hash algorithm");
         setLongContent((long) hashAlgorithm.getId());
     }
 
@@ -580,7 +580,7 @@ public final class TLVElement {
      *         when I/O error occurred or TLV encoding failed.
      */
     public void writeTo(OutputStream out) throws TLVParserException {
-        Util.notNull(out, "OutputStream");
+        Util.notNull(out, "Output stream");
         try {
             assertActualContentLengthIsInTLVLimits(getContentLength());
             out.write(encodeHeader());

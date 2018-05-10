@@ -277,27 +277,27 @@ public class TLVElementTest {
         TLVElement.create(null);
     }
 
-    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "TLV date content can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Date can not be null")
     public void testCreateTlvElementWithNullDateContent_throwsNullPointerException() throws Exception {
         TLVElement.create(1, (Date) null);
     }
 
-    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "TLV data hash content can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Data hash can not be null")
     public void testCreateTlvElementWithNullDataHashContent_throwsNullPointerException() throws Exception {
         TLVElement.create(1, (DataHash) null);
     }
 
-    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "TLV element content can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Content can not be null")
     public void testCreateTlvElementWithNullByteArrayContent_throwsNullPointerException() throws Exception {
         TLVElement.create(1, (byte[]) null);
     }
 
-    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "TLV hash algorithm content can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Hash algorithm can not be null")
     public void testCreateTlvElementWithNullHashAlgorithmContent_throwsNullPointerException() throws Exception {
         TLVElement.create(1, (HashAlgorithm) null);
     }
 
-    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "OutputStream can not be null")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Output stream can not be null")
     public void testWriteTlvElementToNullStream_throwsNullPointerException() throws Exception {
         TLVElement element = new TLVElement(false, false, 2);
         element.writeTo(null);

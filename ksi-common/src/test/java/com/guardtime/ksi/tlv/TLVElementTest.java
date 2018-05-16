@@ -349,6 +349,30 @@ public class TLVElementTest {
         assertElementFlagsAreFalse(element);
     }
 
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Content can not be null")
+    public void testSetNullContent() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x1);
+        element.setContent(null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Data hash can not be null")
+    public void testSetNullDataHash() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x1);
+        element.setDataHashContent(null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Date can not be null")
+    public void testSetNullDate() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x1);
+        element.setDateContent(null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Hash algorithm can not be null")
+    public void testSetNullHashAlgorithm() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x1);
+        element.setHashAlgorithmContent(null);
+    }
+
     @Test
     public void testCreateTlvElementWithHashAlgorithmContent() throws Exception {
         TLVElement element = TLVElement.create(2, HashAlgorithm.SHA2_256);

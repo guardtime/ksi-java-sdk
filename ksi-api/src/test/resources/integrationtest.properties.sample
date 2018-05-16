@@ -26,12 +26,12 @@ pubfileUrl=publications.file.url
 signerUrl=signing.service.url:port
 signerLoginId=http-signing-login-id
 signerLoginKey=http-signing-login-key
-signerHmacAlgorithm=SHA256
+signerHmacAlgorithm=DEFAULT
 
 extenderUrl=extending.service.url:port
 extenderLoginId=http-extender-login-id
 extenderLoginKey=http-extender-login-key
-extenderHmacAlgorithm=SHA256
+extenderHmacAlgorithm=DEFAULT
 
 # TCP settings
 tcp.maxParallelTransactions=100
@@ -41,10 +41,10 @@ tcp.signerIP=tcp.signing.service.ip
 tcp.signerPort=tcp-singing-service-port
 tcp.signerLoginId=tcp-singing-login-id
 tcp.signerLoginKey=tcp-singing-login-key
-tcp.signerHmacAlgorithm=SHA256
+tcp.signerHmacAlgorithm=DEFAULT
 
 tcp.extenderIP=tcp.extender.service.ip
 tcp.extenderPort=tcp-extender-service-port
 tcp.extenderLoginId=tcp-extender-login-id
 tcp.extenderLoginKey=tcp-extender-login-key
-tcp.extenderHmacAlgorithm=SHA256
+tcp.extenderHmacAlgorithm=DEFAULT

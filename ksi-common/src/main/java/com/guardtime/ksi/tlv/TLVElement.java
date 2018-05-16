@@ -101,6 +101,7 @@ public final class TLVElement {
      * @throws TLVParserException
      */
     public static TLVElement create(byte[] bytes) throws TLVParserException {
+        Util.notNull(bytes, "Byte array");
         TLVInputStream input = null;
         try {
             input = new TLVInputStream(new ByteArrayInputStream(bytes));
@@ -335,6 +336,7 @@ public final class TLVElement {
      * @throws TLVParserException
      */
     public void setContent(byte[] content) throws TLVParserException {
+        Util.notNull(content, "Content");
         assertActualContentLengthIsInTLVLimits(content.length);
         this.content = content;
     }
@@ -360,14 +362,17 @@ public final class TLVElement {
     }
 
     public void setDataHashContent(DataHash dataHash) throws TLVParserException {
+        Util.notNull(dataHash, "Data hash");
         setContent(dataHash.getImprint());
     }
 
     public void setDateContent(Date date) throws TLVParserException {
+        Util.notNull(date, "Date");
         setLongContent(date.getTime() / 1000);
     }
 
     public void setHashAlgorithmContent(HashAlgorithm hashAlgorithm) throws TLVParserException {
+        Util.notNull(hashAlgorithm, "Hash algorithm");
         setLongContent((long) hashAlgorithm.getId());
     }
 
@@ -554,11 +559,13 @@ public final class TLVElement {
     }
 
     public void addChildElement(TLVElement element) throws TLVParserException {
+        Util.notNull(element, "Child TLV element");
         this.children.add(element);
         assertActualContentLengthIsInTLVLimits(getContentLength());
     }
 
     public void addFirstChildElement(TLVElement element) throws TLVParserException {
+        Util.notNull(element, "Child TLV element");
         this.children.add(0, element);
         assertActualContentLengthIsInTLVLimits(getContentLength());
     }
@@ -573,6 +580,7 @@ public final class TLVElement {
      *         when I/O error occurred or TLV encoding failed.
      */
     public void writeTo(OutputStream out) throws TLVParserException {
+        Util.notNull(out, "Output stream");
         try {
             assertActualContentLengthIsInTLVLimits(getContentLength());
             out.write(encodeHeader());

@@ -161,7 +161,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
         AggregationHashChain firstChain = aggregationHashChains.get(0);
         aggregationHashChains.set(0, createHashChainWithLevelCorrection(firstChain, levelCorrection));
-        aggregationHashChains.add(0, aggregationHashChain);
+        aggregationHashChains.add(0, createHashChainWithIndex(aggregationHashChain, firstChain.getChainIndex()));
         return createSignature(aggregationHashChains, signature.getCalendarHashChain(),
                 signature.getCalendarAuthenticationRecord(), signature.getPublicationRecord(),
                 signature.getRfc3161Record(), originalInputHash);
@@ -262,12 +262,32 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
                 firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
     }
 
+    private AggregationHashChain createHashChainWithIndex(AggregationHashChain chain, List<Long> index) throws KSIException {
+        LinkedList<Long> chainIndex = new LinkedList<>(index);
+        LinkedList<AggregationChainLink> chainLinks = new LinkedList<>(chain.getChainLinks());
+        chainIndex.add(calculateIndex(chainLinks));
+        return signatureComponentFactory.createAggregationHashChain(chain.getInputHash(),
+                chain.getAggregationTime(), chainIndex, chainLinks, chain.getAggregationAlgorithm());
+    }
+
     private AggregationChainLink createLinkWithLevelCorrection(AggregationChainLink link, long levelCorrection) throws KSIException {
         if (link.isLeft()) {
             return signatureComponentFactory.createLeftAggregationChainLink(link, levelCorrection);
         } else {
             return signatureComponentFactory.createRightAggregationChainLink(link, levelCorrection);
         }
+    }
+
+    private long calculateIndex(LinkedList<AggregationChainLink> links) {
+        long index = 1;
+        for (int i = links.size(); i > 0; i--) {
+            AggregationChainLink link = links.get(i - 1);
+            index <<= 1;
+            if (link.isLeft()) {
+                index |= 1;
+            }
+        }
+        return index;
     }
 
     private void verifyChainToBePrepended(KSISignature signature, AggregationHashChain aggregationHashChain) throws KSIException {

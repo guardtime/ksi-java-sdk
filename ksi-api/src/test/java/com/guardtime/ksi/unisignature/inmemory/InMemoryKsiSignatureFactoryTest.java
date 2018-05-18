@@ -29,6 +29,7 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.adapter.PublicationsFileClientAdapter;
 import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
+import com.guardtime.ksi.unisignature.ChainResult;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.SignaturePublicationRecord;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
@@ -41,6 +42,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
@@ -136,6 +138,21 @@ public class InMemoryKsiSignatureFactoryTest {
                     "Its output hash .* does not match base signature input hash .*")
     public void testCreateSignatureWithInvalidOutputHash_throwsKSIException() throws Exception {
         AggregationHashChain chain = new InMemoryAggregationHashChain(loadTlv(SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_2));
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_WITH_LEVEL_CORRECTION_3);
+        signatureFactory.createSignature(signature, chain, null);
+    }
+
+    @Test(expectedExceptions = KSIException.class,
+            expectedExceptionsMessageRegExp = "The aggregation hash chain cannot be added as lowest level chain. " +
+                    "Its aggregation time .* does not match base signature aggregation time .*")
+    public void testCreateSignatureWithWrongAggregationTime_throwsKSIException() throws Exception {
+        AggregationHashChain chain = Mockito.mock(AggregationHashChain.class);
+        ChainResult cr = Mockito.mock(ChainResult.class);
+        Mockito.when(cr.getLevel()).thenReturn(0L);
+        Mockito.when(chain.calculateOutputHash(0L)).thenReturn(cr);
+        Mockito.when(chain.getOutputHash()).thenReturn(new DataHash(Base16.decode("015A848EE304CBE6B858ABCCFA0E8397920C226FD18B9E5A34D0048F749B2DA0EC")));
+
+        Mockito.when(chain.getAggregationTime()).thenReturn(new Date(1515660418000L));
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_WITH_LEVEL_CORRECTION_3);
         signatureFactory.createSignature(signature, chain, null);
     }

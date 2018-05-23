@@ -21,6 +21,7 @@ package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
@@ -44,6 +45,8 @@ import java.util.Date;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14_MISSING_RIGHT_LINK_IN_CALENDAR_CHAIN;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14_WRONG_HASH_IN_CALENDAR_CHAIN_RIGHT_LINK;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
@@ -122,5 +125,19 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
             Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.INT_09);
             Assert.assertTrue(e.getSignature().isExtended());
         }
+    }
+
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = KSIException.class,
+            expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
+    public void testExtendSignatureWithMissingRightLinkInCalendarChain_throwsKsiException(KSI ksi) throws Exception {
+        ksi.extend(loadSignature(SIGNATURE_2017_03_14_MISSING_RIGHT_LINK_IN_CALENDAR_CHAIN));
+    }
+
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = KSIException.class,
+            expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
+    public void testExtendSignatureWithCalendarChain_throwsKsiException(KSI ksi) throws Exception {
+        ksi.extend(loadSignature(SIGNATURE_2017_03_14_WRONG_HASH_IN_CALENDAR_CHAIN_RIGHT_LINK));
     }
 }

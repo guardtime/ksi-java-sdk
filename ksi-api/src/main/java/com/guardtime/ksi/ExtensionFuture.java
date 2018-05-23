@@ -30,6 +30,7 @@ import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.SignaturePublicationRecord;
 
+import static com.guardtime.ksi.unisignature.CalendarHashChainUtil.areCalendarHashChainRightLinksConsistent;
 import static java.util.Arrays.asList;
 
 /**
@@ -61,6 +62,9 @@ public final class ExtensionFuture implements Future<KSISignature> {
             try {
                 ExtensionResponse extensionResponse = future.getResult();
                 CalendarHashChain calendarHashChain = signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());
+                if (!areCalendarHashChainRightLinksConsistent(signature.getCalendarHashChain(), calendarHashChain)) {
+                    throw new KSIException("Right links of signature calendar hash chain and extended calendar hash chain do not match");
+                }
                 SignaturePublicationRecord publication = signatureComponentFactory.createPublicationRecord(publicationRecord.getPublicationData(), publicationRecord.getPublicationReferences(), publicationRecord.getPublicationRepositoryURIs());
                 extendedSignature = signatureFactory.createSignature(asList(signature.getAggregationHashChains()), calendarHashChain, null, publication, signature.getRfc3161Record());
             } catch (com.guardtime.ksi.tlv.TLVParserException e) {

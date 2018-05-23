@@ -154,6 +154,9 @@ public class Resources {
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_INPUT_HASH = INTERNAL_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-input-hash-wrong.tlv";
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_AGGREGATION_TIME  = INTERNAL_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-aggr-time-future-value.tlv";
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_LAST_LINK_VALUE = INTERNAL_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-last-link-wrong.tlv";
+    public static final String SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING = COMPONENTS_CALENDAR_HASH_CHAIN + "signature-2017-03-14-calendar-hash-chain-right-link-missing.tlv";
+    public static final String SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA = COMPONENTS_CALENDAR_HASH_CHAIN + "signature-2017-03-14-calendar-hash-chain-right-link-extra.tlv";
+    public static final String SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_DATA_HASH_MISMATCH = COMPONENTS_CALENDAR_HASH_CHAIN + "signature-2017-03-14-calendar-hash-chain-data-hash-mismatch.tlv";
     //Calendar authentication record
     public static final String SIGNATURE_CALENDAR_AUTH_NO_PUBLICATION_DATA = INVALID_SIGNATURES_CALENDAR_AUTH + "invalid-signature-cal-auth-rec-pub-data-missing-tag.tlv";
     public static final String SIGNATURE_CALENDAR_AUTH_NO_SIGNATURE_DATA = INVALID_SIGNATURES_CALENDAR_AUTH + "invalid-signature-cal-auth-rec-sig-data-missing-tag.tlv";

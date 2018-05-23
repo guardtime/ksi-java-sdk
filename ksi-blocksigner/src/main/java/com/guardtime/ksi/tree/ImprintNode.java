@@ -20,9 +20,9 @@
 
 package com.guardtime.ksi.tree;
 
-import static com.guardtime.ksi.util.Util.notNull;
-
 import com.guardtime.ksi.hashing.DataHash;
+
+import static com.guardtime.ksi.util.Util.notNull;
 
 /**
  * Represents a hash tree node. Every non-leaf node is labelled with the hash of the labels or values
@@ -39,6 +39,10 @@ public class ImprintNode implements TreeNode {
 
     private boolean left = false;
 
+    /**
+     * Creates a copy of a node
+     * @param node Node to be copied
+     */
     public ImprintNode(ImprintNode node) {
         notNull(node, "ImprintNode");
         this.value = node.value;
@@ -46,29 +50,44 @@ public class ImprintNode implements TreeNode {
         this.parent = node.parent;
         this.leftChild = node.leftChild;
         this.rightChild = node.rightChild;
+        this.left = node.left;
     }
 
+    /**
+     * Creates a new leaf node with given hash and level 0
+     * @param value Hash of the new node
+     */
     public ImprintNode(DataHash value) {
         this(value, 0L);
     }
 
+    /**
+     * Creates a leaf node with given hash and level
+     * @param value Hash of the new node
+     * @param level Level of the new node
+     */
     public ImprintNode(DataHash value, long level) {
         notNull(value, "InputHash");
         this.value = value;
         this.level = level;
     }
 
-    ImprintNode(TreeNode leftChild, TreeNode rightChild, DataHash value, long level) {
+    /**
+     * Creates a non-leaf node
+     * @param leftChild Left child node of the new node
+     * @param rightChild Right child node of the new node
+     * @param value Hash of the new node
+     * @param level Level of the new node
+     */
+    public ImprintNode(ImprintNode leftChild, ImprintNode rightChild, DataHash value, long level) {
+        this(value, level);
         notNull(leftChild, "LeftChild");
         notNull(rightChild, "RightChild");
-        notNull(value, "DataHash");
+        leftChild.parent = this;
+        leftChild.left = true;
+        rightChild.parent = this;
         this.leftChild = leftChild;
         this.rightChild = rightChild;
-        this.leftChild.setParent(this);
-        this.leftChild.setLeft(true);
-        this.rightChild.setParent(this);
-        this.level = level;
-        this.value = value;
     }
 
     public byte[] getValue() {
@@ -77,10 +96,6 @@ public class ImprintNode implements TreeNode {
 
     public TreeNode getParent() {
         return parent;
-    }
-
-    public void setParent(TreeNode node) {
-        this.parent = node;
     }
 
     public TreeNode getLeftChildNode() {
@@ -93,10 +108,6 @@ public class ImprintNode implements TreeNode {
 
     public boolean isLeft() {
         return left;
-    }
-
-    public void setLeft(boolean b) {
-        this.left = b;
     }
 
     public long getLevel() {

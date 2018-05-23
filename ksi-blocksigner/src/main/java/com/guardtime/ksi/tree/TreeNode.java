@@ -40,8 +40,6 @@ public interface TreeNode {
      */
     TreeNode getParent();
 
-    void setParent(TreeNode node);
-
     /**
      * @return Left child node. In case of leaf node, null is returned.
      */
@@ -56,13 +54,6 @@ public interface TreeNode {
      * @return True, if this node is left child node.
      */
     boolean isLeft();
-
-    /**
-     * Helper to mark that the current node is left child node.
-     *
-     * @param b True, if the current node is left child node.
-     */
-    void setLeft(boolean b);
 
     /**
      * @return True, if current node is the root (head) node.

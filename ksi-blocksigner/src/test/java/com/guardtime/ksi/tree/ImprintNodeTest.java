@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 
 public class ImprintNodeTest {
 
-    public static final byte[] INPUT_HASH_VALUE = new byte[32];
+    private static final byte[] INPUT_HASH_VALUE = new byte[32];
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "InputHash can not be null")
     public void testCreateImprintNodeWithoutDataHash() {
@@ -71,7 +71,7 @@ public class ImprintNodeTest {
         ImprintNode copy = new ImprintNode(root);
 
         assertEquals(copy.getLeftChildNode(), leftChildNode);
-        assertEquals(copy.getRightChildNode(), leftChildNode);
+        assertEquals(copy.getRightChildNode(), rightChildNode);
         assertEquals(copy.getLevel(), root.getLevel());
         assertEquals(copy.getValue(), root.getValue());
         assertNotSame(copy, root);

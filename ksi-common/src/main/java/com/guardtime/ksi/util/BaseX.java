@@ -150,7 +150,7 @@ public class BaseX {
         for (int i = 0; i < chars.length(); i++) {
             int c = chars.codePointAt(i) - min;
             if (values[c] != -1 && values[c] != i) {
-                throw new IllegalArgumentException("Duplicate characters in the encoding alphapbet");
+                throw new IllegalArgumentException("Duplicate characters in the encoding alphabet");
             }
             values[c] = i;
         }

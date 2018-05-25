@@ -81,7 +81,7 @@ public class CMSSignatureVerifier {
         X509CertificateHolder certHolder = (X509CertificateHolder) certIterator.next();
         verifyCmsSignerInfo(signerInfo, certHolder);
         if(!trustStore.isTrusted(getCertificate(certHolder), certStore)) {
-            throw new InvalidCmsSignatureException("Certificate that was used for singing isn't trusted");
+            throw new InvalidCmsSignatureException("Certificate that was used for signing isn't trusted");
         }
     }
 

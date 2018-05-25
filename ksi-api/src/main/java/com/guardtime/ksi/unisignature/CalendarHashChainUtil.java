@@ -20,12 +20,17 @@
 
 package com.guardtime.ksi.unisignature;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.LinkedList;
 import java.util.List;
 
 import static com.guardtime.ksi.util.Util.notNull;
 
 public final class CalendarHashChainUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(CalendarHashChainUtil.class);
 
     /**
      * Checks consistency of two calendar hash chains: <ul>
@@ -45,6 +50,8 @@ public final class CalendarHashChainUtil {
         List<CalendarHashChainLink> rightLinks1 = getRightLinksFromCalendarHashChain(calendarHashChain1);
         List<CalendarHashChainLink> rightLinks2 = getRightLinksFromCalendarHashChain(calendarHashChain2);
         if (rightLinks1.size() != rightLinks2.size()) {
+            logger.info("Calendar hash chains have different amount of right links: {} vs {}",
+                    rightLinks1.size(), rightLinks2.size());
             return false;
         }
 
@@ -52,6 +59,7 @@ public final class CalendarHashChainUtil {
             CalendarHashChainLink link1 = rightLinks2.get(i);
             CalendarHashChainLink link2 = rightLinks1.get(i);
             if (!link1.getDataHash().equals(link2.getDataHash())) {
+                logger.info("Calendar hash chain right links do not match at right link number {}", i + 1);
                 return false;
             }
         }

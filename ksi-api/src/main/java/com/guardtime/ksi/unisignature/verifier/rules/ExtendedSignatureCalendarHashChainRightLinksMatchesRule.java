@@ -26,6 +26,8 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.guardtime.ksi.unisignature.CalendarHashChainUtil.areCalendarHashChainRightLinksConsistent;
 
@@ -36,6 +38,8 @@ import static com.guardtime.ksi.unisignature.CalendarHashChainUtil.areCalendarHa
  */
 public class ExtendedSignatureCalendarHashChainRightLinksMatchesRule extends BaseRule {
 
+    private static final Logger logger = LoggerFactory.getLogger(ExtendedSignatureCalendarHashChainRightLinksMatchesRule.class);
+
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         KSISignature signature = context.getSignature();
         CalendarHashChain extendedCalendarHashChain = context.getExtendedCalendarHashChain(signature.getCalendarHashChain().getPublicationTime());
@@ -43,9 +47,9 @@ public class ExtendedSignatureCalendarHashChainRightLinksMatchesRule extends Bas
         if (areCalendarHashChainRightLinksConsistent(signature.getCalendarHashChain(), extendedCalendarHashChain)) {
             return VerificationResultCode.OK;
         } else {
+            logger.info("Extended calendar hash chain right links do not match with signature calendar hash chain right links");
             return VerificationResultCode.FAIL;
         }
-
     }
 
     public VerificationErrorCode getErrorCode() {

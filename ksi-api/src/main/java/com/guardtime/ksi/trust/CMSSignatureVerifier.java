@@ -68,7 +68,7 @@ public class CMSSignatureVerifier {
             throw new InvalidCmsSignatureException("Invalid CMS signature. Signature does not contain SignerInformation element.");
         }
         if (signerCollection.size() != 1) {
-            throw new InvalidCmsSignatureException("Invalid CMS signature. Signature contains multiple SingerInformation elements.");
+            throw new InvalidCmsSignatureException("Invalid CMS signature. Signature contains multiple SignerInformation elements.");
         }
         SignerInformation signerInfo = signerCollection.iterator().next();
         Collection certCollection = certStore.getMatches(signerInfo.getSID());

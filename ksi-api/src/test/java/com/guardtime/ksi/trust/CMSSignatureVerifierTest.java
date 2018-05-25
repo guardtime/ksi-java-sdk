@@ -56,7 +56,7 @@ public class CMSSignatureVerifierTest {
         verifier.verify(mockedSignature);
     }
 
-    @Test(expectedExceptions = InvalidCmsSignatureException.class, expectedExceptionsMessageRegExp = "Invalid CMS signature. Signature contains multiple SingerInformation elements.")
+    @Test(expectedExceptions = InvalidCmsSignatureException.class, expectedExceptionsMessageRegExp = "Invalid CMS signature. Signature contains multiple SignerInformation elements.")
     public void testVerifySignatureWithMultipleSignerInformationElements_ThrowsInvalidCmsSignatureException() throws Exception {
         List<SignerInformation> collection = new ArrayList<>();
         collection.add(null);

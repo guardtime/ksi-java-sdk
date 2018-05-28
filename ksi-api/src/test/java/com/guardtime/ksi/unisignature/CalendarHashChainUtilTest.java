@@ -31,7 +31,7 @@ import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14_CALENDAR_HASH_CHA
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING;
 import static com.guardtime.ksi.TestUtil.loadSignature;
-import static com.guardtime.ksi.unisignature.CalendarHashChainUtil.areCalendarHashChainRightLinksConsistent;
+import static com.guardtime.ksi.unisignature.CalendarHashChainUtil.areRightLinksConsistent;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -47,17 +47,17 @@ public class CalendarHashChainUtilTest {
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "CalendarHashChain can not be null")
     public void testCalendarHashChainConsistency_firstChainNull_throwsNullPointerException() {
-        areCalendarHashChainRightLinksConsistent(null, calendarHashChain1);
+        areRightLinksConsistent(null, calendarHashChain1);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "CalendarHashChain can not be null")
     public void testCalendarHashChainConsistency_secondChainNull_throwsNullPointerException() {
-        areCalendarHashChainRightLinksConsistent(calendarHashChain1, null);
+        areRightLinksConsistent(calendarHashChain1, null);
     }
 
     @Test
     public void testCalendarHashChainConsistency_firstChainHasMoreRightLinks() throws Exception {
-        boolean areChainsConsistent = areCalendarHashChainRightLinksConsistent(
+        boolean areChainsConsistent = areRightLinksConsistent(
                 calendarHashChain1,
                 readCalendarHashChainFromFile(SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING));
         assertFalse(areChainsConsistent);
@@ -65,7 +65,7 @@ public class CalendarHashChainUtilTest {
 
     @Test
     public void testCalendarHashChainConsistency_secondChainHasMoreRightLinks() throws Exception {
-        boolean areChainsConsistent = areCalendarHashChainRightLinksConsistent(
+        boolean areChainsConsistent = areRightLinksConsistent(
                 calendarHashChain1,
                 readCalendarHashChainFromFile(SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA));
         assertFalse(areChainsConsistent);
@@ -73,7 +73,7 @@ public class CalendarHashChainUtilTest {
 
     @Test
     public void testCalendarHashChainConsistency_calendarHashChainValueDifferent() throws Exception {
-        boolean areChainsConsistent = areCalendarHashChainRightLinksConsistent(
+        boolean areChainsConsistent = areRightLinksConsistent(
                 calendarHashChain1,
                 readCalendarHashChainFromFile(SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_DATA_HASH_MISMATCH));
         assertFalse(areChainsConsistent);
@@ -81,7 +81,7 @@ public class CalendarHashChainUtilTest {
 
     @Test
     public void testCalendarHashChainConsistency_Ok() throws Exception {
-        boolean areChainsConsistent = areCalendarHashChainRightLinksConsistent(
+        boolean areChainsConsistent = areRightLinksConsistent(
                 calendarHashChain1, loadSignature(EXTENDED_SIGNATURE_2017_03_14).getCalendarHashChain());
         assertTrue(areChainsConsistent);
     }

@@ -29,7 +29,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.guardtime.ksi.unisignature.CalendarHashChainUtil.areCalendarHashChainRightLinksConsistent;
+import static com.guardtime.ksi.unisignature.CalendarHashChainUtil.areRightLinksConsistent;
 
 /**
  * Checks that: <ul> <li>the extended calendar hash chain contains the same count of right
@@ -44,7 +44,7 @@ public class ExtendedSignatureCalendarHashChainRightLinksMatchesRule extends Bas
         KSISignature signature = context.getSignature();
         CalendarHashChain extendedCalendarHashChain = context.getExtendedCalendarHashChain(signature.getCalendarHashChain().getPublicationTime());
 
-        if (areCalendarHashChainRightLinksConsistent(signature.getCalendarHashChain(), extendedCalendarHashChain)) {
+        if (areRightLinksConsistent(signature.getCalendarHashChain(), extendedCalendarHashChain)) {
             return VerificationResultCode.OK;
         } else {
             logger.info("Extended calendar hash chain right links do not match with signature calendar hash chain right links");

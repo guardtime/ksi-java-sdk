@@ -43,12 +43,12 @@ public final class CalendarHashChainUtil {
      * @return true if both chains have same amount of right chain links and
      * all right chain link hash values are equal
      */
-    public static boolean areCalendarHashChainRightLinksConsistent(CalendarHashChain calendarHashChain1,
-                                                                   CalendarHashChain calendarHashChain2) {
+    public static boolean areRightLinksConsistent(CalendarHashChain calendarHashChain1,
+                                                  CalendarHashChain calendarHashChain2) {
         notNull(calendarHashChain1, "CalendarHashChain");
         notNull(calendarHashChain2, "CalendarHashChain");
-        List<CalendarHashChainLink> rightLinks1 = getRightLinksFromCalendarHashChain(calendarHashChain1);
-        List<CalendarHashChainLink> rightLinks2 = getRightLinksFromCalendarHashChain(calendarHashChain2);
+        List<CalendarHashChainLink> rightLinks1 = getRightLinks(calendarHashChain1);
+        List<CalendarHashChainLink> rightLinks2 = getRightLinks(calendarHashChain2);
         if (rightLinks1.size() != rightLinks2.size()) {
             logger.info("Calendar hash chains have different amount of right links: {} vs {}",
                     rightLinks1.size(), rightLinks2.size());
@@ -66,7 +66,7 @@ public final class CalendarHashChainUtil {
         return true;
     }
 
-    private static List<CalendarHashChainLink> getRightLinksFromCalendarHashChain(CalendarHashChain hashChain) {
+    private static List<CalendarHashChainLink> getRightLinks(CalendarHashChain hashChain) {
         List<CalendarHashChainLink> rightLinks = new LinkedList<>();
         for (CalendarHashChainLink link : hashChain.getChainLinks()) {
             if (link.isRightLink()) {

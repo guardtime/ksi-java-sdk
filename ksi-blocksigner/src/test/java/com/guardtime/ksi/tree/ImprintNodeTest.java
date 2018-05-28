@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 
 public class ImprintNodeTest {
 
-    public static final byte[] INPUT_HASH_VALUE = new byte[32];
+    private static final byte[] INPUT_HASH_VALUE = new byte[32];
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "InputHash can not be null")
     public void testCreateImprintNodeWithoutDataHash() {
@@ -64,16 +64,20 @@ public class ImprintNodeTest {
     @Test
     public void testCopyImprintNode() {
         DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, INPUT_HASH_VALUE);
-        ImprintNode childNode = new ImprintNode(dataHash);
-        ImprintNode root = new ImprintNode(childNode, childNode, dataHash, 2);
+        ImprintNode leftChildNode = new ImprintNode(dataHash);
+        ImprintNode rightChildNode = new ImprintNode(dataHash);
+        ImprintNode root = new ImprintNode(leftChildNode, rightChildNode, dataHash, 2);
 
         ImprintNode copy = new ImprintNode(root);
 
-        assertEquals(copy.getLeftChildNode(), childNode);
-        assertEquals(copy.getRightChildNode(), childNode);
+        assertEquals(copy.getLeftChildNode(), leftChildNode);
+        assertEquals(copy.getRightChildNode(), rightChildNode);
         assertEquals(copy.getLevel(), root.getLevel());
         assertEquals(copy.getValue(), root.getValue());
         assertNotSame(copy, root);
+
+        ImprintNode leftChildNodeCopy = new ImprintNode(leftChildNode);
+        assertTrue(leftChildNodeCopy.isLeft());
     }
 
 }

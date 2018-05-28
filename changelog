@@ -2,6 +2,7 @@ Version 4.12
 
 * FEATURE: Add support for receiving pushed aggregator/extender configuration updates.
 * FEATURE: Create a signature by prepending a lower aggregation hash chain to an existing signature.
+* FEATURE: Add AggregationHashChainBuilder to extract aggregation hash chains from leaf nodes
 * IMPROVEMENT: Separated extender and signer settings in tests and properties.
 * IMPROVEMENT: Added convenience methods for creating TLVElement and setting its content.
 * IMPROVEMENT: For aggregation and extension requests take HMAC algorithm from credentials.

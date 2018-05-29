@@ -42,7 +42,7 @@ public interface Rule {
      *         context to be used for this rule for verification.
      * @return rule result
      * @throws KSIException
-     *         if exception occures.
+     *         if exception occurs.
      */
     RuleResult verify(VerificationContext context) throws KSIException;
 

@@ -135,7 +135,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
         DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]);
         KSISignature sig = ksi.sign(dataHash, 2L);
         Assert.assertTrue(sig.getAggregationHashChains()[0].getChainLinks().get(0).getLevelCorrection() >= 2L,
-                "Signature's first link's level correction is smaller than used for sining.");
+                "Signature's first link's level correction is smaller than used for signing.");
         VerificationResult result = ksi.verify(TestUtil.buildContext(sig, ksi, ksi.getExtendingService(), dataHash), new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }

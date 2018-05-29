@@ -51,7 +51,7 @@ import java.security.Security;
  * </pre>
  * <br><br>
  * <h3>Call chaining</h3>
- * <p> DataHashser addData() functions always return the same hasher so it is possible
+ * <p> DataHasher addData() functions always return the same hasher so it is possible
  * to chain call to the hasher, if needed. </p>
  * For example
  * <pre>

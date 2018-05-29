@@ -71,7 +71,7 @@ public interface AggregationHashChain {
     Identity[] getIdentity();
 
     /**
-     * Calculates the aggregation hash chain ouput hash.
+     * Calculates the aggregation hash chain output hash.
      */
     ChainResult calculateOutputHash(long level) throws KSIException;
 

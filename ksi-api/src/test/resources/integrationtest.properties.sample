@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2016 Guardtime, Inc.
+# Copyright 2013-2018 Guardtime, Inc.
 #
 # This file is part of the Guardtime client SDK.
 #
@@ -38,9 +38,9 @@ tcp.maxParallelTransactions=100
 tcp.transactionTimeoutSec=transaction-Timeout-Sec
 
 tcp.signerIP=tcp.signing.service.ip
-tcp.signerPort=tcp-singing-service-port
-tcp.signerLoginId=tcp-singing-login-id
-tcp.signerLoginKey=tcp-singing-login-key
+tcp.signerPort=tcp-signing-service-port
+tcp.signerLoginId=tcp-signing-login-id
+tcp.signerLoginKey=tcp-signing-login-key
 tcp.signerHmacAlgorithm=DEFAULT
 
 tcp.extenderIP=tcp.extender.service.ip

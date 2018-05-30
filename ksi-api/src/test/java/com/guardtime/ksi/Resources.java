@@ -95,6 +95,8 @@ public class Resources {
     //Not extended
     public static final String SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2.ksig";
     public static final String SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14.ksig";
+    public static final String SIGNATURE_2017_03_14_MISSING_RIGHT_LINK_IN_CALENDAR_CHAIN = INVALID_SIGNATURES + "sig-2017-03-14-missing-right-link-in-calendar-chain.ksig";
+    public static final String SIGNATURE_2017_03_14_WRONG_HASH_IN_CALENDAR_CHAIN_RIGHT_LINK = INVALID_SIGNATURES + "sig-2017-03-14-wrong-hash-in-calendar-chain-right-link.ksig";
     public static final String SIGNATURE_OTHER_CORE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature.ksig";
     public static final String SIGNATURE_CHANGED_CHAINS = SIGNATURES + "all-wrong-hash-chains-in-signature.ksig";
     public static final String SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-changed-certificate-id-KEY-01.ksig";
@@ -154,6 +156,9 @@ public class Resources {
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_INPUT_HASH = INTERNAL_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-input-hash-wrong.tlv";
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_AGGREGATION_TIME  = INTERNAL_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-aggr-time-future-value.tlv";
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_LAST_LINK_VALUE = INTERNAL_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-last-link-wrong.tlv";
+    public static final String SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING = COMPONENTS_CALENDAR_HASH_CHAIN + "signature-2017-03-14-calendar-hash-chain-right-link-missing.tlv";
+    public static final String SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA = COMPONENTS_CALENDAR_HASH_CHAIN + "signature-2017-03-14-calendar-hash-chain-right-link-extra.tlv";
+    public static final String SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_DATA_HASH_MISMATCH = COMPONENTS_CALENDAR_HASH_CHAIN + "signature-2017-03-14-calendar-hash-chain-data-hash-mismatch.tlv";
     //Calendar authentication record
     public static final String SIGNATURE_CALENDAR_AUTH_NO_PUBLICATION_DATA = INVALID_SIGNATURES_CALENDAR_AUTH + "invalid-signature-cal-auth-rec-pub-data-missing-tag.tlv";
     public static final String SIGNATURE_CALENDAR_AUTH_NO_SIGNATURE_DATA = INVALID_SIGNATURES_CALENDAR_AUTH + "invalid-signature-cal-auth-rec-sig-data-missing-tag.tlv";

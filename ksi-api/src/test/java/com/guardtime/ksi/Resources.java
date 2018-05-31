@@ -104,6 +104,7 @@ public class Resources {
     public static final String SIGNATURE_INPUT_HASH_LEVEL_5 =  VALID_SIGNATURES + "signature-provided-input-hash-level-is-5.ksig";
     public static final String SIGNATURE_SHA1_INPUT_HASH_OK =  VALID_SIGNATURES + "signature-SHA1-in-aggregation-chain-input-hash.ksig";
     public static final String SIGNATURE_SHA1_AGGREGATION_LINK_OK =  VALID_SIGNATURES + "signature-SHA1-in-aggregation-chain-aggregation-algorithm.ksig";
+    public static final String SIGNATURE_WITH_LEVEL_CORRECTION_1 =  SIGNATURES + "signature-with-level-correction-1.ksig";
     public static final String SIGNATURE_WITH_LEVEL_CORRECTION_3 =  SIGNATURES + "signature-with-level-correction-3.ksig";
     public static final String SIGNATURE_WITH_LEVEL_CORRECTION_5 =  SIGNATURES + "signature-with-level-correction-5.ksig";
     public static final String SIGNATURE_WITH_LEVEL_CORRECTION_14 =  SIGNATURES + "signature-with-level-correction-14.ksig";

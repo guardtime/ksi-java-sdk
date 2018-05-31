@@ -61,9 +61,6 @@ public class AggregationHashChainBuilder {
     public AggregationHashChainBuilder(TreeNode leaf, Date aggregationTime) {
         Util.notNull(leaf, "TreeNode");
         Util.notNull(aggregationTime, "Aggregation time");
-        if (!leaf.isLeaf() || leaf.isRoot()) {
-            throw new IllegalArgumentException("Aggregation hash chain can be built only from leaf nodes");
-        }
         this.leaf = leaf;
         this.level = leaf.getLevel();
         this.aggregationTime = aggregationTime;
@@ -112,6 +109,9 @@ public class AggregationHashChainBuilder {
      */
     public AggregationHashChain build() throws KSIException {
         LinkedList<AggregationChainLink> links = new LinkedList<>();
+        if (!leaf.isLeaf() || isRootNodeWithoutMetadata()) {
+            throw new IllegalArgumentException("Aggregation hash chain can be built only from leaf nodes");
+        }
         if (this.metadata != null) {
             LinkMetadata linkMetadata = SIGNATURE_COMPONENT_FACTORY.createLinkMetadata(metadata.getClientId(),
                     metadata.getMachineId(), metadata.getSequenceNumber(), metadata.getRequestTime());
@@ -126,6 +126,10 @@ public class AggregationHashChainBuilder {
         }
         chainIndex.add(calculateIndex(links));
         return SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(inputHash, aggregationTime, chainIndex, links, aggregationAlgorithm);
+    }
+
+    private boolean isRootNodeWithoutMetadata() {
+        return leaf.isRoot() && metadata == null;
     }
 
     private long calculateIndex(LinkedList<AggregationChainLink> links) {

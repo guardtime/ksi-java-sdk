@@ -39,11 +39,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static com.guardtime.ksi.Resources.SIGNATURE_WITH_LEVEL_CORRECTION_1;
 import static com.guardtime.ksi.Resources.SIGNATURE_WITH_LEVEL_CORRECTION_3;
 import static com.guardtime.ksi.Resources.SIGNATURE_WITH_LEVEL_CORRECTION_5;
 import static org.testng.Assert.assertEquals;
@@ -131,6 +133,22 @@ public class AggregationHashChainBuilderTest {
         input.put(node3, null);
 
         buildTreeAndExtractAggregationChainsAndVerify(signature, input);
+    }
+
+    @Test
+    public void testCreateAggregationHashChainWithHeight1FromTreeLeafWithMetadata_Ok() throws Exception {
+        /*
+               01E4EE0B 1
+               /‾‾‾‾‾‾‾‾‾‾\
+          01000000       test1
+         */
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_WITH_LEVEL_CORRECTION_1);
+        ImprintNode node = new ImprintNode(new DataHash(Base16.decode("01E4EE0B9517B6EFEB1AB84907CDE55081B0672FA6DA0FBCEAC4C6B435EF90211E")), 1L);
+        MetadataInput metadataInput = new MetadataInput(
+                new IdentityMetadata("test1"),
+                new DataHash(HashAlgorithm.SHA2_256, new byte[32])
+        );
+        buildTreeAndExtractAggregationChainsAndVerify(signature, Collections.singletonMap(node, metadataInput));
     }
 
     private void buildTreeAndExtractAggregationChainsAndVerify(KSISignature signature, Map<ImprintNode, MetadataInput> data) throws Exception {

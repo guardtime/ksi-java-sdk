@@ -34,6 +34,8 @@ import com.guardtime.ksi.util.Util;
 import java.util.Date;
 import java.util.LinkedList;
 
+import static com.guardtime.ksi.unisignature.AggregationHashChainUtil.calculateIndex;
+
 /**
  * Builder for creating {@link AggregationHashChain} from a {@link TreeNode} leaf
  * <p>
@@ -130,18 +132,6 @@ public class AggregationHashChainBuilder {
 
     private boolean isRootNodeWithoutMetadata() {
         return leaf.isRoot() && metadata == null;
-    }
-
-    private long calculateIndex(LinkedList<AggregationChainLink> links) {
-        long index = 1;
-        for (int i = links.size(); i > 0; i--) {
-            AggregationChainLink link = links.get(i - 1);
-            index <<= 1;
-            if (link.isLeft()) {
-                index |= 1;
-            }
-        }
-        return index;
     }
 
     private AggregationChainLink createLink(TreeNode node, TreeNode parent, long hashLevel) throws KSIException {

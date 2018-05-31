@@ -54,6 +54,7 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.guardtime.ksi.unisignature.AggregationHashChainUtil.calculateIndex;
 import static java.util.Arrays.asList;
 
 /**
@@ -276,18 +277,6 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         } else {
             return signatureComponentFactory.createRightAggregationChainLink(link, levelCorrection);
         }
-    }
-
-    private long calculateIndex(LinkedList<AggregationChainLink> links) {
-        long index = 1;
-        for (int i = links.size(); i > 0; i--) {
-            AggregationChainLink link = links.get(i - 1);
-            index <<= 1;
-            if (link.isLeft()) {
-                index |= 1;
-            }
-        }
-        return index;
     }
 
     private void verifyChainToBePrepended(KSISignature signature, AggregationHashChain aggregationHashChain) throws KSIException {

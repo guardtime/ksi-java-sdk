@@ -21,16 +21,14 @@
 package com.guardtime.ksi.unisignature.verifier.rules;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import static com.guardtime.ksi.unisignature.AggregationHashChainUtil.calculateIndex;
 
 /**
  * Verifies that aggregation chain indices are matching corresponding aggregation chains (e.g all left and
@@ -38,26 +36,19 @@ import java.util.List;
  */
 public final class AggregationHashChainIndexConsistencyRule extends BaseRule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AggregationHashChainIndexConsistencyRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(AggregationHashChainIndexConsistencyRule.class);
 
     public VerificationResultCode verifySignature(VerificationContext context) throws KSIException {
         AggregationHashChain[] aggregationChains = context.getAggregationHashChains();
 
         for (AggregationHashChain chain : aggregationChains) {
             int size = chain.getChainIndex().size();
-            long index = chain.getChainIndex().get(size - 1);
-            long chainToIndex = 0;
 
-            List<AggregationChainLink> links = chain.getChainLinks();
-            for (int i = 0; i < links.size(); i++) {
-                if (links.get(i).isLeft()) {
-                    chainToIndex |= 1L << i;
-                }
-            }
-            chainToIndex |= 1L << links.size();
+            long chainIndex = chain.getChainIndex().get(size - 1);
+            long calculatedChainIndex = calculateIndex(chain.getChainLinks());
 
-            if (index != chainToIndex) {
-                LOGGER.info("Chain index {} does not match corresponding chain {}", index, chainToIndex);
+            if (chainIndex != calculatedChainIndex) {
+                logger.info("Chain index {} does not match corresponding chain {}", chainIndex, calculatedChainIndex);
                 return VerificationResultCode.FAIL;
             }
         }

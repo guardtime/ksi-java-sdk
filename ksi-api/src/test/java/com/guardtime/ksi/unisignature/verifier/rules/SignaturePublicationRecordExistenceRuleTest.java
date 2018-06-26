@@ -23,6 +23,7 @@ package com.guardtime.ksi.unisignature.verifier.rules;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

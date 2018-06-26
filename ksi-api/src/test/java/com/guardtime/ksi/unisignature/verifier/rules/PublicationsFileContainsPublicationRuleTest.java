@@ -25,6 +25,7 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
+
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -33,8 +34,8 @@ import org.testng.annotations.Test;
 import java.util.Date;
 
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
+import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 public class PublicationsFileContainsPublicationRuleTest extends AbstractRuleTest {
 

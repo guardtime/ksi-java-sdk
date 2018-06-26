@@ -28,6 +28,7 @@ import com.guardtime.ksi.unisignature.IdentityType;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

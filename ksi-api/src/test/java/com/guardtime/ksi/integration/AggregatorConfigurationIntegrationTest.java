@@ -37,6 +37,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
 import java.util.Collections;
 
 import static com.guardtime.ksi.TestUtil.assertCause;

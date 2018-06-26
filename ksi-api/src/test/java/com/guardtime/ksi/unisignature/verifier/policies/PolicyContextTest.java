@@ -22,6 +22,7 @@ package com.guardtime.ksi.unisignature.verifier.policies;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.service.KSIExtendingService;
+
 import org.mockito.Mockito;
 import org.testng.annotations.Test;
 

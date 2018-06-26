@@ -24,6 +24,7 @@ import com.guardtime.ksi.Extender;
 import com.guardtime.ksi.PublicationsHandler;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.service.KSIExtendingService;
+
 import org.mockito.Mockito;
 import org.testng.annotations.Test;
 

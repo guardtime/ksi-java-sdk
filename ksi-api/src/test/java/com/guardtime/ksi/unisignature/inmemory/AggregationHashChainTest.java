@@ -24,6 +24,7 @@ import com.guardtime.ksi.unisignature.ChainResult;
 import com.guardtime.ksi.unisignature.Identity;
 import com.guardtime.ksi.unisignature.IdentityType;
 import com.guardtime.ksi.util.Base16;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

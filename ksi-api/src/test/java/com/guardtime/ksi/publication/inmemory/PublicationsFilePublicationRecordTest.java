@@ -25,6 +25,7 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.tlv.TLVElement;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

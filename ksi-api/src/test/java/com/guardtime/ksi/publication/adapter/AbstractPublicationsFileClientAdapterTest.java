@@ -24,6 +24,7 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIPublicationsFileClient;
 import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.util.Util;
+
 import org.bouncycastle.util.Store;
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;

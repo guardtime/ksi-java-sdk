@@ -21,6 +21,7 @@
 package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

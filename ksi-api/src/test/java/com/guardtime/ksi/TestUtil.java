@@ -37,6 +37,7 @@ import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.util.Util;
+
 import org.bouncycastle.util.Store;
 
 import java.io.IOException;

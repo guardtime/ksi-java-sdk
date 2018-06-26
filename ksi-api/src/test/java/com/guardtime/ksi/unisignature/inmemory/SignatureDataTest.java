@@ -21,6 +21,7 @@
 package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.unisignature.SignatureData;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

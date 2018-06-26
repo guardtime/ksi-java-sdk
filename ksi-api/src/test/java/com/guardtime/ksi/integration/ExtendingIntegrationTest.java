@@ -45,8 +45,9 @@ import java.util.Date;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14_MISSING_RIGHT_LINK_IN_CALENDAR_CHAIN;
-import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14_WRONG_HASH_IN_CALENDAR_CHAIN_RIGHT_LINK;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_CHAIN_FIRST_LINK_CHANGED;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_CHAIN_WITH_EXTRA_RIGHT_LINK;
+import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
@@ -131,13 +132,13 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
             expectedExceptions = KSIException.class,
             expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
     public void testExtendSignatureWithMissingRightLinkInCalendarChain_throwsKsiException(KSI ksi) throws Exception {
-        ksi.extend(loadSignature(SIGNATURE_2017_03_14_MISSING_RIGHT_LINK_IN_CALENDAR_CHAIN));
+        ksi.extend(loadSignature(SIGNATURE_CALENDAR_CHAIN_WITH_EXTRA_RIGHT_LINK));
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION,
             expectedExceptions = KSIException.class,
             expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
     public void testExtendSignatureWithCalendarChain_throwsKsiException(KSI ksi) throws Exception {
-        ksi.extend(loadSignature(SIGNATURE_2017_03_14_WRONG_HASH_IN_CALENDAR_CHAIN_RIGHT_LINK));
+        ksi.extend(loadSignature(SIGNATURE_CALENDAR_CHAIN_FIRST_LINK_CHANGED));
     }
 }

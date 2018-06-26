@@ -25,6 +25,7 @@ public class Resources {
     private static final String INPUT_FILES = "input-file/";
     private static final String COMPONENTS = "components/";
     private static final String COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA = COMPONENTS + "calendar-auth-signature-data/";
+    private static final String COMPONENTS_AGGREGATION_HASH_CHAIN = COMPONENTS + "aggregation-hash-chain/";
     private static final String COMPONENTS_CALENDAR_HASH_CHAIN = COMPONENTS + "calendar-hash-chain/";
     private static final String COMPONENTS_CERTIFICATE_RECORD = COMPONENTS + "certificate-record/";
     private static final String COMPONENTS_CMS_SIGNATURE = COMPONENTS + "cms-signature/";
@@ -110,12 +111,6 @@ public class Resources {
     public static final String SIGNATURE_WITH_LEVEL_CORRECTION_5 =  SIGNATURES + "signature-with-level-correction-5.ksig";
     public static final String SIGNATURE_WITH_LEVEL_CORRECTION_14 =  SIGNATURES + "signature-with-level-correction-14.ksig";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_OK = SIGNATURES + "single-long-aggregation-hash-chain-ok.tlv";
-    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_2 = SIGNATURES + "aggregation-hash-chain-with-height-2.tlv";
-    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1 = SIGNATURES + "aggregation-hash-chain-with-left-link-and-height-1.tlv";
-    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_RIGHT_LINKS_AND_HEIGHT_3 = SIGNATURES + "aggregation-hash-chain-with-right-links-and-height-3.tlv";
-    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_AND_RIGHT_LINKS_AND_HEIGHT_3 = SIGNATURES + "aggregation-hash-chain-with-left-and-right-links-and-height-3.tlv";
-    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_LINKS_AND_HEIGHT_5 = SIGNATURES + "aggregation-hash-chain-with-left-links-and-height-5.tlv";
-    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3 = SIGNATURES + "aggregation-hash-chain-with-height-3.tlv";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INDEX = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-missing-tag.tlv";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_INPUT_HASH = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-input-hash-missing-tag.tlv";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_ALGORITHM = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-aggr-algo-missing-tag.tlv";
@@ -176,6 +171,15 @@ public class Resources {
     /**
      * Signature components
      */
+    public static final String AGGREGATION_HASH_CHAIN_WITH_HEIGHT_2 = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-height-2.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1 = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-left-link-and-height-1.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_WITH_RIGHT_LINKS_AND_HEIGHT_3 = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-right-links-and-height-3.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_WITH_LEFT_AND_RIGHT_LINKS_AND_HEIGHT_3 = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-left-and-right-links-and-height-3.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_WITH_LEFT_LINKS_AND_HEIGHT_5 = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-left-links-and-height-5.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3 = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-height-3.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_DIFFERENT_AGGREGATION_ALGORITHM = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-height-3-different-aggregation-algorithm.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_INVALID_CHAIN_INDEX = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-height-3-invalid-chain-index.tlv";
+    public static final String AGGREGATION_HASH_CHAIN_INVALID_AGGREGATION_TIME = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-height-3-invalid-time.tlv";
     public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-right-link-missing.tlv";
     public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-right-link-extra.tlv";
     public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_DATA_HASH_MISMATCH = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-right-link-data-hash-mismatch.tlv";

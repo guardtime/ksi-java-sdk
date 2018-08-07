@@ -125,7 +125,7 @@ public class InMemoryKsiSignatureFactoryTest {
                 "0111A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D");
     }
 
-    @Test(expectedExceptions = KSIException.class,
+    @Test(expectedExceptions = AggregationHashChainPrependingException.class,
             expectedExceptionsMessageRegExp = "The aggregation hash chain cannot be added as lowest level chain. " +
                     "Its output level .* is bigger than level correction of the first link of the first aggregation hash chain of the base signature .*")
     public void testCreateSignatureWithInvalidChainHeight_throwsKSIException() throws Exception {
@@ -134,7 +134,7 @@ public class InMemoryKsiSignatureFactoryTest {
         signatureFactory.createSignature(TestUtil.loadSignature(SIGNATURE_2017_03_14), chain, null);
     }
 
-    @Test(expectedExceptions = KSIException.class,
+    @Test(expectedExceptions = AggregationHashChainPrependingException.class,
             expectedExceptionsMessageRegExp = "The aggregation hash chain cannot be added as lowest level chain. " +
                     "Its output hash .* does not match base signature input hash .*")
     public void testCreateSignatureWithInvalidOutputHash_throwsKSIException() throws Exception {
@@ -143,7 +143,7 @@ public class InMemoryKsiSignatureFactoryTest {
         signatureFactory.createSignature(signature, chain, null);
     }
 
-    @Test(expectedExceptions = KSIException.class,
+    @Test(expectedExceptions = AggregationHashChainPrependingException.class,
             expectedExceptionsMessageRegExp = "The aggregation hash chain cannot be added as lowest level chain. " +
                     "Its aggregation time .* does not match base signature aggregation time .*")
     public void testCreateSignatureWithWrongAggregationTime_throwsKSIException() throws Exception {

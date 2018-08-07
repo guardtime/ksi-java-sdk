@@ -183,6 +183,7 @@ public class Resources {
     public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-right-link-missing.tlv";
     public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-right-link-extra.tlv";
     public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_DATA_HASH_MISMATCH = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-right-link-data-hash-mismatch.tlv";
+    public static final String CALENDAR_HASH_CHAIN_EXTENDED_FROM_SIG_WITH_AGGR_CHAIN_ONLY = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-extended-from-sig-with-aggr-chain-only.tlv";
     public static final String CALENDAR_HASH_CHAIN_OK = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-ok.tlv";
     public static final String CALENDAR_HASH_CHAIN_INVALID_ALGORITHM = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-invalid-algorithm.tlv";
     public static final String CALENDAR_AUTH_SIGNATURE_DATA_OK = COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA + "signature-data-ok.tlv";

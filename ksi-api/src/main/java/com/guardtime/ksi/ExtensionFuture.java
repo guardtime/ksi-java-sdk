@@ -62,7 +62,7 @@ public final class ExtensionFuture implements Future<KSISignature> {
             try {
                 ExtensionResponse extensionResponse = future.getResult();
                 CalendarHashChain calendarHashChain = signatureComponentFactory.createCalendarHashChain(extensionResponse.getCalendarHashChain());
-                if (!areRightLinksConsistent(signature.getCalendarHashChain(), calendarHashChain)) {
+                if (signature.getCalendarHashChain() != null && !areRightLinksConsistent(signature.getCalendarHashChain(), calendarHashChain)) {
                     throw new KSIException("Right links of signature calendar hash chain and extended calendar hash chain do not match");
                 }
                 SignaturePublicationRecord publication = signatureComponentFactory.createPublicationRecord(publicationRecord.getPublicationData(), publicationRecord.getPublicationReferences(), publicationRecord.getPublicationRepositoryURIs());

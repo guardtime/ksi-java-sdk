@@ -23,6 +23,7 @@ package com.guardtime.ksi;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.KSISigningService;
+
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;

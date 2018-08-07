@@ -32,6 +32,7 @@ import com.guardtime.ksi.trust.PKITrustStore;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
 import com.guardtime.ksi.unisignature.verifier.AlwaysSuccessfulPolicy;
 import com.guardtime.ksi.util.Util;
+
 import org.bouncycastle.util.Store;
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;

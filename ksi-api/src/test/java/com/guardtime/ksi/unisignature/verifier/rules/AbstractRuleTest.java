@@ -29,6 +29,7 @@ import com.guardtime.ksi.service.client.KSIExtenderClient;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
+
 import org.mockito.Mockito;
 
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;

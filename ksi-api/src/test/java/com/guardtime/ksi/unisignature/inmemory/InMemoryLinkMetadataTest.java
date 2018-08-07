@@ -21,6 +21,7 @@
 package com.guardtime.ksi.unisignature.inmemory;
 
 import com.guardtime.ksi.tlv.TLVElement;
+
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;

@@ -27,6 +27,7 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

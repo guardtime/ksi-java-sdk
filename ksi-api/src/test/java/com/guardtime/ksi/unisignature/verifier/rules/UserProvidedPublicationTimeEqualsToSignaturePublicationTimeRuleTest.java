@@ -27,6 +27,7 @@ import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

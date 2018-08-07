@@ -21,12 +21,13 @@
 package com.guardtime.ksi.unisignature;
 
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
-import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3;
-import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1;
+import static com.guardtime.ksi.Resources.AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3;
+import static com.guardtime.ksi.Resources.AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1;
 import static com.guardtime.ksi.unisignature.AggregationHashChainUtil.calculateIndex;
 import static org.testng.Assert.assertEquals;
 
@@ -46,13 +47,13 @@ public class AggregationHashChainUtilTest {
 
     @Test
     public void testCalculateIndexWithChainHeight1_Ok() throws Exception {
-        AggregationHashChain chain = signatureComponentFactory.createAggregationHashChain(loadTlv(SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1));
+        AggregationHashChain chain = signatureComponentFactory.createAggregationHashChain(loadTlv(AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1));
         assertEquals(calculateIndex(chain.getChainLinks()), 3L);
     }
 
     @Test
     public void testCalculateIndexWithChainHeight3_Ok() throws Exception {
-        AggregationHashChain chain = signatureComponentFactory.createAggregationHashChain(loadTlv(SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3));
+        AggregationHashChain chain = signatureComponentFactory.createAggregationHashChain(loadTlv(AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3));
         assertEquals(calculateIndex(chain.getChainLinks()), 15L);
     }
 }

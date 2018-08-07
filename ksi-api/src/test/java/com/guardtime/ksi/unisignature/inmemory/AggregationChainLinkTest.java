@@ -26,6 +26,7 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.util.Base16;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

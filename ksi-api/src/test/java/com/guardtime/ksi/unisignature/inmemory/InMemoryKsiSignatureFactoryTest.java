@@ -36,6 +36,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.util.Base16;
+
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -45,15 +46,15 @@ import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.AGGREGATION_HASH_CHAIN_WITH_HEIGHT_2;
+import static com.guardtime.ksi.Resources.AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3;
+import static com.guardtime.ksi.Resources.AGGREGATION_HASH_CHAIN_WITH_LEFT_AND_RIGHT_LINKS_AND_HEIGHT_3;
+import static com.guardtime.ksi.Resources.AGGREGATION_HASH_CHAIN_WITH_LEFT_LINKS_AND_HEIGHT_5;
+import static com.guardtime.ksi.Resources.AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1;
+import static com.guardtime.ksi.Resources.AGGREGATION_HASH_CHAIN_WITH_RIGHT_LINKS_AND_HEIGHT_3;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_OK;
-import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_2;
-import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3;
-import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_AND_RIGHT_LINKS_AND_HEIGHT_3;
-import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_LINKS_AND_HEIGHT_5;
-import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1;
-import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_RIGHT_LINKS_AND_HEIGHT_3;
 import static com.guardtime.ksi.Resources.SIGNATURE_WITH_LEVEL_CORRECTION_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_WITH_LEVEL_CORRECTION_3;
 import static com.guardtime.ksi.Resources.SIGNATURE_WITH_LEVEL_CORRECTION_5;
@@ -87,7 +88,7 @@ public class InMemoryKsiSignatureFactoryTest {
     @Test
     public void testCreateSignatureWithAggregationHashChainWithLeftLinksOnly_Ok() throws Exception {
         createSignatureWithAggregationChainAndVerify(
-                SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3,
+                AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3,
                 SIGNATURE_WITH_LEVEL_CORRECTION_3,
                 "01580192B0D06E48884432DFFC26A67C6C685BEAF0252B9DD2A0B4B05D1724C5F2");
     }
@@ -95,7 +96,7 @@ public class InMemoryKsiSignatureFactoryTest {
     @Test
     public void testCreateSignatureWithAggregationHashChainWithLeftAndRightLinks_Ok() throws Exception {
         createSignatureWithAggregationChainAndVerify(
-                SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_AND_RIGHT_LINKS_AND_HEIGHT_3,
+                AGGREGATION_HASH_CHAIN_WITH_LEFT_AND_RIGHT_LINKS_AND_HEIGHT_3,
                 SIGNATURE_WITH_LEVEL_CORRECTION_3,
                 "018D982C6911831201C5CF15E937514686A2169E2AD57BA36FD92CBEBD99A67E34");
     }
@@ -103,7 +104,7 @@ public class InMemoryKsiSignatureFactoryTest {
     @Test
     public void testCreateSignatureWithAggregationHashChainWithRightLinksOnly_Ok() throws Exception {
         createSignatureWithAggregationChainAndVerify(
-                SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_RIGHT_LINKS_AND_HEIGHT_3,
+                AGGREGATION_HASH_CHAIN_WITH_RIGHT_LINKS_AND_HEIGHT_3,
                 SIGNATURE_WITH_LEVEL_CORRECTION_3,
                 "019D982C6911831201C5CF15E937514686A2169E2AD57BA36FD92CBEBD99A67E32");
     }
@@ -111,7 +112,7 @@ public class InMemoryKsiSignatureFactoryTest {
     @Test
     public void testCreateSignatureWithAggregationHashChainWithLeftLinksAndMetadata_Ok() throws Exception {
         createSignatureWithAggregationChainAndVerify(
-                SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_LINKS_AND_HEIGHT_5,
+                AGGREGATION_HASH_CHAIN_WITH_LEFT_LINKS_AND_HEIGHT_5,
                 SIGNATURE_WITH_LEVEL_CORRECTION_5,
                 "04000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
     }
@@ -119,7 +120,7 @@ public class InMemoryKsiSignatureFactoryTest {
     @Test
     public void testCreateSignatureWithAggregationHashChainWithHeightLessThanLevelCorrection_Ok() throws Exception {
         createSignatureWithAggregationChainAndVerify(
-                SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1,
+                AGGREGATION_HASH_CHAIN_WITH_LEFT_LINK_AND_HEIGHT_1,
                 SIGNATURE_WITH_LEVEL_CORRECTION_14,
                 "0111A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D");
     }
@@ -137,7 +138,7 @@ public class InMemoryKsiSignatureFactoryTest {
             expectedExceptionsMessageRegExp = "The aggregation hash chain cannot be added as lowest level chain. " +
                     "Its output hash .* does not match base signature input hash .*")
     public void testCreateSignatureWithInvalidOutputHash_throwsKSIException() throws Exception {
-        AggregationHashChain chain = new InMemoryAggregationHashChain(loadTlv(SIGNATURE_AGGREGATION_HASH_CHAIN_WITH_HEIGHT_2));
+        AggregationHashChain chain = new InMemoryAggregationHashChain(loadTlv(AGGREGATION_HASH_CHAIN_WITH_HEIGHT_2));
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_WITH_LEVEL_CORRECTION_3);
         signatureFactory.createSignature(signature, chain, null);
     }

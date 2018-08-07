@@ -31,9 +31,8 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.util.Base16;
+
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;

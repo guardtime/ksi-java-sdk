@@ -24,6 +24,7 @@ import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.tlv.TLVParserException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

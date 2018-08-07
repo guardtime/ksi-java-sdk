@@ -23,6 +23,7 @@ package com.guardtime.ksi.unisignature.verifier;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
+
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;

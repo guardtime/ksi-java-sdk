@@ -21,6 +21,7 @@
 package com.guardtime.ksi.trust;
 
 import com.guardtime.ksi.TestUtil;
+
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.mockito.Mockito;

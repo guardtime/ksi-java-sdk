@@ -54,7 +54,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
 import static com.guardtime.ksi.CommonTestUtil.loadFile;
@@ -73,7 +72,6 @@ import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_
 import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.INPUT_FILE_REVERSED;
 import static com.guardtime.ksi.TestUtil.calculateHash;
-import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.KSI_DATA_GROUP_NAME;
 
 public class SignIntegrationTest extends AbstractCommonIntegrationTest {
 

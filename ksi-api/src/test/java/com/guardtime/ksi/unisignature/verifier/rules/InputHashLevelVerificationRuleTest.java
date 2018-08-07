@@ -25,11 +25,12 @@ import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.RuleResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.SIGNATURE_INPUT_HASH_LEVEL_5;
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
+import static com.guardtime.ksi.Resources.SIGNATURE_INPUT_HASH_LEVEL_5;
 
 public class InputHashLevelVerificationRuleTest extends AbstractRuleTest {
 

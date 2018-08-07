@@ -24,6 +24,7 @@ import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.inmemory.InvalidPublicationRecordException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

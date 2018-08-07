@@ -23,6 +23,7 @@ package com.guardtime.ksi.trust;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.util.Util;
 import com.guardtime.ksi.util.X509CertUtil;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

@@ -28,31 +28,32 @@ import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
+
 import org.mockito.Mockito;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.CALENDAR_HASH_CHAIN_RIGHT_LINK_DATA_HASH_MISMATCH;
+import static com.guardtime.ksi.Resources.CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA;
+import static com.guardtime.ksi.Resources.CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_DATA_HASH_MISMATCH;
-import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA;
-import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtensionFutureTest {
 
     @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
     public void testCalendarHashChainsMismatch_originalCalendarHashChainHasMoreRightLinks() throws Exception {
-        createExtensionFuture(SIGNATURE_2017_03_14, SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING).getResult();
+        createExtensionFuture(SIGNATURE_2017_03_14, CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING).getResult();
     }
 
     @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
     public void testCalendarHashChainsMismatch_originalCalendarHashChainHasLessRightLinks() throws Exception {
-        createExtensionFuture(SIGNATURE_2017_03_14, SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA).getResult();
+        createExtensionFuture(SIGNATURE_2017_03_14, CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA).getResult();
     }
 
     @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
     public void testCalendarHashChainsMismatch_rightLinkHashDifferent() throws Exception {
-        createExtensionFuture(SIGNATURE_2017_03_14, SIGNATURE_2017_03_14_CALENDAR_HASH_CHAIN_DATA_HASH_MISMATCH).getResult();
+        createExtensionFuture(SIGNATURE_2017_03_14, CALENDAR_HASH_CHAIN_RIGHT_LINK_DATA_HASH_MISMATCH).getResult();
     }
 
     private ExtensionFuture createExtensionFuture(String signatureFileName, String extendedCalendarChainFileName) throws Exception {

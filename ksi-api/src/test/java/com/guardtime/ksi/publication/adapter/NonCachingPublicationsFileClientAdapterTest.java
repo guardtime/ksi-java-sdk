@@ -21,6 +21,7 @@
 package com.guardtime.ksi.publication.adapter;
 
 import com.guardtime.ksi.publication.inmemory.InMemoryPublicationsFileFactory;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

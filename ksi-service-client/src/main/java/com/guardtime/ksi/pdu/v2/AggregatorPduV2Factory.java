@@ -21,7 +21,11 @@ package com.guardtime.ksi.pdu.v2;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.pdu.*;
+import com.guardtime.ksi.pdu.AggregationRequest;
+import com.guardtime.ksi.pdu.AggregationResponse;
+import com.guardtime.ksi.pdu.AggregatorConfiguration;
+import com.guardtime.ksi.pdu.AggregatorPduFactory;
+import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.service.ConfigurationListener;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.ServiceCredentials;
@@ -33,7 +37,7 @@ import com.guardtime.ksi.util.Util;
 import java.util.Collections;
 import java.util.List;
 
-import static com.guardtime.ksi.tlv.GlobalTlvTypes.ELEMENT_TYPE_CONFIGURATION;
+import static com.guardtime.ksi.tlv.GlobalTlvTypes.ELEMENT_TYPE_CONFIGURATION_PAYLOAD;
 
 /**
  * Implementation of the {@link AggregatorPduFactory}.
@@ -69,12 +73,12 @@ public class AggregatorPduV2Factory extends AbstractPduV2Factory<AggregatorConfi
     public AggregationRequest createAggregatorConfigurationRequest(KSIRequestContext context, ServiceCredentials credentials) throws KSIException {
         Util.notNull(context, "KsiRequestContext");
         Util.notNull(credentials, "ServiceCredentials");
-        TLVElement payload = new TLVElement(false, false, false, ELEMENT_TYPE_CONFIGURATION);
+        TLVElement payload = new TLVElement(false, false, false, ELEMENT_TYPE_CONFIGURATION_PAYLOAD);
         return new AggregationRequestPduV2(Collections.singletonList(payload), context, credentials);
     }
 
     public AggregatorConfiguration readAggregatorConfigurationResponse(KSIRequestContext requestContext, ServiceCredentials credentials, TLVElement input) throws KSIException {
-        return getConfiguration(getMandatoryPayloadElements(credentials, input, ELEMENT_TYPE_CONFIGURATION));
+        return getConfiguration(getMandatoryPayloadElements(credentials, input, ELEMENT_TYPE_CONFIGURATION_PAYLOAD));
     }
 
     AggregatorConfiguration getConfiguration(List<TLVElement> confPayload) throws TLVParserException {

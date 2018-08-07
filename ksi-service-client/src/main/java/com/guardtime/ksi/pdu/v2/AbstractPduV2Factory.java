@@ -29,11 +29,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static com.guardtime.ksi.tlv.GlobalTlvTypes.ELEMENT_TYPE_CONFIGURATION;
-import static com.guardtime.ksi.tlv.GlobalTlvTypes.ELEMENT_TYPE_REQUEST_ID;
+import static com.guardtime.ksi.tlv.GlobalTlvTypes.ELEMENT_TYPE_CONFIGURATION_PAYLOAD;
 
 abstract class AbstractPduV2Factory<T> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractPduV2Factory.class);
+    private static final int ELEMENT_TYPE_REQUEST_ID = 0x1;
 
     private ConfigurationListener<T> configurationListener;
 
@@ -47,7 +47,7 @@ abstract class AbstractPduV2Factory<T> {
     void updateConfiguration(ServiceCredentials credentials, TLVElement input) {
         if (this.configurationListener != null) {
             try {
-                List<TLVElement> confPayload = getPayloadElements(credentials, input, ELEMENT_TYPE_CONFIGURATION);
+                List<TLVElement> confPayload = getPayloadElements(credentials, input, ELEMENT_TYPE_CONFIGURATION_PAYLOAD);
                 if (!confPayload.isEmpty()) {
                     this.configurationListener.updated(getConfiguration(confPayload));
                 }

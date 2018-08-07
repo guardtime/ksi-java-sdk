@@ -20,7 +20,16 @@
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
-import com.guardtime.ksi.unisignature.verifier.rules.*;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainDoesNotExistRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainExistenceRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CompositeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.ExtendedSignatureCalendarChainAggregationTimeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.ExtendedSignatureCalendarChainInputHashRule;
+import com.guardtime.ksi.unisignature.verifier.rules.ExtendedSignatureCalendarChainRootHashRule;
+import com.guardtime.ksi.unisignature.verifier.rules.ExtendedSignatureCalendarHashChainRightLinksMatchesRule;
+import com.guardtime.ksi.unisignature.verifier.rules.Rule;
+import com.guardtime.ksi.unisignature.verifier.rules.SignatureDoesNotContainPublicationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.SignaturePublicationRecordExistenceRule;
 
 /**
  * Calendar-based verification takes as input the computed output hash of aggregation hash chains and the `aggregation

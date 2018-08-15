@@ -20,7 +20,6 @@
 
 package com.guardtime.ksi;
 
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.ExtensionResponse;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationRecord;
@@ -45,17 +44,17 @@ import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtensionFutureTest {
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
+    @Test(expectedExceptions = InconsistentCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
     public void testCalendarHashChainsMismatch_originalCalendarHashChainHasMoreRightLinks() throws Exception {
         createExtensionFuture(SIGNATURE_2017_03_14, CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING).getResult();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
+    @Test(expectedExceptions = InconsistentCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
     public void testCalendarHashChainsMismatch_originalCalendarHashChainHasLessRightLinks() throws Exception {
         createExtensionFuture(SIGNATURE_2017_03_14, CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA).getResult();
     }
 
-    @Test(expectedExceptions = KSIException.class, expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
+    @Test(expectedExceptions = InconsistentCalendarHashChainException.class, expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
     public void testCalendarHashChainsMismatch_rightLinkHashDifferent() throws Exception {
         createExtensionFuture(SIGNATURE_2017_03_14, CALENDAR_HASH_CHAIN_RIGHT_LINK_DATA_HASH_MISMATCH).getResult();
     }

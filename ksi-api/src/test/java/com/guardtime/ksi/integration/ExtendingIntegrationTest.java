@@ -19,9 +19,9 @@
  */
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.InconsistentCalendarHashChainException;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
-import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
@@ -129,14 +129,14 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION,
-            expectedExceptions = KSIException.class,
+            expectedExceptions = InconsistentCalendarHashChainException.class,
             expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
     public void testExtendSignatureWithMissingRightLinkInCalendarChain_throwsKsiException(KSI ksi) throws Exception {
         ksi.extend(loadSignature(SIGNATURE_CALENDAR_CHAIN_WITH_EXTRA_RIGHT_LINK));
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION,
-            expectedExceptions = KSIException.class,
+            expectedExceptions = InconsistentCalendarHashChainException.class,
             expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
     public void testExtendSignatureWithCalendarChain_throwsKsiException(KSI ksi) throws Exception {
         ksi.extend(loadSignature(SIGNATURE_CALENDAR_CHAIN_FIRST_LINK_CHANGED));

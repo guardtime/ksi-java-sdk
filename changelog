@@ -8,6 +8,7 @@ Version 4.12
 * IMPROVEMENT: For aggregation and extension requests take HMAC algorithm from credentials.
 * IMPROVEMENT: Add option to set HMAC algorithm that is used in tests via integrationtest.properties.
 * IMPROVEMENT: Verify calendar hash chain consistency when extending a signature
+* IMPROVEMENT: Add option to supply metadata together with leaf node when using TreeBuilder
 * BUGFIX: KSI close now closes publications client/service.
 * BUGFIX: Tests are now closing services, clients and KSI.
 * BUGFIX: Hash data imprint when hashing DataHash object.

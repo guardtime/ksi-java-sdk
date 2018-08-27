@@ -19,6 +19,7 @@
  */
 package com.guardtime.ksi;
 
+import com.guardtime.ksi.blocksigner.IdentityMetadata;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 
@@ -28,4 +29,5 @@ public abstract class AbstractBlockSignatureTest {
     public static final DataHash DATA_HASH_2 = new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1});
     public static final DataHash DATA_HASH_3 = new DataHash(HashAlgorithm.SHA2_256, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2});
 
+    public static final IdentityMetadata IDENTITY_METADATA = new IdentityMetadata("client");
 }

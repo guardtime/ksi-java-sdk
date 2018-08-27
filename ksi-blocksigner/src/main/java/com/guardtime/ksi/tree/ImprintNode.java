@@ -90,6 +90,25 @@ public class ImprintNode implements TreeNode {
         this.rightChild = rightChild;
     }
 
+    /**
+     * Creates a non-leaf node
+     *
+     * @param leftChild  Left child node of the new node
+     * @param rightChild Right child node of the new node
+     * @param value      Hash of the new node
+     * @param level      Level of the new node
+     */
+    ImprintNode(ImprintNode leftChild, MetadataNode rightChild, DataHash value, long level) {
+        this(value, level);
+        notNull(leftChild, "LeftChild");
+        notNull(rightChild, "RightChild");
+        leftChild.parent = this;
+        leftChild.left = true;
+        rightChild.parent = this;
+        this.leftChild = leftChild;
+        this.rightChild = rightChild;
+    }
+
     public byte[] getValue() {
         return value.getImprint();
     }
@@ -120,6 +139,10 @@ public class ImprintNode implements TreeNode {
 
     public boolean isLeaf() {
         return getLeftChildNode() == null && getRightChildNode() == null;
+    }
+
+    public boolean hasMetadata() {
+        return parent != null && parent.getRightChildNode() instanceof MetadataNode;
     }
 
     @Override

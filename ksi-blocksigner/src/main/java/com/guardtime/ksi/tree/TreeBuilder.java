@@ -20,7 +20,9 @@
 
 package com.guardtime.ksi.tree;
 
+import com.guardtime.ksi.blocksigner.IdentityMetadata;
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.hashing.HashException;
 
 /**
  * Provides the means to build a binary tree where every node in the tree has at most two children.
@@ -46,6 +48,16 @@ public interface TreeBuilder<N extends TreeNode> {
     void add(N node) throws KSIException;
 
     /**
+     * Adds a new leaf with its metadata to the binary tree.
+     *
+     * @param node     leaf node to be added, must not be null.
+     * @param metadata node's metadata, must not be null
+     * @throws HashException
+     * @throws KSIException
+     */
+    void add(N node, IdentityMetadata metadata) throws HashException, KSIException;
+
+    /**
      * Calculates the binary tree height if new leaf would be added.
      *
      * @param node
@@ -56,6 +68,17 @@ public interface TreeBuilder<N extends TreeNode> {
      * @throws KSIException
      */
     long calculateHeight(N node) throws KSIException;
+
+    /**
+     * Calculates the binary tree height if new leaf with metadata would be added.
+     *
+     * @param node     a leaf to be added to the tree, must not be null.
+     * @param metadata node's metadata, must not be null
+     * @return Binary tree height.
+     * @throws HashException
+     * @throws KSIException
+     */
+    long calculateHeight(N node, IdentityMetadata metadata) throws HashException, KSIException;
 
     /**
      * Adds a new list of leaves to the binary tree.

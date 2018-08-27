@@ -80,6 +80,12 @@ public class InMemoryKsiSignatureComponentFactory implements KSISignatureCompone
         return new LeftAggregationChainLink(metadata, levelCorrection);
     }
 
+    public AggregationChainLink createLeftAggregationChainLink(byte[] metadata, long level) throws KSIException {
+        TLVElement linkMetadata = TLVElement.create(TLVElement.create(InMemoryLinkMetadata.ELEMENT_TYPE_METADATA, metadata).getEncoded());
+        InMemoryLinkMetadata inMemoryLinkMetadata = new InMemoryLinkMetadata(linkMetadata);
+        return new LeftAggregationChainLink(inMemoryLinkMetadata, level);
+    }
+
     public AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long levelCorrection) throws KSIException {
         return new RightAggregationChainLink(siblingHash, levelCorrection);
     }

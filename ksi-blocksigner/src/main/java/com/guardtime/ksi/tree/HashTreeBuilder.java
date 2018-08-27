@@ -20,17 +20,22 @@
 
 package com.guardtime.ksi.tree;
 
-import static com.guardtime.ksi.util.Util.notNull;
-
-import java.util.LinkedList;
-
+import com.guardtime.ksi.blocksigner.IdentityMetadata;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
+import com.guardtime.ksi.unisignature.LinkMetadata;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedList;
+
+import static com.guardtime.ksi.util.Util.notNull;
 
 /**
  * Hash tree (aka Merkle tree) builder implementation.
@@ -45,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * This builder can not be used multiple times.
  */
 public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
-
+    private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
     private static final Logger LOGGER = LoggerFactory.getLogger(HashTreeBuilder.class);
 
     private static final HashAlgorithm DEFAULT_HASH_ALGORITHM = HashAlgorithm.SHA2_256;
@@ -89,6 +94,18 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     }
 
     /**
+     * Adds a new leaf with its metadata to the hash tree.
+     *
+     * @param node leaf node to be added, must not be null.
+     * @param metadata node's metadata, must not be null
+     * @throws HashException
+     * @throws KSIException
+     */
+    public void add(ImprintNode node, IdentityMetadata metadata) throws HashException, KSIException {
+        addToHeads(heads, aggregate(node, metadata));
+    }
+
+    /**
      * Calculates the height of the hash tree in case a new node would be added.
      *
      * @param node
@@ -98,19 +115,31 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
      *
      * @throws HashException
      */
-
     public long calculateHeight(ImprintNode node) throws HashException {
         LinkedList<ImprintNode> tmpHeads = new LinkedList<>();
         for (ImprintNode in : heads) {
             tmpHeads.add(new ImprintNode(in));
         }
 
-        addToHeads(tmpHeads, node);
+        addToHeads(tmpHeads, new ImprintNode(node));
 
         ImprintNode root = getRootNode(tmpHeads);
         LOGGER.debug("Adding node with hash {} and height {}, the hash tree height would be {}", node.getValue(), node.getLevel(),
                 root.getLevel());
         return root.getLevel();
+    }
+
+    /**
+     * Calculates the height of the hash tree in case a new node with metadata would be added.
+     *
+     * @param node     a leaf to be added to the tree, must not be null.
+     * @param metadata metadata associated with the node
+     * @return Height of the hash tree.
+     * @throws HashException
+     * @throws KSIException
+     */
+    public long calculateHeight(ImprintNode node, IdentityMetadata metadata) throws HashException, KSIException {
+        return calculateHeight(aggregate(node, metadata));
     }
 
     /**
@@ -155,7 +184,7 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     private void addToHeads(LinkedList<ImprintNode> heads, ImprintNode node) throws HashException {
         notNull(node, "Node");
         LOGGER.debug("Adding node with hash {} and height {} to the hash tree", node.getValue(), node.getLevel());
-        ImprintNode n = node;
+        ImprintNode n = node.hasMetadata() ? (ImprintNode) node.getParent() : node;
         if (!heads.isEmpty()) {
             ImprintNode head = heads.getLast();
             if (head.getLevel() <= n.getLevel()) {
@@ -183,4 +212,19 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
         return hasher.getHash();
     }
 
+    private ImprintNode aggregate(ImprintNode node, IdentityMetadata metadata) throws KSIException {
+        notNull(metadata, "IdentityMetadata");
+        notNull(node, "ImprintNode");
+        byte[] metadataBytes = getMetadataBytes(metadata);
+        MetadataNode metadataNode = new MetadataNode(metadataBytes, node.getLevel());
+        long parentLevel = node.getLevel() + 1;
+        DataHash hash = hash(algorithm, node.getValue(), metadataBytes, parentLevel);
+        return new ImprintNode(node, metadataNode, hash, parentLevel);
+    }
+
+    private byte[] getMetadataBytes(IdentityMetadata metadata) throws KSIException {
+        LinkMetadata linkMetadata = SIGNATURE_COMPONENT_FACTORY.createLinkMetadata(metadata.getClientId(),
+                metadata.getMachineId(), metadata.getSequenceNumber(), metadata.getRequestTime());
+        return linkMetadata.getMetadataStructure().getRootElement().getContent();
+    }
 }

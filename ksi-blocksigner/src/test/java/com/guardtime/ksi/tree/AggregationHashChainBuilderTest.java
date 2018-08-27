@@ -39,7 +39,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -48,6 +47,7 @@ import java.util.Map;
 import static com.guardtime.ksi.Resources.SIGNATURE_WITH_LEVEL_CORRECTION_1;
 import static com.guardtime.ksi.Resources.SIGNATURE_WITH_LEVEL_CORRECTION_3;
 import static com.guardtime.ksi.Resources.SIGNATURE_WITH_LEVEL_CORRECTION_5;
+import static java.util.Collections.singletonMap;
 import static org.testng.Assert.assertEquals;
 
 public class AggregationHashChainBuilderTest {
@@ -72,9 +72,13 @@ public class AggregationHashChainBuilderTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Aggregation hash chain can be built only from leaf nodes")
     public void testCreateAggregationHashChainFromRootNode_throwsIllegalArgumentException() throws KSIException {
-        HashTreeBuilder treeBuilder = new HashTreeBuilder(HashAlgorithm.SHA2_256);
         ImprintNode node = new ImprintNode(new DataHash(Base16.decode("01580192B0D06E48884432DFFC26A67C6C685BEAF0252B9DD2A0B4B05D1724C5F2")));
-        treeBuilder.add(node);
+        new AggregationHashChainBuilder(node, new Date()).build();
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Aggregation hash chain can be built only from leaf nodes")
+    public void testCreateAggregationHashChainFromMetadataNode_throwsIllegalArgumentException() throws KSIException {
+        MetadataNode node = new MetadataNode(new byte[]{1}, 0);
         new AggregationHashChainBuilder(node, new Date()).build();
     }
 
@@ -92,15 +96,15 @@ public class AggregationHashChainBuilderTest {
 
 
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_WITH_LEVEL_CORRECTION_3);
-        Map<ImprintNode, MetadataInput> input = new LinkedHashMap<>();
+        Map<ImprintNode, IdentityMetadata> nodes = new LinkedHashMap<>();
 
-        input.put(new ImprintNode(new DataHash(Base16.decode("01580192B0D06E48884432DFFC26A67C6C685BEAF0252B9DD2A0B4B05D1724C5F2")), 0L), null);
-        input.put(new ImprintNode(new DataHash(Base16.decode("018D982C6911831201C5CF15E937514686A2169E2AD57BA36FD92CBEBD99A67E34")), 0L), null);
-        input.put(new ImprintNode(new DataHash(Base16.decode("0114F9189A45A30D856029F9537FD20C9C7342B82A2D949072AB195D95D7B32ECB")), 1L), null);
-        input.put(new ImprintNode(new DataHash(Base16.decode("01680192B0D06E48884432DFFC26A67C6C685BEAF0252B9DD2A0B4B05D1724C5F1")), 1L), null);
-        input.put(new ImprintNode(new DataHash(Base16.decode("019D982C6911831201C5CF15E937514686A2169E2AD57BA36FD92CBEBD99A67E32")), 1L), null);
+        nodes.put(new ImprintNode(new DataHash(Base16.decode("01580192B0D06E48884432DFFC26A67C6C685BEAF0252B9DD2A0B4B05D1724C5F2")), 0L), null);
+        nodes.put(new ImprintNode(new DataHash(Base16.decode("018D982C6911831201C5CF15E937514686A2169E2AD57BA36FD92CBEBD99A67E34")), 0L), null);
+        nodes.put(new ImprintNode(new DataHash(Base16.decode("0114F9189A45A30D856029F9537FD20C9C7342B82A2D949072AB195D95D7B32ECB")), 1L), null);
+        nodes.put(new ImprintNode(new DataHash(Base16.decode("01680192B0D06E48884432DFFC26A67C6C685BEAF0252B9DD2A0B4B05D1724C5F1")), 1L), null);
+        nodes.put(new ImprintNode(new DataHash(Base16.decode("019D982C6911831201C5CF15E937514686A2169E2AD57BA36FD92CBEBD99A67E32")), 1L), null);
 
-        buildTreeAndExtractAggregationChainsAndVerify(signature, input);
+        buildTreeAndExtractAggregationChainsAndVerify(signature, nodes);
     }
 
     @Test
@@ -115,22 +119,31 @@ public class AggregationHashChainBuilderTest {
         */
 
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_WITH_LEVEL_CORRECTION_5);
-        Map<ImprintNode, MetadataInput> input = new LinkedHashMap<>();
+        Map<ImprintNode, IdentityMetadata> input = new LinkedHashMap<>();
 
-        ImprintNode node1 = new ImprintNode(new DataHash(Base16.decode("0178BAFB1F3AF73B661F9C7B4ADC30DE5A7B715184A4543B200694101C1A8C0E02")), 1L);
-        MetadataInput metadataInput1 = new MetadataInput(
-                new IdentityMetadata("test3"),
-                new DataHash(Base16.decode("04000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")));
-        input.put(node1, metadataInput1);
+        input.put(
+                new ImprintNode(
+                        new DataHash(Base16.decode("04000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")),
+                        0L
+                ),
+                new IdentityMetadata("test3")
+        );
 
-        ImprintNode node2 = new ImprintNode(new DataHash(Base16.decode("01979985EED807EC9E036D679D327B7BEFF0CA0D127524B0AD6EC37414EBE96258")), 2L);
-        MetadataInput metadataInput2 = new MetadataInput(
-                new IdentityMetadata("test2", "machine-id-1", 1L, 1517236554764L),
-                new DataHash(Base16.decode("020000000000000000000000000000000000000000")));
-        input.put(node2, metadataInput2);
+        input.put(
+                new ImprintNode(
+                        new DataHash(Base16.decode("020000000000000000000000000000000000000000")),
+                        1L
+                ),
+                new IdentityMetadata("test2", "machine-id-1", 1L, 1517236554764L)
+        );
 
-        ImprintNode node3 = new ImprintNode(new DataHash(Base16.decode("0500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")), 4L);
-        input.put(node3, null);
+        input.put(
+                new ImprintNode(
+                        new DataHash(Base16.decode("0500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")),
+                        4L
+                ),
+                null
+        );
 
         buildTreeAndExtractAggregationChainsAndVerify(signature, input);
     }
@@ -143,31 +156,29 @@ public class AggregationHashChainBuilderTest {
           01000000       test1
          */
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_WITH_LEVEL_CORRECTION_1);
-        ImprintNode node = new ImprintNode(new DataHash(Base16.decode("01E4EE0B9517B6EFEB1AB84907CDE55081B0672FA6DA0FBCEAC4C6B435EF90211E")), 1L);
-        MetadataInput metadataInput = new MetadataInput(
-                new IdentityMetadata("test1"),
-                new DataHash(HashAlgorithm.SHA2_256, new byte[32])
+        ImprintNode node = new ImprintNode(
+                new DataHash(Base16.decode("010000000000000000000000000000000000000000000000000000000000000000")),
+                0L
         );
-        buildTreeAndExtractAggregationChainsAndVerify(signature, Collections.singletonMap(node, metadataInput));
+        buildTreeAndExtractAggregationChainsAndVerify(signature, singletonMap(node, new IdentityMetadata("test1")));
     }
 
-    private void buildTreeAndExtractAggregationChainsAndVerify(KSISignature signature, Map<ImprintNode, MetadataInput> data) throws Exception {
+    private void buildTreeAndExtractAggregationChainsAndVerify(KSISignature signature, Map<ImprintNode, IdentityMetadata> nodes) throws Exception {
         HashAlgorithm aggregationAlgorithm = signature.getInputHash().getAlgorithm();
         HashTreeBuilder treeBuilder = new HashTreeBuilder(aggregationAlgorithm);
-        for (ImprintNode node : data.keySet()) {
-            treeBuilder.add(node);
+        for (ImprintNode node : nodes.keySet()) {
+            IdentityMetadata metadata = nodes.get(node);
+            if (metadata == null) {
+                treeBuilder.add(node);
+            } else {
+                treeBuilder.add(node, metadata);
+            }
         }
 
-        for (ImprintNode node : data.keySet()) {
+        for (ImprintNode node : nodes.keySet()) {
             DataHash inputHash = new DataHash(node.getValue());
             AggregationHashChainBuilder chainBuilder = new AggregationHashChainBuilder(node, signature.getAggregationTime())
-                    .setAggregationAlgorithm(aggregationAlgorithm)
                     .setChainIndex(new LinkedList<>(signature.getAggregationHashChains()[0].getChainIndex()));
-            MetadataInput metadataInput = data.get(node);
-            if (metadataInput != null) {
-                chainBuilder.setMetadata(metadataInput.getMetadata(), metadataInput.getInputHash());
-                inputHash = metadataInput.getInputHash();
-            }
             AggregationHashChain chain = chainBuilder.build();
             createSignatureWithAggregationChainAndVerify(chain, signature, inputHash);
         }
@@ -184,23 +195,5 @@ public class AggregationHashChainBuilderTest {
         assertEquals(signatureBytesAfterSignatureCreation.toByteArray(), signatureBytes.toByteArray());
         VerificationResult result = verifier.verify(newSignature, inputHash, this.policy);
         Assert.assertTrue(result.isOk());
-    }
-
-    private class MetadataInput {
-        private IdentityMetadata metadata;
-        private DataHash inputHash;
-
-        MetadataInput(IdentityMetadata metadata, DataHash inputHash) {
-            this.metadata = metadata;
-            this.inputHash = inputHash;
-        }
-
-        IdentityMetadata getMetadata() {
-            return metadata;
-        }
-
-        DataHash getInputHash() {
-            return inputHash;
-        }
     }
 }

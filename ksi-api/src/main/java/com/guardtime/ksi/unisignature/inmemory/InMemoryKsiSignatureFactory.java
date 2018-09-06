@@ -279,22 +279,22 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         }
     }
 
-    private void verifyChainToBePrepended(KSISignature signature, AggregationHashChain aggregationHashChain) throws KSIException {
+    private void verifyChainToBePrepended(KSISignature signature, AggregationHashChain aggregationHashChain) throws AggregationHashChainPrependingException, KSIException {
         long newChainLevel = aggregationHashChain.calculateOutputHash(0L).getLevel();
         AggregationHashChain firstChainInSignature = signature.getAggregationHashChains()[0];
         Long firstChainLevelCorrection = firstChainInSignature.getChainLinks().get(0).getLevelCorrection();
         if (newChainLevel > firstChainLevelCorrection) {
-            throw new KSIException("The aggregation hash chain cannot be added as lowest level chain. " +
+            throw new AggregationHashChainPrependingException("The aggregation hash chain cannot be added as lowest level chain. " +
                     "Its output level (" + newChainLevel + ") is bigger than level correction of the first link of the " +
                     "first aggregation hash chain of the base signature (" + firstChainLevelCorrection + ").");
         }
         if (!firstChainInSignature.getInputHash().equals(aggregationHashChain.getOutputHash())) {
-            throw new KSIException("The aggregation hash chain cannot be added as lowest level chain. " +
+            throw new AggregationHashChainPrependingException("The aggregation hash chain cannot be added as lowest level chain. " +
                     "Its output hash (" + aggregationHashChain.getOutputHash() + ") does not match base signature " +
                     "input hash (" + firstChainInSignature.getInputHash() + ").");
         }
         if (!aggregationHashChain.getAggregationTime().equals(firstChainInSignature.getAggregationTime())) {
-            throw new KSIException("The aggregation hash chain cannot be added as lowest level chain. " +
+            throw new AggregationHashChainPrependingException("The aggregation hash chain cannot be added as lowest level chain. " +
                     "Its aggregation time (" + aggregationHashChain.getAggregationTime() + ") does not match base signature " +
                     "aggregation time (" + signature.getAggregationTime() + ").");
         }

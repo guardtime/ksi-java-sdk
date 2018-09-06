@@ -65,6 +65,11 @@ public interface KSISignatureComponentFactory {
     AggregationChainLink createLeftAggregationChainLink(LinkMetadata identity, long level) throws KSIException;
 
     /**
+     * Creates a new left aggregation hash chain link with given metadata bytes and level.
+     */
+    AggregationChainLink createLeftAggregationChainLink(byte[] metadata, long level) throws KSIException;
+
+    /**
      * Creates a new right aggregation hash chain link with given sibling hash and level.
      */
     AggregationChainLink createRightAggregationChainLink(DataHash siblingHash, long level) throws KSIException;

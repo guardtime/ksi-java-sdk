@@ -20,14 +20,12 @@
 
 package com.guardtime.ksi.tree;
 
-import com.guardtime.ksi.blocksigner.IdentityMetadata;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
-import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.util.Util;
 
@@ -46,12 +44,8 @@ import static com.guardtime.ksi.unisignature.AggregationHashChainUtil.calculateI
 public class AggregationHashChainBuilder {
     private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
 
-    private HashAlgorithm aggregationAlgorithm;
     private Date aggregationTime;
     private TreeNode leaf;
-    private long level;
-    private IdentityMetadata metadata;
-    private DataHash inputHash;
     private LinkedList<Long> chainIndex = new LinkedList<>();
 
     /**
@@ -64,20 +58,7 @@ public class AggregationHashChainBuilder {
         Util.notNull(leaf, "TreeNode");
         Util.notNull(aggregationTime, "Aggregation time");
         this.leaf = leaf;
-        this.level = leaf.getLevel();
         this.aggregationTime = aggregationTime;
-        this.inputHash = new DataHash(leaf.getValue());
-        this.aggregationAlgorithm = new DataHash(leaf.getValue()).getAlgorithm();
-    }
-
-    /**
-     * @param aggregationAlgorithm aggregation algorithm of the aggregation hash chain, may not be null
-     * @return instance of the builder itself
-     */
-    public AggregationHashChainBuilder setAggregationAlgorithm(HashAlgorithm aggregationAlgorithm) {
-        Util.notNull(aggregationAlgorithm, "HashAlgorithm");
-        this.aggregationAlgorithm = aggregationAlgorithm;
-        return this;
     }
 
     /**
@@ -90,48 +71,45 @@ public class AggregationHashChainBuilder {
     }
 
     /**
-     * @param metadata  metadata which was hashed together with input hash
-     * @param inputHash original input hash
-     * @return instance of the builder itself
-     */
-    public AggregationHashChainBuilder setMetadata(IdentityMetadata metadata, DataHash inputHash) {
-        Util.notNull(metadata, "IdentityMetadata");
-        Util.notNull(metadata, "DataHash");
-        this.metadata = metadata;
-        this.inputHash = inputHash;
-        this.level = 0L;
-        return this;
-    }
-
-    /**
      * Builds the {@link AggregationHashChain} instance
      *
      * @return instance of {@link AggregationHashChain}
      * @throws KSIException in case any error occurs.
      */
     public AggregationHashChain build() throws KSIException {
-        LinkedList<AggregationChainLink> links = new LinkedList<>();
-        if (!leaf.isLeaf() || isRootNodeWithoutMetadata()) {
+        if (!leaf.isLeaf() || leaf.isRoot() || leaf instanceof MetadataNode) {
             throw new IllegalArgumentException("Aggregation hash chain can be built only from leaf nodes");
         }
-        if (this.metadata != null) {
-            LinkMetadata linkMetadata = SIGNATURE_COMPONENT_FACTORY.createLinkMetadata(metadata.getClientId(),
-                    metadata.getMachineId(), metadata.getSequenceNumber(), metadata.getRequestTime());
-            links.add(SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(linkMetadata, leaf.getLevel() - 1));
+
+        LinkedList<AggregationChainLink> links = new LinkedList<>();
+        long levelCorrection = 0L;
+        TreeNode node;
+        if (leaf.getParent().getRightChildNode() instanceof MetadataNode) {
+            links.add(createMetadataChainLink((MetadataNode) leaf.getParent().getRightChildNode()));
+            node = leaf.getParent();
+        } else {
+            node = leaf;
+            levelCorrection = node.getLevel();
         }
-        TreeNode node = leaf;
-        while (!node.isRoot()) {
-            TreeNode parent = node.getParent();
-            links.add(createLink(node, parent, level));
-            level = 0L; //reset hash level, so only the first link gets the extra level correction
-            node = parent;
-        }
+        createChainLinks(links, levelCorrection, node);
         chainIndex.add(calculateIndex(links));
-        return SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(inputHash, aggregationTime, chainIndex, links, aggregationAlgorithm);
+        HashAlgorithm aggregationAlgorithm = new DataHash(leaf.getParent().getValue()).getAlgorithm();
+        return SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(
+                new DataHash(leaf.getValue()), aggregationTime, chainIndex, links, aggregationAlgorithm);
     }
 
-    private boolean isRootNodeWithoutMetadata() {
-        return leaf.isRoot() && metadata == null;
+    private void createChainLinks(LinkedList<AggregationChainLink> links, long levelCorrection, TreeNode node) throws KSIException {
+        while (!node.isRoot()) {
+            TreeNode parent = node.getParent();
+            links.add(createLink(node, parent, levelCorrection));
+            levelCorrection = 0L; // reset hash level, so only the first link gets the extra level correction
+            node = parent;
+        }
+    }
+
+    private AggregationChainLink createMetadataChainLink(MetadataNode node) throws KSIException {
+        byte[] metadataBytes = node.getValue();
+        return SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(metadataBytes, leaf.getLevel());
     }
 
     private AggregationChainLink createLink(TreeNode node, TreeNode parent, long hashLevel) throws KSIException {

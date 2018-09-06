@@ -20,6 +20,7 @@
 
 package com.guardtime.ksi.tree;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -27,9 +28,11 @@ import org.testng.annotations.Test;
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_2;
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_3;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.IDENTITY_METADATA;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 public class HashTreeBuilderTest {
 
@@ -37,7 +40,6 @@ public class HashTreeBuilderTest {
     private ImprintNode node;
     private ImprintNode node2;
     private ImprintNode node3;
-
 
     @BeforeMethod
     public void setUp() {
@@ -83,6 +85,16 @@ public class HashTreeBuilderTest {
     }
 
     @Test
+    public void testCreateTreeWithMetadataLeaf() throws KSIException {
+        builder.add(node, IDENTITY_METADATA);
+        builder.add(node2);
+        ImprintNode root = builder.build();
+        assertNotNull(root);
+        assertEquals(root.getLevel(), 2);
+        assertTrue(node.getParent().getRightChildNode() instanceof MetadataNode);
+    }
+
+    @Test
     public void testCreateTreeWithMultipleDifferentSubtrees() {
         builder.add(node, node, node3, node3, node3);
         ImprintNode root = builder.build();
@@ -105,6 +117,11 @@ public class HashTreeBuilderTest {
     public void testCalculateTreeHeightWithMultipleDifferentSubtrees() {
         builder.add(node, node, node3, node3);
         assertEquals(builder.calculateHeight(node3), 3);
+    }
+
+    @Test
+    public void testCalculateTreeHeightWithOneLeafWithMetadata() throws KSIException {
+        assertEquals(builder.calculateHeight(node, IDENTITY_METADATA), 1);
     }
 
     @Test

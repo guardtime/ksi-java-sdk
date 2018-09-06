@@ -36,23 +36,17 @@ import com.guardtime.ksi.tree.AggregationHashChainBuilder;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
-import com.guardtime.ksi.unisignature.AggregationChainLink;
 import com.guardtime.ksi.unisignature.AggregationHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
-import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
-import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
-import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static com.guardtime.ksi.util.Util.notNull;
 import static java.util.Arrays.asList;
@@ -100,17 +94,15 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private static final Logger logger = LoggerFactory.getLogger(KsiBlockSigner.class);
 
-    private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
     protected static final int MAXIMUM_LEVEL = 255;
 
-    private final Map<LeafKey, IdentityMetadata> metadataMap = new LinkedHashMap<>();
+    private final List<ImprintNode> leafs = new LinkedList<>();
     private final HashTreeBuilder treeBuilder;
 
     private final KSISigningService signingService;
 
     private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
-    private DataHasher linkDataHasher;
     private int maxTreeHeight;
 
     /**
@@ -136,7 +128,6 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         }
         this.signingService = signingService;
         this.treeBuilder = new HashTreeBuilder(this.algorithm);
-        this.linkDataHasher = new DataHasher(this.algorithm);
         this.maxTreeHeight = MAXIMUM_LEVEL;
     }
 
@@ -252,38 +243,20 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         }
         logger.debug("New input hash '{}' with level '{}' added to block signer.", dataHash, level);
 
-        ImprintNode leaf;
+        ImprintNode leaf = new ImprintNode(dataHash, level);
         if (metadata != null) {
-            LinkMetadata linkMetadata = SIGNATURE_COMPONENT_FACTORY.createLinkMetadata(metadata.getClientId(),
-                    metadata.getMachineId(), metadata.getSequenceNumber(), metadata.getRequestTime());
-
-            AggregationChainLink metadataLink = SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(linkMetadata, level);
-            leaf = calculateChainStepLeft(dataHash.getImprint(), metadataLink.getSiblingData(), level);
+            if (treeBuilder.calculateHeight(leaf, metadata) > maxTreeHeight) {
+                return false;
+            }
+            treeBuilder.add(leaf, metadata);
         } else {
-            leaf = new ImprintNode(dataHash, level);
+            if (treeBuilder.calculateHeight(leaf) > maxTreeHeight) {
+                return false;
+            }
+            treeBuilder.add(leaf);
         }
-
-        if (treeBuilder.calculateHeight(new ImprintNode(leaf)) > maxTreeHeight) {
-            return false;
-        }
-        metadataMap.put(new LeafKey(leaf, dataHash), metadata);
-
-        treeBuilder.add(leaf);
+        leafs.add(leaf);
         return true;
-    }
-
-    private ImprintNode calculateChainStepLeft(byte[] left, byte[] right, long length) {
-        long level = length + 1;
-        DataHash hash = hash(left, right, level);
-        return new ImprintNode(hash, level);
-    }
-
-    private DataHash hash(byte[] hash1, byte[] hash2, long level)  {
-        linkDataHasher.reset();
-        linkDataHasher.addData(hash1);
-        linkDataHasher.addData(hash2);
-        linkDataHasher.addData(Util.encodeUnsignedLong(level));
-        return linkDataHasher.getHash();
     }
 
     /**
@@ -296,18 +269,15 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     public List<KSISignature> sign() throws KSIException {
         TreeNode rootNode = treeBuilder.build();
         logger.debug("Root node calculated. {}(level={})", new DataHash(rootNode.getValue()), rootNode.getLevel());
-        if (metadataMap.keySet().size() == 1 && metadataMap.get(metadataMap.keySet().iterator().next()) == null) {
+        if (leafs.size() == 1 && !leafs.get(0).hasMetadata()) {
             return Collections.singletonList(signSingleNodeWithLevel(rootNode));
         }
         KSISignature rootNodeSignature = signRootNode(rootNode);
         AggregationHashChain firstChain = rootNodeSignature.getAggregationHashChains()[0];
         List<KSISignature> signatures = new LinkedList<>();
-        for (LeafKey leafKey : this.metadataMap.keySet()) {
-            AggregationHashChainBuilder chainBuilder = new AggregationHashChainBuilder(leafKey.getLeaf(), firstChain.getAggregationTime())
-                    .setChainIndex(new LinkedList<>(firstChain.getChainIndex())).setAggregationAlgorithm(algorithm);
-            if (this.metadataMap.get(leafKey) != null) {
-                chainBuilder.setMetadata(this.metadataMap.get(leafKey), leafKey.getInputDataHash());
-            }
+        for (ImprintNode leaf : leafs) {
+            AggregationHashChainBuilder chainBuilder = new AggregationHashChainBuilder(leaf, firstChain.getAggregationTime())
+                    .setChainIndex(new LinkedList<>(firstChain.getChainIndex()));
 
             List<AggregationHashChain> aggregationHashChains =
                     new LinkedList<>(asList(rootNodeSignature.getAggregationHashChains()));
@@ -337,23 +307,4 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
                         level);
         return SigningFuture.getResult();
     }
-
-    private static class LeafKey {
-        private ImprintNode leaf;
-        private DataHash inputDataHash;
-
-        LeafKey(ImprintNode leaf, DataHash inputDataHash) {
-            this.leaf = leaf;
-            this.inputDataHash = inputDataHash;
-        }
-
-        DataHash getInputDataHash() {
-            return inputDataHash;
-        }
-
-        ImprintNode getLeaf() {
-            return leaf;
-        }
-    }
-
 }

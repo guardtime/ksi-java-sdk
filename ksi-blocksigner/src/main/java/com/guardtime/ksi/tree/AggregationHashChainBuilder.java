@@ -40,7 +40,7 @@ import static java.util.Collections.singletonList;
  * <p>
  * Resulting hash chain consists of all nodes on the path from leaf node to the root node
  * <p>
- * This builder can not be used multiple times.
+ * This builder can be used multiple times.
  */
 public class AggregationHashChainBuilder {
     private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();

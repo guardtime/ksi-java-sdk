@@ -51,6 +51,7 @@ import com.guardtime.ksi.util.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -75,6 +76,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
     private KSISignatureVerifier verifier = new KSISignatureVerifier();
 
     public InMemoryKsiSignatureFactory() {
+        this(new InMemoryKsiSignatureComponentFactory());
     }
 
     public InMemoryKsiSignatureFactory(KSISignatureComponentFactory signatureComponentFactory) {
@@ -162,7 +164,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
         AggregationHashChain firstChain = aggregationHashChains.get(0);
         aggregationHashChains.set(0, createHashChainWithLevelCorrection(firstChain, levelCorrection));
-        aggregationHashChains.add(0, createHashChainWithIndex(aggregationHashChain, firstChain.getChainIndex()));
+        aggregationHashChains.add(0, createHashChainWithIndex(aggregationHashChain, firstChain.getChainIndex(), firstChain.getAggregationTime()));
         return createSignature(aggregationHashChains, signature.getCalendarHashChain(),
                 signature.getCalendarAuthenticationRecord(), signature.getPublicationRecord(),
                 signature.getRfc3161Record(), originalInputHash);
@@ -263,12 +265,12 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
                 firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
     }
 
-    private AggregationHashChain createHashChainWithIndex(AggregationHashChain chain, List<Long> index) throws KSIException {
+    private AggregationHashChain createHashChainWithIndex(AggregationHashChain chain, List<Long> index, Date aggregationTime) throws KSIException {
         LinkedList<Long> chainIndex = new LinkedList<>(index);
         LinkedList<AggregationChainLink> chainLinks = new LinkedList<>(chain.getChainLinks());
         chainIndex.add(calculateIndex(chainLinks));
         return signatureComponentFactory.createAggregationHashChain(chain.getInputHash(),
-                chain.getAggregationTime(), chainIndex, chainLinks, chain.getAggregationAlgorithm());
+                aggregationTime, chainIndex, chainLinks, chain.getAggregationAlgorithm());
     }
 
     private AggregationChainLink createLinkWithLevelCorrection(AggregationChainLink link, long levelCorrection) throws KSIException {
@@ -279,7 +281,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         }
     }
 
-    private void verifyChainToBePrepended(KSISignature signature, AggregationHashChain aggregationHashChain) throws AggregationHashChainPrependingException, KSIException {
+    private void verifyChainToBePrepended(KSISignature signature, AggregationHashChain aggregationHashChain) throws KSIException {
         long newChainLevel = aggregationHashChain.calculateOutputHash(0L).getLevel();
         AggregationHashChain firstChainInSignature = signature.getAggregationHashChains()[0];
         Long firstChainLevelCorrection = firstChainInSignature.getChainLinks().get(0).getLevelCorrection();
@@ -292,11 +294,6 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
             throw new AggregationHashChainPrependingException("The aggregation hash chain cannot be added as lowest level chain. " +
                     "Its output hash (" + aggregationHashChain.getOutputHash() + ") does not match base signature " +
                     "input hash (" + firstChainInSignature.getInputHash() + ").");
-        }
-        if (!aggregationHashChain.getAggregationTime().equals(firstChainInSignature.getAggregationTime())) {
-            throw new AggregationHashChainPrependingException("The aggregation hash chain cannot be added as lowest level chain. " +
-                    "Its aggregation time (" + aggregationHashChain.getAggregationTime() + ") does not match base signature " +
-                    "aggregation time (" + signature.getAggregationTime() + ").");
         }
     }
 }

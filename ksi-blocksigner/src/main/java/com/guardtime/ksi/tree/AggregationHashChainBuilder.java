@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import static com.guardtime.ksi.unisignature.AggregationHashChainUtil.calculateIndex;
+import static java.util.Collections.singletonList;
 
 /**
  * Builder for creating {@link AggregationHashChain} from a {@link TreeNode} leaf
@@ -44,39 +45,15 @@ import static com.guardtime.ksi.unisignature.AggregationHashChainUtil.calculateI
 public class AggregationHashChainBuilder {
     private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
 
-    private Date aggregationTime;
-    private TreeNode leaf;
-    private LinkedList<Long> chainIndex = new LinkedList<>();
-
-    /**
-     * Creates a new aggregation hash chain builder
-     *
-     * @param leaf            leaf node from which aggregation hash chain will be created, must not have any child nodes
-     * @param aggregationTime aggregation time of the aggregation hash chain
-     */
-    public AggregationHashChainBuilder(TreeNode leaf, Date aggregationTime) {
-        Util.notNull(leaf, "TreeNode");
-        Util.notNull(aggregationTime, "Aggregation time");
-        this.leaf = leaf;
-        this.aggregationTime = aggregationTime;
-    }
-
-    /**
-     * @param chainIndex index of upper aggregation hash chain, may not be null
-     * @return instance of the builder itself
-     */
-    public AggregationHashChainBuilder setChainIndex(LinkedList<Long> chainIndex) {
-        this.chainIndex = chainIndex;
-        return this;
-    }
-
     /**
      * Builds the {@link AggregationHashChain} instance
      *
+     * @param leaf Leaf node from which to build the hash chain
      * @return instance of {@link AggregationHashChain}
      * @throws KSIException in case any error occurs.
      */
-    public AggregationHashChain build() throws KSIException {
+    public AggregationHashChain build(TreeNode leaf) throws KSIException {
+        Util.notNull(leaf, "TreeNode");
         if (!leaf.isLeaf() || leaf.isRoot() || leaf instanceof MetadataNode) {
             throw new IllegalArgumentException("Aggregation hash chain can be built only from leaf nodes");
         }
@@ -85,17 +62,17 @@ public class AggregationHashChainBuilder {
         long levelCorrection = 0L;
         TreeNode node;
         if (leaf.getParent().getRightChildNode() instanceof MetadataNode) {
-            links.add(createMetadataChainLink((MetadataNode) leaf.getParent().getRightChildNode()));
+            links.add(createMetadataChainLink((MetadataNode) leaf.getParent().getRightChildNode(), leaf.getLevel()));
             node = leaf.getParent();
         } else {
             node = leaf;
             levelCorrection = node.getLevel();
         }
         createChainLinks(links, levelCorrection, node);
-        chainIndex.add(calculateIndex(links));
+        LinkedList<Long> chainIndex = new LinkedList<>(singletonList(calculateIndex(links)));
         HashAlgorithm aggregationAlgorithm = new DataHash(leaf.getParent().getValue()).getAlgorithm();
         return SIGNATURE_COMPONENT_FACTORY.createAggregationHashChain(
-                new DataHash(leaf.getValue()), aggregationTime, chainIndex, links, aggregationAlgorithm);
+                new DataHash(leaf.getValue()), new Date(), chainIndex, links, aggregationAlgorithm);
     }
 
     private void createChainLinks(LinkedList<AggregationChainLink> links, long levelCorrection, TreeNode node) throws KSIException {
@@ -107,9 +84,9 @@ public class AggregationHashChainBuilder {
         }
     }
 
-    private AggregationChainLink createMetadataChainLink(MetadataNode node) throws KSIException {
+    private AggregationChainLink createMetadataChainLink(MetadataNode node, long level) throws KSIException {
         byte[] metadataBytes = node.getValue();
-        return SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(metadataBytes, leaf.getLevel());
+        return SIGNATURE_COMPONENT_FACTORY.createLeftAggregationChainLink(metadataBytes, level);
     }
 
     private AggregationChainLink createLink(TreeNode node, TreeNode parent, long hashLevel) throws KSIException {

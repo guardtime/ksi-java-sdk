@@ -37,7 +37,6 @@ import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.tree.TreeNode;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
-import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -266,7 +265,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     public List<KSISignature> sign() throws KSIException {
         TreeNode rootNode = treeBuilder.build();
         logger.debug("Root node calculated. {}(level={})", new DataHash(rootNode.getValue()), rootNode.getLevel());
-        KSISignature rootNodeSignature = signSingleNodeWithLevel(rootNode);
+        KSISignature rootNodeSignature = signRootNode(rootNode);
         if (leafs.size() == 1 && !leafs.get(0).hasMetadata()) {
             return Collections.singletonList(rootNodeSignature);
         }
@@ -278,13 +277,11 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
         return signatures;
     }
 
-    private KSISignature signSingleNodeWithLevel(TreeNode rootNode) throws KSIException {
+    private KSISignature signRootNode(TreeNode rootNode) throws KSIException {
         DataHash dataHash = new DataHash(rootNode.getValue());
         long level = rootNode.getLevel();
         Future<AggregationResponse> future = signingService.sign(dataHash, level);
-        SigningFuture SigningFuture =
-                new SigningFuture(future, new InMemoryKsiSignatureFactory(new InMemoryKsiSignatureComponentFactory()), dataHash,
-                        level);
-        return SigningFuture.getResult();
+        SigningFuture signingFuture = new SigningFuture(future, signatureFactory, dataHash, level);
+        return signingFuture.getResult();
     }
 }

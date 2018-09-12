@@ -164,7 +164,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
         List<AggregationHashChain> aggregationHashChains = new LinkedList<>(asList(signature.getAggregationHashChains()));
         AggregationHashChain firstChain = aggregationHashChains.get(0);
         aggregationHashChains.set(0, createHashChainWithLevelCorrection(firstChain, levelCorrection));
-        aggregationHashChains.add(0, createHashChainWithIndex(aggregationHashChain, firstChain.getChainIndex(), firstChain.getAggregationTime()));
+        aggregationHashChains.add(0, createHashChainWithIndexAndAggregationDate(aggregationHashChain, firstChain.getChainIndex(), firstChain.getAggregationTime()));
         return createSignature(aggregationHashChains, signature.getCalendarHashChain(),
                 signature.getCalendarAuthenticationRecord(), signature.getPublicationRecord(),
                 signature.getRfc3161Record(), originalInputHash);
@@ -265,7 +265,7 @@ public final class InMemoryKsiSignatureFactory implements KSISignatureFactory {
                 firstChain.getAggregationTime(), chainIndex, links, firstChain.getAggregationAlgorithm());
     }
 
-    private AggregationHashChain createHashChainWithIndex(AggregationHashChain chain, List<Long> index, Date aggregationTime) throws KSIException {
+    private AggregationHashChain createHashChainWithIndexAndAggregationDate(AggregationHashChain chain, List<Long> index, Date aggregationTime) throws KSIException {
         LinkedList<Long> chainIndex = new LinkedList<>(index);
         LinkedList<AggregationChainLink> chainLinks = new LinkedList<>(chain.getChainLinks());
         chainIndex.add(calculateIndex(chainLinks));

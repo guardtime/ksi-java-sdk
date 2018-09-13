@@ -41,7 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A publication file is a trust anchor for verifying keyless signatures. It contains a list of public-key certificates
+ * A publication file is a trust anchor for verifying KSI signatures. It contains a list of public-key certificates
  * for verifying authentication records and a list of publications for verifying calendar hash chains. A publication
  * file has the following components that must appear in the following order: <ul> <li>8-byte magic 4B 53 49 50 55 42 4C
  * 46 (in hexadecimal), which encodes the string 'KSIPUBLF' in ASCII.</li> <li>publication file header. Contains version

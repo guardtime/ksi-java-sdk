@@ -39,7 +39,7 @@ public interface Policy {
     /**
      * Used to get the rules of the policy. The rules are used to verify KSI signature.
      *
-     * @return list of rules to be used to verify keyless signature
+     * @return list of rules to be used to verify KSI signature
      */
     List<Rule> getRules();
 

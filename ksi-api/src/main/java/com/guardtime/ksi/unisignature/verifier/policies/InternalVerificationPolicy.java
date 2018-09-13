@@ -49,7 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Checks keyless signature internal consistency. The verification described in this policy
+ * Checks KSI signature's internal consistency. The verification described in this policy
  * assumes, the signature being verified is syntactically correct - it parses correctly and contains all the mandatory
  * elements. Parsing of the signature must be completed before the verification process.
  */
@@ -106,7 +106,7 @@ public class InternalVerificationPolicy implements Policy {
     }
 
     /**
-     * Returns the list of rules to be used verify the keyless signature.
+     * Returns the list of rules to be used verify the KSI signature.
      *
      * @return list of rules. always present.
      */

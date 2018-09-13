@@ -99,7 +99,7 @@ public interface Signer extends Closeable {
 
     /**
      * This method is used to sign data hash asynchronously with user provided aggregation tree height.
-     * Use method {@link Future#getResult()} to get keyless signature.
+     * Use method {@link Future#getResult()} to get KSI signature.
      *
      * @param dataHash
      *         instance of {@link DataHash} to sign. not null.

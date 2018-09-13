@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * <p> KSI trust store provides trusted certificates and publications for verifying keyless signatures. It provides
+ * <p> KSI trust store provides trusted certificates and publications for verifying KSI signatures. It provides
  * methods for getting trusted certificates for verifying authentication records and a list of publications for
  * verifying calendar hash chains.</p>
  *

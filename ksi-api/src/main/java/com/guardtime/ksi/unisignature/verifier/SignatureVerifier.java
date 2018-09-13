@@ -29,7 +29,7 @@ import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 public interface SignatureVerifier {
 
     /**
-     * This method is used to verify keyless signature.
+     * This method is used to verify KSI signature.
      *
      * @param context
      *         context to be used to verify signature.

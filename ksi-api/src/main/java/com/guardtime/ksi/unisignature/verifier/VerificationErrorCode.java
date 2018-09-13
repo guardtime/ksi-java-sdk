@@ -21,7 +21,7 @@
 package com.guardtime.ksi.unisignature.verifier;
 
 /**
- * This enum contains all the error codes that may be returned by keyless signature verification process.
+ * This enum contains all the error codes that may be returned by the KSI signature verification process.
  */
 public enum VerificationErrorCode {
 

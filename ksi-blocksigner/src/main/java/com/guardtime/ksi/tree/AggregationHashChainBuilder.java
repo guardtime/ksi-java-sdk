@@ -36,9 +36,9 @@ import static com.guardtime.ksi.unisignature.AggregationHashChainUtil.calculateI
 import static java.util.Collections.singletonList;
 
 /**
- * Builder for creating {@link AggregationHashChain} from a {@link TreeNode} leaf
+ * Builder for creating {@link AggregationHashChain} from a {@link TreeNode} leaf.
  * <p>
- * Resulting hash chain consists of all nodes on the path from leaf node to the root node
+ * Resulting hash chain consists of all nodes on the path from leaf node to the root node.
  * <p>
  * This builder can be used multiple times.
  */
@@ -46,10 +46,10 @@ public class AggregationHashChainBuilder {
     private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
 
     /**
-     * Builds the {@link AggregationHashChain} instance
+     * Builds the {@link AggregationHashChain} instance.
      *
-     * @param leaf Leaf node from which to build the hash chain
-     * @return instance of {@link AggregationHashChain}
+     * @param leaf leaf node from which to build the hash chain.
+     * @return Instance of {@link AggregationHashChain}.
      * @throws KSIException in case any error occurs.
      */
     public AggregationHashChain build(TreeNode leaf) throws KSIException {

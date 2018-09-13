@@ -133,7 +133,7 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
      * Calculates the height of the hash tree in case a new node with metadata would be added.
      *
      * @param node     a leaf to be added to the tree, must not be null.
-     * @param metadata metadata associated with the node
+     * @param metadata metadata associated with the node.
      * @return Height of the hash tree.
      * @throws HashException
      * @throws KSIException

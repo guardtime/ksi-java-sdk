@@ -39,9 +39,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import static com.guardtime.ksi.Resources.SIGNATURE_WITH_LEVEL_CORRECTION_1;
@@ -67,19 +65,19 @@ public class AggregationHashChainBuilderTest {
         ImprintNode node1 = new ImprintNode(new DataHash(Base16.decode("01580192B0D06E48884432DFFC26A67C6C685BEAF0252B9DD2A0B4B05D1724C5F2")));
         ImprintNode node2 = new ImprintNode(new DataHash(Base16.decode("018D982C6911831201C5CF15E937514686A2169E2AD57BA36FD92CBEBD99A67E34")));
         treeBuilder.add(node1, node2);
-        new AggregationHashChainBuilder(node1.getParent(), new Date()).build();
+        new AggregationHashChainBuilder().build(node1.getParent());
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Aggregation hash chain can be built only from leaf nodes")
     public void testCreateAggregationHashChainFromRootNode_throwsIllegalArgumentException() throws KSIException {
         ImprintNode node = new ImprintNode(new DataHash(Base16.decode("01580192B0D06E48884432DFFC26A67C6C685BEAF0252B9DD2A0B4B05D1724C5F2")));
-        new AggregationHashChainBuilder(node, new Date()).build();
+        new AggregationHashChainBuilder().build(node);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Aggregation hash chain can be built only from leaf nodes")
     public void testCreateAggregationHashChainFromMetadataNode_throwsIllegalArgumentException() throws KSIException {
         MetadataNode node = new MetadataNode(new byte[]{1}, 0);
-        new AggregationHashChainBuilder(node, new Date()).build();
+        new AggregationHashChainBuilder().build(node);
     }
 
     @Test
@@ -177,9 +175,8 @@ public class AggregationHashChainBuilderTest {
 
         for (ImprintNode node : nodes.keySet()) {
             DataHash inputHash = new DataHash(node.getValue());
-            AggregationHashChainBuilder chainBuilder = new AggregationHashChainBuilder(node, signature.getAggregationTime())
-                    .setChainIndex(new LinkedList<>(signature.getAggregationHashChains()[0].getChainIndex()));
-            AggregationHashChain chain = chainBuilder.build();
+            AggregationHashChainBuilder chainBuilder = new AggregationHashChainBuilder();
+            AggregationHashChain chain = chainBuilder.build(node);
             createSignatureWithAggregationChainAndVerify(chain, signature, inputHash);
         }
     }

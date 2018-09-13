@@ -40,8 +40,9 @@ public class ImprintNode implements TreeNode {
     private boolean left = false;
 
     /**
-     * Creates a copy of a node
-     * @param node Node to be copied
+     * Creates a copy of a node.
+     *
+     * @param node node to be copied.
      */
     public ImprintNode(ImprintNode node) {
         notNull(node, "ImprintNode");
@@ -54,17 +55,19 @@ public class ImprintNode implements TreeNode {
     }
 
     /**
-     * Creates a new leaf node with given hash and level 0
-     * @param value Hash of the new node
+     * Creates a new leaf node with given hash and level 0.
+     *
+     * @param value hash of the new node.
      */
     public ImprintNode(DataHash value) {
         this(value, 0L);
     }
 
     /**
-     * Creates a leaf node with given hash and level
-     * @param value Hash of the new node
-     * @param level Level of the new node
+     * Creates a leaf node with given hash and level.
+     *
+     * @param value hash of the new node.
+     * @param level level of the new node.
      */
     public ImprintNode(DataHash value, long level) {
         notNull(value, "InputHash");
@@ -73,11 +76,12 @@ public class ImprintNode implements TreeNode {
     }
 
     /**
-     * Creates a non-leaf node
-     * @param leftChild Left child node of the new node
-     * @param rightChild Right child node of the new node
-     * @param value Hash of the new node
-     * @param level Level of the new node
+     * Creates a non-leaf node.
+     *
+     * @param leftChild left child node of the new node.
+     * @param rightChild right child node of the new node.
+     * @param value hash of the new node.
+     * @param level level of the new node.
      */
     public ImprintNode(ImprintNode leftChild, ImprintNode rightChild, DataHash value, long level) {
         this(value, level);
@@ -91,12 +95,12 @@ public class ImprintNode implements TreeNode {
     }
 
     /**
-     * Creates a non-leaf node
+     * Creates a non-leaf node.
      *
-     * @param leftChild  Left child node of the new node
-     * @param rightChild Right child node of the new node
-     * @param value      Hash of the new node
-     * @param level      Level of the new node
+     * @param leftChild  left child node of the new node.
+     * @param rightChild right child node of the new node.
+     * @param value      hash of the new node.
+     * @param level      level of the new node.
      */
     ImprintNode(ImprintNode leftChild, MetadataNode rightChild, DataHash value, long level) {
         this(value, level);

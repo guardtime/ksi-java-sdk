@@ -23,7 +23,7 @@ package com.guardtime.ksi.unisignature.verifier;
 import java.util.List;
 
 /**
- * This interface represents a keyless signature verification result.
+ * This interface represents a KSI signature verification result.
  */
 public interface VerificationResult {
 

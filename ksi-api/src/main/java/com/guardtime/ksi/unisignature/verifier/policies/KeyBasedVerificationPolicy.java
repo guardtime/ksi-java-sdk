@@ -28,7 +28,7 @@ import com.guardtime.ksi.unisignature.verifier.rules.CertificateExistenceRule;
 import com.guardtime.ksi.unisignature.verifier.rules.CertificateValidityRule;
 
 /**
- * KSI Signature verification policy. Can be used if the keyless signature contains a calendar hash chain and a calendar
+ * KSI Signature verification policy. Can be used if the KSI signature contains a calendar hash chain and a calendar
  * authentication record. <p/><p>NB! Key-based verification should be used for short-term verification before a
  * publication becomes available.</p>
  */

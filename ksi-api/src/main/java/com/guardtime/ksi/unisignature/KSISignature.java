@@ -27,7 +27,7 @@ import java.io.OutputStream;
 import java.util.Date;
 
 /**
- * This interface represents a keyless uni-signature. KSI signature consist of the following components: <ul> <li>One or
+ * This interface represents a KSI uni-signature. KSI signature consist of the following components: <ul> <li>One or
  * more aggregation hash chain components that together form a single continuous chain.</li> <li>At most one calendar
  * hash chain component. Represents the computation of the published hash value from the per-round root hash value.</li>
  * <li>Publication record. Contains the published hash value and bibliographic references to the media where it

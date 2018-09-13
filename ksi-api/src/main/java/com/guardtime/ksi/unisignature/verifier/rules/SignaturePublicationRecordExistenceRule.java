@@ -27,7 +27,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 
 /**
- * Checks if keyless signature contains publication record or not.
+ * Checks if the KSI signature contains publication record or not.
  */
 public class SignaturePublicationRecordExistenceRule extends BaseRule {
 

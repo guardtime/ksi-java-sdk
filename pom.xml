@@ -28,7 +28,7 @@
 	<packaging>pom</packaging>
 
 	<name>KSI SDK</name>
-	<description>Keyless Signature Infrastructure (KSI) SDK for Java</description>
+	<description>KSI Blockchain SDK for Java</description>
 	<url>https://guardtime.com/ksi-technology</url>
 
 	<licenses>

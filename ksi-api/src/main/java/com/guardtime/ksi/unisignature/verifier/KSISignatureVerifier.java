@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Keyless signature verifier implementation.
+ * KSI signature verifier implementation.
  */
 public final class KSISignatureVerifier implements SignatureVerifier {
 

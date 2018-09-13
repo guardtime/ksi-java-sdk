@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Checks if keyless signature contains publication record or not. If publication record is missing
+ * Checks if the KSI signature contains publication record or not. If publication record is missing
  * then status {@link VerificationResultCode#OK} will be returned.
  */
 public class SignaturePublicationRecordPublicationHashRule extends BaseRule {

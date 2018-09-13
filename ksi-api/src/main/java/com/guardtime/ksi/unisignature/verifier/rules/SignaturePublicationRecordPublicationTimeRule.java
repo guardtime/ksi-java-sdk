@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * Checks if keyless signature contains correct publication record publication time. If publication
+ * Checks if the KSI signature contains correct publication record publication time. If publication
  * record is missing then status {@link VerificationResultCode#OK} will ne returned.
  */
 public class SignaturePublicationRecordPublicationTimeRule extends BaseRule {

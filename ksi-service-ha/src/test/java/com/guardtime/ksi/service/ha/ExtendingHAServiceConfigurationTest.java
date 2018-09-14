@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2017 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.service.ha;
 
@@ -27,7 +28,8 @@ import java.util.Date;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class ExtendingHAServiceConfigurationTest {
 
@@ -73,22 +75,22 @@ public class ExtendingHAServiceConfigurationTest {
     }
 
     @Test
-    public void testConsolidatedMaximumRequests() throws Exception {
+    public void testConsolidatedMaximumRequests() {
         assertEquals(c1.getMaximumRequests(), new ExtendingHAServiceConfiguration(c1, c2).getMaximumRequests());
     }
 
     @Test
-    public void testConsolidatedParents() throws Exception {
+    public void testConsolidatedParents() {
         assertEquals(c2.getParents(), new ExtendingHAServiceConfiguration(c1, c2).getParents());
     }
 
     @Test
-    public void testConsolidatedCalendarFirstTime() throws Exception {
+    public void testConsolidatedCalendarFirstTime() {
         assertEquals(c1.getCalendarFirstTime(), new ExtendingHAServiceConfiguration(c1, c2).getCalendarFirstTime());
     }
 
     @Test
-    public void testConsolidatedCalendarLastTime() throws Exception {
+    public void testConsolidatedCalendarLastTime() {
         assertEquals(c2.getCalendarLastTime(), new ExtendingHAServiceConfiguration(c1, c2).getCalendarLastTime());
     }
 

@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2016 Guardtime, Inc.
+# Copyright 2013-2018 Guardtime, Inc.
 #
 # This file is part of the Guardtime client SDK.
 #
@@ -16,19 +16,35 @@
 # Guardtime, Inc., and no license to trademarks is granted; Guardtime
 # reserves and retains all trademark rights.
 #
-pubfileUrl=publications.file.url
-gatewayUrl=signing.service.url:port
-extenderUrl=extending.service.url:port
-loginId=http-login-id
-loginKey=http-login-key
 
+#Common settings
 javaKeyStorePath=src/test/resources/truststore.jks
+pubfileUrl=publications.file.url
+
+
+#Http settings
+signerUrl=signing.service.url:port
+signerLoginId=http-signing-login-id
+signerLoginKey=http-signing-login-key
+signerHmacAlgorithm=DEFAULT
+
+extenderUrl=extending.service.url:port
+extenderLoginId=http-extender-login-id
+extenderLoginKey=http-extender-login-key
+extenderHmacAlgorithm=DEFAULT
+
+# TCP settings
+tcp.maxParallelTransactions=100
+tcp.transactionTimeoutSec=transaction-Timeout-Sec
 
 tcp.signerIP=tcp.signing.service.ip
-tcp.signerPort=tcp-singing-service-port
+tcp.signerPort=tcp-signing-service-port
+tcp.signerLoginId=tcp-signing-login-id
+tcp.signerLoginKey=tcp-signing-login-key
+tcp.signerHmacAlgorithm=DEFAULT
+
 tcp.extenderIP=tcp.extender.service.ip
 tcp.extenderPort=tcp-extender-service-port
-tcp.transactionTimeoutSec=transaction-Timeout-Sec
-tcp.loginId=tcp-login-id
-tcp.loginKey=tcp-login-key
-
+tcp.extenderLoginId=tcp-extender-login-id
+tcp.extenderLoginKey=tcp-extender-login-key
+tcp.extenderHmacAlgorithm=DEFAULT

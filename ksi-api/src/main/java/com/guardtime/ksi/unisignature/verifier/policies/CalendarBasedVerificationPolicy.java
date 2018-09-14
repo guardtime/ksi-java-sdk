@@ -1,25 +1,35 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.unisignature.verifier.policies;
 
-import com.guardtime.ksi.unisignature.verifier.rules.*;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainDoesNotExistRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CalendarHashChainExistenceRule;
+import com.guardtime.ksi.unisignature.verifier.rules.CompositeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.ExtendedSignatureCalendarChainAggregationTimeRule;
+import com.guardtime.ksi.unisignature.verifier.rules.ExtendedSignatureCalendarChainInputHashRule;
+import com.guardtime.ksi.unisignature.verifier.rules.ExtendedSignatureCalendarChainRootHashRule;
+import com.guardtime.ksi.unisignature.verifier.rules.ExtendedSignatureCalendarHashChainRightLinksMatchesRule;
+import com.guardtime.ksi.unisignature.verifier.rules.Rule;
+import com.guardtime.ksi.unisignature.verifier.rules.SignatureDoesNotContainPublicationRule;
+import com.guardtime.ksi.unisignature.verifier.rules.SignaturePublicationRecordExistenceRule;
 
 /**
  * Calendar-based verification takes as input the computed output hash of aggregation hash chains and the `aggregation

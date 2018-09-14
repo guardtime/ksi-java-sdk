@@ -1,23 +1,25 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.integration;
 
+import com.guardtime.ksi.InconsistentCalendarHashChainException;
 import com.guardtime.ksi.KSI;
 import com.guardtime.ksi.TestUtil;
 import com.guardtime.ksi.hashing.DataHash;
@@ -43,6 +45,9 @@ import java.util.Date;
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_CHAIN_FIRST_LINK_CHANGED;
+import static com.guardtime.ksi.Resources.SIGNATURE_CALENDAR_CHAIN_WITH_EXTRA_RIGHT_LINK;
+import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
@@ -95,17 +100,24 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertTrue(verificationResult.isOk(), "Verification of extended signature failed with " + verificationResult.getErrorCode());
     }
 
-    @Test(groups = TEST_GROUP_INTEGRATION, expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
+    @Test(groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Publication is before signature")
     public void testExtendPublicationBeforeSignature_NOK() throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
-        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(new Date(signature.getAggregationTime().getTime() - 1000000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        PublicationRecord publicationRecord = new PublicationsFilePublicationRecord(new PublicationData(
+                new Date(signature.getAggregationTime().getTime() - 1000000L),
+                new DataHash(HashAlgorithm.SHA2_256, new byte[32])
+        ));
         ksi.extend(signature, publicationRecord);
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
     public void testExtendSignatureFromAnotherCore_NOK(KSI ksi) throws Exception {
         KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
-        PublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData(new Date(signature.getPublicationTime().getTime() + 100000L), new DataHash(HashAlgorithm.SHA2_256, new byte[32])));
+        PublicationRecord record = new PublicationsFilePublicationRecord(new PublicationData(
+                new Date(signature.getPublicationTime().getTime() + 100000L),
+                new DataHash(HashAlgorithm.SHA2_256, new byte[32])
+        ));
         try {
             ksi.extend(signature, record);
             Assert.assertTrue(false, "Extended signature internal verification had to fail.");
@@ -114,5 +126,25 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
             Assert.assertEquals(e.getVerificationResult().getErrorCode(), VerificationErrorCode.INT_09);
             Assert.assertTrue(e.getSignature().isExtended());
         }
+    }
+
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = InconsistentCalendarHashChainException.class,
+            expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
+    public void testExtendSignatureWithMissingRightLinkInCalendarChain_throwsKsiException(KSI ksi) throws Exception {
+        ksi.extend(loadSignature(SIGNATURE_CALENDAR_CHAIN_WITH_EXTRA_RIGHT_LINK));
+    }
+
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION,
+            expectedExceptions = InconsistentCalendarHashChainException.class,
+            expectedExceptionsMessageRegExp = "Right links of signature calendar hash chain and extended calendar hash chain do not match")
+    public void testExtendSignatureWithCalendarChain_throwsKsiException(KSI ksi) throws Exception {
+        ksi.extend(loadSignature(SIGNATURE_CALENDAR_CHAIN_FIRST_LINK_CHANGED));
+    }
+
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
+    public void testExtendSignatureWithCalendarChain_Ok(KSI ksi) throws Exception {
+        KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS));
+        Assert.assertTrue(extendedSignature.isExtended(), "Signature extension failed.");
     }
 }

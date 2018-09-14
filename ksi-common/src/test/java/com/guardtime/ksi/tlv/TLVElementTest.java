@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.tlv;
@@ -271,10 +272,120 @@ public class TLVElementTest {
         TLVElement.create(new byte[]{0, 0, 0});
     }
 
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Byte array can not be null")
+    public void testCreateTlvElementFromNullByteArray_throwsNullPointerException() throws Exception {
+        TLVElement.create(null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Date can not be null")
+    public void testCreateTlvElementWithNullDateContent_throwsNullPointerException() throws Exception {
+        TLVElement.create(1, (Date) null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Data hash can not be null")
+    public void testCreateTlvElementWithNullDataHashContent_throwsNullPointerException() throws Exception {
+        TLVElement.create(1, (DataHash) null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Content can not be null")
+    public void testCreateTlvElementWithNullByteArrayContent_throwsNullPointerException() throws Exception {
+        TLVElement.create(1, (byte[]) null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Hash algorithm can not be null")
+    public void testCreateTlvElementWithNullHashAlgorithmContent_throwsNullPointerException() throws Exception {
+        TLVElement.create(1, (HashAlgorithm) null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Output stream can not be null")
+    public void testWriteTlvElementToNullStream_throwsNullPointerException() throws Exception {
+        TLVElement element = new TLVElement(false, false, 2);
+        element.writeTo(null);
+    }
+
     @Test
-    public void testGetDecodedHashAlgorithm_OK() throws Exception {
-        TLVElement element = TLVElement.create(new byte[]{0x0f, 33, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
-        element.setLongContent(0x0A);
+    public void testCreateTlvElementWithLongContent() throws Exception {
+        TLVElement element = TLVElement.create(2, 42L);
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getDecodedLong().longValue(), 42L);
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testCreateTlvElementWithDateContent() throws Exception {
+        TLVElement element = TLVElement.create(2, new Date(152275149000L));
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getDecodedDate(), new Date(152275149000L));
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testCreateTlvElementWithDataHashContent() throws Exception {
+        DataHash value = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
+        TLVElement element = TLVElement.create(2, value);
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getDecodedDataHash(), value);
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testCreateTlvElementWithStringContent() throws Exception {
+        TLVElement element = TLVElement.create(2, "string");
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getDecodedString(), "string");
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testCreateTlvElementWithByteArrayContent() throws Exception {
+        TLVElement element = TLVElement.create(2, new byte[]{1, 2, 3});
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getContent(), new byte[]{1, 2, 3});
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Content can not be null")
+    public void testSetNullContent() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x1);
+        element.setContent(null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Data hash can not be null")
+    public void testSetNullDataHash() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x1);
+        element.setDataHashContent(null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Date can not be null")
+    public void testSetNullDate() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x1);
+        element.setDateContent(null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Hash algorithm can not be null")
+    public void testSetNullHashAlgorithm() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x1);
+        element.setHashAlgorithmContent(null);
+    }
+
+    @Test
+    public void testCreateTlvElementWithHashAlgorithmContent() throws Exception {
+        TLVElement element = TLVElement.create(2, HashAlgorithm.SHA2_256);
+
+        Assert.assertEquals(element.getType(), 2);
+        Assert.assertEquals(element.getDecodedHashAlgorithm(), HashAlgorithm.SHA2_256);
+        assertElementFlagsAreFalse(element);
+    }
+
+    @Test
+    public void testSetHashAlgorithm_OK() throws Exception {
+        TLVElement element = new TLVElement(false, false, 0x0f);
+        element.setHashAlgorithmContent(HashAlgorithm.SHA3_512);
         Assert.assertEquals(element.getDecodedHashAlgorithm(), HashAlgorithm.SHA3_512);
     }
 
@@ -286,9 +397,9 @@ public class TLVElementTest {
     }
 
     @Test
-    public void testGetDecodedDate_OK() throws Exception {
+    public void testSetDate_OK() throws Exception {
         TLVElement element = new TLVElement(false, false, 0x1);
-        element.setLongContent(1442837678);
+        element.setDateContent(new Date(1442837678000L));
         Assert.assertEquals(element.getDecodedDate(), new Date(1442837678000L));
     }
 
@@ -299,7 +410,7 @@ public class TLVElementTest {
     }
 
     @Test
-    public void testTlvWithLongTypeIsAlwaysEncodedAsTlv16() throws Exception {
+    public void testTlvWithLongTypeIsAlwaysEncodedAsTlv16() {
         TLVElement element = new TLVElement(false, false, 0x800);
         Assert.assertTrue(element.isOutputTlv16());
     }
@@ -347,8 +458,26 @@ public class TLVElementTest {
         root.addChildElement(child2);
     }
 
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Child TLV element can not be null")
+    public void testAddChildElement_throwsNullPointerException() throws Exception {
+        TLVElement element = new TLVElement(false, false, 2);
+        element.addChildElement(null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Child TLV element can not be null")
+    public void testAddFirstChildElement_throwsNullPointerException() throws Exception {
+        TLVElement element = new TLVElement(false, false, 2);
+        element.addFirstChildElement(null);
+    }
+
     private TLVElement load(InputStream input) throws Exception {
         return loadTlv(input);
+    }
+
+    private void assertElementFlagsAreFalse(TLVElement element) {
+        Assert.assertFalse(element.isInputTlv16());
+        Assert.assertFalse(element.isNonCritical());
+        Assert.assertFalse(element.isForwarded());
     }
 
 }

@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.hashing;
 
@@ -44,35 +45,35 @@ public class DataHasherTest {
     }
 
     @Test(dataProvider = "notImplementedAlgorithms", expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm .* is not implemented")
-    public void testNotImplementedAlgorithms_throwsHashAlgorithmNotImplementedException(HashAlgorithm algorithm) throws Exception {
+    public void testNotImplementedAlgorithms_throwsHashAlgorithmNotImplementedException(HashAlgorithm algorithm) {
         new DataHasher(algorithm);
     }
 
     @Test(dataProvider = "workingAlgorithms")
-    public void testWorkingAlgorithms(HashAlgorithm algorithm) throws Exception {
+    public void testWorkingAlgorithms(HashAlgorithm algorithm) {
         DataHasher hasher = new DataHasher(algorithm, false);
         Assert.assertNotNull(hasher);
     }
 
     @Test(dataProvider = "deprecatedAlgorithms", expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm .* is marked deprecated since .*")
-    public void testDeprecatedAlgorithms(HashAlgorithm algorithm) throws Exception {
+    public void testDeprecatedAlgorithms(HashAlgorithm algorithm) {
         new DataHasher(algorithm, true);
     }
 
     @Test
-    public void testDefaultAlgorithmNameAlternative() throws Exception {
+    public void testDefaultAlgorithmNameAlternative() {
         HashAlgorithm alg = HashAlgorithm.getByName("dEfaulT");
         Assert.assertEquals(HashAlgorithm.SHA2_256.getName(), alg.getName());
     }
 
     @Test
-    public void testSha2AlgorithmNameAlternative() throws Exception {
+    public void testSha2AlgorithmNameAlternative() {
         HashAlgorithm alg = HashAlgorithm.getByName("ShA2");
         Assert.assertEquals(HashAlgorithm.SHA2_256.getName(), alg.getName());
     }
 
     @Test
-    public void testSha1AlgorithmStateTag() throws Exception {
+    public void testSha1AlgorithmStateTag() {
         HashAlgorithm alg = HashAlgorithm.getByName("SHA1");
         Assert.assertEquals(alg.getStatus(), Status.NOT_TRUSTED);
         Assert.assertEquals(alg.getDeprecatedSince(), new Date(1467331200000L));
@@ -83,7 +84,7 @@ public class DataHasherTest {
     }
 
     @Test
-    public void testSha1AlgorithmBeforeObsolete() throws Exception {
+    public void testSha1AlgorithmBeforeObsolete() {
         HashAlgorithm alg = HashAlgorithm.SHA1;
         Assert.assertEquals(alg.getStatus(), Status.NOT_TRUSTED);
         Assert.assertFalse(alg.isDeprecated(new Date(1467234000000L)/* 30.06.2016 */));
@@ -91,19 +92,19 @@ public class DataHasherTest {
     }
 
     @Test
-    public void testSha2AlgorithmStateTag() throws Exception {
+    public void testSha2AlgorithmStateTag() {
         HashAlgorithm alg = HashAlgorithm.getByName("ShA2");
         Assert.assertEquals(alg.getStatus(), HashAlgorithm.Status.NORMAL);
     }
 
     @Test
-    public void testSm3AlgorithmStateTag() throws Exception {
+    public void testSm3AlgorithmStateTag() {
         HashAlgorithm alg = HashAlgorithm.getByName("SM3");
         Assert.assertEquals(alg.getStatus(), HashAlgorithm.Status.NOT_IMPLEMENTED);
     }
 
     @Test
-    public void testHashGenerationWithoutAddingData() throws Exception {
+    public void testHashGenerationWithoutAddingData() {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         DataHash dataHash = hasher.getHash();
         Assert.assertEquals(HashAlgorithm.SHA2_256.getLength(), dataHash.getValue().length);
@@ -111,7 +112,7 @@ public class DataHasherTest {
     }
 
     @Test
-    public void testHashGenerationWithData() throws Exception {
+    public void testHashGenerationWithData() {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData(testData);
         DataHash dataHash = hasher.getHash();
@@ -120,7 +121,7 @@ public class DataHasherTest {
     }
 
     @Test
-    public void testHashGenerationAddDataTwice() throws Exception {
+    public void testHashGenerationAddDataTwice() {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData(testData);
         hasher.addData(testData);
@@ -139,7 +140,7 @@ public class DataHasherTest {
     }
 
     @Test
-    public void testGetHashMultipleTimes() throws Exception {
+    public void testGetHashMultipleTimes() {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData(testData);
         DataHash dataHash = hasher.getHash();
@@ -151,7 +152,7 @@ public class DataHasherTest {
     }
 
     @Test
-    public void testAddDataAfterReset() throws Exception {
+    public void testAddDataAfterReset() {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData(testData);
         DataHash hash = hasher.getHash();
@@ -160,8 +161,17 @@ public class DataHasherTest {
         Assert.assertEquals(hash, hasher.getHash());
     }
 
+    @Test
+    public void testAddDataHash() {
+        DataHash input = new DataHash(Base16.decode("0111A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D"));
+        DataHash output = new DataHash(Base16.decode("013B28D96EAFE042AB948D5D78C43AB08C7D55EB935DF9DD62BEEDD3D17BA070D0"));
+        DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
+        hasher.addData(input);
+        Assert.assertEquals(hasher.getHash(), output);
+    }
+
     @Test(expectedExceptions = IllegalStateException.class, expectedExceptionsMessageRegExp = "Output hash has already been calculated")
-    public void testAddDataAfterGettingResult() throws Exception {
+    public void testAddDataAfterGettingResult() {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData(testData);
         hasher.getHash();
@@ -169,30 +179,30 @@ public class DataHasherTest {
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "File can not be null")
-    public void testAddDataInvalidFileException() throws Exception {
+    public void testAddDataInvalidFileException() {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData((File) null);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Input stream can not be null")
-    public void testAddDataInvalidInputStreamException() throws Exception {
+    public void testAddDataInvalidInputStreamException() {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData((InputStream) null);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Date can not be null")
-    public void testAddInvalidData_ThrowsIllegalArgumentException() throws Exception {
+    public void testAddInvalidData_ThrowsIllegalArgumentException() {
         DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
         hasher.addData((byte[]) null);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Hash algorithm can not be null")
-    public void testAlgorithmIsNullException() throws Exception {
+    public void testAlgorithmIsNullException() {
         new DataHasher(null);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm SHA3_256 is not implemented")
-    public void testSha3AlgorithmIsNotImplemented_ThrowsHashAlgorithmNotImplementedException() throws Exception {
+    public void testSha3AlgorithmIsNotImplemented_ThrowsHashAlgorithmNotImplementedException() {
         new DataHasher(HashAlgorithm.SHA3_256);
     }
 

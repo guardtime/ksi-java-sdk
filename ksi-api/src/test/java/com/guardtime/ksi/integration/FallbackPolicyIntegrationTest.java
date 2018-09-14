@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.integration;
@@ -25,7 +26,12 @@ import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
-import com.guardtime.ksi.unisignature.verifier.policies.*;
+import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.Policy;
+import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -80,7 +86,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         PublicationData publicationData = signature.getPublicationRecord().getPublicationData();
 
         VerificationContextBuilder builder = new VerificationContextBuilder();
-        builder.setSignature(signature).setExtenderClient(simpleHttpClient).setPublicationsFile(publicationFile);
+        builder.setSignature(signature).setExtenderClient(extenderClient).setPublicationsFile(publicationFile);
         builder.setUserPublication(publicationData);
         builder.setExtendingAllowed(false);
         Assert.assertTrue(ksi.verify(builder.build(), policy).isOk());
@@ -144,12 +150,12 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
     }
 
     private void verification(KSISignature signature, Policy policy, boolean enableExtender) throws Exception {
-        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, enableExtender);
+        VerificationResult result = verify(ksi, extenderClient, signature, policy, enableExtender);
         Assert.assertTrue(result.isOk());
     }
 
     private void verificationWithPublicationData(KSISignature signature, Policy policy, PublicationData publicationData, boolean enableExtender) throws Exception{
-        VerificationResult result = verify(ksi, simpleHttpClient, signature, policy, publicationData, enableExtender);
+        VerificationResult result = verify(ksi, extenderClient, signature, policy, publicationData, enableExtender);
         Assert.assertTrue(result.isOk());
     }
 }

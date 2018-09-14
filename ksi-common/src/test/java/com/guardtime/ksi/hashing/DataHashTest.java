@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2016 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.hashing;
 
@@ -29,22 +30,22 @@ public class DataHashTest {
     private static final byte[] VALID_SHA256_IMPRINT = Util.join(new byte[] {1}, VALID_SHA256_CONTENT);
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp="Hash algorithm can not be null")
-    public void testAlgorithmMissing() throws Exception {
+    public void testAlgorithmMissing() {
         new DataHash(null, new byte[] {1});
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp="Hash value can not be null")
-    public void testHashValueMissing() throws Exception {
+    public void testHashValueMissing() {
         new DataHash(HashAlgorithm.SHA2_256, null);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash size\\(1\\) does not match SHA-256 size\\(32\\)")
-    public void testWrongLengthValue() throws Exception {
+    public void testWrongLengthValue() {
         new DataHash(HashAlgorithm.SHA2_256, new byte[] {1});
     }
 
     @Test
-    public void testHashValue() throws Exception {
+    public void testHashValue() {
         DataHash dataHash = new DataHash(HashAlgorithm.SHA2_256, VALID_SHA256_CONTENT);
         Assert.assertEquals(dataHash.getAlgorithm(), HashAlgorithm.SHA2_256);
         Assert.assertEquals(dataHash.getImprint(), VALID_SHA256_IMPRINT);
@@ -57,22 +58,22 @@ public class DataHashTest {
     }
 
     @Test
-    public void testIsDataHash() throws Exception {
+    public void testIsDataHash() {
         Assert.assertTrue(DataHash.isDataHash(VALID_SHA256_IMPRINT));
     }
 
     @Test
-    public void testDataHashWithInvalidLength() throws Exception {
+    public void testDataHashWithInvalidLength() {
         Assert.assertFalse(DataHash.isDataHash(new byte[]{1,2}));
     }
 
     @Test
-    public void testDataHashWithInvalidAlgorithmId() throws Exception {
+    public void testDataHashWithInvalidAlgorithmId() {
         Assert.assertFalse(DataHash.isDataHash(new byte[]{-1,0,0}));
     }
 
     @Test
-    public void testDataHashWithEmptyArray() throws Exception {
+    public void testDataHashWithEmptyArray() {
         Assert.assertFalse(DataHash.isDataHash(new byte[]{}));
     }
 }

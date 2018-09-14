@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2017 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 package com.guardtime.ksi.service.ha;
 
@@ -38,7 +39,6 @@ import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -237,7 +237,7 @@ public class HAServiceTest {
     private KSISigningService initSucceedingSigningClient(final AggregationResponse subclientResponse) throws KSIException {
         KSISigningService succeedingClient = mock(KSISigningService.class);
         when(succeedingClient.sign(any(DataHash.class), anyLong())).thenReturn(new Future<AggregationResponse>() {
-            public AggregationResponse getResult() throws KSIException {
+            public AggregationResponse getResult() {
                 return subclientResponse;
             }
 
@@ -257,7 +257,7 @@ public class HAServiceTest {
     private KSIExtendingService initSucceedingExtenderClient(final ExtensionResponse subclientResponse) throws KSIException {
         KSIExtendingService succeedingClient = mock(KSIExtendingService.class);
         when(succeedingClient.extend(any(Date.class), any(Date.class))).thenReturn(new Future<ExtensionResponse>() {
-            public ExtensionResponse getResult() throws KSIException {
+            public ExtensionResponse getResult() {
                 return subclientResponse;
             }
 
@@ -315,7 +315,7 @@ public class HAServiceTest {
             this.maxRequests = maxRequests;
         }
 
-        public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) throws KSIException {
+        public Future<ExtensionResponse> extend(Date aggregationTime, Date publicationTime) {
             return null;
         }
 
@@ -331,13 +331,13 @@ public class HAServiceTest {
             final ExtenderConfiguration confMock = Mockito.mock(ExtenderConfiguration.class);
             Mockito.when(confMock.getMaximumRequests()).thenReturn(maxRequests);
             extenderConfHandler.doConfigurationUpdate(new ConfigurationRequest<ExtenderConfiguration>() {
-                public ExtenderConfiguration invoke() throws KSIException {
+                public ExtenderConfiguration invoke() {
                     sleep(maxRequests); // Make sure better values take more time
                     return confMock;
                 }
             });
             return new Future<ExtenderConfiguration>() {
-                public ExtenderConfiguration getResult() throws KSIException {
+                public ExtenderConfiguration getResult() {
                     return confMock;
                 }
 
@@ -347,7 +347,7 @@ public class HAServiceTest {
             };
         }
 
-        public Future<AggregationResponse> sign(DataHash dataHash, Long level) throws KSIException {
+        public Future<AggregationResponse> sign(DataHash dataHash, Long level) {
             return null;
         }
 
@@ -362,14 +362,14 @@ public class HAServiceTest {
         public Future<AggregatorConfiguration> getAggregationConfiguration() {
             final AggregatorConfiguration confMock = Mockito.mock(AggregatorConfiguration.class);
             aggrConfHandler.doConfigurationUpdate(new ConfigurationRequest<AggregatorConfiguration>() {
-                public AggregatorConfiguration invoke() throws KSIException {
+                public AggregatorConfiguration invoke() {
                     sleep(maxRequests); // Make sure better values take more time
                     Mockito.when(confMock.getMaximumRequests()).thenReturn(maxRequests);
                     return confMock;
                 }
             });
             return new Future<AggregatorConfiguration>() {
-                public AggregatorConfiguration getResult() throws KSIException {
+                public AggregatorConfiguration getResult() {
                     return confMock;
                 }
 
@@ -379,7 +379,7 @@ public class HAServiceTest {
             };
         }
 
-        public void close() throws IOException {
+        public void close() {
 
         }
 

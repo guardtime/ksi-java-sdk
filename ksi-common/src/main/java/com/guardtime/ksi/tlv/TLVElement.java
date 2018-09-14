@@ -1,20 +1,21 @@
 /*
- * Copyright 2013-2017 Guardtime, Inc.
+ * Copyright 2013-2018 Guardtime, Inc.
  *
- * This file is part of the Guardtime client SDK.
+ *  This file is part of the Guardtime client SDK.
  *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- * "Guardtime" and "KSI" are trademarks or registered trademarks of
- * Guardtime, Inc., and no license to trademarks is granted; Guardtime
- * reserves and retains all trademark rights.
+ *  Licensed under the Apache License, Version 2.0 (the "License").
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES, CONDITIONS, OR OTHER LICENSES OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ *  "Guardtime" and "KSI" are trademarks or registered trademarks of
+ *  Guardtime, Inc., and no license to trademarks is granted; Guardtime
+ *  reserves and retains all trademark rights.
+ *
  */
 
 package com.guardtime.ksi.tlv;
@@ -100,6 +101,7 @@ public final class TLVElement {
      * @throws TLVParserException
      */
     public static TLVElement create(byte[] bytes) throws TLVParserException {
+        Util.notNull(bytes, "Byte array");
         TLVInputStream input = null;
         try {
             input = new TLVInputStream(new ByteArrayInputStream(bytes));
@@ -144,7 +146,9 @@ public final class TLVElement {
      * @throws TLVParserException
      */
     public static TLVElement create(int type, Date value) throws TLVParserException {
-        return create(type, value.getTime() / 1000);
+        TLVElement element = create(type);
+        element.setDateContent(value);
+        return element;
     }
 
     /**
@@ -181,7 +185,41 @@ public final class TLVElement {
         return element;
     }
 
-    private static TLVElement create(int type) throws TLVParserException {
+    /**
+     * Creates TLV element with byte array content.
+     * TLV element nonCritical and forwarded flags are set to false.
+     *
+     * @param type TLV element type.
+     * @param value value to be the content of the TLV element.
+     *
+     * @return {@link TLVElement}
+     *
+     * @throws TLVParserException
+     */
+    public static TLVElement create(int type, byte[] value) throws TLVParserException {
+        TLVElement element = create(type);
+        element.setContent(value);
+        return element;
+    }
+
+    /**
+     * Creates TLV element with {@link HashAlgorithm} content.
+     * TLV element nonCritical and forwarded flags are set to false.
+     *
+     * @param type TLV element type.
+     * @param value value to be the content of the TLV element.
+     *
+     * @return {@link TLVElement}
+     *
+     * @throws TLVParserException
+     */
+    public static TLVElement create(int type, HashAlgorithm value) throws TLVParserException {
+        TLVElement element = create(type);
+        element.setHashAlgorithmContent(value);
+        return element;
+    }
+
+    private static TLVElement create(int type) {
         return new TLVElement(false, false, type);
     }
 
@@ -298,6 +336,7 @@ public final class TLVElement {
      * @throws TLVParserException
      */
     public void setContent(byte[] content) throws TLVParserException {
+        Util.notNull(content, "Content");
         assertActualContentLengthIsInTLVLimits(content.length);
         this.content = content;
     }
@@ -323,7 +362,18 @@ public final class TLVElement {
     }
 
     public void setDataHashContent(DataHash dataHash) throws TLVParserException {
+        Util.notNull(dataHash, "Data hash");
         setContent(dataHash.getImprint());
+    }
+
+    public void setDateContent(Date date) throws TLVParserException {
+        Util.notNull(date, "Date");
+        setLongContent(date.getTime() / 1000);
+    }
+
+    public void setHashAlgorithmContent(HashAlgorithm hashAlgorithm) throws TLVParserException {
+        Util.notNull(hashAlgorithm, "Hash algorithm");
+        setLongContent((long) hashAlgorithm.getId());
     }
 
     /**
@@ -509,11 +559,13 @@ public final class TLVElement {
     }
 
     public void addChildElement(TLVElement element) throws TLVParserException {
+        Util.notNull(element, "Child TLV element");
         this.children.add(element);
         assertActualContentLengthIsInTLVLimits(getContentLength());
     }
 
     public void addFirstChildElement(TLVElement element) throws TLVParserException {
+        Util.notNull(element, "Child TLV element");
         this.children.add(0, element);
         assertActualContentLengthIsInTLVLimits(getContentLength());
     }
@@ -528,6 +580,7 @@ public final class TLVElement {
      *         when I/O error occurred or TLV encoding failed.
      */
     public void writeTo(OutputStream out) throws TLVParserException {
+        Util.notNull(out, "Output stream");
         try {
             assertActualContentLengthIsInTLVLimits(getContentLength());
             out.write(encodeHeader());

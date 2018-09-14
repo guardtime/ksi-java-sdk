@@ -1,5 +1,7 @@
 Version 4.12
 
+2018-09-14 4.12.181
+
 * FEATURE: Add support for receiving pushed aggregator/extender configuration updates.
 * FEATURE: Create a signature by prepending a lower aggregation hash chain to an existing signature.
 * FEATURE: Add AggregationHashChainBuilder to extract aggregation hash chains from leaf nodes

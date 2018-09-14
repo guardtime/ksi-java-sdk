@@ -173,6 +173,10 @@ public class AggregationHashChainBuilderTest {
             }
         }
 
+        // TreeBuilder must be built so that all added nodes would be aggregated into single root node
+        // and thus all added nodes would become leaf nodes.
+        treeBuilder.build();
+
         for (ImprintNode node : nodes.keySet()) {
             DataHash inputHash = new DataHash(node.getValue());
             AggregationHashChainBuilder chainBuilder = new AggregationHashChainBuilder();

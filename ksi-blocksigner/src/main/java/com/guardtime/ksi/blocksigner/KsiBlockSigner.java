@@ -31,10 +31,7 @@ import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.KSISigningClient;
-import com.guardtime.ksi.tree.AggregationHashChainBuilder;
-import com.guardtime.ksi.tree.HashTreeBuilder;
-import com.guardtime.ksi.tree.ImprintNode;
-import com.guardtime.ksi.tree.TreeNode;
+import com.guardtime.ksi.tree.*;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
@@ -93,7 +90,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     protected static final int MAXIMUM_LEVEL = 255;
 
     private final List<ImprintNode> leafs = new LinkedList<>();
-    private final HashTreeBuilder treeBuilder;
+    private TreeBuilder treeBuilder;
 
     private final KSISigningService signingService;
 
@@ -107,6 +104,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      *
      * @param signingService an instance of {@link KSISigningService}.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningService signingService) {
         this(signingService, null);
     }
@@ -117,6 +115,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * @param signingService an instance of {@link KSISigningService}.
      * @param algorithm hash algorithm to be used.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningService signingService, HashAlgorithm algorithm) {
         notNull(signingService, "KSI signing service");
         if (algorithm != null) {
@@ -133,6 +132,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      *
      * @param signingClient an instance of {@link KSISigningClient}.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningClient signingClient) {
         this(signingClient, null);
     }
@@ -144,6 +144,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * @param signingClient an instance of {@link KSISigningClient}.
      * @param algorithm hash algorithm to be used.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningClient signingClient, HashAlgorithm algorithm) {
        this(new KSISigningClientServiceAdapter(signingClient), algorithm);
     }
@@ -157,6 +158,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * @param signatureFactory an instance of {@link KSISignatureFactory}.
      * @param algorithm hash algorithm to be used.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningClient signingClient, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
         this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm);
     }
@@ -170,15 +172,19 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * @param signatureFactory an instance of {@link KSISignatureFactory}.
      * @param algorithm hash algorithm to be used.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningService signingService, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
         this(signingService, algorithm);
         notNull(signatureFactory, "KSI signature factory");
         this.signatureFactory = signatureFactory;
     }
 
-    KsiBlockSigner(KSISigningService signingService, KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight) {
+    KsiBlockSigner(KSISigningService signingService, KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight, TreeBuilder treeBuilder) {
         this(signingService, signatureFactory, algorithm);
         this.maxTreeHeight = maxTreeHeight;
+        if(treeBuilder != null) {
+            this.treeBuilder = treeBuilder;
+        }
     }
 
     @Deprecated
@@ -190,7 +196,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     @Deprecated
     KsiBlockSigner(KSISigningClient signingClient, PduFactory pduFactory, PduIdentifierProvider pduIdentifierProvider,
                    KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight) {
-        this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm, maxTreeHeight);
+        this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm, maxTreeHeight, null);
     }
 
     /**

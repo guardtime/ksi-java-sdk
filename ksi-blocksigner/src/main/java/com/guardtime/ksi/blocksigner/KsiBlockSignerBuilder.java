@@ -26,6 +26,7 @@ import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.KSISigningClient;
+import com.guardtime.ksi.tree.TreeBuilder;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ public class KsiBlockSignerBuilder {
     private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
     private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
     private int maxTreeHeight = KsiBlockSigner.MAXIMUM_LEVEL;
+    private TreeBuilder treeBuilder;
 
     public KsiBlockSignerBuilder setKsiSigningClient(KSISigningClient signingClient) {
         notNull(signingClient, "Signing client");
@@ -76,6 +78,12 @@ public class KsiBlockSignerBuilder {
         return this;
     }
 
+    public KsiBlockSignerBuilder setTreeBuilder(TreeBuilder treeBuilder) {
+        notNull(treeBuilder, "HashTreeBuilder");
+        this.treeBuilder = treeBuilder;
+        return this;
+    }
+
     @Deprecated
     public KsiBlockSignerBuilder setPduVersion(PduVersion pduVersion) {
         logger.warn("KsiBlockSignerBuilder.setPduVersion(PduVersion) is deprecated and has no affect. PDU version is determined " +
@@ -90,6 +98,6 @@ public class KsiBlockSignerBuilder {
     }
 
     public KsiBlockSigner build() {
-        return new KsiBlockSigner(signingService, signatureFactory, algorithm, maxTreeHeight);
+        return new KsiBlockSigner(signingService, signatureFactory, algorithm, maxTreeHeight, treeBuilder);
     }
 }

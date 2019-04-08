@@ -1,3 +1,7 @@
+Version 4.13
+
+* FEATURE: Add support for a hash tree builder that uses blinding masks.
+
 Version 4.12
 
 2018-09-14 4.12.181

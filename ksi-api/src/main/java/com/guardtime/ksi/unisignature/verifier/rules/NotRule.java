@@ -26,8 +26,6 @@ import com.guardtime.ksi.unisignature.verifier.VerificationContext;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 
-import java.util.Collections;
-
 /**
  * Inverts rule results where:
  *      !OK = NA
@@ -45,6 +43,11 @@ public class NotRule implements Rule {
     @Override
     public RuleResult verify(VerificationContext context) throws KSIException {
         return new NotRuleResult(rule, rule.verify(context));
+    }
+
+    @Override
+    public String toString() {
+        return "Not " + rule.toString();
     }
 
     private class NotRuleResult implements RuleResult {
@@ -76,6 +79,11 @@ public class NotRule implements Rule {
 
         public String getRuleName() {
             return "Not " + ruleName;
+        }
+
+        @Override
+        public Exception getException() {
+            return null;
         }
 
         @Override

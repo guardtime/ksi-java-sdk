@@ -112,7 +112,7 @@ public class PduV2FactoryTest {
         pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-invalid-login-key.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: .*")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*:Error was returned by server. Error status is .* Error message from server: .*")
     public void testAggregationResponseContainsErrorMessageInside02Element_ThrowsKSIProtocolException() throws Exception {
         pduFactory.readAggregationResponse(new KSIRequestContext(8530358545345979581L, 42L, 42L), CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
     }
@@ -169,7 +169,7 @@ public class PduV2FactoryTest {
         pduFactory.readExtensionResponse(requestContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-invalid-login-key.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is .* Error message from server: 'The request contained invalid payload'")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = ".*:Error was returned by server. Error status is .* Error message from server: 'The request contained invalid payload'")
     public void testExtensionResponseContains02ErrorMessage_ThrowsKSIProtocolException() throws Exception {
         pduFactory.readExtensionResponse(new KSIRequestContext(98765L, 42L, 42L), CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-with-error.tlv"));
     }

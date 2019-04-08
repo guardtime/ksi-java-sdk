@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class CompositeRule implements Rule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompositeRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(CompositeRule.class);
 
     private final boolean skipOnFirstAppliedRule;
     private final Rule[] rules;
@@ -70,6 +70,21 @@ public class CompositeRule implements Rule {
         return result;
     }
 
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < rules.length; i++) {
+            Rule rule = rules[i];
+            if (rule instanceof CompositeRule)
+                builder.append(rule.getClass().getSimpleName());
+            if (rule instanceof BaseRule)
+                builder.append(((BaseRule) rule).getClass().getSimpleName());
+            if (i < rules.length) {
+                builder.append(",");
+            }
+        }
+        return builder.toString();
+    }
+
     /**
      * Composite rule result
      */
@@ -85,7 +100,7 @@ public class CompositeRule implements Rule {
         }
 
         public void addRuleResult(Rule rule, RuleResult result) {
-            LOGGER.debug("Added result {} to composite rule result", result);
+            logger.debug("Added result {} to composite rule result", result);
             if (VerificationResultCode.FAIL.equals(result.getResultCode())) {
                 lastFailedResult = result;
             }
@@ -94,7 +109,6 @@ public class CompositeRule implements Rule {
             }
             results.put(rule, result);
         }
-
 
         public VerificationResultCode getResultCode() {
             if (skipOnFirstAppliedRule) {
@@ -114,7 +128,6 @@ public class CompositeRule implements Rule {
 
             return VerificationResultCode.OK;
         }
-
 
         public VerificationErrorCode getErrorCode() {
             if (skipOnFirstAppliedRule) {
@@ -136,25 +149,17 @@ public class CompositeRule implements Rule {
         }
 
         public String getRuleName() {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < rules.length; i++) {
-                Rule rule = rules[i];
-                if (rule instanceof CompositeRule)
-                    builder.append(rule.getClass().getSimpleName());
-                if (rule instanceof BaseRule)
-                    builder.append(((BaseRule) rule).getClass().getSimpleName());
-                if (i < rules.length) {
-                    builder.append(",");
-                }
-            }
-            return builder.toString();
+            return CompositeRule.this.toString();
+        }
+
+        public Exception getException() {
+            return null;
         }
 
         @Override
         public String toString() {
             return getRuleName() + "=" + getResultCode() + "(" + getErrorCode() + ")";
         }
-
 
     }
 

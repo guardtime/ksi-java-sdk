@@ -48,6 +48,9 @@ public class AlwaysSuccessfulPolicy implements Policy {
                     public String getRuleName() {
                         return "Ok rule";
                     }
+
+                    public Exception getException() { return null; }
+
                 };
             }
         };

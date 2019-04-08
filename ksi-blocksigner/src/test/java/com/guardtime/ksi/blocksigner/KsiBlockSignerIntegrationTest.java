@@ -40,11 +40,32 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
-import static com.guardtime.ksi.AbstractBlockSignatureTest.*;
-import static com.guardtime.ksi.Resources.*;
-import static org.testng.Assert.*;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_2;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_3;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_LEGACY_ID_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_METADATA_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_RIGHT_WITH_SIBLING_HASH_AND_LEVEL;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+
 
 public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest {
 
@@ -272,7 +293,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         Assert.assertEquals(signatures.get(0).getAggregationHashChains()[0].getChainLinks().get(0).isLeft(), firstLinkIsLeft,
                 "Expected link direction was not found.");
 
-        Assert.assertNotNull(((TLVStructure)signatures.get(0).getAggregationHashChains()[0].getChainLinks().get(0)).getRootElement().getFirstChildElement(expectedSiblingType),
+        Assert.assertNotNull(((TLVStructure) signatures.get(0).getAggregationHashChains()[0].getChainLinks().get(0)).getRootElement().getFirstChildElement(expectedSiblingType),
                 "Expected sibling data type of " + expectedSiblingType + " was not found.");
     }
 

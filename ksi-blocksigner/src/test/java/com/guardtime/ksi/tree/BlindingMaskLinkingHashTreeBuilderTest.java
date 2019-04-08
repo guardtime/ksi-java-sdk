@@ -85,7 +85,7 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
         Assert.assertEquals(builder.calculateHeight(new ImprintNode(DATA_HASH_3)), 2);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Identity metadata is not supported by BlindingMaskLinkingHashTreeBuilder")
+    @Test(expectedExceptions = UnsupportedOperationException.class, expectedExceptionsMessageRegExp = "Identity metadata is not supported by BlindingMaskLinkingHashTreeBuilder")
     public void testCalculateHeightThrowsExceptionWhenIdentityMetadataIsPresent() {
         BlindingMaskLinkingHashTreeBuilder builder = createTreeBuilder();
         builder.calculateHeight(new ImprintNode(DATA_HASH_2), new IdentityMetadata("1"));
@@ -118,7 +118,7 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
         builder.add(new ImprintNode(DATA_HASH_2, 2));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Identity metadata is not supported by BlindingMaskLinkingHashTreeBuilder")
+    @Test(expectedExceptions = UnsupportedOperationException.class, expectedExceptionsMessageRegExp = "Identity metadata is not supported by BlindingMaskLinkingHashTreeBuilder")
     public void testAddNodeWithMetadataToHashBuilder() {
         BlindingMaskLinkingHashTreeBuilder builder = createTreeBuilder();
         builder.add(new ImprintNode(DATA_HASH_2), new IdentityMetadata("ClientId"));

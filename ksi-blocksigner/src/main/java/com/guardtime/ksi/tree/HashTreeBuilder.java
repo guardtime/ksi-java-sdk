@@ -23,13 +23,11 @@ package com.guardtime.ksi.tree;
 import com.guardtime.ksi.blocksigner.IdentityMetadata;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.hashing.HashException;
 import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.LinkMetadata;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
-import com.guardtime.ksi.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +51,6 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     private static final KSISignatureComponentFactory SIGNATURE_COMPONENT_FACTORY = new InMemoryKsiSignatureComponentFactory();
     private static final Logger logger = LoggerFactory.getLogger(HashTreeBuilder.class);
 
-    private static final HashAlgorithm DEFAULT_HASH_ALGORITHM = HashAlgorithm.SHA2_256;
-
     /**
      * Queue for holding the head (root) nodes of hash subtrees.
      */
@@ -76,10 +72,10 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     }
 
     /**
-     * Creates a new hash tree builder with default hash algorithm.
+     * Creates a new hash tree builder with {@link Util#DEFAULT_AGGREGATION_ALGORITHM} hash algorithm.
      */
     public HashTreeBuilder() {
-        this(DEFAULT_HASH_ALGORITHM);
+        this(Util.DEFAULT_AGGREGATION_ALGORITHM);
     }
 
     /**
@@ -200,16 +196,9 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
     private ImprintNode aggregate(ImprintNode left, ImprintNode right) throws HashException {
         long newLevel = Math.max(left.getLevel(), right.getLevel()) + 1;
         logger.debug("Aggregating. Left {}(level={}), right {}(level={}), newLevel={}", left.getValue(), left.getLevel(), right.getValue(), right.getLevel(), newLevel);
-        DataHash nodeHash = hash(algorithm, left.getValue(), right.getValue(), newLevel);
+        DataHash nodeHash = com.guardtime.ksi.tree.Util.hash(algorithm, left.getValue(), right.getValue(), newLevel);
         logger.info("Aggregation result {}(level={})", nodeHash, newLevel);
         return new ImprintNode(left, right, nodeHash, newLevel);
-    }
-
-    protected DataHash hash(HashAlgorithm hashAlgorithm, byte[] left, byte[] right, long level) throws HashException {
-        DataHasher hasher = new DataHasher(hashAlgorithm);
-        hasher.addData(left).addData(right);
-        hasher.addData(Util.encodeUnsignedLong(level));
-        return hasher.getHash();
     }
 
     private ImprintNode aggregate(ImprintNode node, IdentityMetadata metadata) throws KSIException {
@@ -218,7 +207,7 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
         byte[] metadataBytes = getMetadataBytes(metadata);
         MetadataNode metadataNode = new MetadataNode(metadataBytes, node.getLevel());
         long parentLevel = node.getLevel() + 1;
-        DataHash hash = hash(algorithm, node.getValue(), metadataBytes, parentLevel);
+        DataHash hash = com.guardtime.ksi.tree.Util.hash(algorithm, node.getValue(), metadataBytes, parentLevel);
         return new ImprintNode(node, metadataNode, hash, parentLevel);
     }
 

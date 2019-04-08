@@ -48,12 +48,15 @@ public interface TreeBuilder<N extends TreeNode> {
     void add(N node) throws KSIException;
 
     /**
-     * Adds a new leaf with its metadata to the binary tree.
+     * Adds a new leaf with its metadata to the binary tree. Some implementations of the
+     * {@link TreeBuilder#add(TreeNode, IdentityMetadata)} may not support {@link IdentityMetadata} and may
+     * throw an {@link UnsupportedOperationException}.
      *
      * @param node     leaf node to be added, must not be null.
      * @param metadata node's metadata, must not be null
      * @throws HashException
      * @throws KSIException
+     * @throws UnsupportedOperationException if operation is not supported
      */
     void add(N node, IdentityMetadata metadata) throws HashException, KSIException;
 
@@ -70,13 +73,16 @@ public interface TreeBuilder<N extends TreeNode> {
     long calculateHeight(N node) throws KSIException;
 
     /**
-     * Calculates the binary tree height if new leaf with metadata would be added.
+     * Calculates the binary tree height if new leaf with metadata would be added. Some implementations of the
+     * {@link TreeBuilder#calculateHeight(TreeNode, IdentityMetadata)} may not support {@link IdentityMetadata} and may
+     * throw an {@link UnsupportedOperationException}.
      *
      * @param node     a leaf to be added to the tree, must not be null.
      * @param metadata node's metadata, must not be null
      * @return Binary tree height.
      * @throws HashException
      * @throws KSIException
+     * @throws UnsupportedOperationException if operation is not supported
      */
     long calculateHeight(N node, IdentityMetadata metadata) throws HashException, KSIException;
 

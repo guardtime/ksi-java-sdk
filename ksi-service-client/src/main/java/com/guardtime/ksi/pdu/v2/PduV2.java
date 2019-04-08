@@ -122,7 +122,7 @@ abstract class PduV2 extends TLVStructure {
         for (TLVElement payload : payloads) {
             if (payload.getType() == tlvType) {
                 payloadElements.add(payload);
-            } else if (!isPushableElement(payload)) {
+            } else if (!isPushableElementType(tlvType) && !isPushableElementType(payload.getType())) {
                 logger.warn("Non-pushable payload with type=0x{} encountered", Integer.toHexString(payload.getType()));
             }
         }
@@ -187,8 +187,7 @@ abstract class PduV2 extends TLVStructure {
         return containsInt(getSupportedPayloadTypes(), type);
     }
 
-    private boolean isPushableElement(TLVElement element) {
-        int type = element.getType();
+    private boolean isPushableElementType(int type) {
         return containsInt(PUSHABLE_ELEMENT_TYPES, type);
     }
 

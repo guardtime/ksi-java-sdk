@@ -158,30 +158,6 @@ public abstract class AbstractCommonIntegrationTest {
         return getFileHash(fileName, DEFAULT_HASH_ALGORITHM);
     }
 
-
-    @Deprecated
-    public static HttpClientSettings loadHTTPSettings(PduVersion pduVersion){
-        Properties props = loadProperties();
-        String extenderUrl = getProperty(props, "extenderUrl");
-        String publicationsFileUrl = props.getProperty("pubfileUrl", DEFAULT_PUBFILE_URL);
-        String signingUrl = getProperty(props, "gatewayUrl");
-        String loginKey = getProperty(props, "loginKey");
-        String loginId = getProperty(props, "loginId");
-
-        ServiceCredentials credentials = new KSIServiceCredentials(loginId, loginKey);
-
-        if (props.containsKey("javaKeyStorePath")) {
-            javaKeyStorePath = getProperty(props, "javaKeyStorePath");
-        }
-
-        HttpClientSettings serviceSettings = new HttpClientSettings(signingUrl, extenderUrl, publicationsFileUrl, credentials,
-                pduVersion);
-        serviceSettings.getParameters().setConnectionTimeout(DEFAULT_TIMEOUT);
-        serviceSettings.getParameters().setReadTimeout(DEFAULT_TIMEOUT);
-        return serviceSettings;
-    }
-
-
     protected static TCPClientSettings loadTCPSigningSettings() {
         Properties props = loadProperties();
         String signerIP = getProperty(props, "tcp.signerIP");

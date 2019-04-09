@@ -24,7 +24,6 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
-import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVStructure;
@@ -35,6 +34,7 @@ import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.util.Base16;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -95,7 +95,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         this.dataHashSha386 = new DataHash(HashAlgorithm.SHA2_384, new byte[48]);
         this.dataHashSha512 = new DataHash(HashAlgorithm.SHA2_512, new byte[64]);
         this.dataHashRipemd160 = new DataHash(HashAlgorithm.RIPEMD_160, new byte[20]);
-        this.credentials = loadHTTPSettings(PduVersion.V2).getCredentials();
+        this.credentials = loadSignerSettings().getCredentials();
     }
 
     @DataProvider(name = WORKING_HASH_ALGORITHMS)

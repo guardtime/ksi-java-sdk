@@ -41,4 +41,10 @@ public interface RuleResult {
      */
     String getRuleName();
 
+    /**
+     * Returns an exception that occurred during the rule execution while fetching a resource (e.g extender,
+     * publications file).
+     */
+    Exception getException();
+
 }

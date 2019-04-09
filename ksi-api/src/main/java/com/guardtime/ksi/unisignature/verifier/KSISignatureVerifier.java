@@ -21,6 +21,8 @@
 package com.guardtime.ksi.unisignature.verifier;
 
 import com.guardtime.ksi.exceptions.KSIException;
+import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
 import org.slf4j.Logger;
@@ -36,17 +38,17 @@ import java.util.Map;
  */
 public final class KSISignatureVerifier implements SignatureVerifier {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KSISignatureVerifier.class);
+    private static final Logger logger = LoggerFactory.getLogger(KSISignatureVerifier.class);
 
     public KSIVerificationResult verify(VerificationContext context, Policy policy) throws KSIException {
-        LOGGER.info("Starting to verify signature {} using policy {}", context.getSignature(), policy.getName());
+        logger.info("Starting to verify signature {} using policy {}", context.getSignature(), policy.getName());
         KSIVerificationResult finalResult = new KSIVerificationResult();
         Policy runPolicy = policy;
         while (runPolicy != null) {
             PolicyVerificationResult result = verifySignature(context, runPolicy);
             finalResult.addPolicyResult(result);
             if (VerificationResultCode.NA.equals(result.getPolicyStatus())) {
-                LOGGER.info("Using fallback policy {}", runPolicy.getFallbackPolicy());
+                logger.info("Using fallback policy {}", runPolicy.getFallbackPolicy());
                 runPolicy = runPolicy.getFallbackPolicy();
             } else {
                 runPolicy = null;
@@ -58,21 +60,54 @@ public final class KSISignatureVerifier implements SignatureVerifier {
     private KSIPolicyVerificationResult verifySignature(VerificationContext context, Policy policy) throws KSIException {
         KSIPolicyVerificationResult policyVerificationResult = new KSIPolicyVerificationResult(policy);
         List<Rule> rules = policy.getRules();
-        for (Rule rule : rules) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Starting to execute rule {}", rule);
+        for (final Rule rule : rules) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Starting to execute rule {}", rule);
             }
-            RuleResult result = rule.verify(context);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Rule '{}' result is {}", rule, result);
-            }
+            RuleResult result = createRuleResult(context, rule);
             policyVerificationResult.addRuleResult(rule, result);
             policyVerificationResult.setPolicyStatus(result.getResultCode());
+
             if (!VerificationResultCode.OK.equals(result.getResultCode())) {
                 break;
             }
         }
         return policyVerificationResult;
+    }
+
+    private RuleResult createRuleResult(VerificationContext context, final Rule rule) throws KSIException {
+        RuleResult result;
+        try {
+            result = rule.verify(context);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Rule '{}' result is {}", rule, result);
+            }
+        } catch (KSIProtocolException | KSIClientException e) {
+            // accessing an external resource (extender or publication file) failed
+            logger.warn("An error was returned while fetching a resource", e);
+            result = new RuleResult() {
+                @Override
+                public VerificationResultCode getResultCode() {
+                    return VerificationResultCode.NA;
+                }
+
+                @Override
+                public VerificationErrorCode getErrorCode() {
+                    return VerificationErrorCode.GEN_02;
+                }
+
+                @Override
+                public String getRuleName() {
+                    return rule.toString();
+                }
+
+                @Override
+                public Exception getException() {
+                    return e;
+                }
+            };
+        }
+        return result;
     }
 
     private class KSIPolicyVerificationResult implements PolicyVerificationResult {
@@ -81,6 +116,7 @@ public final class KSISignatureVerifier implements SignatureVerifier {
         private VerificationResultCode policyStatus = VerificationResultCode.NA;
         private Map<Rule, RuleResult> ruleResults = new LinkedHashMap<>();
         private VerificationErrorCode errorCode;
+        private Exception exception;
 
         public KSIPolicyVerificationResult(Policy policy) {
             this.policy = policy;
@@ -90,6 +126,7 @@ public final class KSISignatureVerifier implements SignatureVerifier {
             ruleResults.put(rule, result);
             if (!VerificationResultCode.OK.equals(result.getResultCode())) {
                 this.errorCode = result.getErrorCode();
+                this.exception = result.getException();
             }
         }
 
@@ -107,6 +144,10 @@ public final class KSISignatureVerifier implements SignatureVerifier {
 
         public VerificationErrorCode getErrorCode() {
             return errorCode;
+        }
+
+        public Exception getException() {
+            return exception;
         }
 
         public Map<Rule, RuleResult> getRuleResults() {

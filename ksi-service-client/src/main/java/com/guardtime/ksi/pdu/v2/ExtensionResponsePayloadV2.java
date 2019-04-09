@@ -69,7 +69,7 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
             }
         }
         if (status != 0) {
-            throw new KSIProtocolException("Error was returned by server. Error status is 0x" + Long.toHexString(status) + ". Error message from server: '" + errorMessage + "'");
+            throw new KSIProtocolException(status,"Error was returned by server. Error status is 0x" + Long.toHexString(status) + ". Error message from server: '" + errorMessage + "'");
         }
     }
 

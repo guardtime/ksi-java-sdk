@@ -116,6 +116,7 @@ public abstract class AbstractCommonIntegrationTest {
     protected KSI ksi;
     protected SimpleHttpSigningClient signerClient;
     protected SimpleHttpExtenderClient extenderClient;
+    protected SimpleHttpExtenderClient invalidExtenderClient;
     protected SimpleHttpPublicationsFileClient publicationsFileClient;
 
     protected static CredentialsAwareHttpSettings signingSettings;
@@ -132,6 +133,7 @@ public abstract class AbstractCommonIntegrationTest {
         publicationsFileSettings = loadPublicationsFileSettings();
         signerClient = new SimpleHttpSigningClient(signingSettings);
         extenderClient = new SimpleHttpExtenderClient(extenderSettings);
+        invalidExtenderClient = new SimpleHttpExtenderClient(signingSettings);
         publicationsFileClient = new SimpleHttpPublicationsFileClient(publicationsFileSettings);
         ksi = createKsi(extenderClient, signerClient, publicationsFileClient);
     }

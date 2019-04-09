@@ -40,7 +40,6 @@ import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapte
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

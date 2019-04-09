@@ -1,6 +1,7 @@
 Version 4.13
 
 * FEATURE: Add support for a hash tree builder that uses blinding masks.
+* IMPROVEMENT: All errors that occur during the verification process while fetching a resource (e.g extender, publications file) are caught and "mapped" to the NA verification result.
 
 Version 4.12
 

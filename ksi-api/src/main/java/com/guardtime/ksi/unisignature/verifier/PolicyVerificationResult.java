@@ -49,4 +49,10 @@ public interface PolicyVerificationResult {
      * Returns error code when verification failed.
      */
     VerificationErrorCode getErrorCode();
+
+    /**
+     * Returns an exception that occurred during the policy execution while fetching a resource (e.g extender,
+     * publications file).
+     */
+    Exception getException();
 }

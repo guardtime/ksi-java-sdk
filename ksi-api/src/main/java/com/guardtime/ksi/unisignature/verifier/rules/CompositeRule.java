@@ -78,7 +78,7 @@ public class CompositeRule implements Rule {
                 builder.append(rule.getClass().getSimpleName());
             if (rule instanceof BaseRule)
                 builder.append(((BaseRule) rule).getClass().getSimpleName());
-            if (i < rules.length) {
+            if (i < rules.length-1) {
                 builder.append(",");
             }
         }

@@ -49,7 +49,9 @@ public class AlwaysSuccessfulPolicy implements Policy {
                         return "Ok rule";
                     }
 
-                    public Exception getException() { return null; }
+                    public Exception getException() {
+                        return null;
+                    }
 
                 };
             }

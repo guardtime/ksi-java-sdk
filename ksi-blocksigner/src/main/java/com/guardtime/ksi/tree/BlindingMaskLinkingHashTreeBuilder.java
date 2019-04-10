@@ -68,8 +68,8 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
      *                             {@link com.guardtime.ksi.tree.Util#DEFAULT_AGGREGATION_ALGORITHM} hash algorithm.
      * @throws IllegalArgumentException if initializationVector length is not as long as the output of the
      *                                  {@link com.guardtime.ksi.tree.Util#DEFAULT_AGGREGATION_ALGORITHM} hash
-     *                                  algorithm
-     * @throws NullPointerException     if one of the required input parameters is null
+     *                                  algorithm.
+     * @throws NullPointerException     if one of the required input parameters is null.
      */
     public BlindingMaskLinkingHashTreeBuilder(byte[] initializationVector) {
         this(com.guardtime.ksi.tree.Util.DEFAULT_AGGREGATION_ALGORITHM, initializationVector, null);
@@ -85,15 +85,15 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
      *                             of the initialization vector should be as long as the output of the
      *                             {@link com.guardtime.ksi.tree.Util#DEFAULT_AGGREGATION_ALGORITHM} hash algorithm.
      * @throws IllegalArgumentException if initializationVector length is not as long as the output of the
-     *                                  {@link com.guardtime.ksi.tree.Util#DEFAULT_AGGREGATION_ALGORITHM} hash algorithm
-     * @throws NullPointerException     if one of the required input parameters is null
+     *                                  {@link com.guardtime.ksi.tree.Util#DEFAULT_AGGREGATION_ALGORITHM} hash algorithm.
+     * @throws NullPointerException     if one of the required input parameters is null.
      */
     public BlindingMaskLinkingHashTreeBuilder(byte[] initializationVector, DataHash previousBlockHash) {
         this(com.guardtime.ksi.tree.Util.DEFAULT_AGGREGATION_ALGORITHM, initializationVector, previousBlockHash);
     }
 
     /**
-     * Creates an instance of {@link BlindingMaskLinkingHashTreeBuilder}
+     * Creates an instance of {@link BlindingMaskLinkingHashTreeBuilder}.
      *
      * @param algorithm            hash algorithm used to calculate inner nodes of the hash tree, must not be null.
      * @param initializationVector initialization vector used to calculate masking nodes, must not be null. The length
@@ -102,8 +102,8 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
      * @param previousBlockHash    previous block data hash used to calculate first blinding mask. In case this
      *                             parameter is null a zero data hash is used to calculate the first blinding mask.
      * @throws IllegalArgumentException if initializationVector length is not as long as the output of the
-     *                                  {@code algorithm} hash algorithm
-     * @throws NullPointerException     if one of the required input parameters is null
+     *                                  {@code algorithm} hash algorithm.
+     * @throws NullPointerException     if one of the required input parameters is null.
      */
     public BlindingMaskLinkingHashTreeBuilder(HashAlgorithm algorithm, byte[] initializationVector, DataHash previousBlockHash) {
         Util.notNull(algorithm, "HashAlgorithm");

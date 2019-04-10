@@ -75,7 +75,7 @@ public class KsiBlockSignerBuilder {
 
     /**
      * Sets the {@link KSISigningService}. Either this method or
-     *      * {@link KsiBlockSignerBuilder#setKsiSigningClient} method should be called.
+     * {@link KsiBlockSignerBuilder#setKsiSigningClient} method should be called.
      */
     public KsiBlockSignerBuilder setKsiSigningService(KSISigningService signingService) {
         notNull(signingService, "Signing service");

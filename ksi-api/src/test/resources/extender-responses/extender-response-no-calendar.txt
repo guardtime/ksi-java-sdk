@@ -1,8 +1,0 @@
-TLV[0321]:
-  TLV[01]:
-    TLV[01]: 616e6f6e00
-  TLV[0002]:
-    TLV[01]: 01
-    TLV[04]:
-    TLV[0802]:
-  TLV[1f]: 013cf6b1ce56122e878e9a36a8ffcb2ad2879a6fd4c44bd1e3db973afe0d15799d

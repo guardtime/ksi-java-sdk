@@ -255,13 +255,14 @@ public class Resources {
     /**
      * Extender responses
      */
-    public static final String EXTENDER_RESPONSE_WITH_CRITICAL_ELEMENT = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-critical-element.ksig";
-    public static final String EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-critical-main-with-critical-tlv.ksig";
-    public static final String EXTENDER_RESPONSE_WITH_EXTRA_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-critical-main-with-non-critical-tlv.ksig";
-    public static final String EXTENDER_RESPONSE_WITH_NON_CRITICAL_ELEMENT = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-element.ksig";
-    public static final String EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-main-with-critical-tlv.ksig";
-    public static final String EXTENDER_RESPONSE_WITH_EXTRA_NON_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extension-response-for-ok-sig-2014-06-2-extra-main-with-non-critical-tlv.ksig";
-    public static final String EXTENSION_RESPONSE_DUMMY = "pdu/extension/extension-response-v1-ok-request-id-4321.tlv";
+    public static final String EXTENDED_CALENDAR_WITH_CRITICAL_ELEMENT = EXTENDER_RESPONSES + "extended-calendar-for-ok-sig-2014-06-2-extra-critical-element.tlv";
+    public static final String EXTENDED_CALENDAR_WITH_EXTRA_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extended-calendar-for-ok-sig-2014-06-2-extra-critical-main-with-critical-tlv.tlv";
+    public static final String EXTENDED_CALENDAR_WITH_EXTRA_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extended-calendar-for-ok-sig-2014-06-2-extra-critical-main-with-non-critical-tlv.tlv";
+    public static final String EXTENDED_CALENDAR_WITH_NON_CRITICAL_ELEMENT = EXTENDER_RESPONSES + "extended-calendar-for-ok-sig-2014-06-2-extra-element.tlv";
+    public static final String EXTENDED_CALENDAR_WITH_EXTRA_NON_CRITICAL_PDU_WITH_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extended-calendar-for-ok-sig-2014-06-2-extra-main-with-critical-tlv.tlv";
+    public static final String EXTENDED_CALENDAR_WITH_EXTRA_NON_CRITICAL_PDU_WITH_NON_CRITICAL_ELEMENTS = EXTENDER_RESPONSES + "extended-calendar-for-ok-sig-2014-06-2-extra-main-with-non-critical-tlv.tlv";
+    public static final String EXTENDER_RESPONSE_WITH_ERROR_AND_CALENDAR = EXTENDER_RESPONSES + "extender-response-with-error-code-and-calendar-for-ok-sig-2014-06-2.tlv";
+    public static final String EXTENDED_RESPONSE_WITH_NO_CALENDAR = EXTENDER_RESPONSES + "extender-response-no-calendar.tlv";
 
 }
 

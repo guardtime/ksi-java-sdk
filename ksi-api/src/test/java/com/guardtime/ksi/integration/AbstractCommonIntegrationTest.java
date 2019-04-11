@@ -32,6 +32,8 @@ import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationRequest;
 import com.guardtime.ksi.pdu.AggregationResponse;
 import com.guardtime.ksi.pdu.AggregationResponseFuture;
+import com.guardtime.ksi.pdu.ExtensionRequest;
+import com.guardtime.ksi.pdu.ExtensionResponseFuture;
 import com.guardtime.ksi.pdu.KSIRequestContext;
 import com.guardtime.ksi.pdu.PduFactory;
 import com.guardtime.ksi.pdu.PduVersion;
@@ -48,7 +50,6 @@ import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings;
 import com.guardtime.ksi.service.client.http.HTTPConnectionParameters;
-import com.guardtime.ksi.service.client.http.HttpClientSettings;
 import com.guardtime.ksi.service.client.http.HttpSettings;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpExtenderClient;
 import com.guardtime.ksi.service.client.http.apache.ApacheHttpPublicationsFileClient;
@@ -60,7 +61,10 @@ import com.guardtime.ksi.service.http.simple.SimpleHttpSigningClient;
 import com.guardtime.ksi.service.tcp.TCPClient;
 import com.guardtime.ksi.service.tcp.TCPClientSettings;
 import com.guardtime.ksi.tlv.TLVElement;
+import com.guardtime.ksi.tlv.TLVParserException;
 import com.guardtime.ksi.trust.X509CertificateSubjectRdnSelector;
+import com.guardtime.ksi.unisignature.AggregationHashChain;
+import com.guardtime.ksi.unisignature.CalendarHashChain;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
@@ -72,8 +76,6 @@ import org.apache.commons.io.IOUtils;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -87,6 +89,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -94,22 +97,20 @@ import java.util.Properties;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
 import static com.guardtime.ksi.CommonTestUtil.loadFile;
+import static com.guardtime.ksi.Resources.EXTENDED_RESPONSE_WITH_NO_CALENDAR;
 import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE;
 import static com.guardtime.ksi.Resources.KSI_TRUSTSTORE_PASSWORD;
 import static com.guardtime.ksi.Resources.PROPERTIES_INTEGRATION_TEST;
 import static com.guardtime.ksi.TestUtil.calculateHash;
+import static com.guardtime.ksi.tlv.GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_RESPONSE_PDU_V2;
+import static com.guardtime.ksi.tlv.GlobalTlvTypes.ELEMENT_TYPE_REQUEST_ID;
 
 public abstract class AbstractCommonIntegrationTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(AbstractCommonIntegrationTest.class);
 
     protected static final String KSI_DATA_GROUP_NAME = "ksiDataProvider";
     protected static final String TEST_GROUP_INTEGRATION = "integration";
     protected static final String DEFAULT_HASH_ALGORITHM = "DEFAULT";
     private static final int DEFAULT_TIMEOUT = 5000;
-    private static final String DEFAULT_PUBFILE_URL = "http://verify.guardtime.com/gt-controlpublications.bin";
-    protected static final HttpClientSettings FAULTY_HTTP_SETTINGS =
-            new HttpClientSettings("http://.", "http://.", "http://.", new KSIServiceCredentials(".", "."));
     protected static String javaKeyStorePath = null;
     private static List<Closeable> listOfCloseables = new LinkedList<>();
 
@@ -159,30 +160,6 @@ public abstract class AbstractCommonIntegrationTest {
     public static DataHash getFileHash(String fileName) throws Exception {
         return getFileHash(fileName, DEFAULT_HASH_ALGORITHM);
     }
-
-
-    @Deprecated
-    public static HttpClientSettings loadHTTPSettings(PduVersion pduVersion){
-        Properties props = loadProperties();
-        String extenderUrl = getProperty(props, "extenderUrl");
-        String publicationsFileUrl = props.getProperty("pubfileUrl", DEFAULT_PUBFILE_URL);
-        String signingUrl = getProperty(props, "gatewayUrl");
-        String loginKey = getProperty(props, "loginKey");
-        String loginId = getProperty(props, "loginId");
-
-        ServiceCredentials credentials = new KSIServiceCredentials(loginId, loginKey);
-
-        if (props.containsKey("javaKeyStorePath")) {
-            javaKeyStorePath = getProperty(props, "javaKeyStorePath");
-        }
-
-        HttpClientSettings serviceSettings = new HttpClientSettings(signingUrl, extenderUrl, publicationsFileUrl, credentials,
-                pduVersion);
-        serviceSettings.getParameters().setConnectionTimeout(DEFAULT_TIMEOUT);
-        serviceSettings.getParameters().setReadTimeout(DEFAULT_TIMEOUT);
-        return serviceSettings;
-    }
-
 
     protected static TCPClientSettings loadTCPSigningSettings() {
         Properties props = loadProperties();
@@ -433,6 +410,15 @@ public abstract class AbstractCommonIntegrationTest {
         return ksi.verify(builder.build(), policy);
     }
 
+    public VerificationResult verify(KSI ksi, KSIExtendingService extendingService, KSISignature signature, Policy policy, boolean
+            extendingAllowed) throws
+            KSIException {
+        VerificationContextBuilder builder = new VerificationContextBuilder();
+        builder.setSignature(signature).setExtendingService(extendingService).setPublicationsFile(ksi.getPublicationsFile());
+        builder.setExtendingAllowed(extendingAllowed);
+        return ksi.verify(builder.build(), policy);
+    }
+
     public VerificationResult verify(KSI ksi, KSIExtenderClient extenderClient, KSISignature signature, Policy policy, boolean
             extendingAllowed) throws KSIException {
         VerificationContextBuilder builder = new VerificationContextBuilder();
@@ -472,11 +458,11 @@ public abstract class AbstractCommonIntegrationTest {
                 //Set header
                 responseTLV.getFirstChildElement(0x1).setContent(requestElement.getFirstChildElement(0x1).getEncoded());
                 //Set Request ID
-                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x1).setLongContent(
-                        requestElement.getFirstChildElement(0x2).getFirstChildElement(0x1).getDecodedLong()
+                responseTLV.getFirstChildElement(0x2).getFirstChildElement(ELEMENT_TYPE_REQUEST_ID).setLongContent(
+                        requestElement.getFirstChildElement(0x2).getFirstChildElement(ELEMENT_TYPE_REQUEST_ID).getDecodedLong()
                 );
                 //Set Input hash
-                responseTLV.getFirstChildElement(0x2).getFirstChildElement(0x801).getFirstChildElement(0x5).setDataHashContent(dataHash);
+                responseTLV.getFirstChildElement(0x2).getFirstChildElement(AggregationHashChain.ELEMENT_TYPE).getFirstChildElement(0x5).setDataHashContent(dataHash);
                 //Update HMAC
                 responseTLV.getFirstChildElement(0x1F).setDataHashContent(
                         calculateHash(
@@ -490,5 +476,59 @@ public abstract class AbstractCommonIntegrationTest {
         });
 
         return mockedSigningService;
+    }
+
+    protected KSIExtendingService mockExtenderResponseCalendarHashCain(String responseCalendarChainFile) throws Exception {
+        KSIExtendingService mockedExtenderService = Mockito.mock(KSIExtendingService.class);
+        final Future<TLVElement> mockedFuture = Mockito.mock(Future.class);
+        Mockito.when(mockedFuture.isFinished()).thenReturn(Boolean.TRUE);
+        final TLVElement responseTLV = putCHCIntoExtenderResponsePdu(responseCalendarChainFile);
+        Mockito.when(mockedFuture.getResult()).thenReturn(responseTLV);
+
+        Mockito.when(mockedExtenderService.extend(Mockito.any(Date.class), Mockito.any
+                (Date.class))).then(new Answer<Future>() {
+            public Future answer(InvocationOnMock invocationOnMock) throws Throwable {
+                ServiceCredentials credentials = loadExtenderSettings().getCredentials();
+                KSIRequestContext requestContext = RequestContextFactory.DEFAULT_FACTORY.createContext();
+                Date aggregationTime = (Date) invocationOnMock.getArguments()[0];
+                Date publicationTime = (Date) invocationOnMock.getArguments()[1];
+                PduFactory pduFactory = new PduV2Factory();
+                ExtensionRequest requestMessage = pduFactory.createExtensionRequest(requestContext, credentials, aggregationTime,
+                        publicationTime);
+                ByteArrayInputStream requestStream = new ByteArrayInputStream(requestMessage.toByteArray());
+                TLVElement requestElement = TLVElement.create(Util.toByteArray(requestStream));
+                TLVElement responsePayload = responseTLV.getFirstChildElement(0x02);
+                //Set header loginID
+                responseTLV.getFirstChildElement(0x1).setContent(requestElement.getFirstChildElement(0x1).getEncoded());
+                //Set request id
+                responsePayload.getFirstChildElement(0x01).setLongContent(requestElement.getFirstChildElement(0x02).getFirstChildElement
+                        (ELEMENT_TYPE_REQUEST_ID).getDecodedLong());
+                //Update HMAC
+                responseTLV.getFirstChildElement(0x1F).setDataHashContent(
+                        calculateHash(
+                                responseTLV,
+                                responseTLV.getFirstChildElement(0x1F).getDecodedDataHash().getAlgorithm(),
+                                credentials.getLoginKey()
+                        ));
+                return new ExtensionResponseFuture(mockedFuture, requestContext, credentials, pduFactory);
+            }
+        });
+        return mockedExtenderService;
+    }
+
+    private static TLVElement putCHCIntoExtenderResponsePdu(String extenderResponse) throws IllegalArgumentException, IOException, TLVParserException {
+        TLVElement rsp = TLVElement.create(IOUtils.toByteArray(load(extenderResponse)));
+        if (rsp.getType() == ELEMENT_TYPE_EXTENSION_RESPONSE_PDU_V2) {
+            return rsp;
+        } else if (rsp.getType() == 0x2) {
+            TLVElement responseTLV = TLVElement.create(IOUtils.toByteArray(load(EXTENDED_RESPONSE_WITH_NO_CALENDAR)));
+            responseTLV.replace(responseTLV.getFirstChildElement(0x2), rsp);
+            return responseTLV;
+        } else if (rsp.getType() == CalendarHashChain.ELEMENT_TYPE) {
+            TLVElement responseTLV = TLVElement.create(IOUtils.toByteArray(load(EXTENDED_RESPONSE_WITH_NO_CALENDAR)));
+            responseTLV.getFirstChildElement(0x2).replace(responseTLV.getFirstChildElement(0x2).getFirstChildElement(CalendarHashChain.ELEMENT_TYPE), rsp);
+            return responseTLV;
+        }
+        throw new IllegalArgumentException("Provided extender response is not supported.");
     }
 }

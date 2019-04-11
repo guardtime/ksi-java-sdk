@@ -77,8 +77,8 @@ public interface BlockSigner<T> {
 
     /**
      * Creates a block of multiple signatures.
-     * Block signer inputs are locally aggregated and aggregation root is signed in GW.
-     * For each signer input a signature is created from root signature, and hash tree for specific input from locally aggregated hash tree.
+     * All of the block signer inputs are locally aggregated and aggregation root is signed in GW.
+     * For each signer input a signature is created from root signature, and also a hash tree for specific input from locally aggregated hash tree.
      *
      * @return The block of multiple signatures.
      *

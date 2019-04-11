@@ -28,7 +28,7 @@ import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 
 /**
  * Rule contains one logical step of signature verification policy. Rules are reusable and can be used by multiple
- * different policies. Rules are registered in the {@link Policy} and will be executed by {@link SignatureVerifier}
+ * different policies. Rules are registered in the {@link Policy} and will be executed by {@link SignatureVerifier}.
  *
  * @see Policy
  * @see SignatureVerifier

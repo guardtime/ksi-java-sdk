@@ -37,7 +37,7 @@ public interface RuleResult {
     VerificationErrorCode getErrorCode();
 
     /**
-     * Returns the name of the rule
+     * Returns the name of the rule.
      */
     String getRuleName();
 

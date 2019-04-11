@@ -49,7 +49,7 @@ import java.util.List;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * Creates multiple signatures with one request..
+ * Creates multiple signatures with one request.
  * <p>
  * Methods {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)},
  * {@link KsiBlockSigner#add(DataHash)} and/or
@@ -59,7 +59,7 @@ import static com.guardtime.ksi.util.Util.notNull;
  * <p>
  * Method {@link KsiBlockSigner#sign()} must be called to get the final group of
  * signatures.
- * The signatures are returned the same order as the data hashes were added to block signer.
+ * The signatures are returned in the same order as the data hashes were added to block signer.
  * </p>
  * <p>
  * Current implementation returns one signature per input hash.
@@ -108,7 +108,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * {@link Util#DEFAULT_AGGREGATION_ALGORITHM}. {@link HashTreeBuilder} is always used for aggregation.
      *
      * @param signingService an instance of {@link KSISigningService}.
-     * @deprecated Use {@link KsiBlockSignerBuilder} instead
+     * @deprecated Use {@link KsiBlockSignerBuilder} instead.
      */
     @Deprecated
     public KsiBlockSigner(KSISigningService signingService) {
@@ -121,7 +121,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      *
      * @param signingService an instance of {@link KSISigningService}.
      * @param algorithm      hash algorithm to be used.
-     * @deprecated Use {@link KsiBlockSignerBuilder} instead
+     * @deprecated Use {@link KsiBlockSignerBuilder} instead.
      */
     @Deprecated
     public KsiBlockSigner(KSISigningService signingService, HashAlgorithm algorithm) {
@@ -136,7 +136,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * {@link Util#DEFAULT_AGGREGATION_ALGORITHM}. {@link HashTreeBuilder} is always used for aggregation.
      *
      * @param signingClient an instance of {@link KSISigningClient}.
-     * @deprecated Use {@link KsiBlockSignerBuilder} instead
+     * @deprecated Use {@link KsiBlockSignerBuilder} instead.
      */
     @Deprecated
     public KsiBlockSigner(KSISigningClient signingClient) {
@@ -149,7 +149,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      *
      * @param signingClient an instance of {@link KSISigningClient}.
      * @param algorithm     hash algorithm to be used.
-     * @deprecated Use {@link KsiBlockSignerBuilder} instead
+     * @deprecated Use {@link KsiBlockSignerBuilder} instead.
      */
     @Deprecated
     public KsiBlockSigner(KSISigningClient signingClient, HashAlgorithm algorithm) {
@@ -163,7 +163,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * @param signingClient    an instance of {@link KSISigningClient}.
      * @param signatureFactory an instance of {@link KSISignatureFactory}.
      * @param algorithm        hash algorithm to be used.
-     * @deprecated Use {@link KsiBlockSignerBuilder} instead
+     * @deprecated Use {@link KsiBlockSignerBuilder} instead.
      */
     @Deprecated
     public KsiBlockSigner(KSISigningClient signingClient, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {

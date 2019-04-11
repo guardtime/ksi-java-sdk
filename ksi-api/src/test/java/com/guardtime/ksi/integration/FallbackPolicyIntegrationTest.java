@@ -21,9 +21,18 @@
 package com.guardtime.ksi.integration;
 
 import com.guardtime.ksi.TestUtil;
+import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
+import com.guardtime.ksi.service.KSIExtendingService;
+import com.guardtime.ksi.service.KSIProtocolException;
+import com.guardtime.ksi.service.client.KSIClientException;
+import com.guardtime.ksi.service.client.KSIServiceCredentials;
+import com.guardtime.ksi.service.client.http.CredentialsAwareHttpSettings;
+import com.guardtime.ksi.service.http.simple.SimpleHttpExtenderClient;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.verifier.PolicyVerificationResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationContextBuilder;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
@@ -35,8 +44,12 @@ import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationB
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_ERROR_AND_CALENDAR;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_WRONG_HASH;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 
 
@@ -149,12 +162,74 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         verificationWithPublicationData(TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14), policy, publicationData, false);
     }
 
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testFallBackFromCalendarBasedPolicyToKeyBasedPolicyWithInvalidExtenderCredentials_Ok() throws Exception {
+        CalendarBasedVerificationPolicy policy = new CalendarBasedVerificationPolicy();
+        KeyBasedVerificationPolicy fallbackPolicy = new KeyBasedVerificationPolicy();
+        policy.setFallbackPolicy(fallbackPolicy);
+
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
+        SimpleHttpExtenderClient extClient = new SimpleHttpExtenderClient(new CredentialsAwareHttpSettings(
+                loadExtenderSettings().getUrl().toString(), new KSIServiceCredentials("rand", "omnom")));
+        VerificationResult result = verify(ksi, extClient, signature, policy, null, true);
+        checkFallBackVerificationResultWithException(result, true, 2, KSIProtocolException.class);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testFallBackFromCalendarBasedPolicyToKeyBasedPolicyWithInvalidExtenderUrl_Ok() throws Exception {
+        CalendarBasedVerificationPolicy policy = new CalendarBasedVerificationPolicy();
+        KeyBasedVerificationPolicy fallbackPolicy = new KeyBasedVerificationPolicy();
+        policy.setFallbackPolicy(fallbackPolicy);
+
+        KSISignature signature = ksi.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
+        SimpleHttpExtenderClient randomClient = new SimpleHttpExtenderClient(new CredentialsAwareHttpSettings(
+                "http://some.random.url.abc", new KSIServiceCredentials("rand", "omnom")));
+        VerificationResult result = verify(ksi, randomClient, signature, policy, null, true);
+        checkFallBackVerificationResultWithException(result, true, 2, KSIClientException.class);
+    }
+
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testFallBackFromCalendarBasedPolicyToKeyBasedPolicyWithErrorResponseFromExtender_Ok() throws Exception {
+        CalendarBasedVerificationPolicy policy = new CalendarBasedVerificationPolicy();
+        KeyBasedVerificationPolicy fallbackPolicy = new KeyBasedVerificationPolicy();
+        policy.setFallbackPolicy(fallbackPolicy);
+
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_06_02);
+        KSIExtendingService mockedExtenderService = mockExtenderResponseCalendarHashCain(EXTENDER_RESPONSE_WITH_ERROR_AND_CALENDAR);
+
+        VerificationResult result = verify(ksi, mockedExtenderService, signature, policy, true);
+        checkFallBackVerificationResultWithException(result, true, 2, KSIProtocolException.class);
+    }
+
+    private void checkFallBackVerificationResultWithException(VerificationResult result, boolean resultIsOk, int policyResultsSize, Class expectedExceptionClass) {
+        Assert.assertEquals(result.isOk(), resultIsOk);
+
+        List<PolicyVerificationResult> policyResults = result.getPolicyVerificationResults();
+        Assert.assertEquals(policyResults.size(), policyResultsSize);
+
+        PolicyVerificationResult policyVerificationResult = getCalendarPolicyVerificationResult(policyResults);
+        Assert.assertNotNull(policyVerificationResult);
+        Assert.assertNotNull(policyVerificationResult.getException());
+        Assert.assertEquals(policyVerificationResult.getException().getClass(), expectedExceptionClass);
+
+    }
+
+    private PolicyVerificationResult getCalendarPolicyVerificationResult(List<PolicyVerificationResult> policyResults) {
+        for (PolicyVerificationResult policyResult : policyResults) {
+            if(policyResult.getPolicy() instanceof CalendarBasedVerificationPolicy) {
+                return policyResult;
+            }
+        }
+        return null;
+    }
+
     private void verification(KSISignature signature, Policy policy, boolean enableExtender) throws Exception {
         VerificationResult result = verify(ksi, extenderClient, signature, policy, enableExtender);
         Assert.assertTrue(result.isOk());
     }
 
-    private void verificationWithPublicationData(KSISignature signature, Policy policy, PublicationData publicationData, boolean enableExtender) throws Exception{
+    private void verificationWithPublicationData(KSISignature signature, Policy policy, PublicationData publicationData, boolean enableExtender) throws Exception {
         VerificationResult result = verify(ksi, extenderClient, signature, policy, publicationData, enableExtender);
         Assert.assertTrue(result.isOk());
     }

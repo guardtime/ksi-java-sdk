@@ -30,19 +30,20 @@ package com.guardtime.ksi.unisignature.verifier;
 public enum VerificationResultCode {
 
     /**
-     * Verification succeeded, which means there's a way to prove the correctness of the signature
+     * Verification succeeded, which means there's a way to prove the correctness of the signature.
      */
     OK,
 
     /**
      * Verification failed, which means the signature is definitely invalid or the document does not match with the
-     * signature
+     * signature.
      */
     FAIL,
 
     /**
      * Verification not possible, which means there is not enough data to prove or disprove the correctness of the
-     * signature
+     * signature. Also all errors that occur during the verification process while fetching a resource (e.g extender,
+     * publications file), are caught and "mapped" to the NA verification result.
      */
     NA
 

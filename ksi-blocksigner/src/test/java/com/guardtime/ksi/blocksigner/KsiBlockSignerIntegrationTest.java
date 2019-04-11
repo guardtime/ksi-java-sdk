@@ -24,16 +24,17 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
-import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVStructure;
+import com.guardtime.ksi.tree.BlindingMaskLinkingHashTreeBuilder;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.util.Base16;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -65,6 +66,7 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+
 public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest {
 
     private static final String WORKING_HASH_ALGORITHMS = "workingHashAlgorithms";
@@ -93,7 +95,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         this.dataHashSha386 = new DataHash(HashAlgorithm.SHA2_384, new byte[48]);
         this.dataHashSha512 = new DataHash(HashAlgorithm.SHA2_512, new byte[64]);
         this.dataHashRipemd160 = new DataHash(HashAlgorithm.RIPEMD_160, new byte[20]);
-        this.credentials = loadHTTPSettings(PduVersion.V2).getCredentials();
+        this.credentials = loadSignerSettings().getCredentials();
     }
 
     @DataProvider(name = WORKING_HASH_ALGORITHMS)
@@ -152,6 +154,17 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         assertFalse(blockSigner.add(DATA_HASH, metadata));
 
         signAndVerify(blockSigner, 4);
+    }
+
+    @Test
+    public void testBlockSignerWithBlindingInterLinkingHashTreeBuilder() throws Exception {
+        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder()
+                .setKsiSigningClient(signerClient)
+                .setTreeBuilder(new BlindingMaskLinkingHashTreeBuilder(new byte[32], null)).build();
+        // Up to 4 hashes with meta data could be added without exceeding max tree height 3.
+        assertTrue(blockSigner.add(DATA_HASH_2));
+        assertTrue(blockSigner.add(DATA_HASH_3));
+        signAndVerify(blockSigner, 2);
     }
 
     @Test
@@ -280,7 +293,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         Assert.assertEquals(signatures.get(0).getAggregationHashChains()[0].getChainLinks().get(0).isLeft(), firstLinkIsLeft,
                 "Expected link direction was not found.");
 
-        Assert.assertNotNull(((TLVStructure)signatures.get(0).getAggregationHashChains()[0].getChainLinks().get(0)).getRootElement().getFirstChildElement(expectedSiblingType),
+        Assert.assertNotNull(((TLVStructure) signatures.get(0).getAggregationHashChains()[0].getChainLinks().get(0)).getRootElement().getFirstChildElement(expectedSiblingType),
                 "Expected sibling data type of " + expectedSiblingType + " was not found.");
     }
 

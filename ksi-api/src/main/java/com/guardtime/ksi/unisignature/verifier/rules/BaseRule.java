@@ -37,12 +37,17 @@ public abstract class BaseRule implements Rule {
         if (VerificationResultCode.OK.equals(result)) {
             return new SimpleRuleResult(result, this.getClass().getSimpleName());
         }
-        return new SimpleRuleResult(result, getErrorCode(), this.getClass().getSimpleName());
+        return new SimpleRuleResult(result, getErrorCode(), this.toString());
     }
 
     abstract VerificationResultCode verifySignature(VerificationContext context) throws KSIException;
 
     abstract VerificationErrorCode getErrorCode();
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName();
+    }
 
     /**
      * Base rule result.
@@ -74,6 +79,11 @@ public abstract class BaseRule implements Rule {
 
         public String getRuleName() {
             return ruleName;
+        }
+
+        @Override
+        public Exception getException() {
+            return null;
         }
 
         @Override

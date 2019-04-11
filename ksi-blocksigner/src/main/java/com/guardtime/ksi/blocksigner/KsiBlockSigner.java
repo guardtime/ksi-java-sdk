@@ -25,16 +25,17 @@ import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.pdu.AggregationResponse;
-import com.guardtime.ksi.pdu.PduFactory;
-import com.guardtime.ksi.pdu.PduIdentifierProvider;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.KSISigningClientServiceAdapter;
 import com.guardtime.ksi.service.KSISigningService;
 import com.guardtime.ksi.service.client.KSISigningClient;
 import com.guardtime.ksi.tree.AggregationHashChainBuilder;
+import com.guardtime.ksi.tree.BlindingMaskLinkingHashTreeBuilder;
 import com.guardtime.ksi.tree.HashTreeBuilder;
 import com.guardtime.ksi.tree.ImprintNode;
+import com.guardtime.ksi.tree.TreeBuilder;
 import com.guardtime.ksi.tree.TreeNode;
+import com.guardtime.ksi.tree.Util;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.KSISignatureFactory;
 import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureFactory;
@@ -48,7 +49,7 @@ import java.util.List;
 import static com.guardtime.ksi.util.Util.notNull;
 
 /**
- * Creates multiple signatures with one request..
+ * Creates multiple signatures with one request.
  * <p>
  * Methods {@link KsiBlockSigner#add(DataHash, long, IdentityMetadata)},
  * {@link KsiBlockSigner#add(DataHash)} and/or
@@ -58,7 +59,7 @@ import static com.guardtime.ksi.util.Util.notNull;
  * <p>
  * Method {@link KsiBlockSigner#sign()} must be called to get the final group of
  * signatures.
- * The signatures are returned the same order as the data hashes were added to block signer.
+ * The signatures are returned in the same order as the data hashes were added to block signer.
  * </p>
  * <p>
  * Current implementation returns one signature per input hash.
@@ -71,8 +72,12 @@ import static com.guardtime.ksi.util.Util.notNull;
  * {@code
  *
  * // initialize ksi block signer
- * KSISigningClient signingClient = getSigningClient()
- * KsiBlockSigner signer = new KsiBlockSigner(signingClient);
+ * KSISigningClient signingClient = getSigningClient();
+ * TreeBuilder treeBuilder = new HashTreeBuilder();
+ * KsiBlockSigner signer = new KsiBlockSignerBuilder()
+ *                 .setKsiSigningClient(signingClient)
+ *                 .setTreeBuilder(treeBuilder)
+ *                 .build();
  *
  * // add data hashes
  * signer.add(new DataHash(HashAlgorithm.SHA2_256, new byte[32]));
@@ -85,112 +90,110 @@ import static com.guardtime.ksi.util.Util.notNull;
  * }
  * </pre>
  * This class isn't thread safe.
+ *
+ * @see HashTreeBuilder
+ * @see BlindingMaskLinkingHashTreeBuilder
  */
 public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
 
     private static final Logger logger = LoggerFactory.getLogger(KsiBlockSigner.class);
-
-    protected static final int MAXIMUM_LEVEL = 255;
-
     private final List<ImprintNode> leafs = new LinkedList<>();
-    private final HashTreeBuilder treeBuilder;
-
     private final KSISigningService signingService;
-
+    private TreeBuilder treeBuilder;
     private KSISignatureFactory signatureFactory = new InMemoryKsiSignatureFactory();
-    private HashAlgorithm algorithm = HashAlgorithm.SHA2_256;
     private int maxTreeHeight;
 
     /**
-     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService}. Default hash algorithm is
-     * used to create signatures.
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService} and default hash algorithm
+     * {@link Util#DEFAULT_AGGREGATION_ALGORITHM}. {@link HashTreeBuilder} is always used for aggregation.
      *
      * @param signingService an instance of {@link KSISigningService}.
+     * @deprecated Use {@link KsiBlockSignerBuilder} instead.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningService signingService) {
         this(signingService, null);
     }
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService} and {@link HashAlgorithm}.
+     * {@link HashTreeBuilder} is always used for aggregation.
      *
      * @param signingService an instance of {@link KSISigningService}.
-     * @param algorithm hash algorithm to be used.
+     * @param algorithm      hash algorithm to be used.
+     * @deprecated Use {@link KsiBlockSignerBuilder} instead.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningService signingService, HashAlgorithm algorithm) {
         notNull(signingService, "KSI signing service");
-        if (algorithm != null) {
-            this.algorithm = algorithm;
-        }
         this.signingService = signingService;
-        this.treeBuilder = new HashTreeBuilder(this.algorithm);
-        this.maxTreeHeight = MAXIMUM_LEVEL;
+        this.treeBuilder = algorithm == null ? new HashTreeBuilder() : new HashTreeBuilder(algorithm);
+        this.maxTreeHeight = Util.MAXIMUM_LEVEL;
     }
 
     /**
-     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}. Default hash algorithm is
-     * used to create signatures.
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient} and default hash algorithm
+     * {@link Util#DEFAULT_AGGREGATION_ALGORITHM}. {@link HashTreeBuilder} is always used for aggregation.
      *
      * @param signingClient an instance of {@link KSISigningClient}.
+     * @deprecated Use {@link KsiBlockSignerBuilder} instead.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningClient signingClient) {
         this(signingClient, null);
     }
 
     /**
-     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient}
-     * and {@link HashAlgorithm}.
+     * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient} and {@link HashAlgorithm}.
+     * {@link HashTreeBuilder} is always used for aggregation.
      *
      * @param signingClient an instance of {@link KSISigningClient}.
-     * @param algorithm hash algorithm to be used.
+     * @param algorithm     hash algorithm to be used.
+     * @deprecated Use {@link KsiBlockSignerBuilder} instead.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningClient signingClient, HashAlgorithm algorithm) {
-       this(new KSISigningClientServiceAdapter(signingClient), algorithm);
+        this(new KSISigningClientServiceAdapter(signingClient), algorithm);
     }
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningClient},
-     * {@link KSISignatureFactory}
-     * and {@link HashAlgorithm}.
+     * {@link KSISignatureFactory} and {@link HashAlgorithm}. {@link HashTreeBuilder} is always used for aggregation.
      *
-     * @param signingClient an instance of {@link KSISigningClient}.
+     * @param signingClient    an instance of {@link KSISigningClient}.
      * @param signatureFactory an instance of {@link KSISignatureFactory}.
-     * @param algorithm hash algorithm to be used.
+     * @param algorithm        hash algorithm to be used.
+     * @deprecated Use {@link KsiBlockSignerBuilder} instead.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningClient signingClient, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
         this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm);
     }
 
     /**
      * Creates a new instance of {@link KsiBlockSigner} with given {@link KSISigningService},
-     * {@link KSISignatureFactory}
-     * and {@link HashAlgorithm}.
+     * {@link KSISignatureFactory} and {@link HashAlgorithm}. {@link HashTreeBuilder} is always used for aggregation.
      *
-     * @param signingService an instance of {@link KSISigningService}.
+     * @param signingService   an instance of {@link KSISigningService}.
      * @param signatureFactory an instance of {@link KSISignatureFactory}.
-     * @param algorithm hash algorithm to be used.
+     * @param algorithm        hash algorithm to be used.
      */
+    @Deprecated
     public KsiBlockSigner(KSISigningService signingService, KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
         this(signingService, algorithm);
         notNull(signatureFactory, "KSI signature factory");
         this.signatureFactory = signatureFactory;
     }
 
-    KsiBlockSigner(KSISigningService signingService, KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight) {
-        this(signingService, signatureFactory, algorithm);
+    KsiBlockSigner(
+            KSISigningService signingService,
+            KSISignatureFactory signatureFactory,
+            int maxTreeHeight,
+            TreeBuilder treeBuilder) {
+        this.signingService = signingService;
+        this.signatureFactory = signatureFactory;
         this.maxTreeHeight = maxTreeHeight;
-    }
-
-    @Deprecated
-    KsiBlockSigner(KSISigningClient signingClient, PduFactory pduFactory, PduIdentifierProvider pduIdentifierProvider,
-                   KSISignatureFactory signatureFactory, HashAlgorithm algorithm) {
-        this(signingClient, signatureFactory, algorithm);
-    }
-
-    @Deprecated
-    KsiBlockSigner(KSISigningClient signingClient, PduFactory pduFactory, PduIdentifierProvider pduIdentifierProvider,
-                   KSISignatureFactory signatureFactory, HashAlgorithm algorithm, int maxTreeHeight) {
-        this(new KSISigningClientServiceAdapter(signingClient), signatureFactory, algorithm, maxTreeHeight);
+        this.treeBuilder = treeBuilder;
     }
 
     /**
@@ -224,7 +227,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
      * Adds a hash (with specific level) and a signature metadata to the {@link KsiBlockSigner}.
      *
      * @param dataHash data hash.
-     * @param level hash level.
+     * @param level    hash level.
      * @param metadata metadata to be added.
      *
      * @return True, if data hash and metadata were added.
@@ -234,7 +237,7 @@ public class KsiBlockSigner implements BlockSigner<List<KSISignature>> {
     public boolean add(DataHash dataHash, long level, IdentityMetadata metadata) throws KSIException {
         notNull(dataHash, "DataHash");
         dataHash.getAlgorithm().checkExpiration();
-        if (level < 0 || level > MAXIMUM_LEVEL) {
+        if (level < 0 || level > Util.MAXIMUM_LEVEL) {
             throw new IllegalStateException("Level must be between 0 and 255");
         }
         logger.debug("New input hash '{}' with level '{}' added to block signer.", dataHash, level);

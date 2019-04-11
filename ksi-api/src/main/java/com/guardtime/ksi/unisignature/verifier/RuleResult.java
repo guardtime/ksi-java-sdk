@@ -37,8 +37,14 @@ public interface RuleResult {
     VerificationErrorCode getErrorCode();
 
     /**
-     * Returns the name of the rule
+     * Returns the name of the rule.
      */
     String getRuleName();
+
+    /**
+     * Returns an exception that occurred during the rule execution while fetching a resource (e.g extender,
+     * publications file).
+     */
+    Exception getException();
 
 }

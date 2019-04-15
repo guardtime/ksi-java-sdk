@@ -187,8 +187,8 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
         return policy.getFallbackPolicy();
     }
 
-    public void setFallbackPolicy(Policy policy) {
-        policy.setFallbackPolicy(policy);
+    public void setFallbackPolicy(Policy fallbackPolicy) {
+        this.policy.setFallbackPolicy(fallbackPolicy);
     }
 
 }

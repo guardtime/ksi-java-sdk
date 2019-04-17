@@ -187,7 +187,19 @@ public class ContextAwarePolicyAdapter implements ContextAwarePolicy {
         return policy.getFallbackPolicy();
     }
 
+    /**
+     * Sets a fallback policy to be used when signature does not verify with given policy.
+     * @param fallbackPolicy the fallback policy used when signature does not verify with given policy. All fallback
+     *                       policies in he chain must be instances of {@link ContextAwarePolicy}.
+     */
     public void setFallbackPolicy(Policy fallbackPolicy) {
+        Policy p = fallbackPolicy;
+        while (p != null) {
+            if (!(p instanceof ContextAwarePolicy)) {
+                throw new IllegalArgumentException("Fallback policy must be instance of ContextAwarePolicy");
+            }
+            p = p.getFallbackPolicy();
+        }
         this.policy.setFallbackPolicy(fallbackPolicy);
     }
 

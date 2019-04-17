@@ -23,7 +23,10 @@ package com.guardtime.ksi.unisignature.verifier;
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIClientException;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
+import com.guardtime.ksi.unisignature.verifier.policies.PolicyContext;
 import com.guardtime.ksi.unisignature.verifier.rules.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +51,21 @@ public final class KSISignatureVerifier implements SignatureVerifier {
             PolicyVerificationResult result = verifySignature(context, runPolicy);
             finalResult.addPolicyResult(result);
             if (VerificationResultCode.NA.equals(result.getPolicyStatus())) {
-                logger.info("Using fallback policy {}", runPolicy.getFallbackPolicy());
-                runPolicy = runPolicy.getFallbackPolicy();
+                Policy fallbackPolicy = runPolicy.getFallbackPolicy();
+                logger.info("Using a fallback policy {}", fallbackPolicy);
+                if (fallbackPolicy instanceof ContextAwarePolicy) {
+                    PolicyContext c = ((ContextAwarePolicy) fallbackPolicy).getPolicyContext();
+                    context = new VerificationContextBuilder()
+                            .setDocumentHash(context.getDocumentHash(), context.getInputHashLevel())
+                            .setExtendingService(c.getExtendingService())
+                            .setExtendingAllowed(c.isExtendingAllowed())
+                            .setPublicationsFile(c.getPublicationsHandler() != null ? c.getPublicationsHandler().getPublicationsFile() : null)
+                            .setSignature(context.getSignature())
+                            .setUserPublication(c.getUserPublication())
+                            .build();
+                    context.setKsiSignatureComponentFactory(new InMemoryKsiSignatureComponentFactory());
+                }
+                runPolicy = fallbackPolicy;
             } else {
                 runPolicy = null;
             }

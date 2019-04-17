@@ -36,11 +36,12 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
-import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -50,6 +51,7 @@ import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION;
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS;
 import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGR_CHAINS_AND_CALENDAR_CHAIN;
 import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE;
 import static com.guardtime.ksi.Resources.SIGNATURE_PUBLICATION_RECORD_DOES_NOT_MATCH_PUBLICATION;
@@ -296,11 +298,10 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_01);
     }
 
-    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testVerifierCreatesNewContextInCaseOfUsesContextAwarePolicy_Ok(KSI ksi) throws Exception {
-        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
-        ContextAwarePolicy policy = ContextAwarePolicyAdapter.createKeyPolicy(getPublicationsHandler(publicationsFileClient));
-        policy.setFallbackPolicy(ContextAwarePolicyAdapter.createCalendarPolicy(getExtender(ksi.getExtendingService(), publicationsFileClient)));
+    @Test(groups = TEST_GROUP_INTEGRATION)
+    public void testVerifySignatureWithOnlyAggregationChainsUsingPublicationFilePolicy_Ok() throws Exception {
+        KSISignature sig = loadSignature(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS);
+        Policy policy = ContextAwarePolicyAdapter.createPublicationsFilePolicy(getPublicationsHandler(publicationsFileClient), getExtender(ksi.getExtendingService(), publicationsFileClient));
         VerificationResult result = ksi.verify(sig, policy);
         Assert.assertTrue(result.isOk());
     }

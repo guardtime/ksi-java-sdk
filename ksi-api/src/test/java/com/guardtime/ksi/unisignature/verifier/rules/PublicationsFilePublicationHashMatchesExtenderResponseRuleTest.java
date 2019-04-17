@@ -68,4 +68,12 @@ public class PublicationsFilePublicationHashMatchesExtenderResponseRuleTest exte
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.PUB_01);
     }
 
+    @Test
+    public void testVerifyThatAggregationTimeIsTakenCorrectedWay() throws Exception {
+        Mockito.when(mockedVerificationContext.getCalendarHashChain()).thenReturn(null);
+        Mockito.when(mockedVerificationContext.getExtendedCalendarHashChain(Mockito.any(Date.class))).thenReturn(TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14).getCalendarHashChain());
+        RuleResult result = rule.verify(mockedVerificationContext);
+        Assert.assertEquals(result.getResultCode(), VerificationResultCode.OK);
+    }
+
 }

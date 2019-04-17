@@ -28,7 +28,7 @@
     <parent>
         <groupId>com.guardtime</groupId>
         <artifactId>ksi</artifactId>
-        <version>4.14.192-SNAPSHOT</version>
+        <version>4.14.193-SNAPSHOT</version>
     </parent>
 
     <name>KSI Service Client</name>

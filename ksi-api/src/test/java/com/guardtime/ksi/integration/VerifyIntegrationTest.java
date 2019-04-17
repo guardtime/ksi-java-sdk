@@ -36,6 +36,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import com.guardtime.ksi.unisignature.verifier.policies.CalendarBasedVerificationPolicy;
+import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicyAdapter;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
@@ -293,6 +294,15 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
         );
         Assert.assertFalse(result.isOk());
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_01);
+    }
+
+    @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
+    public void testVerifierCreatesNewContextInCaseOfUsesContextAwarePolicy_Ok(KSI ksi) throws Exception {
+        KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
+        ContextAwarePolicy policy = ContextAwarePolicyAdapter.createKeyPolicy(getPublicationsHandler(publicationsFileClient));
+        policy.setFallbackPolicy(ContextAwarePolicyAdapter.createCalendarPolicy(getExtender(ksi.getExtendingService(), publicationsFileClient)));
+        VerificationResult result = ksi.verify(sig, policy);
+        Assert.assertTrue(result.isOk());
     }
 
     private Extender createExtender(CredentialsAwareHttpSettings settings) throws Exception {

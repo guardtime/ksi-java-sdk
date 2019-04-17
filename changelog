@@ -1,6 +1,7 @@
 Version 4.14
 
 * BUGFIX: Fixed a bug where ContextAwarePolicyAdapter didn't set a fallback policy.
+* BUGFIX: Fixed a bug where KSISignatureVerifier ignored the context of the ContextAwarePolicyAdapter fallback policy.
 
 Version 4.13
 

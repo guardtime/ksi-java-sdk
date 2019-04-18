@@ -215,4 +215,26 @@ public class ContextAwarePolicyAdapterTest {
         ContextAwarePolicyAdapter.createPolicy(new UserProvidedPublicationBasedVerificationPolicy(),
                 Mockito.mock(PublicationsHandler.class), Mockito.mock(KSIExtendingService.class));
     }
+
+    @Test
+    public void testSetFallbackPolicy() {
+        ContextAwarePolicy keyBasedPolicy = ContextAwarePolicyAdapter.createPolicy(new KeyBasedVerificationPolicy(),
+                Mockito.mock(PublicationsHandler.class), Mockito.mock(KSIExtendingService.class));
+        ContextAwarePolicy userProvidedPublicationPolicy =
+                ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(Mockito.mock(PublicationData.class), null);
+
+        userProvidedPublicationPolicy.setFallbackPolicy(keyBasedPolicy);
+        assertNotNull(userProvidedPublicationPolicy.getFallbackPolicy());
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Fallback policy must be instance of ContextAwarePolicy")
+    public void testSetInvalidFallbackPolicy() {
+        ContextAwarePolicy keyBasedPolicy = ContextAwarePolicyAdapter.createPolicy(new KeyBasedVerificationPolicy(),
+                Mockito.mock(PublicationsHandler.class), Mockito.mock(KSIExtendingService.class));
+        ContextAwarePolicy userProvidedPublicationPolicy =
+                ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(Mockito.mock(PublicationData.class), null);
+
+        keyBasedPolicy.setFallbackPolicy(new KeyBasedVerificationPolicy());
+        userProvidedPublicationPolicy.setFallbackPolicy(keyBasedPolicy);
+    }
 }

@@ -39,18 +39,14 @@ public class Resources {
     private static final String INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN = INVALID_SIGNATURES + "aggregation-chain/";
     private static final String INVALID_SIGNATURES_CALENDAR_AUTH = INVALID_SIGNATURES + "calendar-authentication-record/";
     private static final String INVALID_SIGNATURES_CALENDAR_HASH_CHAIN = INVALID_SIGNATURES + "calendar-hash-chain/";
-    private static final String INVALID_SIGNATURES_PUBLICATION_RECORD = INVALID_SIGNATURES + "publication-record/";
-    private static final String INVALID_SIGNATURES_RFC3161_RECORD = INVALID_SIGNATURES + "rfc3161-record/";
     private static final String INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN = INTERNAL_POLICY_SIGNATURES + "aggregation-chain/";
     private static final String INTERNAL_SIGNATURES_CALENDAR_AUTH = INTERNAL_POLICY_SIGNATURES + "calendar-authentication-record/";
     private static final String INTERNAL_SIGNATURES_CALENDAR_HASH_CHAIN = INTERNAL_POLICY_SIGNATURES + "calendar-hash-chain/";
     private static final String INTERNAL_SIGNATURES_PUBLICATION_RECORD = INTERNAL_POLICY_SIGNATURES + "publication-record/";
     private static final String INTERNAL_SIGNATURES_RFC3161_RECORD = INTERNAL_POLICY_SIGNATURES + "rfc3161-record/";
-    private static final String POLICY_VERIFICATION_RESOURCES = POLICY_VERIFICATION_SIGNATURES + "resources/";
     private static final String PUBLICATIONS_FILES = "publications-files/";
     private static final String EXTENDER_RESPONSES = "extender-responses/";
     private static final String AGGREGATION_RESPONSES = "aggregation-responses/";
-    private static final String SIGNATURE = "TO-TESTPACK-signature/";
 
     /**
      * Properties & TrustStore
@@ -58,15 +54,6 @@ public class Resources {
     public static final String PROPERTIES_INTEGRATION_TEST = "integrationtest.properties";
     public static final String KSI_TRUSTSTORE = "ksi-truststore.jks";
     public static final String KSI_TRUSTSTORE_PASSWORD = "changeit";
-
-    /**
-     * CSV files
-     */
-    public static final String CSV_TLV_PARSER = "tlv-parser-verification-test-extender-responses-and-expected-results.csv";
-    public static final String CSV_POLICY_VERIFICATION_SIGNATURES = POLICY_VERIFICATION_SIGNATURES + "invalid-signature-results.csv";
-    public static final String CSV_INVALID_SIGNATURES = INVALID_SIGNATURES + "policy-verification-results.csv";
-    public static final String CSV_INTERNAL_SIGNATURES = INTERNAL_POLICY_SIGNATURES + "internal-policy-results.csv";
-    public static final String CSV_VALID_SIGNATURES = VALID_SIGNATURES + "signature-results.csv";
 
     /**
      * Input data files
@@ -88,8 +75,8 @@ public class Resources {
     public static final String RFC3161_SHA1_SIG_ATR_2016 = VALID_SIGNATURES + "signature-SHA1-in-rfc3161-record-sig-atr-algorithm.ksig";
     public static final String RFC3161_SHA1_TST_ALGORITHM_2016 = VALID_SIGNATURES + "signature-SHA1-in-rfc3161-record-tst-info-algorithm.ksig";
     public static final String RFC3161_SHA1_INPUT_HASH_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-input-hash-has-deprecated-algorithm.tlv";
-    public static final String RFC3161_SHA1_SIG_ATR_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-sig-attr-algo-has-deprecated-algorithm.tlv";
-    public static final String RFC3161_SHA1_TST_ALGORITHM_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-tst-info-algo-has-deprecated-algorithm.tlv";
+    public static final String RFC3161_SHA1_SIG_ATR_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-deprecated-algo-in-sig-attr-algo.tlv";
+    public static final String RFC3161_SHA1_TST_ALGORITHM_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-deprecated-algo-in-tst-info-algo.tlv";
     //Extended
     public static final String EXTENDED_SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14-extended.ksig";
@@ -98,11 +85,11 @@ public class Resources {
     public static final String SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14.ksig";
     public static final String SIGNATURE_OTHER_CORE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature.ksig";
     public static final String SIGNATURE_CHANGED_CHAINS = SIGNATURES + "all-wrong-hash-chains-in-signature.ksig";
-    public static final String SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-changed-certificate-id-KEY-01.ksig";
+    public static final String SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-changed-certificate-id-GEN-02.ksig";
     public static final String SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature-with-extended-calendar-PUB-03.ksig";
     public static final String SIGNATURE_ONLY_AGGR_CHAINS_AND_CALENDAR_CHAIN = VALID_SIGNATURES + "signature-one-aggregation-chain-and-chc.ksig";
     //Aggregation Hash Chains
-    public static final String SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS =  VALID_SIGNATURES + "signature-only-aggregation-chains.ksig";
+    public static final String SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS =  SIGNATURES + "ok-sig-2014-06-2-only-aggr-chains.ksig";
     public static final String SIGNATURE_INPUT_HASH_LEVEL_5 =  VALID_SIGNATURES + "signature-provided-input-hash-level-is-5.ksig";
     public static final String SIGNATURE_SHA1_INPUT_HASH_OK =  VALID_SIGNATURES + "signature-SHA1-in-aggregation-chain-input-hash.ksig";
     public static final String SIGNATURE_SHA1_AGGREGATION_LINK_OK =  VALID_SIGNATURES + "signature-SHA1-in-aggregation-chain-aggregation-algorithm.ksig";
@@ -121,9 +108,9 @@ public class Resources {
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_ONE_CHAIN_MISSING = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-multiple-chains-one-chain-removed.tlv";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_CHANGED_CHAIN_ORDER =  SIGNATURES + "signature-with-mixed-aggregation-chains.ksig";
     public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_MISSING_CHAIN_INDEX = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-chain-index-missing-tag.tlv";
-    public static final String SIGANTURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-no-aggregation-chains.tlv";
-    public static final String SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRECATED_INPUT_ALGORITHM = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-input-hash-has-deprecated-algorithm.tlv";
-    public static final String SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRECATED_ALGORITHM = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-aggr-algo-has-deprecated-algorithm.tlv";
+    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-no-aggregation-chains.tlv";
+    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_DEPRECATED_INPUT_ALGORITHM = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-input-hash-has-deprecated-algorithm.tlv";
+    public static final String SIGNATURE_AGGREGATION_HASH_CHAIN_DEPRECATED_ALGORITHM = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-aggr-algo-has-deprecated-algorithm.tlv";
     //Aggregation Hash Chains -> METADATA
     public static final String SIGNATURE_METADATA_MATCHING_HASH_IMPRINT = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-matches-imprint.tlv";
     public static final String SIGNATURE_METADATA_MISSING_PADDING = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-missing-tag.tlv";
@@ -135,7 +122,7 @@ public class Resources {
     public static final String SIGNATURE_METADATA_PADDING_TOO_LONG = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-value-too-long.tlv";
     public static final String SIGNATURE_METADATA_PADDING_TOO_SHORT = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-value-too-short.tlv";
     public static final String SIGNATURE_METADATA_WRONG_CONTENT = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-value.tlv";
-    public static final String SIGNATURE_METADATA_WRONG_ORDER = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-order.tlv";
+    public static final String SIGNATURE_METADATA_WRONG_ORDER = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-order.tlv";
     //Aggregation Hash Chains -> Legacy ID
     public static final String SIGNATURE_LEGACY_ID_TOO_LONG = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-legacy-id-value-too-long.tlv";
     public static final String SIGNATURE_LEGACY_ID_INVALID_ENDING_BYTE = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-legacy-id-invalid-ending-byte.tlv";
@@ -144,8 +131,6 @@ public class Resources {
     //Calendar Hash Chain
     public static final String SIGNATURE_CALENDAR_CHAIN_FIRST_LINK_CHANGED = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-first-right-link-is-changed-CAL-04.ksig";
     public static final String SIGNATURE_CALENDAR_CHAIN_WITH_EXTRA_RIGHT_LINK = SIGNATURES + "signature-calendar-hash-chain-with-extra-right-link-and-shape-not-ok.ksig";
-    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_PAST = INTERNAL_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-pub-time-int-value-wrong.tlv";
-    public static final String SIGNATURE_CALENDAR_HASH_CHAIN_INVALID_PUBLICATION_TIME_FUTURE = INTERNAL_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-pub-time-future-value.tlv";
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_NO_LINK = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-right-link-left-link-missing-tags.tlv";
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_NO_INPUT_HASH = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-input-hash-missing-tag.tlv";
     public static final String SIGNATURE_CALENDAR_HASH_CHAIN_NO_PUBLICATION_TIME = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-pub-time-missing-tag.tlv";
@@ -166,7 +151,6 @@ public class Resources {
     public static final String SIGNATURE_WITH_CAL_AUTH_AND_PUB_REC = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-cal-aut-present-pub-rec-present.tlv";
     public static final String SIGNATURE_PUBLICATION_RECORD_BUT_NO_CALENDAR = INVALID_SIGNATURES_CALENDAR_HASH_CHAIN + "invalid-signature-calendar-chain-missing-pub-rec-present.tlv";
     public static final String SIGNATURE_PUBLICATION_RECORD_DOES_NOT_MATCH_PUBLICATION = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-extended-signature-to-publication-file-PUB-05.ksig";
-    public static final String SIGNATURE_PUBLICATION_RECORD_NOT_FOUND_FROM_FILE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-suitable-publication-not-found-GEN-02.ksig";
 
     /**
      * Signature components
@@ -177,13 +161,10 @@ public class Resources {
     public static final String AGGREGATION_HASH_CHAIN_WITH_LEFT_AND_RIGHT_LINKS_AND_HEIGHT_3 = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-left-and-right-links-and-height-3.tlv";
     public static final String AGGREGATION_HASH_CHAIN_WITH_LEFT_LINKS_AND_HEIGHT_5 = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-left-links-and-height-5.tlv";
     public static final String AGGREGATION_HASH_CHAIN_WITH_HEIGHT_3 = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-height-3.tlv";
-    public static final String AGGREGATION_HASH_CHAIN_DIFFERENT_AGGREGATION_ALGORITHM = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-height-3-different-aggregation-algorithm.tlv";
-    public static final String AGGREGATION_HASH_CHAIN_INVALID_CHAIN_INDEX = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-height-3-invalid-chain-index.tlv";
-    public static final String AGGREGATION_HASH_CHAIN_INVALID_AGGREGATION_TIME = COMPONENTS_AGGREGATION_HASH_CHAIN + "aggregation-hash-chain-with-height-3-invalid-time.tlv";
-    public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-right-link-missing.tlv";
-    public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-right-link-extra.tlv";
-    public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_DATA_HASH_MISMATCH = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-right-link-data-hash-mismatch.tlv";
-    public static final String CALENDAR_HASH_CHAIN_EXTENDED_FROM_SIG_WITH_AGGR_CHAIN_ONLY = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-extended-from-sig-with-aggr-chain-only.tlv";
+    public static final String CALENDAR_HASH_CHAIN_FOR_SIGNATURE_2017_03_14 = COMPONENTS_CALENDAR_HASH_CHAIN + "ok-sig-2014-06-2-extended-calendar-chain.tlv";
+    public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING = COMPONENTS_CALENDAR_HASH_CHAIN + "ok-sig-2014-06-2-extended-calendar-chain-right-link-missing.tlv";
+    public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA = COMPONENTS_CALENDAR_HASH_CHAIN + "ok-sig-2014-06-2-extended-calendar-chain-right-link-extra.tlv";
+    public static final String CALENDAR_HASH_CHAIN_RIGHT_LINK_DATA_HASH_MISMATCH = COMPONENTS_CALENDAR_HASH_CHAIN + "ok-sig-2014-06-2-extended-calendar-chain-right-link-data-hash-mismatch.tlv";
     public static final String CALENDAR_HASH_CHAIN_OK = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-ok.tlv";
     public static final String CALENDAR_HASH_CHAIN_INVALID_ALGORITHM = COMPONENTS_CALENDAR_HASH_CHAIN + "calendar-hash-chain-invalid-algorithm.tlv";
     public static final String CALENDAR_AUTH_SIGNATURE_DATA_OK = COMPONENTS_CALENDAR_AUTH_SIGNATURE_DATA + "signature-data-ok.tlv";

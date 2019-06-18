@@ -25,7 +25,9 @@ import com.guardtime.ksi.blocksigner.IdentityMetadata;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
+import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,6 +39,20 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
 
     public static final byte[] INITIALIZATION_VECTOR = new byte[32];
     private final DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
+
+    @Test
+    public void testCsdkTree() {
+        byte[] vector = new byte[]{0x01, 0x02, (byte) 0xff, (byte) 0xfe, (byte) 0xaa, (byte) 0xa9, (byte) 0xf1, 0x55, 0x23, 0x51, (byte) 0xa1,0x01, 0x02, (byte) 0xff, (byte) 0xfe, (byte) 0xaa, (byte) 0xa9, (byte) 0xf1, 0x55, 0x23, 0x51, (byte) 0xa1,0x01, 0x02, (byte) 0xff, (byte) 0xfe, (byte) 0xaa, (byte) 0xa9, (byte) 0xf1, 0x55, 0x23, 0x51};
+        DataHash prev = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
+        DataHash dataHash = new DataHash(Base16.decode("01004313f53502a18fe4a31ae0197ab09d4597042942a3a54e846fa01ff5479fa2"));
+
+        BlindingMaskLinkingHashTreeBuilder treeBuilder = new BlindingMaskLinkingHashTreeBuilder(vector, null);
+        for (int i = 0; i < 1; ++i) {
+            treeBuilder.add(new ImprintNode(dataHash));
+        }
+        ImprintNode dh = treeBuilder.build();
+        System.out.println("");
+    }
 
     @Test
     public void testBlindingMasksCalculation() {

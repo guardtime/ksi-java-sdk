@@ -217,15 +217,15 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyContextAwarePolicyAndPolicyFallbackMix_Ok() throws Exception {
+        //TODO: only agg chains is from test pack. should not?
         KSISignature sig = loadSignature(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS);
 
         Policy policy = new KeyBasedVerificationPolicy();
-        Policy fallbackPolicy = ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(
-                new PublicationData("AAAAAA-C4RLVQ-AANBBO-5WLN2O-WONO5N-RKF5UD-RBOWLI-44YWTZ-MV4NT6-MSNYQR-LM6PTB-ROGDPE")
-        );
+        PublicationsFile file = ksi.getPublicationsFile();
+        PublicationData pubData = file.getPublicationRecord(sig.getAggregationTime()).getPublicationData();
+        Policy fallbackPolicy = ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(pubData);
         fallbackPolicy.setFallbackPolicy(ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(
-                new PublicationData("AAAAAA-C4RLVQ-AANBBO-5WLN2O-WONO5N-RKF5UD-RBOWLI-44YWTZ-MV4NT6-MSNYQR-LM6PTB-ROGDPE"),
-                getExtender(ksi.getExtendingService(), publicationsFileClient)
+                pubData, getExtender(ksi.getExtendingService(), publicationsFileClient)
         ));
         policy.setFallbackPolicy(fallbackPolicy);
 

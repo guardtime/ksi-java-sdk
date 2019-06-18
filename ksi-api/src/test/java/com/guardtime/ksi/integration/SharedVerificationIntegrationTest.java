@@ -171,7 +171,7 @@ public class SharedVerificationIntegrationTest {
         if (testData.getAction().equals(IntegrationTestAction.FAIL_AT_PARSING)) {
             try {
                 ksi.read(new File(testData.getTestFile()));
-                throw new IntegrationTestFailureException("Did not fail at parinsg while expected to. " + testData.toString());
+                throw new IntegrationTestFailureException("Did not fail at parsing while expected to. " + testData.toString());
             } catch (KSIException e) {
                 return;
             }
@@ -187,7 +187,11 @@ public class SharedVerificationIntegrationTest {
         VerificationResult result = ksi.verify(context, testData.getAction().getPolicy());
 
         if (testData.getErrorCode() == null) {
-            Assert.assertTrue(result.isOk(), "Verification result is not OK. " + testData.toString());
+            if (result.isOk()) {
+                System.out.println("All ok");
+            } else {
+                Assert.assertTrue(result.isOk(), "Verification result is not OK. " + testData.toString());
+            }
         } else {
             if (!(testData.getErrorCode().getCode().equals(result.getErrorCode().getCode()))) {
                 throw new IntegrationTestFailureException("Expected verification result error code '" + testData.getErrorCode().getCode() +

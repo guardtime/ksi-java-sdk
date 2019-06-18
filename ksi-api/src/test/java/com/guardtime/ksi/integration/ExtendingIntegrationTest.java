@@ -29,12 +29,15 @@ import com.guardtime.ksi.publication.PublicationRecord;
 import com.guardtime.ksi.publication.PublicationsFile;
 import com.guardtime.ksi.publication.inmemory.PublicationsFilePublicationRecord;
 import com.guardtime.ksi.unisignature.KSISignature;
+import com.guardtime.ksi.unisignature.KSISignatureComponentFactory;
 import com.guardtime.ksi.unisignature.SignaturePublicationRecord;
+import com.guardtime.ksi.unisignature.inmemory.InMemoryKsiSignatureComponentFactory;
 import com.guardtime.ksi.unisignature.inmemory.InvalidSignatureContentException;
 import com.guardtime.ksi.unisignature.verifier.VerificationErrorCode;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -144,7 +147,11 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
     public void testExtendSignatureWithCalendarChain_Ok(KSI ksi) throws Exception {
-        KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS));
+        String publicationString = "AAAAAA-C2VG3Y-AANAMA-FULJ3X-CMWLPB-F5O2BA-7Y6UE5-VOJKPQ-OV2VFQ-W3SXJM-JIDMWY-4PDBN2";
+        KSISignatureComponentFactory signatureComponentFactory = new InMemoryKsiSignatureComponentFactory();
+        PublicationRecord publicationRecord = signatureComponentFactory.createPublicationRecord(
+                new PublicationData(publicationString), null, null);
+        KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS), publicationRecord);
         Assert.assertTrue(extendedSignature.isExtended(), "Signature extension failed.");
     }
 }

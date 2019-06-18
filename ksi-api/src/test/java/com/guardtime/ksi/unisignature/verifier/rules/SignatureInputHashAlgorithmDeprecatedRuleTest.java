@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.Resources.RFC3161_SHA1_INPUT_HASH_2016;
 import static com.guardtime.ksi.Resources.RFC3161_SHA1_INPUT_HASH_2017;
-import static com.guardtime.ksi.Resources.SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRECATED_INPUT_ALGORITHM;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_DEPRECATED_INPUT_ALGORITHM;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_SHA1_INPUT_HASH_OK;
 
@@ -59,7 +59,7 @@ public class SignatureInputHashAlgorithmDeprecatedRuleTest extends AbstractRuleT
     @Test
     public void testSignatureVerificationWithDeprecatedAlgorithm() throws Exception {
         RuleResult result =
-                rule.verify(build(TestUtil.loadSignature(SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRECATED_INPUT_ALGORITHM)));
+                rule.verify(build(TestUtil.loadSignature(SIGNATURE_AGGREGATION_HASH_CHAIN_DEPRECATED_INPUT_ALGORITHM)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_13);
     }

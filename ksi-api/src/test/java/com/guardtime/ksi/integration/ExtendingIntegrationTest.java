@@ -144,7 +144,7 @@ public class ExtendingIntegrationTest extends AbstractCommonIntegrationTest {
     }
 
     @Test(dataProvider = KSI_DATA_GROUP_NAME, groups = TEST_GROUP_INTEGRATION)
-    public void testExtendSignatureWithCalendarChain_Ok(KSI ksi) throws Exception {;
+    public void testExtendSignatureWithCalendarChain_Ok(KSI ksi) throws Exception {
         KSISignature extendedSignature = ksi.extend(loadSignature(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS));
         Assert.assertTrue(extendedSignature.isExtended(), "Signature extension failed.");
     }

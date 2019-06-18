@@ -22,12 +22,10 @@ package com.guardtime.ksi.blocksigner;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.integration.AbstractCommonIntegrationTest;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.ServiceCredentials;
-import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.tree.BlindingMaskLinkingHashTreeBuilder;
 import com.guardtime.ksi.unisignature.KSISignature;
@@ -279,23 +277,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     @Test
     public void testRequestWithHashAndLevelResponseHasFirstLeftLinkWithLegacyId() throws Exception {
         checkResponses(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL, 2, 5, true, 3);
-
-    }
-
-    @Test
-    public void testNullDataHashAsClientID() throws Exception {
-        KsiBlockSigner blockSigner = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).build();
-
-        TLVElement element = new TLVElement(false, false, 0x1);
-        TLVElement elementTwo = new TLVElement(false, false, 0x1);
-        element.setDataHashContent(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]));
-        DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
-        hasher.addData("somdung".getBytes());
-        DataHash haash = hasher.getHash();
-
-        IdentityMetadata metadataWithNullHash = new IdentityMetadata((new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]).toString()));
-        blockSigner.add(dataHash, 4L, metadataWithNullHash);
-        List<KSISignature> sigs = blockSigner.sign();
 
     }
 

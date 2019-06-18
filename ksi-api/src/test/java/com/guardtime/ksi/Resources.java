@@ -89,7 +89,8 @@ public class Resources {
     public static final String SIGNATURE_OTHER_CORE_EXTENDED_CALENDAR = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature-with-extended-calendar-PUB-03.ksig";
     public static final String SIGNATURE_ONLY_AGGR_CHAINS_AND_CALENDAR_CHAIN = VALID_SIGNATURES + "signature-one-aggregation-chain-and-chc.ksig";
     //Aggregation Hash Chains
-    public static final String SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS =  SIGNATURES + "ok-sig-2014-06-2-only-aggr-chains.ksig";
+    public static final String SIGNATURE_2014_06_02_ONLY_AGGREGATION_HASH_CHAINS =  SIGNATURES + "ok-sig-2014-06-2-only-aggr-chains.ksig";
+    public static final String SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS = VALID_SIGNATURES + "signature-only-aggregation-chains.ksig";
     public static final String SIGNATURE_INPUT_HASH_LEVEL_5 =  VALID_SIGNATURES + "signature-provided-input-hash-level-is-5.ksig";
     public static final String SIGNATURE_SHA1_INPUT_HASH_OK =  VALID_SIGNATURES + "signature-SHA1-in-aggregation-chain-input-hash.ksig";
     public static final String SIGNATURE_SHA1_AGGREGATION_LINK_OK =  VALID_SIGNATURES + "signature-SHA1-in-aggregation-chain-aggregation-algorithm.ksig";

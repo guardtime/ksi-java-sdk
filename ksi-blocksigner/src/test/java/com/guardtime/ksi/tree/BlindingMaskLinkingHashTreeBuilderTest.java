@@ -26,7 +26,6 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.util.Util;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

@@ -40,7 +40,7 @@ import static com.guardtime.ksi.Resources.CALENDAR_HASH_CHAIN_RIGHT_LINK_DATA_HA
 import static com.guardtime.ksi.Resources.CALENDAR_HASH_CHAIN_RIGHT_LINK_EXTRA;
 import static com.guardtime.ksi.Resources.CALENDAR_HASH_CHAIN_RIGHT_LINK_MISSING;
 import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
-import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02_ONLY_AGGREGATION_HASH_CHAINS;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 public class ExtensionFutureTest {
@@ -62,7 +62,7 @@ public class ExtensionFutureTest {
 
     @Test
     public void testSignatureExtension_noCalendarChainInSignature() throws Exception {
-        KSISignature signature = createExtensionFuture(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS,
+        KSISignature signature = createExtensionFuture(SIGNATURE_2014_06_02_ONLY_AGGREGATION_HASH_CHAINS,
                 CALENDAR_HASH_CHAIN_FOR_SIGNATURE_2017_03_14).getResult();
         Assert.assertTrue(signature.isExtended());
     }

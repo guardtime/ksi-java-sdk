@@ -187,11 +187,7 @@ public class SharedVerificationIntegrationTest {
         VerificationResult result = ksi.verify(context, testData.getAction().getPolicy());
 
         if (testData.getErrorCode() == null) {
-            if (result.isOk()) {
-                System.out.println("All ok");
-            } else {
-                Assert.assertTrue(result.isOk(), "Verification result is not OK. " + testData.toString());
-            }
+            Assert.assertTrue(result.isOk(), "Verification result is not OK. " + testData.toString());
         } else {
             if (!(testData.getErrorCode().getCode().equals(result.getErrorCode().getCode()))) {
                 throw new IntegrationTestFailureException("Expected verification result error code '" + testData.getErrorCode().getCode() +

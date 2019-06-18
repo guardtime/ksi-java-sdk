@@ -30,7 +30,6 @@ import com.guardtime.ksi.service.client.ServiceCredentials;
 import com.guardtime.ksi.tlv.TLVElement;
 import com.guardtime.ksi.tlv.TLVStructure;
 import com.guardtime.ksi.tree.BlindingMaskLinkingHashTreeBuilder;
-import com.guardtime.ksi.tree.ImprintNode;
 import com.guardtime.ksi.unisignature.KSISignature;
 import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.ContextAwarePolicy;
@@ -48,8 +47,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import jdk.nashorn.internal.ir.annotations.Ignore;
 
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_2;
@@ -121,19 +118,6 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
         KsiBlockSigner builder = new KsiBlockSignerBuilder().setKsiSigningClient(signerClient).build();
         builder.add(DATA_HASH, 254L, metadata);
         builder.sign();
-    }
-    @Test
-    public void testCsdkTree() {
-        byte[] vector = new byte[32];
-        DataHash prev = new DataHash(HashAlgorithm.SHA2_256, new byte[32]);
-        DataHash dataHash = new DataHash(Base16.decode("01004313f53502a18fe4a31ae0197ab09d4597042942a3a54e846fa01ff5479fa2"));
-
-        BlindingMaskLinkingHashTreeBuilder treeBuilder = new BlindingMaskLinkingHashTreeBuilder(vector, null);
-        for (int i = 0; i < 1; ++i) {
-            treeBuilder.add(new ImprintNode(dataHash));
-        }
-        ImprintNode dh = treeBuilder.build();
-        System.out.println("");
     }
 
     @Test(dataProvider = WORKING_HASH_ALGORITHMS)

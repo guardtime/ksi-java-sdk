@@ -37,7 +37,6 @@ import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -170,9 +169,13 @@ public class SharedVerificationIntegrationTest {
 
         if (testData.getAction().equals(IntegrationTestAction.FAIL_AT_PARSING)) {
             try {
-                ksi.read(new File(testData.getTestFile()));
+                ksi.read(load(testData.getTestFile()));
                 throw new IntegrationTestFailureException("Did not fail at parsing while expected to. " + testData.toString());
             } catch (KSIException e) {
+                if (e.getCause() != null) {
+                    //All exceptions from TLV parser are KSIExceptions and do not have another cause.
+                    throw e;
+                }
                 return;
             }
         }

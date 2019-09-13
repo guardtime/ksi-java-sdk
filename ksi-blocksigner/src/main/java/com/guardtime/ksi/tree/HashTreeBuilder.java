@@ -171,7 +171,7 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
         if (heads.size() > 1) {
             for (int i = heads.size() - 2; i > -1; i--) {
                 ImprintNode current = heads.get(i);
-                previous = aggregate(previous, current);
+                previous = aggregate(current, previous);
             }
         }
         return previous;

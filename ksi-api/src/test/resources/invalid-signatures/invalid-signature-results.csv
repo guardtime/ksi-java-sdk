@@ -59,6 +59,7 @@ aggregation-chain/invalid-signature-aggr-chain-right-link-legacy-id-invalid-pref
 aggregation-chain/invalid-signature-aggr-chain-right-link-legacy-id-invalid-algorithm.tlv;parsing;;;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-right-link-legacy-id-value-too-long.tlv;parsing;;;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-right-link-legacy-id-value-too-short.tlv;parsing;;;0;;;;;;;false;;;;
+aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-padding-multiple-tags.tlv;parsing;;;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-padding-wrong-order.tlv;parsing;;;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-client-id-int-value.tlv;parsing;;;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-client-id-datahash-value-not-null-ending.tlv;parsing;;;0;;;;;;;false;;;;
@@ -68,6 +69,7 @@ aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-sequence-nr-da
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-sequence-nr-text-value.tlv;parsing;;;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-req-time-text-value.tlv;parsing;;;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-req-time-datahash-value-not-null-ending.tlv;parsing;;;0;;;;;;;false;;;;
+aggregation-chain/invalid-signature-aggr-chain-right-link-metadata-padding-multiple-tags.tlv;parsing;;;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-right-link-metadata-padding-wrong-order.tlv;parsing;;;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-right-link-metadata-client-id-int-value.tlv;parsing;;;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-right-link-metadata-client-id-datahash-value-not-null-ending.tlv;parsing;;;0;;;;;;;false;;;;

@@ -18,7 +18,6 @@ aggregation-chain/invalid-signature-aggr-chain-left-link-right-link-no-value.tlv
 aggregation-chain/invalid-signature-aggr-chain-left-link-right-link-missing-tag.tlv;internal;INT-03;Calendar hash chain input hash mismatch;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-sibling-hash-datahash-value-wrong.tlv;internal;INT-03;Calendar hash chain input hash mismatch;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-right-link-sibling-hash-datahash-value-wrong.tlv;internal;INT-03;Calendar hash chain input hash mismatch;0;;;;;;;false;;;;
-aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-padding-multiple-tags.tlv;internal;INT-11;The metadata record in the aggregation hash chain may not be trusted;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-padding-matches-imprint.tlv;internal;INT-11;The metadata record in the aggregation hash chain may not be trusted;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-padding-flags-not-set.tlv;internal;INT-11;The metadata record in the aggregation hash chain may not be trusted;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-padding-non-forward-flag-not-set.tlv;internal;INT-11;The metadata record in the aggregation hash chain may not be trusted;0;;;;;;;false;;;;
@@ -32,7 +31,6 @@ aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-padding-missin
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-client-id-datahash-value-null-ending.tlv;internal;INT-03;Calendar hash chain input hash mismatch;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-machine-id-datahash-value-null-ending.tlv;internal;INT-03;Calendar hash chain input hash mismatch;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-left-link-metadata-req-time-future-value.tlv;internal;INT-03;Calendar hash chain input hash mismatch;0;;;;;;;false;;;;
-aggregation-chain/invalid-signature-aggr-chain-right-link-metadata-padding-multiple-tags.tlv;internal;INT-11;The metadata record in the aggregation hash chain may not be trusted;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-right-link-metadata-padding-matches-imprint.tlv;internal;INT-11;The metadata record in the aggregation hash chain may not be trusted;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-right-link-metadata-padding-flags-not-set.tlv;internal;INT-11;The metadata record in the aggregation hash chain may not be trusted;0;;;;;;;false;;;;
 aggregation-chain/invalid-signature-aggr-chain-right-link-metadata-padding-non-forward-flag-not-set.tlv;internal;INT-11;The metadata record in the aggregation hash chain may not be trusted;0;;;;;;;false;;;;

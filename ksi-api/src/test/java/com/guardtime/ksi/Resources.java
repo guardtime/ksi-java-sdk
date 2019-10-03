@@ -123,7 +123,7 @@ public class Resources {
     public static final String SIGNATURE_METADATA_PADDING_TOO_LONG = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-value-too-long.tlv";
     public static final String SIGNATURE_METADATA_PADDING_TOO_SHORT = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-value-too-short.tlv";
     public static final String SIGNATURE_METADATA_WRONG_CONTENT = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-value.tlv";
-    public static final String SIGNATURE_METADATA_WRONG_ORDER = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-order.tlv";
+    public static final String SIGNATURE_METADATA_WRONG_ORDER = INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-metadata-padding-wrong-order.tlv";
     //Aggregation Hash Chains -> Legacy ID
     public static final String SIGNATURE_LEGACY_ID_TOO_LONG = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-legacy-id-value-too-long.tlv";
     public static final String SIGNATURE_LEGACY_ID_INVALID_ENDING_BYTE = INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN + "invalid-signature-aggr-chain-left-link-legacy-id-invalid-ending-byte.tlv";

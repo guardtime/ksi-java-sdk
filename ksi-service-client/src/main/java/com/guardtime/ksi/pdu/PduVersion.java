@@ -23,7 +23,8 @@ package com.guardtime.ksi.pdu;
  * Contains a list of supported PDU versions.
  */
 public enum PduVersion {
-
-    V1, V2
+    @Deprecated
+    V1,
+    V2
 
 }

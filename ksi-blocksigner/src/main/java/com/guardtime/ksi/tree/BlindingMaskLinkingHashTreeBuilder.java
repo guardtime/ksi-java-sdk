@@ -26,6 +26,9 @@ import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.util.Util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 
 /**
@@ -51,6 +54,7 @@ import java.util.Arrays;
  */
 public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNode> {
 
+    private static final Logger logger = LoggerFactory.getLogger(HashTreeBuilder.class);
     private static final long MASKED_NODE_LEVEL = 1;
     private final HashTreeBuilder hashTreeBuilder = new HashTreeBuilder();
 
@@ -108,8 +112,8 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
     public BlindingMaskLinkingHashTreeBuilder(HashAlgorithm algorithm, byte[] initializationVector, DataHash previousBlockHash) {
         Util.notNull(algorithm, "HashAlgorithm");
         Util.notNull(initializationVector, "Initialization vector");
-        if (initializationVector.length != algorithm.getLength()) {
-            throw new IllegalArgumentException("Initialization vector should be as long as the output of the hash algorithm");
+        if (initializationVector.length < algorithm.getLength()) {
+            logger.warn("Initialization vector is shorter than the output of the hash algorithm.");
         }
         this.hashAlgorithm = algorithm;
         this.initializationVector = Arrays.copyOf(initializationVector, initializationVector.length);

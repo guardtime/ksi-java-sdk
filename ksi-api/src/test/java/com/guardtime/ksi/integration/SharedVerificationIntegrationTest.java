@@ -45,11 +45,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
-import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.TEST_GROUP_INTEGRATION;
-import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.addToList;
-import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadExtenderSettings;
 
-public class SharedVerificationIntegrationTest {
+public class SharedVerificationIntegrationTest extends AbstractCommonIntegrationTest {
     protected static final String INTERNAL_POLICY_SIGNATURES = "INTERNAL_POLICY_SIGNATURES";
     protected static final String INVALID_SIGNATURES = "INVALID_SIGNATURES";
     protected static final String POLICY_VERIFICATION_SIGNATURES = "POLICY_VERIFICATION_SIGNATURES";

@@ -39,6 +39,7 @@ public class Resources {
     private static final String INVALID_SIGNATURES_AGGREGATION_HASH_CHAIN = INVALID_SIGNATURES + "aggregation-chain/";
     private static final String INVALID_SIGNATURES_CALENDAR_AUTH = INVALID_SIGNATURES + "calendar-authentication-record/";
     private static final String INVALID_SIGNATURES_CALENDAR_HASH_CHAIN = INVALID_SIGNATURES + "calendar-hash-chain/";
+    private static final String INVALID_SIGNATURES_RFC3161_RECORD = INVALID_SIGNATURES + "rfc3161-record/";
     private static final String INTERNAL_SIGNATURES_AGGREGATION_HASH_CHAIN = INTERNAL_POLICY_SIGNATURES + "aggregation-chain/";
     private static final String INTERNAL_SIGNATURES_CALENDAR_AUTH = INTERNAL_POLICY_SIGNATURES + "calendar-authentication-record/";
     private static final String INTERNAL_SIGNATURES_CALENDAR_HASH_CHAIN = INTERNAL_POLICY_SIGNATURES + "calendar-hash-chain/";
@@ -77,6 +78,7 @@ public class Resources {
     public static final String RFC3161_SHA1_INPUT_HASH_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-input-hash-has-deprecated-algorithm.tlv";
     public static final String RFC3161_SHA1_SIG_ATR_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-deprecated-algo-in-sig-attr-algo.tlv";
     public static final String RFC3161_SHA1_TST_ALGORITHM_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-deprecated-algo-in-tst-info-algo.tlv";
+    public static final String RFC3161_MISSING_CHAIN_INDEXES = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-all-chain-index-missing-tag.tlv";
     //Extended
     public static final String EXTENDED_SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14-extended.ksig";

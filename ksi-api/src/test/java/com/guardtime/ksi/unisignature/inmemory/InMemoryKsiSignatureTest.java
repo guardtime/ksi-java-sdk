@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.RFC3161_MISSING_CHAIN_INDEXES;
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
 import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS;
 import static com.guardtime.ksi.Resources.SIGANTURE_CALENDAR_AUTH_BUT_NO_CALAENDAR;
@@ -126,6 +127,11 @@ public class InMemoryKsiSignatureTest {
             expectedExceptionsMessageRegExp = "Found calendar authentication record and publication record. Given elements can not coexist")
     public void testParseSignatureWithPublicationRecordAndCalendarAuthenticationRecord_ThrowsInvalidSignatureException() throws Exception {
         TestUtil.loadSignature(SIGNATURE_WITH_CAL_AUTH_AND_PUB_REC);
+    }
+
+    @Test(expectedExceptions = InvalidSignatureRFC3161RecordException.class, expectedExceptionsMessageRegExp = "RFC3161 record chain index is null")
+    public void testParseSignatureWithRfc3161RecordIsMissingChainIndex() throws Exception {
+        TestUtil.loadSignature(RFC3161_MISSING_CHAIN_INDEXES);
     }
 
     @Test(expectedExceptions = InvalidSignatureException.class, expectedExceptionsMessageRegExp = "Found calendar authentication record without calendar hash chain")

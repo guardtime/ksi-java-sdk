@@ -19,12 +19,12 @@
  */
 package com.guardtime.ksi.pdu;
 
-import com.guardtime.ksi.pdu.v1.PduV1Factory;
 import com.guardtime.ksi.pdu.v2.AggregatorPduV2Factory;
 import com.guardtime.ksi.pdu.v2.ExtenderPduV2Factory;
 import com.guardtime.ksi.pdu.v2.PduV2Factory;
 import com.guardtime.ksi.service.ConfigurationListener;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,13 +33,12 @@ public final class PduFactoryProvider {
     private static final Map<PduVersion, PduFactory> pduFactories = new HashMap<>();
 
     static {
-        pduFactories.put(PduVersion.V1, new PduV1Factory());
         pduFactories.put(PduVersion.V2, new PduV2Factory());
     }
 
     public static PduFactory get(PduVersion pduVersion) {
         if (!pduFactories.containsKey(pduVersion)) {
-            throw new IllegalArgumentException("Invalid PDU version '" + pduVersion + "'. Allowed values are V1 and V2");
+            throw new IllegalArgumentException("Invalid PDU version '" + pduVersion + "'. Allowed values are> " + Arrays.toString(PduVersion.values()));
         }
         return pduFactories.get(pduVersion);
     }
@@ -55,13 +54,11 @@ public final class PduFactoryProvider {
     private static PduFactory get(PduVersion pduVersion,
                                   ConfigurationListener<AggregatorConfiguration> aggregatorConfigurationListener,
                                   ConfigurationListener<ExtenderConfiguration> extenderConfigurationListener) {
-        if (pduVersion == PduVersion.V1) {
-            return new PduV1Factory();
-        } else if (pduVersion == PduVersion.V2) {
+         if (pduVersion == PduVersion.V2) {
             AggregatorPduV2Factory aggregatorPduV2Factory = new AggregatorPduV2Factory(aggregatorConfigurationListener);
             ExtenderPduV2Factory extenderPduV2Factory = new ExtenderPduV2Factory(extenderConfigurationListener);
             return new PduV2Factory(aggregatorPduV2Factory, extenderPduV2Factory);
         }
-        throw new IllegalArgumentException("Invalid PDU version '" + pduVersion + "'. Allowed values are V1 and V2");
+        throw new IllegalArgumentException("Invalid PDU version '" + pduVersion + "'. Allowed values are: " + Arrays.toString(PduVersion.values()));
     }
 }

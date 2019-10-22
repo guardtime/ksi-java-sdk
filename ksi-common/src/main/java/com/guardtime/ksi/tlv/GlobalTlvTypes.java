@@ -35,7 +35,9 @@ public final class GlobalTlvTypes {
     public static final int ELEMENT_TYPE_RFC_3161_RECORD = 0x0806;
 
     // PDU types
+    @Deprecated
     public static final int ELEMENT_TYPE_AGGREGATION_PDU_V1 = 0x0200;
+    @Deprecated
     public static final int ELEMENT_TYPE_EXTENSION_PDU_V1 = 0x0300;
     public static final int ELEMENT_TYPE_AGGREGATION_REQUEST_PDU_V2 = 0x0220;
     public static final int ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2 = 0x0221;

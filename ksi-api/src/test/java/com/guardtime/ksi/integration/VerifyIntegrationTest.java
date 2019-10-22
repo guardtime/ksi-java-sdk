@@ -295,7 +295,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
                 ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null)
         );
         Assert.assertFalse(result.isOk());
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_01);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)

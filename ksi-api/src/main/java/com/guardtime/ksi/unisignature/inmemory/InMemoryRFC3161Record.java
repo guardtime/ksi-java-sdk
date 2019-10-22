@@ -123,6 +123,9 @@ class InMemoryRFC3161Record extends TLVStructure implements RFC3161Record {
         if (aggregationTime == null) {
             throw new InvalidSignatureRFC3161RecordException("RFC3161 record aggregation time is null");
         }
+        if (chainIndex.size() == 0) {
+            throw new InvalidSignatureRFC3161RecordException("RFC3161 record chain index is null");
+        }
         if (inputHash == null) {
             throw new InvalidSignatureRFC3161RecordException("RFC3161 record input hash is null");
         }

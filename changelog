@@ -3,6 +3,7 @@ Version 4.15
 * IMPROVEMENT: Verification error code KEY-01 is now deprecated, certificate existence rule now returns GEN-02 instead of KEY-01.
 * BUGFIX: Fixed a bug where chain index existence was not verified during signature parsing.
 * IMPROVEMENT: Removed PDU V1 support.
+* IMPROVEMENT: BlindingMaskLinkingHashTreeBuilder no longer throws exception but instead logs warning if IV is shorter than the output of the hash algorithm.
 
 Version 4.14
 

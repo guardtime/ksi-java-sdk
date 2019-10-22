@@ -46,12 +46,12 @@ public class CertificateExistenceRule extends BaseRule {
         Certificate certificate = context.getCertificate(signatureData.getCertificateId());
         if (certificate == null) {
             LOGGER.info("Certificate with id {} not present in publications file", Base16.encode(signatureData.getCertificateId()));
-            return VerificationResultCode.FAIL;
+            return VerificationResultCode.NA;
         }
         return VerificationResultCode.OK;
     }
 
     public VerificationErrorCode getErrorCode() {
-        return VerificationErrorCode.KEY_01;
+        return VerificationErrorCode.GEN_02;
     }
 }

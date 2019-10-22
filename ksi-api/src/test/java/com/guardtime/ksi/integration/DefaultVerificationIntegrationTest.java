@@ -112,8 +112,8 @@ public class DefaultVerificationIntegrationTest extends AbstractCommonIntegratio
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION,
-            expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Certificate not found.*")
-    public void testKeyBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_KEY1() throws Exception {
+            expectedExceptions = InvalidSignatureContentException.class, expectedExceptionsMessageRegExp = ".*Signature.*is invalid: GEN_02.*")
+    public void testKeyBasedVerificationAsDefaultVerificationPolicy_InvalidSignatureContentException_GEN2() throws Exception {
         Policy policy = new KeyBasedVerificationPolicy();
         try (KSI ksiTest = ksiBuilder.setDefaultVerificationPolicy(policy).build()) {
             ksiTest.read(loadFile(SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE));

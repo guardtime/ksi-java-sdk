@@ -1,3 +1,7 @@
+Version 4.15
+
+* IMPROVEMENT: Verification error code KEY-01 is now deprecated, certificate existence rule now returns GEN-02 instead of KEY-01.
+
 Version 4.14
 
 2019-04-18 4.14.193

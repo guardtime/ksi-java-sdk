@@ -51,6 +51,7 @@ public enum VerificationErrorCode {
     PUB_03("PUB-03", "Extender response input hash mismatch"),
     PUB_04("PUB-04", "Publication record hash and user provided publication hash mismatch"),
     PUB_05("PUB-05", "Publication record hash and publications file publication hash mismatch"),
+    @Deprecated
     KEY_01("KEY-01", "Certificate not found"),
     KEY_02("KEY-02", "PKI signature not verified with certificate"),
     KEY_03("KEY-03", "Signing certificate not valid at aggregation time"),

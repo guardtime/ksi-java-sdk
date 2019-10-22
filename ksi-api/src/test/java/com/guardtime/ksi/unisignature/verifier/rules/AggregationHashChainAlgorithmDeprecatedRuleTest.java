@@ -28,7 +28,7 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResultCode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static com.guardtime.ksi.Resources.SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRECATED_ALGORITHM;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_DEPRECATED_ALGORITHM;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_SHA1_AGGREGATION_LINK_OK;
 
@@ -54,7 +54,7 @@ public class AggregationHashChainAlgorithmDeprecatedRuleTest extends AbstractRul
 
     @Test
     public void testSignatureWithDeprecatedSha1AggregationChainsAlgorithms() throws Exception {
-        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGANTURE_AGGREGATION_HASH_CHAIN_DEPRECATED_ALGORITHM)));
+        RuleResult result = rule.verify(build(TestUtil.loadSignature(SIGNATURE_AGGREGATION_HASH_CHAIN_DEPRECATED_ALGORITHM)));
         Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
         Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.INT_15);
     }

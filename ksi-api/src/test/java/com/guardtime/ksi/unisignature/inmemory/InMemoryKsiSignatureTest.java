@@ -40,7 +40,7 @@ import java.util.Date;
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
 import static com.guardtime.ksi.Resources.RFC3161_MISSING_CHAIN_INDEXES;
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
-import static com.guardtime.ksi.Resources.SIGANTURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS;
 import static com.guardtime.ksi.Resources.SIGANTURE_CALENDAR_AUTH_BUT_NO_CALAENDAR;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_CHANGED_CHAIN_ORDER;
@@ -146,7 +146,7 @@ public class InMemoryKsiSignatureTest {
 
     @Test(expectedExceptions = InvalidSignatureException.class, expectedExceptionsMessageRegExp = "At least one aggregation chain required")
     public void testParseSignatureWithoutAggregationHashChains_ThrowsInvalidSignatureException() throws Exception {
-        TestUtil.loadSignature(SIGANTURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS);
+        TestUtil.loadSignature(SIGNATURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS);
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Invalid legacyId length")

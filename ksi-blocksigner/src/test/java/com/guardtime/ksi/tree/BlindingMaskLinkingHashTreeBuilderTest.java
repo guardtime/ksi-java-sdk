@@ -103,6 +103,21 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
         new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256,null, AbstractBlockSignatureTest.DATA_HASH_2);
     }
 
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Initialization vector can not be null")
+    public void testCreateTreeBuilderUsingNullInitializationVector2() {
+        new BlindingMaskLinkingHashTreeBuilder(null, AbstractBlockSignatureTest.DATA_HASH_2);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Previous block hash can not be null")
+    public void testCreateTreeBuilderUsingNullPreviousHash() {
+        new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256, INITIALIZATION_VECTOR, null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Previous block hash can not be null")
+    public void testCreateTreeBuilderUsingNullPreviousHash2() {
+        new BlindingMaskLinkingHashTreeBuilder(INITIALIZATION_VECTOR, null);
+    }
+
     @Test
     public void testUseTreeBuilderUsingInitializationVectorWithShortLength() {
         BlindingMaskLinkingHashTreeBuilder builder = new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256, new byte[16], DATA_HASH_2);
@@ -136,7 +151,6 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
     private BlindingMaskLinkingHashTreeBuilder createTreeBuilder() {
         return new BlindingMaskLinkingHashTreeBuilder(INITIALIZATION_VECTOR);
     }
-
     private void addAndBuild(BlindingMaskLinkingHashTreeBuilder builder, byte[] expectedRootHash) {
         for (int i = 0; i < 4; i++) {
             builder.add(new ImprintNode(DATA_HASH_2));

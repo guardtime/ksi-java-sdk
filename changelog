@@ -1,5 +1,6 @@
 Version 4.15
 
+* BUGFIX: BlindingMaskLinkingHashTreeBuilder now checks previous block hash existence.
 * IMPROVEMENT: Verification error code KEY-01 is now deprecated, certificate existence rule now returns GEN-02 instead of KEY-01.
 * BUGFIX: Fixed a bug where chain index existence was not verified during signature parsing.
 * IMPROVEMENT: Removed PDU V1 support.

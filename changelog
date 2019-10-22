@@ -1,5 +1,8 @@
-Version 4.14
+Version 4.15
+
 * IMPROVEMENT: BlindingMaskLinkingHashTreeBuilder no longer throws exception but instead logs warning if IV is shorter than the output of the hash algorithm.
+
+Version 4.14
 
 2019-04-18 4.14.193
 

@@ -90,6 +90,7 @@ public class Resources {
     public static final String RFC3161_SHA1_INPUT_HASH_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-input-hash-has-deprecated-algorithm.tlv";
     public static final String RFC3161_SHA1_SIG_ATR_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-sig-attr-algo-has-deprecated-algorithm.tlv";
     public static final String RFC3161_SHA1_TST_ALGORITHM_2017 = INTERNAL_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-tst-info-algo-has-deprecated-algorithm.tlv";
+    public static final String RFC3161_MISSING_CHAIN_INDEXES = INVALID_SIGNATURES_RFC3161_RECORD + "invalid-signature-rfc3161-all-chain-index-missing-tag.tlv";
     //Extended
     public static final String EXTENDED_SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2-extended.ksig";
     public static final String EXTENDED_SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14-extended.ksig";

@@ -1,5 +1,8 @@
-Version 4.14
+Version 4.15
+
 * BUGFIX: Fixed a bug where chain index existence was not verified during signature parsing.
+
+Version 4.14
 
 2019-04-18 4.14.193
 

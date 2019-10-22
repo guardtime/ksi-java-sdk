@@ -160,7 +160,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     public void testBlockSignerWithBlindingInterLinkingHashTreeBuilder() throws Exception {
         KsiBlockSigner blockSigner = new KsiBlockSignerBuilder()
                 .setKsiSigningClient(signerClient)
-                .setTreeBuilder(new BlindingMaskLinkingHashTreeBuilder(new byte[32], null)).build();
+                .setTreeBuilder(new BlindingMaskLinkingHashTreeBuilder(new byte[32])).build();
         // Up to 4 hashes with meta data could be added without exceeding max tree height 3.
         assertTrue(blockSigner.add(DATA_HASH_2));
         assertTrue(blockSigner.add(DATA_HASH_3));

@@ -224,7 +224,7 @@ public class Resources {
      * Aggregation responses
      */
     public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-legacy-id.tlv";
-    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-legacy-id-and-level-correction.tlv";
+    public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID_AND_LEVEL = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-legacy-id-and-level-correction.tlv";
     public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-metadata.tlv";
     public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA_AND_LEVEL  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-metadata-and-level-correction.tlv";
     public static final String AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH  = AGGREGATION_RESPONSES + "aggr-resp-left-link-with-sibling-hash.tlv";

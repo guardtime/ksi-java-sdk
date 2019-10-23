@@ -125,6 +125,24 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
     }
 
     @Test
+    public void testUseTreeBuilderUsingNonDefaultAlgorithm() {
+        BlindingMaskLinkingHashTreeBuilder builder = new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_384, new byte[HashAlgorithm.SHA2_384.getLength()], DATA_HASH_2);
+        addAndBuild(builder, Base16.decode("04CC98666C62339353D788197312F520ED5E09D94B318ABBD6C07D68A3E65BC0C1A84AC9AA112049A0F36BE32ED4E60AC4]"));
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm SHA3_384 is not implemented")
+    public void testUseTreeBuilderUsingNotImplementedAlgorithm() {
+        BlindingMaskLinkingHashTreeBuilder builder = new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA3_384, new byte[HashAlgorithm.SHA3_512.getLength()], DATA_HASH_2);
+        addAndBuild(builder, new byte[HashAlgorithm.SHA3_384.getLength()]);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since.*2016.*")
+    public void testUseTreeBuilderUsingNotTrustedAlgorithm() {
+        BlindingMaskLinkingHashTreeBuilder builder = new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA1, new byte[HashAlgorithm.SHA3_512.getLength()], DATA_HASH_2);
+        addAndBuild(builder, new byte[HashAlgorithm.SHA1.getLength()]);
+    }
+
+    @Test
     public void testUseTreeBuilderUsingInitializationVectorWithLongLength() {
         BlindingMaskLinkingHashTreeBuilder builder = new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256, new byte[200], DATA_HASH_2);
         addAndBuild(builder, Base16.decode("018D80F90876630372C2537FEE55C1E7375B5133F3CD9CCEBA6C140FAA2F532B91"));

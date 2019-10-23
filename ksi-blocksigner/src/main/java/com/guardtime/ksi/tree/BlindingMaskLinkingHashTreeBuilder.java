@@ -56,7 +56,7 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
 
     private static final Logger logger = LoggerFactory.getLogger(HashTreeBuilder.class);
     private static final long MASKED_NODE_LEVEL = 1;
-    private final HashTreeBuilder hashTreeBuilder = new HashTreeBuilder();
+    private final HashTreeBuilder hashTreeBuilder;
 
     private final byte[] initializationVector;
     private final HashAlgorithm hashAlgorithm;
@@ -120,6 +120,7 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
         this.hashAlgorithm = algorithm;
         this.initializationVector = Arrays.copyOf(initializationVector, initializationVector.length);
         this.previousBlockHash = previousBlockHash;
+        this.hashTreeBuilder = new HashTreeBuilder(algorithm);
     }
 
     /**

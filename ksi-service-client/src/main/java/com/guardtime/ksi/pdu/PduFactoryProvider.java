@@ -24,7 +24,6 @@ import com.guardtime.ksi.pdu.v2.ExtenderPduV2Factory;
 import com.guardtime.ksi.pdu.v2.PduV2Factory;
 import com.guardtime.ksi.service.ConfigurationListener;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +37,7 @@ public final class PduFactoryProvider {
 
     public static PduFactory get(PduVersion pduVersion) {
         if (!pduFactories.containsKey(pduVersion)) {
-            throw new IllegalArgumentException("Invalid PDU version '" + pduVersion + "'. Allowed values are> " + Arrays.toString(PduVersion.values()));
+            throw new IllegalArgumentException("Invalid PDU version '" + pduVersion + "'. Allowed values are: " + PduVersion.V2);
         }
         return pduFactories.get(pduVersion);
     }
@@ -59,6 +58,6 @@ public final class PduFactoryProvider {
             ExtenderPduV2Factory extenderPduV2Factory = new ExtenderPduV2Factory(extenderConfigurationListener);
             return new PduV2Factory(aggregatorPduV2Factory, extenderPduV2Factory);
         }
-        throw new IllegalArgumentException("Invalid PDU version '" + pduVersion + "'. Allowed values are: " + Arrays.toString(PduVersion.values()));
+        throw new IllegalArgumentException("Invalid PDU version '" + pduVersion + "'. Allowed values are: " + PduVersion.V2);
     }
 }

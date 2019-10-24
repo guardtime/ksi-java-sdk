@@ -1,5 +1,7 @@
 Version 4.15
 
+2019-10-24 4.15.198
+
 * BUGFIX: BlindingMaskLinkingHashTreeBuilder now checks previous block hash existence.
 * BUGFIX: Fixed a bug where chain index existence was not verified during signature parsing.
 * BUGFIX: BlindingMaskLinkingHashTreeBuilder is now internally using provided hashing algorithm.

@@ -88,8 +88,8 @@ public class AggregatorPduV2Factory extends AbstractPduV2Factory<AggregatorConfi
     List<TLVElement> getPayloadElements(ServiceCredentials credentials, TLVElement input, int payloadType) throws KSIException {
         Util.notNull(credentials, "ServiceCredentials");
         Util.notNull(input, "Input TLV");
-        if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_PDU_V1) {
-            throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator");
+        if (input.getType() != GlobalTlvTypes.ELEMENT_TYPE_AGGREGATION_RESPONSE_PDU_V2) {
+            throw new KSIProtocolException("Received unknown response to PDU v2 aggregation request.");
         }
         AggregationResponsePduV2 aggregationResponsePdu = new AggregationResponsePduV2(input, credentials);
         return aggregationResponsePdu.getPayloads(payloadType);

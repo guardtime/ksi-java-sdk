@@ -50,7 +50,7 @@ import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_2;
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_3;
 import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID;
-import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID_AND_LEVEL;
 import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA;
 import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA_AND_LEVEL;
 import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH;
@@ -160,7 +160,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
     public void testBlockSignerWithBlindingInterLinkingHashTreeBuilder() throws Exception {
         KsiBlockSigner blockSigner = new KsiBlockSignerBuilder()
                 .setKsiSigningClient(signerClient)
-                .setTreeBuilder(new BlindingMaskLinkingHashTreeBuilder(new byte[32], null)).build();
+                .setTreeBuilder(new BlindingMaskLinkingHashTreeBuilder(new byte[32])).build();
         // Up to 4 hashes with meta data could be added without exceeding max tree height 3.
         assertTrue(blockSigner.add(DATA_HASH_2));
         assertTrue(blockSigner.add(DATA_HASH_3));
@@ -276,7 +276,7 @@ public class KsiBlockSignerIntegrationTest extends AbstractCommonIntegrationTest
 
     @Test
     public void testRequestWithHashAndLevelResponseHasFirstLeftLinkWithLegacyId() throws Exception {
-        checkResponses(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL, 2, 5, true, 3);
+        checkResponses(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID_AND_LEVEL, 2, 5, true, 3);
 
     }
 

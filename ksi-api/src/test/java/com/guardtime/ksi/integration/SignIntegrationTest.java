@@ -58,7 +58,7 @@ import java.io.ByteArrayInputStream;
 import static com.guardtime.ksi.CommonTestUtil.load;
 import static com.guardtime.ksi.CommonTestUtil.loadFile;
 import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID;
-import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL;
+import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID_AND_LEVEL;
 import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA;
 import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_METADATA_AND_LEVEL;
 import static com.guardtime.ksi.Resources.AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_SIBLING_HASH;
@@ -243,7 +243,7 @@ public class SignIntegrationTest extends AbstractCommonIntegrationTest {
     /** Response with first left link that has legacy id and level correction */
     @Test
     public void testSigningWithLevelLeftLinkLegacyIdAndLevel() throws Exception {
-        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGADY_ID_AND_LEVEL)) {
+        try (KSI ksi_ = mockSigning(AGGREGATION_RESPONSE_FIRST_LINK_LEFT_WITH_LEGACY_ID_AND_LEVEL)) {
             KSISignature signature = ksi_.sign(new DataHash(HashAlgorithm.SHA2_256, new byte[HashAlgorithm.SHA2_256.getLength()]), 2);
             checkSignatureFirstLink(signature, 7L, true, 3);
         }

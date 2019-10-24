@@ -26,6 +26,9 @@ import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.util.Util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 
 /**
@@ -51,8 +54,9 @@ import java.util.Arrays;
  */
 public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNode> {
 
+    private static final Logger logger = LoggerFactory.getLogger(HashTreeBuilder.class);
     private static final long MASKED_NODE_LEVEL = 1;
-    private final HashTreeBuilder hashTreeBuilder = new HashTreeBuilder();
+    private final HashTreeBuilder hashTreeBuilder;
 
     private final byte[] initializationVector;
     private final HashAlgorithm hashAlgorithm;
@@ -72,7 +76,9 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
      * @throws NullPointerException     if one of the required input parameters is null.
      */
     public BlindingMaskLinkingHashTreeBuilder(byte[] initializationVector) {
-        this(com.guardtime.ksi.tree.Util.DEFAULT_AGGREGATION_ALGORITHM, initializationVector, null);
+        this(com.guardtime.ksi.tree.Util.DEFAULT_AGGREGATION_ALGORITHM, initializationVector,
+                new DataHash(com.guardtime.ksi.tree.Util.DEFAULT_AGGREGATION_ALGORITHM,
+                        new byte[com.guardtime.ksi.tree.Util.DEFAULT_AGGREGATION_ALGORITHM.getLength()]));
     }
 
     /**
@@ -99,8 +105,7 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
      * @param initializationVector initialization vector used to calculate masking nodes, must not be null. The length
      *                             of the initialization vector should be as long as the output of the hash
      *                             {@code algorithm}.
-     * @param previousBlockHash    previous block data hash used to calculate first blinding mask. In case this
-     *                             parameter is null a zero data hash is used to calculate the first blinding mask.
+     * @param previousBlockHash    previous block data hash used to calculate first blinding mask, must not be null.
      * @throws IllegalArgumentException if initializationVector length is not as long as the output of the
      *                                  {@code algorithm} hash algorithm.
      * @throws NullPointerException     if one of the required input parameters is null.
@@ -108,16 +113,14 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
     public BlindingMaskLinkingHashTreeBuilder(HashAlgorithm algorithm, byte[] initializationVector, DataHash previousBlockHash) {
         Util.notNull(algorithm, "HashAlgorithm");
         Util.notNull(initializationVector, "Initialization vector");
-        if (initializationVector.length != algorithm.getLength()) {
-            throw new IllegalArgumentException("Initialization vector should be as long as the output of the hash algorithm");
+        Util.notNull(previousBlockHash, "Previous block hash");
+        if (initializationVector.length < algorithm.getLength()) {
+            logger.warn("Initialization vector is shorter than the output of the hash algorithm.");
         }
         this.hashAlgorithm = algorithm;
         this.initializationVector = Arrays.copyOf(initializationVector, initializationVector.length);
-        if (previousBlockHash != null) {
-            this.previousBlockHash = new DataHash(previousBlockHash.getImprint());
-        } else {
-            this.previousBlockHash = new DataHash(algorithm, new byte[algorithm.getLength()]);
-        }
+        this.previousBlockHash = previousBlockHash;
+        this.hashTreeBuilder = new HashTreeBuilder(algorithm);
     }
 
     /**

@@ -22,6 +22,7 @@ package com.guardtime.ksi.tree;
 
 import com.guardtime.ksi.AbstractBlockSignatureTest;
 import com.guardtime.ksi.blocksigner.IdentityMetadata;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
@@ -41,7 +42,7 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
     private final DataHasher hasher = new DataHasher(HashAlgorithm.SHA2_256);
 
     @Test
-    public void testBlindingMasksCalculation() {
+    public void testBlindingMasksCalculation() throws KSIException {
         BlindingMaskLinkingHashTreeBuilder treeBuilder = new BlindingMaskLinkingHashTreeBuilder(INITIALIZATION_VECTOR, DATA_HASH);
         treeBuilder.add(
                 new ImprintNode(AbstractBlockSignatureTest.DATA_HASH_2),
@@ -81,7 +82,7 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
     }
 
     @Test
-    public void testCalculateHeight() {
+    public void testCalculateHeight() throws KSIException {
         BlindingMaskLinkingHashTreeBuilder builder = createTreeBuilder();
         builder.add(new ImprintNode(DATA_HASH_2));
         Assert.assertEquals(builder.calculateHeight(new ImprintNode(DATA_HASH_3)), 2);
@@ -119,43 +120,43 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
     }
 
     @Test
-    public void testUseTreeBuilderUsingInitializationVectorWithShortLength() {
+    public void testUseTreeBuilderUsingInitializationVectorWithShortLength() throws KSIException {
         BlindingMaskLinkingHashTreeBuilder builder = new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256, new byte[16], DATA_HASH_2);
         addAndBuild(builder, Base16.decode("01A0AA9C6859E051A6224EC3F2B65B1ACC7A6C2EA2EBFB83AD1E52BCADB3E1552B"));
     }
 
     @Test
-    public void testUseTreeBuilderUsingNonDefaultAlgorithm() {
+    public void testUseTreeBuilderUsingNonDefaultAlgorithm() throws KSIException {
         BlindingMaskLinkingHashTreeBuilder builder = new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_384, new byte[HashAlgorithm.SHA2_384.getLength()], DATA_HASH_2);
         addAndBuild(builder, Base16.decode("04CC98666C62339353D788197312F520ED5E09D94B318ABBD6C07D68A3E65BC0C1A84AC9AA112049A0F36BE32ED4E60AC4]"));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm SHA3_384 is not implemented")
-    public void testUseTreeBuilderUsingNotImplementedAlgorithm() {
+    public void testUseTreeBuilderUsingNotImplementedAlgorithm() throws KSIException {
         BlindingMaskLinkingHashTreeBuilder builder = new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA3_384, new byte[HashAlgorithm.SHA3_512.getLength()], DATA_HASH_2);
         addAndBuild(builder, new byte[HashAlgorithm.SHA3_384.getLength()]);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Hash algorithm SHA1 is marked deprecated since.*2016.*")
-    public void testUseTreeBuilderUsingNotTrustedAlgorithm() {
+    public void testUseTreeBuilderUsingNotTrustedAlgorithm() throws KSIException {
         BlindingMaskLinkingHashTreeBuilder builder = new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA1, new byte[HashAlgorithm.SHA3_512.getLength()], DATA_HASH_2);
         addAndBuild(builder, new byte[HashAlgorithm.SHA1.getLength()]);
     }
 
     @Test
-    public void testUseTreeBuilderUsingInitializationVectorWithLongLength() {
+    public void testUseTreeBuilderUsingInitializationVectorWithLongLength() throws KSIException {
         BlindingMaskLinkingHashTreeBuilder builder = new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256, new byte[200], DATA_HASH_2);
         addAndBuild(builder, Base16.decode("018D80F90876630372C2537FEE55C1E7375B5133F3CD9CCEBA6C140FAA2F532B91"));
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Node can not be null")
-    public void testAddNullNodeToHashBuilder() {
+    public void testAddNullNodeToHashBuilder() throws KSIException {
         BlindingMaskLinkingHashTreeBuilder builder = createTreeBuilder();
         builder.add((ImprintNode) null);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "ImprintNode with level greater than 0 is not supported by BlindingMaskLinkingHashTreeBuilder")
-    public void testAddNodeWithLevelTwoToHashBuilder() {
+    public void testAddNodeWithLevelTwoToHashBuilder() throws KSIException {
         BlindingMaskLinkingHashTreeBuilder builder = createTreeBuilder();
         builder.add(new ImprintNode(DATA_HASH_2, 2));
     }
@@ -166,10 +167,21 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
         builder.add(new ImprintNode(DATA_HASH_2), new IdentityMetadata("ClientId"));
     }
 
+    @Test
+    public void testUseCustomTreeBuilder() throws KSIException {
+        HashTreeBuilder treeBuilder = new HashTreeBuilder();
+        BlindingMaskLinkingHashTreeBuilder blindingMaskLinkingHashTreeBuilder =
+            new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256, INITIALIZATION_VECTOR, DATA_HASH, treeBuilder);
+        blindingMaskLinkingHashTreeBuilder.add(new ImprintNode(DATA_HASH_2));
+
+        Assert.assertEquals(blindingMaskLinkingHashTreeBuilder.build(), treeBuilder.build());
+    }
+
     private BlindingMaskLinkingHashTreeBuilder createTreeBuilder() {
         return new BlindingMaskLinkingHashTreeBuilder(INITIALIZATION_VECTOR);
     }
-    private void addAndBuild(BlindingMaskLinkingHashTreeBuilder builder, byte[] expectedRootHash) {
+
+    private void addAndBuild(BlindingMaskLinkingHashTreeBuilder builder, byte[] expectedRootHash) throws KSIException {
         for (int i = 0; i < 4; i++) {
             builder.add(new ImprintNode(DATA_HASH_2));
         }

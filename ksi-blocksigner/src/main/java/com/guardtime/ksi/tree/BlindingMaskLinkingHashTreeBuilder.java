@@ -21,11 +21,11 @@
 package com.guardtime.ksi.tree;
 
 import com.guardtime.ksi.blocksigner.IdentityMetadata;
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.util.Util;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,10 +54,10 @@ import java.util.Arrays;
  */
 public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNode> {
 
-    private static final Logger logger = LoggerFactory.getLogger(HashTreeBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(BlindingMaskLinkingHashTreeBuilder.class);
     private static final long MASKED_NODE_LEVEL = 1;
-    private final HashTreeBuilder hashTreeBuilder;
 
+    private final TreeBuilder<ImprintNode> treeBuilder;
     private final byte[] initializationVector;
     private final HashAlgorithm hashAlgorithm;
     private DataHash previousBlockHash;
@@ -111,16 +111,37 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
      * @throws NullPointerException     if one of the required input parameters is null.
      */
     public BlindingMaskLinkingHashTreeBuilder(HashAlgorithm algorithm, byte[] initializationVector, DataHash previousBlockHash) {
+        this(algorithm, initializationVector, previousBlockHash, new HashTreeBuilder(algorithm));
+    }
+
+    /**
+     * Creates an instance of {@link BlindingMaskLinkingHashTreeBuilder}.
+     *
+     * @param algorithm            hash algorithm used to calculate inner nodes of the hash tree, must not be null.
+     * @param initializationVector initialization vector used to calculate masking nodes, must not be null. The length
+     *                             of the initialization vector should be as long as the output of the hash
+     *                             {@code algorithm}.
+     * @param previousBlockHash    previous block data hash used to calculate first blinding mask, must not be null.
+     * @param treeBuilder          implementation of {@link TreeBuilder} to use when building the tree.
+     * @throws IllegalArgumentException if initializationVector length is not as long as the output of the
+     *                                  {@code algorithm} hash algorithm.
+     * @throws NullPointerException     if one of the required input parameters is null.
+     */
+    public BlindingMaskLinkingHashTreeBuilder(HashAlgorithm algorithm,
+                                              byte[] initializationVector,
+                                              DataHash previousBlockHash,
+                                              TreeBuilder<ImprintNode> treeBuilder) {
         Util.notNull(algorithm, "HashAlgorithm");
         Util.notNull(initializationVector, "Initialization vector");
         Util.notNull(previousBlockHash, "Previous block hash");
+        Util.notNull(treeBuilder, "Tree builder");
         if (initializationVector.length < algorithm.getLength()) {
             logger.warn("Initialization vector is shorter than the output of the hash algorithm.");
         }
         this.hashAlgorithm = algorithm;
         this.initializationVector = Arrays.copyOf(initializationVector, initializationVector.length);
         this.previousBlockHash = previousBlockHash;
-        this.hashTreeBuilder = new HashTreeBuilder(algorithm);
+        this.treeBuilder = treeBuilder;
     }
 
     /**
@@ -130,13 +151,13 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
      * @throws IllegalArgumentException if node level is greater than 0.
      */
     @Override
-    public void add(ImprintNode node) {
+    public void add(ImprintNode node) throws KSIException {
         Util.notNull(node, "Node");
         if (node.getLevel() != 0) {
             throw new IllegalArgumentException("ImprintNode with level greater than 0 is not supported by BlindingMaskLinkingHashTreeBuilder");
         }
         ImprintNode newNode = calculateNewNode(node);
-        hashTreeBuilder.add(newNode);
+        treeBuilder.add(newNode);
         previousBlockHash = new DataHash(newNode.getValue());
     }
 
@@ -157,9 +178,9 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
      * @throws IllegalArgumentException if node level is greater than 0.
      */
     @Override
-    public long calculateHeight(ImprintNode node) {
+    public long calculateHeight(ImprintNode node) throws KSIException {
         Util.notNull(node, "Node");
-        return hashTreeBuilder.calculateHeight(calculateNewNode(node));
+        return treeBuilder.calculateHeight(calculateNewNode(node));
     }
 
     /**
@@ -178,7 +199,7 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
      * @throws IllegalArgumentException if node level is greater than 0.
      **/
     @Override
-    public void add(ImprintNode... nodes) {
+    public void add(ImprintNode... nodes) throws KSIException {
         Util.notNull(nodes, "Nodes");
         for (ImprintNode node : nodes) {
             add(node);
@@ -189,8 +210,8 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
      * Builds the binary tree and returns the root hash of the tree.
      */
     @Override
-    public ImprintNode build() {
-        return hashTreeBuilder.build();
+    public ImprintNode build() throws KSIException {
+        return treeBuilder.build();
     }
 
     private ImprintNode calculateNewNode(ImprintNode node) {

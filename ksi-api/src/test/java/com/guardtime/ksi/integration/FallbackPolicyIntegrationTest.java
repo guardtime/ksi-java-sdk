@@ -25,7 +25,6 @@ import com.guardtime.ksi.hashing.DataHash;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.publication.PublicationData;
 import com.guardtime.ksi.publication.PublicationsFile;
-import com.guardtime.ksi.service.KSIExtendingService;
 import com.guardtime.ksi.service.KSIProtocolException;
 import com.guardtime.ksi.service.client.KSIClientException;
 import com.guardtime.ksi.service.client.KSIServiceCredentials;
@@ -49,11 +48,9 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.EXTENDER_RESPONSE_WITH_ERROR_AND_CALENDAR;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_WRONG_HASH;
-import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02;
+import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02_ONLY_AGGREGATION_HASH_CHAINS;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 
@@ -194,19 +191,6 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
-    public void testFallBackFromCalendarBasedPolicyToKeyBasedPolicyWithErrorResponseFromExtender_Ok() throws Exception {
-        CalendarBasedVerificationPolicy policy = new CalendarBasedVerificationPolicy();
-        KeyBasedVerificationPolicy fallbackPolicy = new KeyBasedVerificationPolicy();
-        policy.setFallbackPolicy(fallbackPolicy);
-
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2014_06_02);
-        KSIExtendingService mockedExtenderService = mockExtenderResponseCalendarHashCain(EXTENDER_RESPONSE_WITH_ERROR_AND_CALENDAR);
-
-        VerificationResult result = verify(ksi, mockedExtenderService, signature, policy, true);
-        checkFallBackVerificationResultWithException(result, true, 2, KSIProtocolException.class);
-    }
-
-    @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifierCreatesNewContextInCaseOfUsesContextAwarePolicy_Ok() throws Exception {
         KSISignature sig = loadSignature(EXTENDED_SIGNATURE_2017_03_14);
         ContextAwarePolicy policy = ContextAwarePolicyAdapter.createKeyPolicy(getPublicationsHandler(publicationsFileClient));
@@ -217,7 +201,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifyContextAwarePolicyAndPolicyFallbackMix_Ok() throws Exception {
-        KSISignature sig = loadSignature(SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS);
+        KSISignature sig = loadSignature(SIGNATURE_2014_06_02_ONLY_AGGREGATION_HASH_CHAINS);
 
         Policy policy = new KeyBasedVerificationPolicy();
         Policy fallbackPolicy = ContextAwarePolicyAdapter.createUserProvidedPublicationPolicy(

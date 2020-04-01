@@ -117,7 +117,7 @@ public class PduV2FactoryTest {
         pduFactory.readAggregationResponse(new KSIRequestContext(8530358545345979581L, 42L, 42L), CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-with-error.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received unknown response to PDU v2 aggregation request.")
     public void testReadV2AggregationResponse() throws Exception {
         pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("aggregation-203-error.tlv"));
     }
@@ -179,7 +179,7 @@ public class PduV2FactoryTest {
         pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-missing-mac.tlv"));
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received unknown response to PDU v2 extension request.")
     public void testReadV2ExtensionResponse() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
     }
@@ -428,7 +428,7 @@ public class PduV2FactoryTest {
         Assert.assertEquals(response.getParents().size(), 3);
     }
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Aggregator")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received unknown response to PDU v2 aggregation request.")
     public void testReadV1AggregatorConfigurationResponse() throws Exception {
         pduFactory.readAggregatorConfigurationResponse(requestContext, CREDENTIALS, loadTlv("aggregation-203-error.tlv"));
     }
@@ -465,7 +465,7 @@ public class PduV2FactoryTest {
     }
 
 
-    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender")
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Received unknown response to PDU v2 extension request.")
     public void testReadV1ExtensionConfigurationResponse() throws Exception {
         pduFactory.readExtenderConfigurationResponse(CREDENTIALS, loadTlv("pdu/extension/extension-response-v1-ok-request-id-4321.tlv"));
     }

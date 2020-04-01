@@ -37,7 +37,6 @@ import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -46,11 +45,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.guardtime.ksi.CommonTestUtil.load;
-import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.TEST_GROUP_INTEGRATION;
-import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.addToList;
-import static com.guardtime.ksi.integration.AbstractCommonIntegrationTest.loadExtenderSettings;
 
-public class SharedVerificationIntegrationTest {
+public class SharedVerificationIntegrationTest extends AbstractCommonIntegrationTest {
     protected static final String INTERNAL_POLICY_SIGNATURES = "INTERNAL_POLICY_SIGNATURES";
     protected static final String INVALID_SIGNATURES = "INVALID_SIGNATURES";
     protected static final String POLICY_VERIFICATION_SIGNATURES = "POLICY_VERIFICATION_SIGNATURES";
@@ -170,9 +166,13 @@ public class SharedVerificationIntegrationTest {
 
         if (testData.getAction().equals(IntegrationTestAction.FAIL_AT_PARSING)) {
             try {
-                ksi.read(new File(testData.getTestFile()));
-                throw new IntegrationTestFailureException("Did not fail at parinsg while expected to. " + testData.toString());
+                ksi.read(load(testData.getTestFile()));
+                throw new IntegrationTestFailureException("Did not fail at parsing while expected to. " + testData.toString());
             } catch (KSIException e) {
+                if (e.getCause() != null) {
+                    //All exceptions from TLV parser are KSIExceptions and do not have another cause.
+                    throw e;
+                }
                 return;
             }
         }

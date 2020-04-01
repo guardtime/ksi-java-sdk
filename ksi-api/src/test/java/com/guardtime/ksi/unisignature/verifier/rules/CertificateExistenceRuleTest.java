@@ -54,8 +54,8 @@ public class CertificateExistenceRuleTest {
     public void testWhenCertificateNotPresentThenRuleReturnsFailedStatus_Ok() throws Exception {
         Mockito.when(context.getCertificate(Mockito.any(byte[].class))).thenReturn(null);
         RuleResult result = rule.verify(context);
-        Assert.assertEquals(result.getResultCode(), VerificationResultCode.FAIL);
-        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.KEY_01);
+        Assert.assertEquals(result.getResultCode(), VerificationResultCode.NA);
+        Assert.assertEquals(result.getErrorCode(), VerificationErrorCode.GEN_02);
     }
 
     @Test

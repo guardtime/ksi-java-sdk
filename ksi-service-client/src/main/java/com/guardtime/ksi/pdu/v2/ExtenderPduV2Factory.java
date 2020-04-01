@@ -93,8 +93,8 @@ public class ExtenderPduV2Factory extends AbstractPduV2Factory<ExtenderConfigura
     List<TLVElement> getPayloadElements(ServiceCredentials credentials, TLVElement input, int payloadType) throws KSIException {
         Util.notNull(credentials, "ServiceCredentials");
         Util.notNull(input, "Input TLV");
-        if (input.getType() == GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_PDU_V1) {
-            throw new KSIProtocolException("Received PDU v1 response to PDU v2 request. Configure the SDK to use PDU v1 format for the given Extender");
+        if (input.getType() != GlobalTlvTypes.ELEMENT_TYPE_EXTENSION_RESPONSE_PDU_V2) {
+            throw new KSIProtocolException("Received unknown response to PDU v2 extension request.");
         }
         ExtensionResponsePduV2 pdu = new ExtensionResponsePduV2(input, credentials);
         return pdu.getPayloads(payloadType);

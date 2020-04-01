@@ -38,8 +38,9 @@ import java.io.InputStream;
 import java.util.Date;
 
 import static com.guardtime.ksi.CommonTestUtil.loadTlv;
+import static com.guardtime.ksi.Resources.RFC3161_MISSING_CHAIN_INDEXES;
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
-import static com.guardtime.ksi.Resources.SIGANTURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS;
+import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS;
 import static com.guardtime.ksi.Resources.SIGANTURE_CALENDAR_AUTH_BUT_NO_CALAENDAR;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_AGGREGATION_HASH_CHAIN_CHANGED_CHAIN_ORDER;
@@ -128,6 +129,11 @@ public class InMemoryKsiSignatureTest {
         TestUtil.loadSignature(SIGNATURE_WITH_CAL_AUTH_AND_PUB_REC);
     }
 
+    @Test(expectedExceptions = InvalidSignatureRFC3161RecordException.class, expectedExceptionsMessageRegExp = "RFC3161 record chain index is null")
+    public void testParseSignatureWithRfc3161RecordIsMissingChainIndex() throws Exception {
+        TestUtil.loadSignature(RFC3161_MISSING_CHAIN_INDEXES);
+    }
+
     @Test(expectedExceptions = InvalidSignatureException.class, expectedExceptionsMessageRegExp = "Found calendar authentication record without calendar hash chain")
     public void testParseSignatureWithPublicationRecordAndWithoutCalendarHashChain_ThrowsInvalidSignatureException() throws Exception {
         TestUtil.loadSignature(SIGNATURE_PUBLICATION_RECORD_BUT_NO_CALENDAR);
@@ -140,7 +146,7 @@ public class InMemoryKsiSignatureTest {
 
     @Test(expectedExceptions = InvalidSignatureException.class, expectedExceptionsMessageRegExp = "At least one aggregation chain required")
     public void testParseSignatureWithoutAggregationHashChains_ThrowsInvalidSignatureException() throws Exception {
-        TestUtil.loadSignature(SIGANTURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS);
+        TestUtil.loadSignature(SIGNATURE_AGGREGATION_HASH_CHAIN_NO_AGGREGATION_CHAINS);
     }
 
     @Test(expectedExceptions = InvalidAggregationHashChainException.class, expectedExceptionsMessageRegExp = "Invalid legacyId length")

@@ -22,7 +22,6 @@ package com.guardtime.ksi.tree;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
-import com.guardtime.ksi.util.Base16;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -137,95 +136,5 @@ public class HashTreeBuilderTest {
             }
             builder.add(node);
         }
-    }
-    
-    @Test
-    public void testRootHashFromFourLeaves() {
-
-        //                  016587e3 2
-        //          / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
-        //       01f50610 1                01f50610 1
-        //     / ‾‾‾‾‾‾‾‾‾‾ \            / ‾‾‾‾‾‾‾‾‾‾ \
-        //  01000000 0   01000000 0   01000000 0   01000000 0
-
-    	byte[] imprint = Base16.decode("016587e39a15423f3918a862d0eab2723cf7f5d19c33c30beff407e100dedc1339");
-    	for (byte i = 0; i < 4; ++i) {
-    		builder.add(node);
-    	}
-    	assertEquals(builder.build().getValue(), imprint);
-    }
-
-    @Test
-    public void testRootHashFromFiveLeaves() {
-
-    	//                                01ddef63 3
-    	//                     / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
-        //                  016587e3 2                          \
-        //          / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \                  \
-        //       01f50610 1                01f50610 1             \
-        //     / ‾‾‾‾‾‾‾‾‾‾ \            / ‾‾‾‾‾‾‾‾‾‾ \            \
-        //  01000000 0   01000000 0   01000000 0   01000000 0   01000000 0
-
-    	byte[] imprint = Base16.decode("01ddef6393b78840eb6335ee550ff81b7d806cfc7cfb6d32df8fbf69f2498f6db0");
-    	for (byte i = 0; i < 5; ++i) {
-    		builder.add(node);
-    	}
-    	assertEquals(builder.build().getValue(), imprint);
-    }
-
-    @Test
-    public void testRootHashFromSixLeaves() {
-
-    	//                                    01dc57fb 3
-    	//                     / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
-        //                  016587e3 2                                 \
-        //          / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \                         \
-        //       01f50610 1                01f50610 1                01f50610 1
-        //     / ‾‾‾‾‾‾‾‾‾‾ \            / ‾‾‾‾‾‾‾‾‾‾ \            / ‾‾‾‾‾‾‾‾‾‾ \
-        //  01000000 0   01000000 0   01000000 0   01000000 0   01000000 0   01000000 0
-
-    	byte[] imprint = Base16.decode("01dc57fb3d7dc4c72adc777062b3374d8b2e74bc8395691bc810a1d324f7f11d02");
-    	for (byte i = 0; i < 6; ++i) {
-    		builder.add(node);
-    	}
-    	assertEquals(builder.build().getValue(), imprint);
-    }
-
-    @Test
-    public void testRootHashFromSevenLeaves() {
-
-    	//                                         01815d3e 3
-    	//                     / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \ 
-        //                  016587e3 2                                       01e4c3b3 2
-        //          / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \                         / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
-        //       01f50610 1                01f50610 1                01f50610 1             \
-        //     / ‾‾‾‾‾‾‾‾‾‾ \            / ‾‾‾‾‾‾‾‾‾‾ \            / ‾‾‾‾‾‾‾‾‾‾ \            \
-        //  01000000 0   01000000 0   01000000 0   01000000 0   01000000 0   01000000 0   01000000 0
-
-    	byte[] imprint = Base16.decode("01815d3e92c2c2c99b650d849b950a7d0080bd9a5ed24a3dff4c9423b976b3fd5c");
-    	for (byte i = 0; i < 7; ++i) {
-    		builder.add(node);
-    	}
-    	assertEquals(builder.build().getValue(), imprint);
-    }
-
-    @Test
-    public void testRootHashFromTwelveLeaves() {
-        // Too big to draw...
-    	byte[] imprint = Base16.decode("0148604b7e776b7d265457c835cb747fb24a6990c1fceadef19e74db5f4405ca01");
-    	for (byte i = 0; i < 12; ++i) {
-    		builder.add(node);
-    	}
-    	assertEquals(builder.build().getValue(), imprint);
-    }
-
-    @Test
-    public void testRootHashFromThirteenLeaves() {
-        // Too big to draw...
-    	byte[] imprint = Base16.decode("01a8ede9ea0c5d5665e19f7b94ff3dc4e55f88dca6c71a1eba0c79b8ee2d3d81fd");
-    	for (byte i = 0; i < 13; ++i) {
-    		builder.add(node);
-    	}
-    	assertEquals(builder.build().getValue(), imprint);
     }
 }

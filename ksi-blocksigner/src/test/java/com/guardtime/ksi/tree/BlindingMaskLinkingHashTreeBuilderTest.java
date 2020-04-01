@@ -28,7 +28,6 @@ import com.guardtime.ksi.hashing.DataHasher;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.util.Base16;
 import com.guardtime.ksi.util.Util;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -45,8 +44,8 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
     public void testBlindingMasksCalculation() throws KSIException {
         BlindingMaskLinkingHashTreeBuilder treeBuilder = new BlindingMaskLinkingHashTreeBuilder(INITIALIZATION_VECTOR, DATA_HASH);
         treeBuilder.add(
-                new ImprintNode(AbstractBlockSignatureTest.DATA_HASH_2),
-                new ImprintNode(AbstractBlockSignatureTest.DATA_HASH_3)
+            new ImprintNode(AbstractBlockSignatureTest.DATA_HASH_2),
+            new ImprintNode(AbstractBlockSignatureTest.DATA_HASH_3)
         );
 
         ImprintNode root = treeBuilder.build();
@@ -96,17 +95,32 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "HashAlgorithm can not be null")
     public void testCreateTreeBuilderUsingNullHashAlgorithm() {
-        new BlindingMaskLinkingHashTreeBuilder(null,INITIALIZATION_VECTOR, AbstractBlockSignatureTest.DATA_HASH_2);
+        new BlindingMaskLinkingHashTreeBuilder(null, INITIALIZATION_VECTOR, AbstractBlockSignatureTest.DATA_HASH_2);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "HashAlgorithm can not be null")
+    public void testCreateTreeBuilderUsingNullHashAlgorithm2() {
+        new BlindingMaskLinkingHashTreeBuilder(null, INITIALIZATION_VECTOR, DATA_HASH_2, new HashTreeBuilder());
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Initialization vector can not be null")
     public void testCreateTreeBuilderUsingNullInitializationVector() {
-        new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256,null, AbstractBlockSignatureTest.DATA_HASH_2);
+        new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256, null, AbstractBlockSignatureTest.DATA_HASH_2);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Initialization vector can not be null")
     public void testCreateTreeBuilderUsingNullInitializationVector2() {
         new BlindingMaskLinkingHashTreeBuilder(null, AbstractBlockSignatureTest.DATA_HASH_2);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Initialization vector can not be null")
+    public void testCreateTreeBuilderUsingNullInitializationVector3() {
+        new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256, null, DATA_HASH_2, new HashTreeBuilder());
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Initialization vector can not be null")
+    public void testCreateTreeBuilderUsingNullInitializationVector4() {
+        new BlindingMaskLinkingHashTreeBuilder(null);
     }
 
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Previous block hash can not be null")
@@ -117,6 +131,11 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
     @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Previous block hash can not be null")
     public void testCreateTreeBuilderUsingNullPreviousHash2() {
         new BlindingMaskLinkingHashTreeBuilder(INITIALIZATION_VECTOR, null);
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Previous block hash can not be null")
+    public void testCreateTreeBuilderUsingNullPreviousHash3() {
+        new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256, INITIALIZATION_VECTOR, null, new HashTreeBuilder());
     }
 
     @Test
@@ -175,6 +194,11 @@ public class BlindingMaskLinkingHashTreeBuilderTest {
         blindingMaskLinkingHashTreeBuilder.add(new ImprintNode(DATA_HASH_2));
 
         Assert.assertEquals(blindingMaskLinkingHashTreeBuilder.build(), treeBuilder.build());
+    }
+
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = "Tree builder can not be null")
+    public void testCustomTreeBuilderIsNull() {
+        new BlindingMaskLinkingHashTreeBuilder(HashAlgorithm.SHA2_256, INITIALIZATION_VECTOR, DATA_HASH, null);
     }
 
     private BlindingMaskLinkingHashTreeBuilder createTreeBuilder() {

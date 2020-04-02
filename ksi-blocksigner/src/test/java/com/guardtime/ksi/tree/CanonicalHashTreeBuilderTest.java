@@ -26,6 +26,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
+import static com.guardtime.ksi.tree.Util.DEFAULT_AGGREGATION_ALGORITHM;
+import static com.guardtime.ksi.tree.Util.hash;
 import static org.testng.Assert.assertEquals;
 
 public class CanonicalHashTreeBuilderTest {
@@ -127,5 +129,18 @@ public class CanonicalHashTreeBuilderTest {
             builder.add(node);
         }
         assertEquals(builder.build().getValue(), imprint);
+    }
+
+    @Test
+    public void testDefaultConstructor() {
+        CanonicalHashTreeBuilder treeBuilder = new CanonicalHashTreeBuilder();
+        treeBuilder.add(node, node);
+
+        // hashing here so test won't break once default algorithm changes
+        byte[] expected = hash(
+                DEFAULT_AGGREGATION_ALGORITHM, node.getValue(), node.getValue(), node.getLevel() + 1
+        ).getImprint();
+
+        assertEquals(treeBuilder.build().getValue(), expected);
     }
 }

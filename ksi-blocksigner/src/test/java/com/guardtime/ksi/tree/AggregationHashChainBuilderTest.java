@@ -83,15 +83,13 @@ public class AggregationHashChainBuilderTest {
     @Test
     public void testCreateAggregationHashChainFromTreeLeafWithoutMetadata_Ok() throws Exception {
 
-        /*                                 5A848EE
-                             / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
-                          5950DCA                           D4F6E36
-                    / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \                        / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
-                 C9AF37D              \                  /              \
-                 /    \                \                /                \
-            580192B  8D982C6        14F9189          680192B           9D982C6
-        */
-
+        //                             015A848E 3
+        //                  / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
+        //               015950DC 2                       01D4F6E3 2
+        //          / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \                / ‾‾‾‾‾‾‾‾‾‾ \
+        //       01C9AF37 1             \              /              \
+        //     / ‾‾‾‾‾‾‾‾‾‾ \            \            /                \
+        //  01580192 0   018D982C 0   0114F918 1   01680192 1       019D982C 1
 
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_WITH_LEVEL_CORRECTION_3);
         Map<ImprintNode, IdentityMetadata> nodes = new LinkedHashMap<>();
@@ -107,14 +105,14 @@ public class AggregationHashChainBuilderTest {
 
     @Test
     public void testCreateAggregationHashChainFromTreeLeafWithMetadata_Ok() throws Exception {
-       /*                               5A848EE
-                                 /‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\
-                           014024AA 1                 \
-                    /‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\                 \
-                 0178BAFB 1            01979985          \
-               /‾‾‾‾‾‾‾‾‾‾\             /‾‾‾‾‾‾‾‾‾‾‾‾\           \
-          04000000       test3   02000000 1   test2    05000000 4
-        */
+
+        //                             01F811B1 5
+        //                   / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
+        //                014024AA 3                       \
+        //          / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \                 \
+        //       0178BAFB 1            01979985 2            \
+        //     / ‾‾‾‾‾‾‾‾‾‾ \        / ‾‾‾‾‾‾‾‾‾‾ \           \
+        //  04000000 0    test3   02000000 1    test2...   05000000 4
 
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_WITH_LEVEL_CORRECTION_5);
         Map<ImprintNode, IdentityMetadata> input = new LinkedHashMap<>();
@@ -148,11 +146,11 @@ public class AggregationHashChainBuilderTest {
 
     @Test
     public void testCreateAggregationHashChainWithHeight1FromTreeLeafWithMetadata_Ok() throws Exception {
-        /*
-               01E4EE0B 1
-               /‾‾‾‾‾‾‾‾‾‾\
-          01000000       test1
-         */
+
+        //       01E4EE0B 1
+        //     / ‾‾‾‾‾‾‾‾‾‾ \
+        //  01000000 0    test1
+
         KSISignature signature = TestUtil.loadSignature(SIGNATURE_WITH_LEVEL_CORRECTION_1);
         ImprintNode node = new ImprintNode(
                 new DataHash(Base16.decode("010000000000000000000000000000000000000000000000000000000000000000")),

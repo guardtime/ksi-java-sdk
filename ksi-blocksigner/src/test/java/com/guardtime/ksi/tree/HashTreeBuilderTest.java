@@ -22,6 +22,7 @@ package com.guardtime.ksi.tree;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -136,5 +137,4 @@ public class HashTreeBuilderTest {
             builder.add(node);
         }
     }
-
 }

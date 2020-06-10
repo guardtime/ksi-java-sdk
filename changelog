@@ -1,3 +1,7 @@
+Version 4.16
+
+* IMPROVEMENT: Changed BouncyCastle version to 1.65
+
 Version 4.15
 
 2019-10-24 4.15.198

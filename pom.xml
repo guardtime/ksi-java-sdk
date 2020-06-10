@@ -69,7 +69,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<slf4j.version>1.7.12</slf4j.version>
-		<bouncycastle.version>1.52</bouncycastle.version>
+		<bouncycastle.version>1.65</bouncycastle.version>
 		<jacoco.version>0.7.9</jacoco.version>
 	</properties>
 

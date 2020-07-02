@@ -22,6 +22,7 @@ package com.guardtime.ksi.tree;
 
 import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.DataHash;
+import com.guardtime.ksi.util.Base16;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -66,6 +67,40 @@ public class HashTreeBuilderTest {
     }
 
     @Test
+    public void testRootHashFromFiveLeaves() {
+
+        //                    01292ad3 3
+        //            / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
+        //           /                     016587e3 2
+        //          /               /‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
+        //         /           01f50610 1                01f50610 1
+        //        /          / ‾‾‾‾‾‾‾‾‾‾ \            / ‾‾‾‾‾‾‾‾‾‾ \
+        //  01000000 0  01000000 0   01000000 0   01000000 0   01000000 0
+
+        byte[] imprint = Base16.decode("01292ad3e983ee04db4bd23bfb8eb8e34af381b5b6b0aea12afec7ce5c2982d17c");
+        for (byte i = 0; i < 5; ++i) {
+            builder.add(node);
+        }
+        assertEquals(builder.build().getValue(), imprint);
+    }
+
+    @Test
+    public void testRootHashFromFourLeaves() {
+
+        //                  016587e3 2
+        //          / ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾ \
+        //       01f50610 1                01f50610 1
+        //     / ‾‾‾‾‾‾‾‾‾‾ \            / ‾‾‾‾‾‾‾‾‾‾ \
+        //  01000000 0   01000000 0   01000000 0   01000000 0
+
+        byte[] imprint = Base16.decode("016587e39a15423f3918a862d0eab2723cf7f5d19c33c30beff407e100dedc1339");
+        for (byte i = 0; i < 4; ++i) {
+            builder.add(node);
+        }
+        assertEquals(builder.build().getValue(), imprint);
+    }
+
+    @Test
     public void testCreateTreeWithOneLeaf() {
         builder.add(node);
         ImprintNode root = builder.build();
@@ -87,12 +122,12 @@ public class HashTreeBuilderTest {
 
     @Test
     public void testCreateTreeWithMetadataLeaf() throws KSIException {
-        builder.add(node, IDENTITY_METADATA);
+        builder.add(node3, IDENTITY_METADATA);
         builder.add(node2);
         ImprintNode root = builder.build();
         assertNotNull(root);
-        assertEquals(root.getLevel(), 2);
-        assertTrue(node.getParent().getRightChildNode() instanceof MetadataNode);
+        assertEquals(root.getLevel(), 3);
+        assertTrue(root.getRightChildNode().getRightChildNode() instanceof MetadataNode);
     }
 
     @Test

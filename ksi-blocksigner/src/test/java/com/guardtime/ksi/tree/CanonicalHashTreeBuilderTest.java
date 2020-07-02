@@ -20,25 +20,35 @@
 
 package com.guardtime.ksi.tree;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.hashing.HashAlgorithm;
 import com.guardtime.ksi.util.Base16;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_2;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.DATA_HASH_3;
+import static com.guardtime.ksi.AbstractBlockSignatureTest.IDENTITY_METADATA;
 import static com.guardtime.ksi.tree.Util.DEFAULT_AGGREGATION_ALGORITHM;
 import static com.guardtime.ksi.tree.Util.hash;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 public class CanonicalHashTreeBuilderTest {
 
     private CanonicalHashTreeBuilder builder;
     private ImprintNode node;
+    private ImprintNode node2;
+    private ImprintNode node3;
 
     @BeforeMethod
     public void setUp() {
         this.builder = new CanonicalHashTreeBuilder(HashAlgorithm.SHA2_256);
         this.node = new ImprintNode(DATA_HASH);
+        this.node2 = new ImprintNode(DATA_HASH_2);
+        this.node3 = new ImprintNode(DATA_HASH_3, 1);
     }
 
     @Test
@@ -143,4 +153,21 @@ public class CanonicalHashTreeBuilderTest {
 
         assertEquals(treeBuilder.build().getValue(), expected);
     }
+
+    @Test
+    public void testCalculateCanonicalTreeHeightWithMultipleLeafsAndSubtrees() {
+        builder.add(node, node2, node3, node, node3, node2);
+        assertEquals(builder.calculateHeight(node2), 4);
+    }
+
+    @Test
+    public void testCreateCanonicalTreeWithMetadataLeaf() throws KSIException {
+        builder.add(node3, IDENTITY_METADATA);
+        builder.add(node2);
+        ImprintNode root = builder.build();
+        assertNotNull(root);
+        assertEquals(root.getLevel(), 3);
+        assertTrue(root.getLeftChildNode().getRightChildNode() instanceof MetadataNode);
+    }
+
 }

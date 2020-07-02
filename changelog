@@ -1,5 +1,7 @@
 Version 4.16
 
+2020-07-02 4.16.205
+
 * FEATURE: Add support for building canonical Merkle trees.
 * IMPROVEMENT: Changed BouncyCastle version to 1.65.
 

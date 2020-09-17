@@ -55,7 +55,7 @@ import java.util.Arrays;
 public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNode> {
 
     private static final Logger logger = LoggerFactory.getLogger(BlindingMaskLinkingHashTreeBuilder.class);
-    private static final long MASKED_NODE_LEVEL = 1;
+    protected static final long MASKED_NODE_LEVEL = 1;
 
     private final TreeBuilder<ImprintNode> treeBuilder;
     private final byte[] initializationVector;
@@ -214,14 +214,14 @@ public class BlindingMaskLinkingHashTreeBuilder implements TreeBuilder<ImprintNo
         return treeBuilder.build();
     }
 
-    private ImprintNode calculateNewNode(ImprintNode node) {
+    protected ImprintNode calculateNewNode(ImprintNode node) {
         ImprintNode mask = calculateBlindingMaskNode();
         DataHash newLeafNodeDataHash = com.guardtime.ksi.tree.Util.hash(
                 hashAlgorithm, mask.getValue(), node.getValue(), MASKED_NODE_LEVEL);
         return new ImprintNode(mask, node, newLeafNodeDataHash, MASKED_NODE_LEVEL);
     }
 
-    private ImprintNode calculateBlindingMaskNode() {
+    protected ImprintNode calculateBlindingMaskNode() {
         DataHasher hasher = new DataHasher(hashAlgorithm);
         hasher.addData(previousBlockHash.getImprint()).addData(initializationVector);
         return new ImprintNode(hasher.getHash());

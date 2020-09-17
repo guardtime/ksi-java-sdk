@@ -197,7 +197,7 @@ public class HashTreeBuilder implements TreeBuilder<ImprintNode> {
         long newLevel = Math.max(left.getLevel(), right.getLevel()) + 1;
         logger.debug("Aggregating. Left {}(level={}), right {}(level={}), newLevel={}", left.getValue(), left.getLevel(), right.getValue(), right.getLevel(), newLevel);
         DataHash nodeHash = com.guardtime.ksi.tree.Util.hash(algorithm, left.getValue(), right.getValue(), newLevel);
-        logger.info("Aggregation result {}(level={})", nodeHash, newLevel);
+        logger.debug("Aggregation result {}(level={})", nodeHash, newLevel);
         return new ImprintNode(left, right, nodeHash, newLevel);
     }
 

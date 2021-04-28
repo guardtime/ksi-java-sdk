@@ -1,6 +1,7 @@
 Version 4.17
 
 * IMPROVEMENT: Changed BouncyCastle version to 1.68.
+* IMPROVEMENT: Changed commons-io version to 2.7.
 
 Version 4.16
 

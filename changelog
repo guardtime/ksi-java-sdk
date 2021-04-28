@@ -1,5 +1,6 @@
 Version 4.17
 
+* IMPROVEMENT: Removed support for Java 7.
 * IMPROVEMENT: Changed BouncyCastle version to 1.68.
 * IMPROVEMENT: Changed commons-io version to 2.7.
 

@@ -68,6 +68,13 @@ public class DataHasher {
     private MessageDigest messageDigest;
     private DataHash outputHash = null;
 
+    static {
+        String provider = BouncyCastleProvider.PROVIDER_NAME;
+        if (Security.getProvider(provider) == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
+
     /**
      * Creates new data hasher for specified algorithm.
      *
@@ -91,7 +98,6 @@ public class DataHasher {
      */
     public DataHasher(HashAlgorithm algorithm, boolean checkExpiration) {
         Util.notNull(algorithm, "Hash algorithm");
-
         /*
             If an algorithm is given which is not implemented, an
             HashAlgorithmNotImplementedException is thrown.
@@ -104,20 +110,11 @@ public class DataHasher {
         if (checkExpiration) {
             algorithm.checkExpiration();
         }
-
         this.algorithm = algorithm;
-
-        String provider = BouncyCastleProvider.PROVIDER_NAME;
-        if (Security.getProvider(provider) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
-
         try {
-            messageDigest = MessageDigest.getInstance(algorithm.getName(), provider);
+            messageDigest = MessageDigest.getInstance(algorithm.getName());
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException("Hash algorithm not supported: " + algorithm.getName());
-        } catch (NoSuchProviderException e) {
-            throw new IllegalArgumentException("Cryptographic provider not found: " + provider, e);
         }
     }
 

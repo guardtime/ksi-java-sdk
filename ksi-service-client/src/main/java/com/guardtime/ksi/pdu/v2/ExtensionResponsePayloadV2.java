@@ -68,6 +68,9 @@ class ExtensionResponsePayloadV2 extends TLVStructure implements ExtensionRespon
                     verifyCriticalFlag(child);
             }
         }
+        if (status == null) {
+            throw new KSIProtocolException("Response invalid: exactly one status code must exist in extension response payload");
+        }
         if (status != 0) {
             throw new KSIProtocolException(status,"Error was returned by server. Error status is 0x" + Long.toHexString(status) + ". Error message from server: '" + errorMessage + "'");
         }

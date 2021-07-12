@@ -53,13 +53,10 @@ class KSITCPClient implements Closeable {
         this.connector = createConnector();
     }
 
-    Future<TLVElement> sendRequest(InputStream request) throws KSITCPTransactionException {
-        synchronized (this) {
-            if (tcpSession == null || tcpSession.isClosing()) {
-                this.tcpSession = createTcpSession();
-            }
+    synchronized Future<TLVElement> sendRequest(InputStream request) throws KSITCPTransactionException {
+        if (tcpSession == null || tcpSession.isClosing()) {
+            this.tcpSession = createTcpSession();
         }
-
         try {
             return new KSITCPRequestFuture(request, tcpSession,
                     TimeUnit.SECONDS.toMillis(tcpClientSettings.getTcpTransactionTimeoutSec()));
@@ -69,7 +66,7 @@ class KSITCPClient implements Closeable {
         }
     }
 
-    public void close() {
+    public synchronized void close() {
         if (tcpSession != null) {
             tcpSession.closeOnFlush();
         }

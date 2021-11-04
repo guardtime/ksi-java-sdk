@@ -51,6 +51,7 @@ import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_WRONG_HASH;
 import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02_ONLY_AGGREGATION_HASH_CHAINS;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_2021_11_04;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 
@@ -111,7 +112,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         PublicationsFileBasedVerificationPolicy policy = new PublicationsFileBasedVerificationPolicy();
         policy.setFallbackPolicy(new KeyBasedVerificationPolicy());
 
-        verification(TestUtil.loadSignature(SIGNATURE_2017_03_14), policy, false);
+        verification(TestUtil.loadSignature(SIGNATURE_2021_11_04), policy, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -138,18 +139,18 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         policy.setFallbackPolicy(new KeyBasedVerificationPolicy());
 
         PublicationData publicationData = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord().getPublicationData();
-        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2017_03_14), policy, publicationData, false);
+        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2021_11_04), policy, publicationData, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testFallBackFromUserPublicationAndPublicationFileToKeyBasedPolicy_Ok() throws Exception {
         UserProvidedPublicationBasedVerificationPolicy policy = new UserProvidedPublicationBasedVerificationPolicy();
-        PublicationsFileBasedVerificationPolicy fallback_policy = new PublicationsFileBasedVerificationPolicy();
-        fallback_policy.setFallbackPolicy(new KeyBasedVerificationPolicy());
-        policy.setFallbackPolicy(fallback_policy);
+        PublicationsFileBasedVerificationPolicy fallbackPolicy = new PublicationsFileBasedVerificationPolicy();
+        fallbackPolicy.setFallbackPolicy(new KeyBasedVerificationPolicy());
+        policy.setFallbackPolicy(fallbackPolicy);
 
         PublicationData publicationData = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord().getPublicationData();
-        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2017_03_14), policy, publicationData, false);
+        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2021_11_04), policy, publicationData, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -170,7 +171,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         KeyBasedVerificationPolicy fallbackPolicy = new KeyBasedVerificationPolicy();
         policy.setFallbackPolicy(fallbackPolicy);
 
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2017_03_14);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2021_11_04);
         SimpleHttpExtenderClient extClient = new SimpleHttpExtenderClient(new CredentialsAwareHttpSettings(
                 loadExtenderSettings().getUrl().toString(), new KSIServiceCredentials("rand", "omnom")));
         VerificationResult result = verify(ksi, extClient, signature, policy, null, true);

@@ -85,6 +85,7 @@ public class Resources {
     //Not extended
     public static final String SIGNATURE_2014_06_02 = SIGNATURES + "ok-sig-2014-06-2.ksig";
     public static final String SIGNATURE_2017_03_14 = SIGNATURES + "ok-sig-2017-03-14.ksig";
+    public static final String SIGNATURE_2021_11_04 = SIGNATURES + "ok-sig-2021-11-04.ksig";
     public static final String SIGNATURE_OTHER_CORE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-other-core-signature.ksig";
     public static final String SIGNATURE_CHANGED_CHAINS = SIGNATURES + "all-wrong-hash-chains-in-signature.ksig";
     public static final String SIGNATURE_PUB_REC_WRONG_CERT_ID_VALUE = POLICY_VERIFICATION_SIGNATURES + "policy-verification-signature-changed-certificate-id-GEN-02.ksig";

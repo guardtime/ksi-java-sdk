@@ -51,6 +51,7 @@ import static com.guardtime.ksi.Resources.INPUT_FILE;
 import static com.guardtime.ksi.Resources.RFC3161_EXTENDED_FOR_PUBLICATIONS_FILE_VERIFICATION;
 import static com.guardtime.ksi.Resources.RFC3161_SIGNATURE;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
+import static com.guardtime.ksi.Resources.SIGNATURE_2021_11_04;
 import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGREGATION_HASH_CHAINS;
 import static com.guardtime.ksi.Resources.SIGNATURE_ONLY_AGGR_CHAINS_AND_CALENDAR_CHAIN;
 import static com.guardtime.ksi.Resources.SIGNATURE_OTHER_CORE;
@@ -62,7 +63,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingKeyBasedPolicy_Ok() throws Exception {
-        KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
+        KSISignature sig = loadSignature(SIGNATURE_2021_11_04);
         VerificationResult result = verify(ksi, new KSIExtendingClientServiceAdapter(extenderClient), sig, new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
@@ -156,7 +157,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testVerifySignatureUsingContextKeyBasedPolicy_Ok() throws Exception {
-        KSISignature sig = loadSignature(SIGNATURE_2017_03_14);
+        KSISignature sig = loadSignature(SIGNATURE_2021_11_04);
         VerificationResult result =
                 ksi.verify(sig, ContextAwarePolicyAdapter.createKeyPolicy(getPublicationsHandler(publicationsFileClient)));
         Assert.assertTrue(result.isOk());
@@ -232,7 +233,7 @@ public class VerifyIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test(groups = TEST_GROUP_INTEGRATION)
     public void testDefaultPolicyWithNotExtendedSignatureAndNoExtender_OK() throws Exception{
-        KSISignature signature = loadSignature(SIGNATURE_2017_03_14);
+        KSISignature signature = loadSignature(SIGNATURE_2021_11_04);
         VerificationResult result =  new SignatureVerifier().verify(
                 signature,
                 ContextAwarePolicyAdapter.createDefaultPolicy(getPublicationsHandler(publicationsFileClient), null)

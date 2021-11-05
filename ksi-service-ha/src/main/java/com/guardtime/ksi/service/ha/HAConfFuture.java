@@ -56,7 +56,7 @@ class HAConfFuture<T> implements Future<T> {
         }
     }
 
-    public boolean isFinished() {
+    public synchronized boolean isFinished() {
         if (consolidationResult == null) {
             for (Future<T> confFuture : confFutures) {
                 if (!confFuture.isFinished()) {

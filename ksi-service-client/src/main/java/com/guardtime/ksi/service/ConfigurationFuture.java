@@ -20,7 +20,6 @@
 package com.guardtime.ksi.service;
 
 import com.guardtime.ksi.exceptions.KSIException;
-import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.KSIClientException;
 
 import java.util.concurrent.ExecutionException;
@@ -57,7 +56,7 @@ class ConfigurationFuture<T> implements Future<T> {
         }
     }
 
-    public boolean isFinished() {
+    public synchronized boolean isFinished() {
         return result != null || requestFuture.isDone();
     }
 }

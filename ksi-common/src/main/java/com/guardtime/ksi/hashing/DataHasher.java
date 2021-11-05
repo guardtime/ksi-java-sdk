@@ -114,7 +114,7 @@ public class DataHasher {
         try {
             messageDigest = MessageDigest.getInstance(algorithm.getName());
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException("Hash algorithm not supported: " + algorithm.getName());
+            throw new IllegalArgumentException("Hash algorithm not supported: " + algorithm.getName(), e);
         }
     }
 

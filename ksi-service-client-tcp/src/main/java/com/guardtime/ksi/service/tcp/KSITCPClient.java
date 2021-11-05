@@ -19,6 +19,7 @@
  */
 package com.guardtime.ksi.service.tcp;
 
+import com.guardtime.ksi.exceptions.KSIException;
 import com.guardtime.ksi.pdu.PduVersion;
 import com.guardtime.ksi.service.Future;
 import com.guardtime.ksi.service.client.ServiceCredentials;
@@ -32,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +62,7 @@ class KSITCPClient implements Closeable {
         try {
             return new KSITCPRequestFuture(request, tcpSession,
                     TimeUnit.SECONDS.toMillis(tcpClientSettings.getTcpTransactionTimeoutSec()));
-        } catch (Throwable e) {
+        } catch (KSIException | IOException e) {
             throw new KSITCPTransactionException("There was a problem with initiating a TCP transaction with endpoint " +
                     tcpClientSettings.getEndpoint() + ".", e);
         }

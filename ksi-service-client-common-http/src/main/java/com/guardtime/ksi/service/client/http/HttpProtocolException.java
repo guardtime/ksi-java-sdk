@@ -34,6 +34,10 @@ public class HttpProtocolException extends KSIClientException {
         this.errorCode = errorCode;
     }
 
+    public HttpProtocolException(int errorCode, String msg, Exception e) {
+        super("(" + errorCode + "):" + msg, e);
+        this.errorCode = errorCode;
+    }
 
     public int getErrorCode() {
         return errorCode;

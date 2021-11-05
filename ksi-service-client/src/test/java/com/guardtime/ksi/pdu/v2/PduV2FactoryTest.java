@@ -127,6 +127,11 @@ public class PduV2FactoryTest {
         pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-multi-payload-with-error-payload.tlv"));
     }
 
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Response invalid: exactly one status code must exist in aggregation response payload")
+    public void testReadV2AggregationResponseWithMissingStatus_ThrowsKSIProtocolException() throws Exception {
+        pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-missing-status.tlv"));
+    }
+
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=.* encountered")
     public void testReadV2AggregationResponseWithUnknownCriticalElement_ThrowsTLVParserException() throws Exception {
         pduFactory.readAggregationResponse(requestContext, CREDENTIALS, loadTlv("pdu/aggregation/aggregation-response-v2-multi-payload-with-critical-unknown-element.tlv"));
@@ -187,6 +192,11 @@ public class PduV2FactoryTest {
     @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Error was returned by server. Error status is 0x101. Error message from server: 'this-error-should-be-thrown'")
     public void testExtensionResponseWithErrorPayloadAndMac_ThrowsKSIProtocolException() throws Exception {
         pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-multi-payload-with-error-payload.tlv"));
+    }
+
+    @Test(expectedExceptions = KSIProtocolException.class, expectedExceptionsMessageRegExp = "Response invalid: exactly one status code must exist in extension response payload")
+    public void testExtensionResponseWithMissingStatus_ThrowsKSIProtocolException() throws Exception {
+        pduFactory.readExtensionResponse(extensionContext, CREDENTIALS, loadTlv("pdu/extension/extension-response-v2-missing-status.tlv"));
     }
 
     @Test(expectedExceptions = TLVParserException.class, expectedExceptionsMessageRegExp = "Unknown critical TLV element with tag=.* encountered")

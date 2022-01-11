@@ -47,7 +47,7 @@ public class CalendarAuthenticationRecordSignatureVerificationRule extends BaseR
         SignatureData signatureData = authenticationRecord.getSignatureData();
         Certificate certificate = context.getCertificate(signatureData.getCertificateId());
         try {
-            Signature sig = Signature.getInstance(signatureData.getSignatureType(), BouncyCastleProvider.PROVIDER_NAME);
+            Signature sig = Signature.getInstance(signatureData.getSignatureType());
             sig.initVerify(certificate);
             sig.update(authenticationRecord.getPublicationData().getEncoded());
             if (!sig.verify(signatureData.getSignatureValue())) {

@@ -55,7 +55,7 @@ public abstract class HttpPostRequestFuture implements Future<TLVElement> {
             if (logger.isDebugEnabled()) {
                 logger.debug("Invalid TLV response.", e);
             }
-            throw new HttpProtocolException(statusCode, responseMessage);
+            throw new HttpProtocolException(statusCode, responseMessage, e);
         }
     }
 

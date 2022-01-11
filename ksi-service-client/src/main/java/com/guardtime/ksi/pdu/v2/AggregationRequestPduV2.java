@@ -50,7 +50,7 @@ class AggregationRequestPduV2 extends PduV2 implements AggregationRequest {
         try {
             return getRootElement().getEncoded();
         } catch (TLVParserException e) {
-            throw new IllegalArgumentException("Invalid aggregation request state");
+            throw new IllegalArgumentException("Invalid aggregation request state", e);
         }
     }
 

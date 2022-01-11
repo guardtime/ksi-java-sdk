@@ -87,7 +87,7 @@ public class CMSSignatureVerifier {
 
     private void verifyCmsSignerInfo(SignerInformation signerInfo, X509CertificateHolder certHolder) throws InvalidCmsSignatureException {
         try {
-            SignerInformationVerifier signerInformationVerifier = new JcaSimpleSignerInfoVerifierBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME)
+            SignerInformationVerifier signerInformationVerifier = new JcaSimpleSignerInfoVerifierBuilder()
                     .build(certHolder);
             if (!signerInfo.verify(signerInformationVerifier)) {
                 LOGGER.warn("Signer certificate verification failure. Signer info is {}, and certificate subjectDN is {}", signerInfo, certHolder.getSubject());
@@ -102,7 +102,7 @@ public class CMSSignatureVerifier {
 
     private X509Certificate getCertificate(X509CertificateHolder certHolder) throws InvalidCmsSignatureException {
         try {
-            return new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(certHolder);
+            return new JcaX509CertificateConverter().getCertificate(certHolder);
         } catch (CertificateException e) {
             throw new InvalidCmsSignatureException("Invalid certificate in CMS signature. " + e.getMessage(), e);
         }

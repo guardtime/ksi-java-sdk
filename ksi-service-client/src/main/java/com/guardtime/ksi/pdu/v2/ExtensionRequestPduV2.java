@@ -52,7 +52,7 @@ class ExtensionRequestPduV2 extends PduV2 implements ExtensionRequest {
         try {
             return getRootElement().getEncoded();
         } catch (TLVParserException e) {
-            throw new IllegalArgumentException("Invalid aggregation request state");
+            throw new IllegalArgumentException("Invalid extension request state", e);
         }
     }
 }

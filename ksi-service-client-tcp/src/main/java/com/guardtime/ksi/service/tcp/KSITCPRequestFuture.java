@@ -111,7 +111,7 @@ class KSITCPRequestFuture implements com.guardtime.ksi.service.Future<TLVElement
     /**
      * @return True, if the TCP request is finished.
      */
-    public boolean isFinished() {
+    public synchronized boolean isFinished() {
         if (finished) {
             return true;
         }

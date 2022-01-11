@@ -22,6 +22,7 @@ package com.guardtime.ksi.service.tcp;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.FilterEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,10 @@ class TCPSessionHandler implements IoHandler {
 
     public void inputClosed(IoSession session) throws Exception {
         session.closeNow();
+    }
+
+    public void event(IoSession session, FilterEvent filterEvent) throws Exception {
+        LOGGER.debug("TCP session ID={} event received {}.", session.getId(), filterEvent);
     }
 
     public void sessionClosed(IoSession session) throws Exception {

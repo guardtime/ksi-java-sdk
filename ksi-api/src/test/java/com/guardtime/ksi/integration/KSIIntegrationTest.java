@@ -31,7 +31,6 @@ import com.guardtime.ksi.unisignature.verifier.VerificationResult;
 import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.util.Base16;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,7 +39,7 @@ import java.util.Date;
 
 import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.SIGNATURE_2021_11_04;
+import static com.guardtime.ksi.Resources.SIGNATURE_AUTH_RECORD_REFERS_TO_VALID_CERT;
 import static org.testng.Assert.assertNotNull;
 
 public class KSIIntegrationTest extends AbstractCommonIntegrationTest {
@@ -73,17 +72,17 @@ public class KSIIntegrationTest extends AbstractCommonIntegrationTest {
 
     @Test
     public void testVerifySignatureWithoutContext_OK() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.load(SIGNATURE_2021_11_04));
+        KSISignature signature = ksi.read(TestUtil.load(SIGNATURE_AUTH_RECORD_REFERS_TO_VALID_CERT));
         VerificationResult result = ksi.verify(signature, new KeyBasedVerificationPolicy());
         Assert.assertTrue(result.isOk());
     }
 
     @Test
     public void testVerifySignatureWithFileDataHashWithoutContext_OK() throws Exception {
-        KSISignature signature = ksi.read(TestUtil.load(SIGNATURE_2021_11_04));
+        KSISignature signature = ksi.read(TestUtil.load(SIGNATURE_AUTH_RECORD_REFERS_TO_VALID_CERT));
         VerificationResult result = ksi.verify(signature, new KeyBasedVerificationPolicy(), new DataHash(
                 HashAlgorithm.SHA2_256,
-                Base16.decode("D0A6D6D2EAF67A13852A4D0F48107B1DDBC35901ADC90F60CB4763054602D5B3")
+                Base16.decode("11A700B0C8066C47ECBA05ED37BC14DCADB238552D86C659342D1D7E87B8772D")
         ));
         Assert.assertTrue(result.isOk());
     }

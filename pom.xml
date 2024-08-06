@@ -24,7 +24,7 @@
 
 	<groupId>com.guardtime</groupId>
 	<artifactId>ksi</artifactId>
-	<version>4.18.217</version>
+	<version>4.19.220</version>
 	<packaging>pom</packaging>
 
 	<name>KSI SDK</name>
@@ -68,9 +68,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<slf4j.version>1.7.12</slf4j.version>
-		<bouncycastle.version>1.68</bouncycastle.version>
+		<slf4j.version>2.0.13</slf4j.version>
+		<bouncycastle.version>1.78.1</bouncycastle.version>
 		<jacoco.version>0.7.9</jacoco.version>
+		<skip.owasp.check>true</skip.owasp.check>
 	</properties>
 
 	<dependencyManagement>
@@ -83,8 +84,19 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
-				<version>1.7.12</version>
+				<version>${slf4j.version}</version>
 				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>7.5.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-all</artifactId>
+				<version>1.10.19</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -97,8 +109,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 
@@ -269,6 +281,22 @@
 						<id>attach-sources</id>
 						<goals>
 							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>10.0.3</version>
+				<configuration>
+					<skip>${skip.owasp.check}</skip>
+					<nvdApiServerId>nvd.api.server</nvdApiServerId>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
 						</goals>
 					</execution>
 				</executions>

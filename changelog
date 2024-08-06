@@ -1,5 +1,7 @@
 Version 4.19
 
+2024-08-06 4.19.220
+
 * IMPROVEMENT: Changed BouncyCastle version to 1.78.1.
 * IMPROVEMENT: Changed mina-core version to 2.1.8.
 * IMPROVEMENT: Changed httpasyncclient version to 4.1.5.

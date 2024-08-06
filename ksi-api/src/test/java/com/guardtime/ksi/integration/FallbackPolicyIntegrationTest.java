@@ -41,7 +41,6 @@ import com.guardtime.ksi.unisignature.verifier.policies.KeyBasedVerificationPoli
 import com.guardtime.ksi.unisignature.verifier.policies.Policy;
 import com.guardtime.ksi.unisignature.verifier.policies.PublicationsFileBasedVerificationPolicy;
 import com.guardtime.ksi.unisignature.verifier.policies.UserProvidedPublicationBasedVerificationPolicy;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -51,7 +50,7 @@ import static com.guardtime.ksi.Resources.EXTENDED_SIGNATURE_2017_03_14;
 import static com.guardtime.ksi.Resources.PUBLICATIONS_FILE_WRONG_HASH;
 import static com.guardtime.ksi.Resources.SIGNATURE_2014_06_02_ONLY_AGGREGATION_HASH_CHAINS;
 import static com.guardtime.ksi.Resources.SIGNATURE_2017_03_14;
-import static com.guardtime.ksi.Resources.SIGNATURE_2021_11_04;
+import static com.guardtime.ksi.Resources.SIGNATURE_AUTH_RECORD_REFERS_TO_VALID_CERT;
 import static com.guardtime.ksi.TestUtil.loadSignature;
 
 
@@ -112,7 +111,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         PublicationsFileBasedVerificationPolicy policy = new PublicationsFileBasedVerificationPolicy();
         policy.setFallbackPolicy(new KeyBasedVerificationPolicy());
 
-        verification(TestUtil.loadSignature(SIGNATURE_2021_11_04), policy, false);
+        verification(TestUtil.loadSignature(SIGNATURE_AUTH_RECORD_REFERS_TO_VALID_CERT), policy, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -139,7 +138,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         policy.setFallbackPolicy(new KeyBasedVerificationPolicy());
 
         PublicationData publicationData = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord().getPublicationData();
-        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2021_11_04), policy, publicationData, false);
+        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_AUTH_RECORD_REFERS_TO_VALID_CERT), policy, publicationData, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -150,7 +149,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         policy.setFallbackPolicy(fallbackPolicy);
 
         PublicationData publicationData = TestUtil.loadSignature(EXTENDED_SIGNATURE_2017_03_14).getPublicationRecord().getPublicationData();
-        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_2021_11_04), policy, publicationData, false);
+        verificationWithPublicationData(TestUtil.loadSignature(SIGNATURE_AUTH_RECORD_REFERS_TO_VALID_CERT), policy, publicationData, false);
     }
 
     @Test(groups = TEST_GROUP_INTEGRATION)
@@ -171,7 +170,7 @@ public class FallbackPolicyIntegrationTest extends AbstractCommonIntegrationTest
         KeyBasedVerificationPolicy fallbackPolicy = new KeyBasedVerificationPolicy();
         policy.setFallbackPolicy(fallbackPolicy);
 
-        KSISignature signature = TestUtil.loadSignature(SIGNATURE_2021_11_04);
+        KSISignature signature = TestUtil.loadSignature(SIGNATURE_AUTH_RECORD_REFERS_TO_VALID_CERT);
         SimpleHttpExtenderClient extClient = new SimpleHttpExtenderClient(new CredentialsAwareHttpSettings(
                 loadExtenderSettings().getUrl().toString(), new KSIServiceCredentials("rand", "omnom")));
         VerificationResult result = verify(ksi, extClient, signature, policy, null, true);
